@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>New Booking</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--green:#1f6f54;--green-dark:#175843;--green-soft:#e7f0ec;--green-tint:#f1f7f4;--paper:#fbfbf9;--card:#fff;--ink:#1c2420;--muted:#6b7770;--line:#e4e8e5;--amber:#b9791f;--amber-soft:#f7edda;--danger:#b23b3b;--danger-soft:#f7e6e6;--shadow:0 1px 2px rgba(28,36,32,.04),0 6px 18px rgba(28,36,32,.05)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:'Plus Jakarta Sans',sans-serif}
+.wrap{max-width:620px;margin:0 auto;padding-bottom:100px}
+.top{position:sticky;top:0;z-index:20;background:rgba(251,251,249,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top-in{max-width:620px;margin:0 auto;padding:12px 18px;display:flex;align-items:center;gap:12px}
+.back{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;font-size:18px;cursor:pointer;flex-shrink:0}
+.top-title{font-weight:700;font-size:16px;letter-spacing:-.01em}
+.top-sub{font-size:12px;color:var(--muted);font-weight:500;margin-top:1px}
+/* business selector */
+.bizpick{margin-left:auto;display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:7px 11px;cursor:pointer;box-shadow:var(--shadow)}
+.bizpick .bd{width:11px;height:11px;border-radius:50%;flex-shrink:0}
+.bizpick .bn{font-family:'Plus Jakarta Sans';font-weight:700;font-size:12.5px;max-width:96px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bizpick .cr{font-size:13px;color:var(--muted)}
+/* progress */
+.prog{display:flex;align-items:center;padding:14px 24px 4px;max-width:620px;margin:0 auto}
+.pstep{display:flex;flex-direction:column;align-items:center;gap:5px;flex:0 0 auto}
+.pdot{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:800;font-family:'Plus Jakarta Sans';background:var(--card);border:1.5px solid var(--line);color:var(--muted);transition:all .2s}
+.pdot.done{background:var(--green);border-color:var(--green);color:#fff}
+.pdot.cur{border-color:var(--green);color:var(--green);box-shadow:0 0 0 3px var(--green-soft)}
+.plabel{font-size:10px;font-weight:600;color:var(--muted)}
+.pdot.cur+.plabel,.pstep.active .plabel{color:var(--green)}
+.pline{flex:1;height:1.5px;background:var(--line);margin:0 4px;margin-bottom:18px}
+.pline.done{background:var(--green)}
+.pane{padding:20px 18px;display:none;animation:fade .25s ease}
+.pane.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.step-h{font-size:19px;font-weight:800;letter-spacing:-.02em;margin-bottom:4px}
+.step-sub{font-size:13px;color:var(--muted);margin-bottom:18px}
+.seg{display:flex;gap:6px;margin-bottom:18px}
+.seg button{flex:1;padding:11px;border:1px solid var(--line);background:var(--card);border-radius:11px;font-family:'Plus Jakarta Sans';font-size:13.5px;font-weight:700;color:var(--muted);cursor:pointer}
+.seg button.on{border-color:var(--green);background:var(--green-tint);color:var(--green-dark)}
+.field{margin-bottom:15px}
+.field label{display:block;font-size:12.5px;font-weight:600;margin-bottom:6px}
+.field .hint{font-weight:400;color:var(--muted)}
+.req{color:var(--danger)}
+input[type=text],input[type=number],input[type=tel],input[type=date],input[type=time]{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:11px;font-family:'Inter';font-size:15px;background:var(--card);color:var(--ink)}
+input:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px var(--green-soft)}
+.inline2{display:flex;gap:10px}.inline2 .field{flex:1}
+/* existing client list */
+.clientrow{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer}
+.clientrow.on{border-color:var(--green);background:var(--green-tint)}
+.avatar{width:38px;height:38px;border-radius:50%;background:var(--green-soft);color:var(--green-dark);display:grid;place-items:center;font-family:'Plus Jakarta Sans';font-weight:800;font-size:15px;flex-shrink:0}
+.clientrow .cn{font-family:'Plus Jakarta Sans';font-weight:700;font-size:14.5px}
+.clientrow .cm{font-size:12.5px;color:var(--muted)}
+.clientrow .tick{margin-left:auto;color:var(--green);font-weight:800;font-size:16px}
+/* availability banner */
+.avail{border-radius:12px;padding:12px 14px;font-size:13px;font-weight:600;display:flex;gap:9px;align-items:flex-start;margin-top:4px;line-height:1.45}
+.avail.free{background:var(--green-tint);color:var(--green-dark);border:1px solid var(--green-soft)}
+.avail.busy{background:var(--amber-soft);color:var(--amber);border:1px solid #eaddc0}
+/* package options */
+.opt{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 14px;margin-bottom:9px;cursor:pointer}
+.opt.on{border-color:var(--green);background:var(--green-tint)}
+.opt .radio{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);flex-shrink:0;display:grid;place-items:center}
+.opt.on .radio{border-color:var(--green)}
+.opt.on .radio::after{content:'';width:11px;height:11px;border-radius:50%;background:var(--green)}
+.opt .o-body{flex:1;min-width:0}
+.opt .o-name{font-family:'Plus Jakarta Sans';font-weight:700;font-size:14.5px}
+.opt .o-meta{font-size:12px;color:var(--muted);margin-top:1px}
+.opt .o-price{font-family:'Plus Jakarta Sans';font-weight:800;font-size:14.5px;white-space:nowrap}
+.opt .o-price small{display:block;font-size:9.5px;color:var(--muted);font-weight:600}
+/* stepper */
+.stepper{display:flex;align-items:center;gap:0;flex-shrink:0}
+.stepper button{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--card);font-size:17px;font-weight:700;color:var(--green);cursor:pointer;display:grid;place-items:center}
+.stepper input{width:44px;text-align:center;border:none;font-family:'Plus Jakarta Sans';font-weight:700;font-size:15px;padding:0;background:transparent}
+.itemrow{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 14px;margin-bottom:8px}
+.itemrow .i-body{flex:1;min-width:0}
+.itemrow .i-name{font-family:'Plus Jakarta Sans';font-weight:700;font-size:14px}
+.itemrow .i-meta{font-size:11.5px;color:var(--muted);margin-top:1px}
+/* addon checks */
+.chkrow{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer}
+.chkrow.on{border-color:var(--green);background:var(--green-tint)}
+.chkrow .box{width:24px;height:24px;border-radius:7px;border:1.5px solid var(--line);flex-shrink:0;display:grid;place-items:center;font-size:14px;color:#fff}
+.chkrow.on .box{background:var(--green);border-color:var(--green)}
+.chkrow .a-name{flex:1;font-weight:600;font-size:14px}
+.chkrow .a-price{font-family:'Plus Jakarta Sans';font-weight:700;font-size:13.5px;color:var(--muted)}
+.sect-label{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:20px 2px 10px}
+/* running total bar */
+.totbar{position:sticky;bottom:76px;background:var(--ink);color:#fff;border-radius:13px;padding:12px 16px;display:flex;align-items:center;margin-top:16px;box-shadow:0 6px 20px rgba(28,36,32,.18)}
+.totbar .tl{font-size:12px;opacity:.75;font-weight:600}
+.totbar .tv{font-family:'Plus Jakarta Sans';font-weight:800;font-size:20px;margin-left:auto;letter-spacing:-.02em}
+/* advance */
+.pctchips{display:flex;gap:6px;margin-bottom:14px}
+.pctchips button{flex:1;padding:9px;border:1px solid var(--line);background:var(--card);border-radius:10px;font-family:'Plus Jakarta Sans';font-weight:700;font-size:13px;color:var(--muted);cursor:pointer}
+.pctchips button.on{border-color:var(--green);background:var(--green-tint);color:var(--green-dark)}
+.summary{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:8px}
+.srow{display:flex;padding:12px 15px;font-size:13.5px}
+.srow+.srow{border-top:1px solid var(--line)}
+.srow .k{color:var(--muted)}
+.srow .v{margin-left:auto;font-weight:600;text-align:right}
+.srow.big .v{font-family:'Plus Jakarta Sans';font-weight:800;font-size:16px}
+.srow.due .v{color:var(--amber)}
+.srow.adv .v{color:var(--green)}
+/* footer */
+.foot{position:fixed;bottom:0;left:0;right:0;background:rgba(251,251,249,.94);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:12px 18px calc(12px + env(safe-area-inset-bottom));z-index:30}
+.foot-in{max-width:620px;margin:0 auto;display:flex;gap:10px}
+.btn-ghost{padding:14px 20px;border-radius:12px;border:1px solid var(--line);background:var(--card);font-family:'Plus Jakarta Sans';font-weight:700;font-size:14px;color:var(--muted);cursor:pointer}
+.btn-primary{flex:1;padding:14px;border-radius:12px;border:none;background:var(--green);color:#fff;font-family:'Plus Jakarta Sans';font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(31,111,84,.28)}
+.btn-primary:disabled{opacity:.4;box-shadow:none}
+/* success */
+.success{text-align:center;padding:50px 24px}
+.success .ring{width:76px;height:76px;border-radius:50%;background:var(--green);display:grid;place-items:center;margin:0 auto 20px;font-size:38px;color:#fff;animation:pop .35s cubic-bezier(.2,.9,.3,1.4)}
+@keyframes pop{from{transform:scale(.5);opacity:0}to{transform:none;opacity:1}}
+.success h2{font-size:22px;font-weight:800;letter-spacing:-.02em;margin-bottom:8px}
+.success p{font-size:14px;color:var(--muted);margin-bottom:22px;line-height:1.5}
+.success .rcard{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);text-align:left;overflow:hidden;margin-bottom:8px}
+/* biz sheet */
+.scrim{position:fixed;inset:0;background:rgba(20,28,24,.4);z-index:40;display:none;align-items:flex-end;justify-content:center}
+.scrim.on{display:flex}
+.sheet{background:var(--paper);width:100%;max-width:620px;border-radius:20px 20px 0 0;padding:18px 16px calc(16px + env(safe-area-inset-bottom));animation:up .28s cubic-bezier(.2,.8,.2,1)}
+@keyframes up{from{transform:translateY(100%)}to{transform:none}}
+.sheet-grab{width:40px;height:4px;background:#d5dbd7;border-radius:2px;margin:0 auto 14px}
+.sheet h3{font-size:16px;font-weight:800;margin:0 2px 12px}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="top"><div class="top-in">
+  <button class="back">‹</button>
+  <div><div class="top-title">New Booking</div><div class="top-sub" id="topSub">Step 1 of 4</div></div>
+  <div class="bizpick" onclick="openBiz()"><span class="bd" id="bizDot"></span><span class="bn" id="bizName"></span><span class="cr">⌄</span></div>
+</div></div>
+
+<div class="prog" id="prog"></div>
+
+<div class="wrap">
+  <!-- STEP 1: CLIENT -->
+  <div class="pane on" data-s="1">
+    <h2 class="step-h">Who's the booking for?</h2>
+    <p class="step-sub">Name and mobile power the ledger and reminders.</p>
+    <div class="seg"><button class="on" id="cNew" onclick="setClientMode('new')">New client</button><button id="cExist" onclick="setClientMode('existing')">Existing</button></div>
+    <div id="newClient">
+      <div class="field"><label>Full name <span class="req">*</span></label><input type="text" id="fName" placeholder="e.g. Aisha Khan" oninput="validate()"></div>
+      <div class="field"><label>Mobile number <span class="req">*</span></label><input type="tel" id="fMobile" placeholder="+91 " oninput="validate()"></div>
+      <div class="field"><label>WhatsApp <span class="hint">— if different</span></label><input type="tel" id="fWa" placeholder="+91 "></div>
+    </div>
+    <div id="existClient" class="hidden">
+      <div class="field"><input type="text" id="cSearch" placeholder="Search clients…" oninput="renderClients()"></div>
+      <div id="clientList"></div>
+    </div>
+  </div>
+
+  <!-- STEP 2: DATE -->
+  <div class="pane" data-s="2">
+    <h2 class="step-h">When's the event?</h2>
+    <p class="step-sub" id="dateSub">Pick the date. We'll check it against your other bookings.</p>
+    <div class="seg" id="dayModeSeg"><button class="on" data-dm="single" onclick="setDayMode('single')">Single day</button><button data-dm="multi" onclick="setDayMode('multi')">Multi-day</button></div>
+    <div class="inline2">
+      <div class="field"><label id="d1label">Event date <span class="req">*</span></label><input type="date" id="fDate" onchange="onDateChange()"></div>
+      <div class="field hidden" id="d2wrap"><label>End date</label><input type="date" id="fEnd" onchange="onDateChange()"></div>
+    </div>
+    <div class="field hidden" id="slotWrap"><label>Start time <span class="req">*</span></label><input type="time" id="fSlot" onchange="validate()"></div>
+    <div id="availBox"></div>
+  </div>
+
+  <!-- STEP 3: PACKAGE -->
+  <div class="pane" data-s="3">
+    <h2 class="step-h" id="s3h">Choose a package</h2>
+    <p class="step-sub" id="s3sub"></p>
+    <div id="pkgArea"></div>
+    <div class="sect-label" id="addonLabel">Add-ons</div>
+    <div id="addonArea"></div>
+    <div class="totbar"><span class="tl">Estimated total</span><span class="tv" id="totLive">₹0</span></div>
+  </div>
+
+  <!-- STEP 4: PAYMENT -->
+  <div class="pane" data-s="4">
+    <h2 class="step-h">Advance &amp; confirm</h2>
+    <p class="step-sub">Take an advance now; the balance is due on the event day.</p>
+    <div class="field"><label>Advance amount <span class="hint">— default from your settings, editable</span></label><input type="number" id="fAdv" inputmode="numeric" oninput="onAdvInput()"></div>
+    <div class="pctchips" id="pctChips"></div>
+    <div class="field hidden" id="depWrap"><label>Security deposit <span class="hint">— returnable</span></label><input type="number" id="fDep" inputmode="numeric" value="5000" oninput="renderSummary()"></div>
+    <div class="sect-label">Booking summary</div>
+    <div class="summary" id="summary"></div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="pane" data-s="done">
+    <div class="success">
+      <div class="ring">✓</div>
+      <h2>Booking confirmed</h2>
+      <p id="doneMsg"></p>
+      <div class="rcard summary" id="doneCard"></div>
+    </div>
+  </div>
+</div>
+
+<div class="foot" id="foot"><div class="foot-in">
+  <button class="btn-ghost hidden" id="btnBack" onclick="go(-1)">Back</button>
+  <button class="btn-primary" id="btnNext" onclick="go(1)">Continue</button>
+</div></div>
+
+<!-- BIZ SHEET -->
+<div class="scrim" id="bizSheet"><div class="sheet">
+  <div class="sheet-grab"></div>
+  <h3>Booking for which business?</h3>
+  <div id="bizOptions"></div>
+</div></div>
+
+<script>
+const BIZ={
+  photo:{name:'Aperture Photography',color:'#1f6f54',model:'flat',adv:30,multiDay:true,slot:false,deposit:false,
+    packages:[{n:'Wedding Full Day',p:80000,m:'300 photos + album · 30 days'},{n:'Pre-Wedding Shoot',p:25000,m:'60 photos · 15 days'},{n:'Birthday Shoot',p:12000,m:'40 photos · 10 days'}],
+    addons:[{n:'Drone coverage',p:8000},{n:'Extra album',p:6000},{n:'Additional shooter',p:5000}]},
+  makeup:{name:'Glow Makeup Studio',color:'#a1568a',model:'flat',adv:50,multiDay:false,slot:true,deposit:false,
+    packages:[{n:'Bridal HD Makeup',p:18000,m:'Per look · 2 hr slot'},{n:'Engagement Makeup',p:9000,m:'Per look'},{n:'Party Makeup',p:4000,m:'Per face'}],
+    addons:[{n:'Hairstyling',p:2000},{n:'Saree draping',p:1500},{n:'On-location travel',p:2000}]},
+  catering:{name:'Annapurna Catering',color:'#b9791f',model:'perplate',adv:30,multiDay:false,slot:false,deposit:false,
+    packages:[{n:'Standard Veg',p:450,min:50,m:'2 starters · 4 mains · 2 sweets'},{n:'Premium Non-veg',p:750,min:50,m:'4 starters · 6 mains · live counter'}],
+    addons:[{n:'Live chaat counter',p:8000,flat:true},{n:'Welcome drinks',p:40,perplate:true},{n:'Extra service staff',p:2500,flat:true}]},
+  tent:{name:'Sharma Tent House',color:'#3f6d8f',model:'peritem',adv:50,multiDay:true,slot:false,deposit:true,
+    items:[{n:'Plastic chair',p:15,stock:500},{n:'Round table (10-seat)',p:120,stock:40},{n:'Shamiana tent 20×30',p:2500,stock:6},{n:'LED flood light',p:80,stock:60}],
+    addons:[{n:'Setup & teardown labour',p:3000},{n:'Transport',p:1500}]},
+};
+/* existing bookings for conflict check (aligned with the calendar) */
+const EXISTING={
+  photo:[['2026-07-24','2026-07-25'],['2026-11-21','2026-11-23']],
+  makeup:[['2026-07-19','2026-07-19'],['2026-07-31','2026-07-31'],['2026-11-21','2026-11-22']],
+  catering:[['2026-07-26','2026-07-26'],['2026-08-15','2026-08-15'],['2026-11-22','2026-11-22']],
+  tent:[['2026-07-26','2026-07-28'],['2026-08-22','2026-08-27']],
+};
+const EXNAMES={ '2026-07-24':'Verma Wedding','2026-11-21':'Reddy Wedding','2026-07-26':'Sharma Function','2026-08-15':'Desai Reception','2026-07-31':'Priya Nair','2026-08-22':'Ganesh Pandal' };
+const CLIENTS=[
+  {n:'Aisha Khan',m:'+91 98200 11223'},{n:'Rohan Verma',m:'+91 99300 44556'},
+  {n:'Meera Desai',m:'+91 90040 77889'},{n:'Karan Iyer',m:'+91 98110 22334'},
+];
+
+let cur='photo';
+let step=1;
+let S={clientMode:'new',existIdx:null,dayMode:'single',advTouched:false,addons:new Set(),pkgIdx:0,guests:100,qty:{}};
+
+const MON3=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const fmtRs=n=>'₹'+Math.round(+n).toLocaleString('en-IN');
+const parse=s=>{const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);};
+const fmtDate=s=>{if(!s)return'—';const d=parse(s);return `${d.getDate()} ${MON3[d.getMonth()]} ${d.getFullYear()}`;};
+
+/* ---- business selector ---- */
+function renderBizBtn(){document.getElementById('bizDot').style.background=BIZ[cur].color;document.getElementById('bizName').textContent=BIZ[cur].name;}
+function openBiz(){
+  document.getElementById('bizOptions').innerHTML=Object.entries(BIZ).map(([id,b])=>`
+    <div class="opt ${id===cur?'on':''}" onclick="pickBiz('${id}')"><span class="radio"></span><span class="o-body"><span class="o-name">${b.name}</span><span class="o-meta">${b.model==='flat'?'Fixed packages':b.model==='perplate'?'Per-plate pricing':'Per-item rental'} · ${b.adv}% advance</span></span></div>`).join('');
+  document.getElementById('bizSheet').classList.add('on');document.body.style.overflow='hidden';
+}
+function pickBiz(id){cur=id;S={clientMode:S.clientMode,existIdx:S.existIdx,dayMode:'single',advTouched:false,addons:new Set(),pkgIdx:0,guests:(BIZ[id].packages&&BIZ[id].packages[0]&&BIZ[id].packages[0].min)||100,qty:{}};document.getElementById('bizSheet').classList.remove('on');document.body.style.overflow='';renderBizBtn();buildStep2();buildStep3();validate();}
+document.getElementById('bizSheet').addEventListener('click',e=>{if(e.target.id==='bizSheet'){document.getElementById('bizSheet').classList.remove('on');document.body.style.overflow='';}});
+
+/* ---- progress ---- */
+const STEPS=[{n:1,l:'Client'},{n:2,l:'Date'},{n:3,l:'Package'},{n:4,l:'Payment'}];
+function renderProg(){
+  let h='';
+  STEPS.forEach((s,i)=>{
+    const st=typeof step==='number'?step:5;
+    const cls=st>s.n?'done':st===s.n?'cur':'';
+    h+=`<div class="pstep"><div class="pdot ${cls}">${st>s.n?'✓':s.n}</div><div class="plabel" style="${st>=s.n?'color:var(--green)':''}">${s.l}</div></div>`;
+    if(i<STEPS.length-1)h+=`<div class="pline ${st>s.n?'done':''}"></div>`;
+  });
+  document.getElementById('prog').innerHTML=h;
+}
+
+/* ---- step 1 client ---- */
+function setClientMode(m){S.clientMode=m;document.getElementById('cNew').classList.toggle('on',m==='new');document.getElementById('cExist').classList.toggle('on',m==='existing');document.getElementById('newClient').classList.toggle('hidden',m!=='new');document.getElementById('existClient').classList.toggle('hidden',m!=='existing');if(m==='existing')renderClients();validate();}
+function renderClients(){
+  const q=(document.getElementById('cSearch').value||'').toLowerCase();
+  document.getElementById('clientList').innerHTML=CLIENTS.map((c,i)=>c.n.toLowerCase().includes(q)?`
+    <div class="clientrow ${S.existIdx===i?'on':''}" onclick="pickClient(${i})"><div class="avatar">${c.n[0]}</div><div><div class="cn">${c.n}</div><div class="cm">${c.m}</div></div>${S.existIdx===i?'<span class="tick">✓</span>':''}</div>`:'').join('');
+}
+function pickClient(i){S.existIdx=i;renderClients();validate();}
+
+/* ---- step 2 date ---- */
+function buildStep2(){
+  const b=BIZ[cur];
+  document.getElementById('dayModeSeg').style.display=b.multiDay?'flex':'none';
+  document.getElementById('slotWrap').classList.toggle('hidden',!b.slot);
+  document.getElementById('dateSub').textContent=b.slot?"Pick the date and start time — we'll flag any clash.":"Pick the date. We'll check it against your other bookings.";
+}
+function setDayMode(m){S.dayMode=m;document.querySelectorAll('#dayModeSeg button').forEach(x=>x.classList.toggle('on',x.dataset.dm===m));document.getElementById('d2wrap').classList.toggle('hidden',m!=='multi');document.getElementById('d1label').innerHTML=m==='multi'?'Start date <span class="req">*</span>':'Event date <span class="req">*</span>';onDateChange();}
+function overlaps(s1,e1,s2,e2){return s1<=e2&&s2<=e1;}
+function onDateChange(){
+  const d=document.getElementById('fDate').value;
+  const end=(S.dayMode==='multi'&&document.getElementById('fEnd').value)?document.getElementById('fEnd').value:d;
+  const box=document.getElementById('availBox');
+  if(!d){box.innerHTML='';validate();return;}
+  let clash=null;
+  (EXISTING[cur]||[]).forEach(([s,e])=>{if(overlaps(d,end,s,e))clash=s;});
+  if(clash){
+    const nm=EXNAMES[clash]||'another booking';
+    box.innerHTML=`<div class="avail busy">⚠️<div>You already have <b>${nm}</b> (${fmtDate(clash)}) for ${BIZ[cur].name} on this date. You can still book — just confirm it's not a clash.</div></div>`;
+  }else{
+    box.innerHTML=`<div class="avail free">✓<div>Available. No other ${BIZ[cur].name} booking on ${S.dayMode==='multi'?'these dates':'this date'}.</div></div>`;
+  }
+  validate();
+}
+
+/* ---- step 3 package (adaptive) ---- */
+function buildStep3(){
+  const b=BIZ[cur];
+  const area=document.getElementById('pkgArea');
+  if(b.model==='flat'){
+    document.getElementById('s3h').textContent='Choose a package';
+    document.getElementById('s3sub').textContent='One package per booking; add extras below.';
+    area.innerHTML=b.packages.map((p,i)=>`<div class="opt ${S.pkgIdx===i?'on':''}" onclick="pickPkg(${i})"><span class="radio"></span><div class="o-body"><div class="o-name">${p.n}</div><div class="o-meta">${p.m||''}</div></div><div class="o-price">${fmtRs(p.p)}</div></div>`).join('');
+  }else if(b.model==='perplate'){
+    document.getElementById('s3h').textContent='Choose a menu';
+    document.getElementById('s3sub').textContent='Priced per plate — enter your guest count.';
+    area.innerHTML=b.packages.map((p,i)=>`<div class="opt ${S.pkgIdx===i?'on':''}" onclick="pickPkg(${i})"><span class="radio"></span><div class="o-body"><div class="o-name">${p.n}</div><div class="o-meta">${p.m||''} · min ${p.min}</div></div><div class="o-price">${fmtRs(p.p)}<small>PER PLATE</small></div></div>`).join('')
+      +`<div class="field" style="margin-top:14px"><label>Guest count <span class="req">*</span></label><div class="itemrow" style="justify-content:space-between"><div class="i-body"><div class="i-name">Number of plates</div><div class="i-meta">min ${b.packages[S.pkgIdx].min}</div></div><div class="stepper"><button onclick="bumpGuests(-10)">−</button><input id="guestsIn" type="number" value="${S.guests}" oninput="S.guests=+this.value||0;recalc()"><button onclick="bumpGuests(10)">＋</button></div></div></div>`;
+  }else{ // peritem
+    document.getElementById('s3h').textContent='Pick rental items';
+    document.getElementById('s3sub').textContent='Set the quantity for each item you\'re renting out.';
+    area.innerHTML=b.items.map((it,i)=>{const q=S.qty[i]||0;return `<div class="itemrow"><div class="i-body"><div class="i-name">${it.n}</div><div class="i-meta">${fmtRs(it.p)}/day · ${it.stock} in stock</div></div><div class="stepper"><button onclick="bumpQty(${i},-10)">−</button><input type="number" value="${q}" oninput="S.qty[${i}]=+this.value||0;recalc()"><button onclick="bumpQty(${i},10)">＋</button></div></div>`;}).join('');
+  }
+  // addons
+  const al=document.getElementById('addonArea');
+  al.innerHTML=b.addons.map((a,i)=>{const on=S.addons.has(i);const unit=a.perplate?' /plate':'';return `<div class="chkrow ${on?'on':''}" onclick="togAddon(${i})"><div class="box">${on?'✓':''}</div><div class="a-name">${a.n}</div><div class="a-price">${fmtRs(a.p)}${unit}</div></div>`;}).join('');
+  document.getElementById('depWrap').classList.toggle('hidden',!b.deposit);
+  recalc();
+}
+function pickPkg(i){S.pkgIdx=i;const b=BIZ[cur];if(b.model==='perplate'&&S.guests<b.packages[i].min)S.guests=b.packages[i].min;buildStep3();}
+function bumpGuests(n){S.guests=Math.max(0,S.guests+n);buildStep3();}
+function bumpQty(i,n){S.qty[i]=Math.max(0,(S.qty[i]||0)+n);buildStep3();}
+function togAddon(i){S.addons.has(i)?S.addons.delete(i):S.addons.add(i);buildStep3();}
+
+function numDays(){const d=document.getElementById('fDate').value;if(!d)return 1;const e=(S.dayMode==='multi'&&document.getElementById('fEnd').value)?document.getElementById('fEnd').value:d;return Math.max(1,Math.round((parse(e)-parse(d))/864e5)+1);}
+function baseTotal(){
+  const b=BIZ[cur];
+  if(b.model==='flat')return b.packages[S.pkgIdx].p;
+  if(b.model==='perplate')return b.packages[S.pkgIdx].p*S.guests;
+  return b.items.reduce((s,it,i)=>s+it.p*(S.qty[i]||0),0)*numDays();
+}
+function addonTotal(){
+  const b=BIZ[cur];let t=0;
+  S.addons.forEach(i=>{const a=b.addons[i];t+=a.perplate?a.p*S.guests:a.p;});
+  return t;
+}
+function grandTotal(){return baseTotal()+addonTotal();}
+function recalc(){document.getElementById('totLive').textContent=fmtRs(grandTotal());if(!S.advTouched)validate();}
+
+/* ---- step 4 payment ---- */
+function buildStep4(){
+  const b=BIZ[cur];
+  if(!S.advTouched){document.getElementById('fAdv').value=Math.round(grandTotal()*b.adv/100);}
+  renderPct();renderSummary();
+}
+function renderPct(){
+  const b=BIZ[cur];const opts=[25,b.adv,50,100].filter((v,i,a)=>a.indexOf(v)===i).sort((x,y)=>x-y);
+  const cur2=+document.getElementById('fAdv').value;const g=grandTotal();
+  document.getElementById('pctChips').innerHTML=opts.map(p=>{const amt=Math.round(g*p/100);return `<button class="${amt===cur2?'on':''}" onclick="setPct(${p})">${p===100?'Full':p+'%'}</button>`;}).join('');
+}
+function setPct(p){S.advTouched=true;document.getElementById('fAdv').value=Math.round(grandTotal()*p/100);renderPct();renderSummary();}
+function onAdvInput(){S.advTouched=true;renderPct();renderSummary();}
+function renderSummary(){
+  const b=BIZ[cur],g=grandTotal(),adv=+document.getElementById('fAdv').value||0,bal=g-adv;
+  const dep=b.deposit?(+document.getElementById('fDep').value||0):0;
+  let rows=`<div class="srow big"><span class="k">Total</span><span class="v">${fmtRs(g)}</span></div>`;
+  rows+=`<div class="srow adv"><span class="k">Advance now</span><span class="v">${fmtRs(adv)}</span></div>`;
+  rows+=`<div class="srow due"><span class="k">Balance on event day</span><span class="v">${fmtRs(bal>0?bal:0)}</span></div>`;
+  if(dep)rows+=`<div class="srow"><span class="k">Security deposit (returnable)</span><span class="v">${fmtRs(dep)}</span></div>`;
+  document.getElementById('summary').innerHTML=rows;
+}
+
+/* ---- navigation ---- */
+function validate(){
+  let ok=true;
+  if(step===1){ok=S.clientMode==='new'?(document.getElementById('fName').value.trim()&&document.getElementById('fMobile').value.trim()):(S.existIdx!==null);}
+  else if(step===2){ok=!!document.getElementById('fDate').value&&(!BIZ[cur].slot||document.getElementById('fSlot').value);}
+  else if(step===3){ok=grandTotal()>0;}
+  document.getElementById('btnNext').disabled=!ok;
+  return ok;
+}
+function showStep(){
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on'));
+  document.querySelector(`.pane[data-s="${step}"]`).classList.add('on');
+  document.getElementById('btnBack').classList.toggle('hidden',step===1||step==='done');
+  document.getElementById('topSub').textContent=step==='done'?'Done':`Step ${step} of 4`;
+  const nb=document.getElementById('btnNext');
+  nb.textContent=step===4?'Confirm booking':step==='done'?'Done':'Continue';
+  if(step==='done')document.getElementById('foot').classList.add('hidden');
+  renderProg();window.scrollTo({top:0,behavior:'smooth'});
+  if(step===2){buildStep2();onDateChange();}
+  if(step===3)buildStep3();
+  if(step===4)buildStep4();
+  validate();
+}
+function go(dir){
+  if(dir>0){
+    if(step==='done')return;
+    if(!validate())return;
+    if(step===4){confirmBooking();return;}
+    step++;
+  }else{step--;}
+  showStep();
+}
+function confirmBooking(){
+  const b=BIZ[cur],g=grandTotal(),adv=+document.getElementById('fAdv').value||0,bal=g-adv;
+  const name=S.clientMode==='new'?document.getElementById('fName').value:CLIENTS[S.existIdx].n;
+  const d=document.getElementById('fDate').value;
+  const end=(S.dayMode==='multi'&&document.getElementById('fEnd').value)?document.getElementById('fEnd').value:d;
+  const dateTxt=d===end?fmtDate(d):`${fmtDate(d)} – ${fmtDate(end)}`;
+  document.getElementById('doneMsg').innerHTML=`${fmtRs(adv)} advance recorded. It's on your calendar now — <b>${fmtRs(bal>0?bal:0)}</b> due on the event day.`;
+  document.getElementById('doneCard').innerHTML=`
+    <div class="srow"><span class="k">Client</span><span class="v">${name}</span></div>
+    <div class="srow"><span class="k">Business</span><span class="v">${b.name}</span></div>
+    <div class="srow"><span class="k">Date</span><span class="v">${dateTxt}</span></div>
+    <div class="srow big"><span class="k">Total</span><span class="v">${fmtRs(g)}</span></div>
+    <div class="srow adv"><span class="k">Advance paid</span><span class="v">${fmtRs(adv)}</span></div>
+    <div class="srow due"><span class="k">Balance due</span><span class="v">${fmtRs(bal>0?bal:0)}</span></div>`;
+  step='done';showStep();
+}
+
+/* init */
+renderBizBtn();showStep();
+</script>
+</body>
+</html>

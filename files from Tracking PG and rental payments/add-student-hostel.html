@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Student Hostel — Add Student</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fbfbf9;--ink:#16161a;--muted:#62636a;--line:#e7e7e2;--card:#fff;
+    --accent:#1f6f54;--soft:#e8f3ee;--warm:#f4f2ec;--red:#b3261e;--amber:#b36b00;--ambersoft:#fff4e5;
+    --d:'Plus Jakarta Sans',sans-serif;--b:'Inter',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:var(--b);-webkit-font-smoothing:antialiased;padding-bottom:88px;}
+  .wrap{max-width:480px;margin:0 auto;padding:0 16px;}
+  h1,h2,h3{font-family:var(--d);letter-spacing:-.01em;}
+
+  .top{position:sticky;top:0;background:var(--bg);z-index:9;padding:14px 0 12px;border-bottom:1px solid var(--line);}
+  .top-in{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+  .back{font-size:20px;color:var(--muted);cursor:pointer;}
+  .top h1{font-size:18px;}.top .sub{font-size:12px;color:var(--muted);}
+  .dots{display:flex;gap:6px;}
+  .dots .d{flex:1;height:5px;border-radius:99px;background:var(--line);}
+  .dots .d.on{background:var(--accent);}.dots .d.done{background:var(--accent);opacity:.5;}
+
+  .step-h{margin:18px 0 4px;}
+  .step-h .n{font-family:var(--d);font-weight:700;font-size:12px;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;}
+  .step-h h2{font-size:22px;margin-top:5px;}
+  .step-h p{font-size:13.5px;color:var(--muted);margin-top:3px;}
+
+  label{display:block;font-size:12.5px;color:var(--muted);margin:14px 0 5px;font-weight:500;}
+  input,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;font-size:15px;font-family:var(--b);background:var(--card);color:var(--ink);}
+  input:focus,select:focus{outline:none;border-color:var(--accent);}
+  .row{display:flex;gap:10px;}.row>*{flex:1;}
+  .opt-note{font-size:11.5px;color:var(--muted);}
+  .block-h{font-family:var(--d);font-weight:700;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:20px 0 2px;padding-top:14px;border-top:1px dashed var(--line);}
+  .payer-tag{display:inline-block;font-size:10px;background:var(--ambersoft);color:var(--amber);padding:2px 8px;border-radius:99px;margin-left:6px;font-family:var(--d);font-weight:700;vertical-align:middle;}
+
+  .rtypes{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:6px;}
+  .rtype{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:13px;cursor:pointer;transition:.12s;position:relative;}
+  .rtype:hover{border-color:var(--accent);}
+  .rtype.sel{border-color:var(--accent);background:var(--soft);}
+  .rtype.sel::after{content:'✓';position:absolute;top:9px;right:11px;color:var(--accent);font-weight:700;}
+  .rtype .ty{font-family:var(--d);font-weight:700;font-size:14.5px;}
+  .rtype .pr{font-family:var(--d);font-weight:800;font-size:17px;color:var(--accent);margin-top:3px;}
+  .rtype .sh{font-size:11px;color:var(--muted);}
+
+  .seg{display:flex;gap:6px;background:var(--warm);border-radius:10px;padding:4px;margin-top:5px;}
+  .seg button{flex:1;border:none;background:none;padding:9px;border-radius:7px;font-family:var(--d);font-weight:600;font-size:13px;color:var(--muted);cursor:pointer;}
+  .seg button.on{background:var(--card);color:var(--accent);box-shadow:0 1px 2px rgba(0,0,0,.06);}
+
+  .charges-wrap{margin-top:8px;}
+  .charge-row{display:flex;gap:8px;align-items:center;margin-bottom:8px;}
+  .charge-row select{flex:1.4;}.charge-row input{flex:1;}
+  .charge-row .rm{width:38px;height:44px;border:1px solid var(--line);background:var(--card);border-radius:9px;color:var(--red);font-size:14px;cursor:pointer;flex-shrink:0;}
+  .add-charge{width:100%;border:1px dashed #bbb;background:var(--bg);border-radius:10px;padding:11px;font-size:13.5px;cursor:pointer;color:var(--accent);font-family:var(--d);font-weight:600;}
+  .mtotal{display:flex;justify-content:space-between;align-items:center;background:var(--ink);color:#fff;border-radius:12px;padding:14px 16px;margin-top:12px;font-family:var(--d);font-weight:700;}
+  .mtotal span:last-child{font-size:20px;font-weight:800;}
+  .onetime-h{font-family:var(--d);font-weight:700;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:20px 0 4px;padding-top:14px;border-top:1px dashed var(--line);}
+
+  .upload{display:flex;align-items:center;gap:12px;background:var(--card);border:1px dashed #bbb;border-radius:12px;padding:14px;cursor:pointer;margin-top:5px;}
+  .upload .ic{font-size:22px;}.upload .tx{flex:1;}.upload .tx h3{font-size:14px;}.upload .tx small{color:var(--muted);font-size:12px;}
+  .upload.done{border-style:solid;border-color:var(--accent);background:var(--soft);}
+  .priv{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.5;background:var(--warm);padding:10px 12px;border-radius:10px;}
+
+  .toggle{display:flex;align-items:center;justify-content:space-between;padding:12px 0;}
+  .toggle .lbl{font-size:14.5px;font-weight:600;font-family:var(--d);}
+  .toggle .lbl small{display:block;font-size:12px;color:var(--muted);font-weight:400;font-family:var(--b);}
+  .sw{width:46px;height:26px;border-radius:99px;background:var(--line);position:relative;cursor:pointer;transition:.15s;flex-shrink:0;}
+  .sw.on{background:var(--accent);}
+  .sw::after{content:'';position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.15s;}
+  .sw.on::after{left:23px;}
+
+  .rev{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:10px;}
+  .rev .rr{display:flex;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--line);font-size:14px;}
+  .rev .rr:last-child{border:none;}
+  .rev .rr .k{color:var(--muted);}.rev .rr .v{font-weight:500;text-align:right;}
+  .rev-h{font-family:var(--d);font-weight:700;font-size:12px;color:var(--muted);text-transform:uppercase;margin:16px 0 7px;letter-spacing:.04em;}
+
+  .bar{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);padding:12px 16px;z-index:9;}
+  .bar-in{max-width:480px;margin:0 auto;display:flex;gap:10px;align-items:center;}
+  .btn{font-family:var(--d);font-weight:700;font-size:15px;border:none;border-radius:11px;padding:14px;cursor:pointer;}
+  .btn.next{background:var(--accent);color:#fff;flex:1;}
+  .btn.back{background:var(--card);border:1px solid var(--line);color:var(--ink);flex:0 0 26%;}
+  .btn.skip{background:none;color:var(--muted);font-weight:600;font-size:13px;border:none;}
+  .savebar{text-align:center;margin-top:8px;}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+const STEPS=['Student','Guardian','Charges','Documents','Review'];
+let step=0;
+const RTYPES=[
+  {ty:'Single',share:'1 bed / room',rent:8000,beds:1},
+  {ty:'Double',share:'2 sharing',rent:6000,beds:2},
+  {ty:'Triple',share:'3 sharing',rent:4500,beds:3},
+  {ty:'Dormitory',share:'6+ sharing',rent:3000,beds:6}
+];
+const CHARGE_TYPES=['Mess / Food','Laundry','WiFi','AC','Housekeeping','Study room','Other'];
+const d={
+  name:'',phone:'',gender:'Male',college:'',course:'',year:'1st',roll:'',
+  rtypeIdx:1,room:'B-104',bed:'1',checkin:'2026-06-23',
+  gname:'',gphone:'',grelation:'Father',localguardian:'',
+  cycle:'Term', charges:[{name:'Mess / Food',amt:3000}], deposit:12000,
+  idtype:'Aadhaar',idno:'',idUploaded:false,photoUploaded:false,verified:false,police:false,
+};
+const $=id=>document.getElementById(id);
+const money=n=>'₹'+(+n||0).toLocaleString('en-IN');
+function set(f,v){d[f]=v;}
+function rtype(){return RTYPES[d.rtypeIdx];}
+function rent(){return rtype().rent;}
+function periodTotal(){return rent()+d.charges.reduce((a,c)=>a+(+c.amt||0),0);}
+function cycleWord(){return d.cycle==='Term'?'term':'month';}
+
+function student(){
+  return `<div class="step-h"><span class="n">Step 1 of 5</span><h2>Student details</h2><p>Who's joining, and their institution.</p></div>
+  <label>Full name</label><input value="${d.name}" oninput="set('name',this.value);refreshNext()" placeholder="e.g. Ananya Reddy">
+  <div class="row">
+    <div><label>Student phone</label><input value="${d.phone}" oninput="set('phone',this.value)" placeholder="Optional" inputmode="numeric"></div>
+    <div><label>Gender</label><select onchange="set('gender',this.value)">${['Male','Female','Other'].map(g=>`<option ${d.gender===g?'selected':''}>${g}</option>`).join('')}</select></div>
+  </div>
+  <div class="block-h">Institution</div>
+  <label>College / school</label><input value="${d.college}" oninput="set('college',this.value)" placeholder="e.g. St. Xavier's College">
+  <div class="row">
+    <div><label>Course</label><input value="${d.course}" oninput="set('course',this.value)" placeholder="e.g. B.Com"></div>
+    <div><label>Year</label><select onchange="set('year',this.value)">${['1st','2nd','3rd','4th','5th','PG'].map(y=>`<option ${d.year===y?'selected':''}>${y}</option>`).join('')}</select></div>
+  </div>
+  <label>Roll / enrolment no. <span class="opt-note">(optional)</span></label><input value="${d.roll}" oninput="set('roll',this.value)">`;
+}
+function guardian(){
+  return `<div class="step-h"><span class="n">Step 2 of 5</span><h2>Parent / Guardian <span class="payer-tag">PRIMARY CONTACT & PAYER</span></h2><p>Bills and reminders go here.</p></div>
+  <label>Guardian name</label><input value="${d.gname}" oninput="set('gname',this.value);refreshNext()" placeholder="e.g. Mr. Reddy">
+  <div class="row">
+    <div><label>Guardian phone</label><input value="${d.gphone}" oninput="set('gphone',this.value);refreshNext()" placeholder="10-digit mobile" inputmode="numeric"></div>
+    <div><label>Relation</label><select onchange="set('grelation',this.value)">${['Father','Mother','Guardian','Other'].map(r=>`<option ${d.grelation===r?'selected':''}>${r}</option>`).join('')}</select></div>
+  </div>
+  <div class="priv">🔔 Payment reminders & bills will be sent to the guardian's number by default.</div>
+  <label>Local guardian <span class="opt-note">(same city — optional)</span></label>
+  <input value="${d.localguardian}" oninput="set('localguardian',this.value)" placeholder="Name & phone (optional)">`;
+}
+function chargesStep(){
+  const cards=RTYPES.map((r,i)=>`<div class="rtype ${d.rtypeIdx===i?'sel':''}" onclick="set('rtypeIdx',${i});render()">
+    <div class="ty">${r.ty}</div><div class="pr">${money(r.rent)}</div><div class="sh">${r.share} · /mo</div></div>`).join('');
+  const beds=Array.from({length:rtype().beds},(_,i)=>String(i+1));
+  if(!beds.includes(d.bed))d.bed=beds[0];
+  const rows=d.charges.map((c,i)=>`
+    <div class="charge-row">
+      <select onchange="setCharge(${i},'name',this.value)">${CHARGE_TYPES.map(t=>`<option ${c.name===t?'selected':''}>${t}</option>`).join('')}</select>
+      <input type="number" value="${c.amt}" placeholder="0" oninput="setCharge(${i},'amt',this.value)">
+      <button class="rm" onclick="rmCharge(${i})">✕</button>
+    </div>`).join('');
+  return `<div class="step-h"><span class="n">Step 3 of 5</span><h2>Room & charges</h2><p>Room type, charges, and billing cycle.</p></div>
+  <label>Room type <span class="opt-note">(sets the rent)</span></label>
+  <div class="rtypes">${cards}</div>
+  <div class="row" style="margin-top:12px">
+    <div><label>Room</label><input value="${d.room}" oninput="set('room',this.value)"></div>
+    <div><label>Bed</label><select onchange="set('bed',this.value)">${beds.map(b=>`<option ${d.bed===b?'selected':''}>Bed ${b}</option>`).join('')}</select></div>
+  </div>
+  <label>Billing cycle</label>
+  <div class="seg">
+    <button class="${d.cycle==='Monthly'?'on':''}" onclick="set('cycle','Monthly');render()">Monthly</button>
+    <button class="${d.cycle==='Term'?'on':''}" onclick="set('cycle','Term');render()">Per term / semester</button>
+  </div>
+  <div class="charges-wrap" style="margin-top:14px">${rows}</div>
+  <button class="add-charge" onclick="addCharge()">+ Add charge (laundry, WiFi, etc.)</button>
+  <div class="mtotal"><span>Per ${cycleWord()} total</span><span id="mtot">${money(periodTotal())}</span></div>
+  <div class="onetime-h">One-time (at admission)</div>
+  <label>Security deposit</label><input type="number" value="${d.deposit}" oninput="set('deposit',+this.value)">
+  <div class="opt-note" style="margin-top:5px">Deposit is kept separate — not part of the ${cycleWord()} total.</div>`;
+}
+function documents(){
+  return `<div class="step-h"><span class="n">Step 4 of 5</span><h2>Documents & ID</h2><p>Verify and keep records.</p></div>
+  <div class="row">
+    <div><label>ID type</label><select onchange="set('idtype',this.value)">${['Aadhaar','PAN','Passport','College ID'].map(t=>`<option ${d.idtype===t?'selected':''}>${t}</option>`).join('')}</select></div>
+    <div><label>ID number</label><input value="${d.idno}" oninput="set('idno',this.value)" placeholder="Optional"></div>
+  </div>
+  <div class="upload ${d.idUploaded?'done':''}" onclick="fakeUpload('idUploaded')"><span class="ic">${d.idUploaded?'✅':'🪪'}</span><div class="tx"><h3>${d.idUploaded?'ID uploaded':'Upload ID'}</h3><small>${d.idUploaded?'Saved to your Drive':'Aadhaar / College ID'}</small></div></div>
+  ${d.idtype==='Aadhaar'?`<div class="priv">🔒 Aadhaar is <b>not stored in our database</b> — only in your own Google Drive. We keep just a ✓ flag.</div>`:''}
+  <div class="upload ${d.photoUploaded?'done':''}" onclick="fakeUpload('photoUploaded')"><span class="ic">${d.photoUploaded?'✅':'📷'}</span><div class="tx"><h3>${d.photoUploaded?'Photo added':'Student photo'}</h3><small>For records & gate</small></div></div>
+  <div class="toggle"><div class="lbl">Mark ID as verified<small>Checked the original</small></div><div class="sw ${d.verified?'on':''}" onclick="toggleSw('verified')"></div></div>
+  <div class="toggle"><div class="lbl">Police verification done<small>Legally required</small></div><div class="sw ${d.police?'on':''}" onclick="toggleSw('police')"></div></div>`;
+}
+function review(){
+  const chk=b=>b?'<span style="color:var(--accent)">✓</span>':'<span style="color:var(--muted)">—</span>';
+  return `<div class="step-h"><span class="n">Step 5 of 5</span><h2>Review & add</h2><p>Quick check before saving.</p></div>
+  <div class="rev-h">Student</div>
+  <div class="rev">
+    <div class="rr"><span class="k">Name</span><span class="v">${d.name||'—'}</span></div>
+    <div class="rr"><span class="k">College</span><span class="v">${d.college||'—'}</span></div>
+    <div class="rr"><span class="k">Course / Year</span><span class="v">${(d.course||'—')} · ${d.year}</span></div>
+    <div class="rr"><span class="k">Bed</span><span class="v">${rtype().ty} · ${d.room} · Bed ${d.bed}</span></div>
+  </div>
+  <div class="rev-h">Guardian (payer)</div>
+  <div class="rev">
+    <div class="rr"><span class="k">${d.grelation}</span><span class="v">${d.gname||'—'}</span></div>
+    <div class="rr"><span class="k">Phone</span><span class="v">${d.gphone||'—'}</span></div>
+    <div class="rr"><span class="k">Local guardian</span><span class="v">${d.localguardian||'—'}</span></div>
+  </div>
+  <div class="rev-h">Charges (per ${cycleWord()})</div>
+  <div class="rev">
+    <div class="rr"><span class="k">Rent (${rtype().ty})</span><span class="v">${money(rent())}</span></div>
+    ${d.charges.map(c=>`<div class="rr"><span class="k">${c.name}</span><span class="v">${money(c.amt)}</span></div>`).join('')}
+    <div class="rr"><span class="k" style="font-weight:700;color:var(--ink)">Per ${cycleWord()}</span><span class="v" style="font-weight:800;color:var(--accent)">${money(periodTotal())}</span></div>
+    <div class="rr"><span class="k">Deposit (one-time)</span><span class="v">${money(d.deposit)}</span></div>
+  </div>
+  <div class="rev-h">Documents</div>
+  <div class="rev">
+    <div class="rr"><span class="k">ID (${d.idtype})</span><span class="v">${chk(d.idUploaded)}</span></div>
+    <div class="rr"><span class="k">Photo</span><span class="v">${chk(d.photoUploaded)}</span></div>
+    <div class="rr"><span class="k">Verified</span><span class="v">${chk(d.verified)}</span></div>
+    <div class="rr"><span class="k">Police verification</span><span class="v">${chk(d.police)}</span></div>
+  </div>`;
+}
+
+function addCharge(){const used=d.charges.map(c=>c.name);const next=CHARGE_TYPES.find(t=>!used.includes(t))||'Other';d.charges.push({name:next,amt:0});render();}
+function setCharge(i,f,v){d.charges[i][f]=f==='amt'?(+v||0):v;if(f==='amt')updTotal();}
+function rmCharge(i){d.charges.splice(i,1);render();}
+function updTotal(){const e=$('mtot');if(e)e.textContent=money(periodTotal());}
+function fakeUpload(f){d[f]=true;render();}
+function toggleSw(f){d[f]=!d[f];render();}
+function refreshNext(){const b=document.querySelector('.btn.next');if(!b)return;const ok=canNext();b.disabled=!ok;b.style.opacity=ok?'1':'.4';}
+function canNext(){
+  if(step===0)return d.name.trim()!=='';
+  if(step===1)return d.gname.trim()&&d.gphone.trim();
+  return true;
+}
+
+function render(){
+  if(step==='done'){renderDone();return;}
+  const body=[student,guardian,chargesStep,documents,review][step]();
+  const dots=STEPS.map((s,i)=>`<div class="d ${i===step?'on':i<step?'done':''}"></div>`).join('');
+  const isLast=step===STEPS.length-1;
+  $('app').innerHTML=`
+  <div class="top"><div class="wrap">
+    <div class="top-in"><span class="back" onclick="goBack()">←</span>
+    <div><h1>Add student</h1><div class="sub">Vidya Student Hostel · ${STEPS[step]}</div></div></div>
+    <div class="dots">${dots}</div>
+  </div></div>
+  <div class="wrap">${body}</div>
+  <div class="bar"><div class="bar-in">
+    ${step>0?'<button class="btn back" onclick="prev()">←</button>':''}
+    <button class="btn next" onclick="next()" ${canNext()?'':'disabled style="opacity:.4"'}>${isLast?'✓ Add student':'Continue →'}</button>
+  </div>
+  ${!isLast&&step>1?'<div class="savebar"><button class="btn skip" onclick="finish(true)">Save now, add rest later</button></div>':''}
+  </div>`;
+}
+function next(){
+  if(!canNext()){alert(step===0?'Please enter the student name.':'Please enter guardian name and phone.');return;}
+  if(step<STEPS.length-1){step++;render();window.scrollTo(0,0);}else finish(false);
+}
+function prev(){if(step>0){step--;render();window.scrollTo(0,0);}}
+function goBack(){if(step===0)alert('Back to Students list');else prev();}
+function finish(early){step='done';d._early=early;renderDone();window.scrollTo(0,0);}
+function firstPayment(){return periodTotal()+(+d.deposit||0);}
+function renderDone(){
+  const due=firstPayment();
+  $('app').innerHTML=`<div class="wrap" style="text-align:center;padding-top:50px">
+    <div style="font-size:50px">✅</div>
+    <h2 style="font-size:25px;margin:14px 0 6px;font-family:var(--d)">${d.name||'Student'} added!</h2>
+    <p style="color:var(--muted);font-size:15px;line-height:1.5">${rtype().ty} · ${d.room}, Bed ${d.bed} · billed ${d.cycle==='Term'?'per term':'monthly'}<br><span style="font-size:13px">Payer: ${d.gname||'guardian'} (${d.grelation})</span></p>
+    <div style="background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:24px 0;text-align:left">
+      <div style="font-family:var(--d);font-weight:700;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px">Due at admission</div>
+      <div style="display:flex;justify-content:space-between;font-size:14px;padding:4px 0;color:var(--muted)"><span>First ${cycleWord()} (rent + charges)</span><span>${money(periodTotal())}</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:14px;padding:4px 0;color:var(--muted)"><span>Security deposit</span><span>${money(d.deposit)}</span></div>
+      <div style="display:flex;justify-content:space-between;font-family:var(--d);font-weight:800;font-size:19px;border-top:1px solid var(--line);margin-top:6px;padding-top:9px"><span>Total</span><span>${money(due)}</span></div>
+    </div>
+    <button class="btn next" style="width:100%;margin-bottom:10px" onclick="collectAndBill()">💸 Collect payment & generate bill</button>
+    <button class="btn back" style="width:100%;flex:none" onclick="alert('Skipped — you can bill anytime from their profile.')">Skip for now</button>
+  </div>`;
+}
+function collectAndBill(){alert('Opens the bill generator, pre-filled (billed to '+(d.gname||'guardian')+'):\n\nFirst '+cycleWord()+' '+money(periodTotal())+'\n+ Deposit '+money(d.deposit)+'\n= '+money(firstPayment())+' due');}
+render();
+</script>
+</body>
+</html>

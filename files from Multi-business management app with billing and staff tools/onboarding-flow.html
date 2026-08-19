@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Khaata — Onboarding</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1f6f54;
+    --green-light: #e7f2ed;
+    --parchment: #fbfbf9;
+    --ink: #1c1c1a;
+    --muted: #6b6b64;
+    --border: #e6e4dd;
+    --amber: #b5791f;
+    --amber-light: #fbf1e2;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--parchment);
+    color: var(--ink);
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+  }
+  .screen { display: none; padding-bottom: 32px; min-height: 100vh; }
+  .screen.active { display: block; }
+
+  header { padding: 20px 20px 12px; display: flex; align-items: center; gap: 12px; }
+  header .back { font-size: 20px; cursor: pointer; color: var(--muted); }
+  header .titles h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 800; }
+  header .titles p { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+  .search-box {
+    margin: 8px 20px 16px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .type-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 0 20px;
+  }
+  .type-tile {
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 12px;
+    background: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 15px;
+  }
+  .type-tile.selected { background: var(--green-light); border-color: var(--green); color: var(--green); }
+  .type-tile .info-icon {
+    font-size: 13px;
+    color: var(--muted);
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .type-tile.selected .info-icon { color: var(--green); }
+
+  .cta-wrap { padding: 20px; }
+  .primary-btn {
+    width: 100%;
+    background: var(--green);
+    color: #fff;
+    border: none;
+    padding: 16px;
+    border-radius: 14px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+  }
+  .primary-btn:disabled { background: #cfcac0; cursor: not-allowed; }
+
+  /* Modal */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(28,28,26,0.45);
+    z-index: 10;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal-sheet {
+    background: #fff;
+    width: 100%;
+    max-width: 480px;
+    border-radius: 20px 20px 0 0;
+    padding: 24px 22px 28px;
+  }
+  .modal-sheet h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; margin-bottom: 6px; }
+  .modal-sheet .mode-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    background: var(--green-light);
+    color: var(--green);
+    padding: 3px 9px;
+    border-radius: 999px;
+    margin-bottom: 12px;
+  }
+  .modal-sheet p { font-size: 14px; color: var(--ink); margin-bottom: 8px; line-height: 1.5; }
+  .modal-sheet .example { font-size: 13px; color: var(--muted); font-style: italic; }
+  .modal-close {
+    margin-top: 18px;
+    width: 100%;
+    background: var(--green-light);
+    color: var(--green);
+    border: none;
+    padding: 12px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  /* Setup Status screen */
+  .list { padding: 8px 20px; display: flex; flex-direction: column; gap: 12px; }
+  .biz-card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 16px; }
+  .biz-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+  .biz-name { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 16px; }
+  .biz-type { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .badge { font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; white-space: nowrap; }
+  .badge.done { background: var(--green-light); color: var(--green); }
+  .badge.pending { background: var(--amber-light); color: var(--amber); }
+  .progress-track { height: 6px; background: #eee; border-radius: 999px; overflow: hidden; margin-bottom: 12px; }
+  .progress-fill { height: 100%; background: var(--green); border-radius: 999px; }
+  .biz-bottom { display: flex; justify-content: space-between; align-items: center; }
+  .pct { font-size: 13px; color: var(--muted); }
+  .action-btn {
+    font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
+    border: 1px solid var(--green); color: var(--green); background: #fff;
+    padding: 6px 14px; border-radius: 999px; cursor: pointer;
+  }
+  .action-btn.done { border-color: var(--border); color: var(--muted); }
+
+  /* Profile form screen */
+  .preset-tabs { display: flex; gap: 8px; padding: 0 20px 16px; }
+  .preset-tab {
+    flex: 1; text-align: center; padding: 10px; border-radius: 10px;
+    border: 1px solid var(--border); font-size: 13px; font-weight: 600; color: var(--muted);
+    cursor: pointer; background: #fff;
+  }
+  .preset-tab.active { background: var(--green); color: #fff; border-color: var(--green); }
+  .form-fields { padding: 0 20px; display: flex; flex-direction: column; gap: 12px; }
+  .field label { font-size: 12px; font-weight: 600; color: var(--muted); display: block; margin-bottom: 5px; }
+  .field input, .field select {
+    width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px;
+    font-size: 14px; font-family: 'Inter', sans-serif; background: #fff;
+  }
+  .field.hidden { display: none; }
+  .gst-note { font-size: 12px; color: var(--green); background: var(--green-light); padding: 8px 12px; border-radius: 8px; }
+</style>
+</head>
+<body>
+
+<!-- SCREEN 1: Business Type Selection -->
+<div class="screen active" id="screen-type">
+  <header>
+    <span class="back" onclick="void(0)">←</span>
+    <div class="titles"><h1>What do you run?</h1><p>Select all that apply</p></div>
+  </header>
+  <div class="search-box">🔍 Search business type…</div>
+  <div class="type-grid" id="typeGrid"></div>
+  <div class="cta-wrap">
+    <button class="primary-btn" id="continueBtn" disabled onclick="goToStatus()">Select a business to continue</button>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-sheet">
+    <span class="mode-tag" id="modalMode">Mode 1</span>
+    <h3 id="modalTitle">PG</h3>
+    <p id="modalDesc">Description</p>
+    <p class="example" id="modalExample">Example</p>
+    <button class="modal-close" onclick="closeModal()">Got it</button>
+  </div>
+</div>
+
+<!-- SCREEN 2: Setup Status -->
+<div class="screen" id="screen-status">
+  <header>
+    <span class="back" onclick="showScreen('screen-type')">←</span>
+    <div class="titles"><h1>Set up your businesses</h1><p id="statusSubtitle">0 of 0 ready to use</p></div>
+  </header>
+  <div class="list" id="statusList"></div>
+  <div class="cta-wrap">
+    <button class="primary-btn" onclick="alert('Would navigate to Home Dashboard')">Go to Dashboard</button>
+  </div>
+</div>
+
+<!-- SCREEN 3: Business Profile Form -->
+<div class="screen" id="screen-profile">
+  <header>
+    <span class="back" onclick="showScreen('screen-status')">←</span>
+    <div class="titles"><h1 id="profileBizName">Business Profile</h1><p>Choose how much detail to add now</p></div>
+  </header>
+  <div class="preset-tabs">
+    <div class="preset-tab active" onclick="setPreset('simple', this)">Simple</div>
+    <div class="preset-tab" onclick="setPreset('standard', this)">Standard</div>
+    <div class="preset-tab" onclick="setPreset('detailed', this)">Detailed</div>
+  </div>
+  <div class="form-fields">
+    <div class="field"><label>Business name</label><input type="text" placeholder="e.g. FlexFit Gym"></div>
+    <div class="field"><label>Phone</label><input type="text" placeholder="10-digit mobile number"></div>
+    <div class="field"><label>Business type</label><input type="text" value="Gym" disabled></div>
+
+    <div class="field tier-standard tier-detailed hidden"><label>Logo</label><input type="text" placeholder="Upload logo"></div>
+    <div class="field tier-standard tier-detailed hidden"><label>Address</label><input type="text" placeholder="Shop / building address"></div>
+    <div class="field tier-standard tier-detailed hidden">
+      <label>GST registered?</label>
+      <select><option>No (suggested for Gym)</option><option>Yes</option></select>
+    </div>
+
+    <div class="field tier-detailed hidden"><label>GSTIN</label><input type="text" placeholder="22AAAAA0000A1Z5"></div>
+    <div class="field tier-detailed hidden"><label>Registered legal name</label><input type="text" placeholder="As per GST records"></div>
+    <div class="field tier-detailed hidden"><label>Bank / UPI for invoices</label><input type="text" placeholder="UPI ID or bank details"></div>
+  </div>
+  <div class="cta-wrap">
+    <button class="primary-btn" onclick="completeBusiness()">Save & Continue</button>
+  </div>
+</div>
+
+<script>
+const businessTypes = [
+  { name: "PG", mode: "Mode 1", desc: "Paying guest accommodation — rooms rented monthly with rent, deposits, and mess/food dues tracked per tenant.", example: "e.g. Sharma PG — 20 rooms, ₹8,000/month per bed" },
+  { name: "Gym", mode: "Mode 1", desc: "Fitness center with monthly or annual memberships, tracked per member with renewal reminders.", example: "e.g. FlexFit Gym — 150 members, ₹1,200/month" },
+  { name: "Tiffin", mode: "Mode 1", desc: "Daily/monthly meal delivery service, billed as a recurring subscription per customer.", example: "e.g. Amma's Tiffin — 40 subscribers, ₹2,500/month" },
+  { name: "Coaching", mode: "Mode 1", desc: "Tuition or coaching classes with monthly/term fees per student.", example: "e.g. Bright Minds Academy — batches billed monthly" },
+  { name: "Flat", mode: "Mode 1", desc: "Rental flats/apartments with monthly rent collection per tenant.", example: "e.g. 3 flats rented out, rent due on the 5th" },
+  { name: "Hostel", mode: "Mode 1", desc: "Similar to PG — shared rooms with recurring rent and mess charges.", example: "e.g. Student hostel, 60 beds" },
+  { name: "Parking", mode: "Mode 1", desc: "Monthly parking slot rentals billed recurringly per vehicle/customer.", example: "e.g. Monthly parking passes, ₹1,000/slot" },
+  { name: "Co-living", mode: "Mode 1", desc: "Shared living spaces with recurring rent, similar to PG but often with added amenities billed monthly.", example: "e.g. Co-living space, 15 members" },
+  { name: "Saloon", mode: "Mode 2", desc: "Walk-in or appointment-based services billed per visit, not recurring.", example: "e.g. Style Studio — per-service billing, GST optional" },
+  { name: "Hardware", mode: "Mode 2", desc: "Retail/B2B sales of goods, often needing GST invoices per sale.", example: "e.g. Hardware store — item-wise GST billing" },
+  { name: "Tailoring", mode: "Mode 2", desc: "Custom orders billed per job — measurements, materials, and delivery tracked per order.", example: "e.g. Suit stitched to order, quote then invoice" },
+  { name: "Bakery", mode: "Mode 2", desc: "Order-based or retail sales, billed per transaction or bulk order.", example: "e.g. Custom cake orders, invoiced per order" },
+  { name: "Clinic", mode: "Mode 2", desc: "Per-visit consultation billing, typically without recurring subscriptions.", example: "e.g. Clinic visits billed per consultation" },
+  { name: "Dairy", mode: "Mode 2", desc: "Daily supply/delivery billed per order or bulk invoice — can be set to recurring if delivery is subscription-based.", example: "e.g. Daily milk supply, monthly invoice summary" }
+];
+
+let selected = [];
+const grid = document.getElementById('typeGrid');
+businessTypes.forEach((t, i) => {
+  const tile = document.createElement('div');
+  tile.className = 'type-tile';
+  tile.id = 'tile-' + i;
+  tile.innerHTML = `<span onclick="toggleType(${i})" style="flex:1">${t.name}</span><span class="info-icon" onclick="showInfo(${i})">ⓘ</span>`;
+  grid.appendChild(tile);
+});
+
+function toggleType(i) {
+  const tile = document.getElementById('tile-' + i);
+  const idx = selected.indexOf(i);
+  if (idx > -1) { selected.splice(idx, 1); tile.classList.remove('selected'); }
+  else { selected.push(i); tile.classList.add('selected'); }
+  const btn = document.getElementById('continueBtn');
+  if (selected.length > 0) {
+    btn.disabled = false;
+    btn.textContent = `Continue with ${selected.length} business${selected.length > 1 ? 'es' : ''}`;
+  } else {
+    btn.disabled = true;
+    btn.textContent = 'Select a business to continue';
+  }
+}
+
+function showInfo(i) {
+  const t = businessTypes[i];
+  document.getElementById('modalMode').textContent = t.mode;
+  document.getElementById('modalTitle').textContent = t.name;
+  document.getElementById('modalDesc').textContent = t.desc;
+  document.getElementById('modalExample').textContent = t.example;
+  document.getElementById('modalOverlay').classList.add('active');
+}
+function closeModal() { document.getElementById('modalOverlay').classList.remove('active'); }
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function goToStatus() {
+  const list = document.getElementById('statusList');
+  list.innerHTML = '';
+  let doneCount = 0;
+  selected.forEach((i, n) => {
+    const t = businessTypes[i];
+    const pct = n === 0 ? 100 : (n === 1 ? 35 : 0);
+    if (pct === 100) doneCount++;
+    const card = document.createElement('div');
+    card.className = 'biz-card';
+    card.innerHTML = `
+      <div class="biz-top">
+        <div><div class="biz-name">${t.name} Business</div><div class="biz-type">${t.name} · ${t.mode === 'Mode 1' ? 'Subscription billing' : 'Job/service billing'}</div></div>
+        <span class="badge ${pct === 100 ? 'done' : 'pending'}">${pct === 100 ? 'Done' : 'Pending'}</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <div class="biz-bottom">
+        <span class="pct">${pct}% complete</span>
+        <button class="action-btn ${pct === 100 ? 'done' : ''}" onclick="openProfile('${t.name}')">${pct === 100 ? 'Edit' : (pct > 0 ? 'Continue setup' : 'Start setup')}</button>
+      </div>`;
+    list.appendChild(card);
+  });
+  document.getElementById('statusSubtitle').textContent = `${doneCount} of ${selected.length} ready to use`;
+  showScreen('screen-status');
+}
+
+function openProfile(name) {
+  document.getElementById('profileBizName').textContent = name + ' — Profile';
+  showScreen('screen-profile');
+}
+
+function setPreset(tier, el) {
+  document.querySelectorAll('.preset-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.field').forEach(f => f.classList.add('hidden'));
+  document.querySelectorAll('.field:not(.tier-standard):not(.tier-detailed)').forEach(f => f.classList.remove('hidden'));
+  if (tier === 'standard') document.querySelectorAll('.tier-standard').forEach(f => f.classList.remove('hidden'));
+  if (tier === 'detailed') { document.querySelectorAll('.tier-standard').forEach(f => f.classList.remove('hidden')); document.querySelectorAll('.tier-detailed').forEach(f => f.classList.remove('hidden')); }
+}
+
+function completeBusiness() {
+  alert('Saved. Returning to setup status (progress would update).');
+  showScreen('screen-status');
+}
+</script>
+</body>
+</html>

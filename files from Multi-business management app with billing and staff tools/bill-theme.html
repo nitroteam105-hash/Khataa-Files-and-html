@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bill Theme — Khaata</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1f6f54; --green-light: #e7f2ed;
+    --parchment: #fbfbf9; --ink: #1c1c1a; --muted: #6b6b64;
+    --border: #e6e4dd; --amber: #b5791f; --amber-light: #fbf1e2;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', sans-serif; background: var(--parchment); color: var(--ink);
+    max-width: 480px; margin: 0 auto; min-height: 100vh; padding-bottom: 40px;
+  }
+  header { padding: 24px 20px 4px; }
+  header h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 800; }
+  header p { font-size: 13px; color: var(--muted); margin-top: 3px; }
+
+  .section-label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin: 16px 20px 8px; }
+
+  .theme-strip { display: flex; gap: 10px; padding: 0 20px; overflow-x: auto; }
+  .theme-tile {
+    flex-shrink: 0; width: 84px; height: 106px; border-radius: 10px; border: 2px solid var(--border);
+    background: #fff; padding: 8px; cursor: pointer; position: relative;
+  }
+  .theme-tile.active { border-color: var(--green); }
+  .theme-tile .tt-ribbon { height: 6px; border-radius: 3px; background: var(--green); margin-bottom: 6px; }
+  .theme-tile .tt-line { height: 4px; border-radius: 2px; background: #e6e4dd; margin-bottom: 4px; }
+  .theme-tile .tt-line.short { width: 60%; }
+  .theme-tile-label { font-size: 10px; font-weight: 700; text-align: center; margin-top: 6px; color: var(--muted); }
+  .theme-tile.active .theme-tile-label { color: var(--green); }
+  .theme-tile.locked { opacity: 0.45; cursor: not-allowed; }
+  .theme-tile.locked .tt-ribbon { background: var(--border); }
+  .lock-badge { position: absolute; top: 6px; right: 6px; font-size: 10px; }
+
+  .invoice-wrap { padding: 18px 20px 0; }
+  .invoice-doc {
+    background: #fff; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    overflow: hidden; border: 1px solid var(--border);
+  }
+  .ribbon-bar { height: 8px; background: var(--green); }
+
+  .doc-header { display: flex; justify-content: space-between; align-items: flex-start; padding: 20px 20px 16px; }
+  .biz-block { display: flex; gap: 10px; }
+  .logo-badge {
+    width: 42px; height: 42px; border-radius: 50%; background: var(--green); color: #fff;
+    display: flex; align-items: center; justify-content: center; font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 800; font-size: 15px; flex-shrink: 0; margin-top: -22px; border: 3px solid #fff;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+  }
+  .biz-info .biz-name { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 15px; }
+  .biz-info .biz-sub { font-size: 11px; color: var(--muted); margin-top: 2px; line-height: 1.4; }
+
+  .inv-meta-box { border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; text-align: right; min-width: 130px; }
+  .inv-meta-box .inv-label { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 13px; color: var(--green); letter-spacing: 0.05em; }
+  .inv-meta-box .inv-row { font-size: 11px; color: var(--muted); margin-top: 6px; }
+  .inv-meta-box .inv-row b { color: var(--ink); }
+
+  .billto-row { padding: 0 20px 16px; border-bottom: 1px solid var(--border); }
+  .billto-label { font-size: 10.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .billto-name { font-weight: 700; font-size: 14px; margin-top: 4px; }
+  .billto-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .items-table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+  .items-table th {
+    text-align: left; font-size: 10.5px; text-transform: uppercase; color: var(--muted);
+    padding: 10px 20px 8px; border-bottom: 1px solid var(--border); font-weight: 700;
+  }
+  .items-table th.num, .items-table td.num { text-align: right; }
+  .items-table td { padding: 10px 20px; font-size: 12.5px; border-bottom: 1px solid #f2f2ee; }
+  .items-table tr:nth-child(even) td { background: #fbfbf9; }
+
+  .totals-block { padding: 14px 20px; }
+  .totals-row { display: flex; justify-content: space-between; font-size: 12.5px; padding: 4px 0; color: var(--muted); }
+  .gst-box { background: var(--green-light); border-radius: 8px; padding: 10px 12px; margin: 8px 0; font-size: 11.5px; color: var(--green); }
+  .gst-box .gst-line { display: flex; justify-content: space-between; padding: 2px 0; }
+  .grand-total-row {
+    display: flex; justify-content: space-between; align-items: center; padding-top: 10px; margin-top: 6px;
+    border-top: 2px solid var(--ink);
+  }
+  .grand-total-row .gt-label { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 13px; }
+  .grand-total-row .gt-amount { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 18px; }
+
+  .payment-block { padding: 4px 20px 16px; display: flex; gap: 12px; align-items: center; }
+  .qr-placeholder {
+    width: 56px; height: 56px; border: 1.5px dashed var(--border); border-radius: 6px;
+    display: flex; align-items: center; justify-content: center; font-size: 9px; color: var(--muted); text-align: center; flex-shrink: 0;
+  }
+  .payment-text { font-size: 11.5px; color: var(--muted); line-height: 1.5; }
+  .payment-text b { color: var(--ink); }
+
+  .doc-footer { padding: 14px 20px 20px; border-top: 1px solid var(--border); }
+  .footer-note { font-size: 10.5px; color: var(--muted); line-height: 1.5; }
+  .signature-line { margin-top: 22px; display: flex; justify-content: flex-end; }
+  .signature-line div { text-align: center; }
+  .signature-line .sig-rule { width: 130px; border-top: 1px solid var(--ink); margin-bottom: 4px; }
+  .signature-line .sig-label { font-size: 10px; color: var(--muted); }
+
+  .note { font-size: 12px; color: var(--muted); margin: 14px 20px 0; line-height: 1.5; }
+
+  /* ---- SHIPMENT / GOODS THEME ---- */
+  .ship-banner { background: var(--green); color: #fff; padding: 16px 20px; }
+  .ship-banner .ship-biz-name { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 16px; }
+  .ship-banner .ship-biz-tag { font-size: 10.5px; opacity: 0.85; margin-top: 2px; }
+  .ship-banner .ship-biz-addr { font-size: 10.5px; opacity: 0.9; margin-top: 6px; line-height: 1.4; }
+
+  .ship-meta-strip { display: flex; flex-wrap: wrap; background: #f2f2ee; border-bottom: 1px solid var(--border); }
+  .ship-meta-item { flex: 1 1 50%; padding: 8px 12px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .ship-meta-item .sm-label { font-size: 9.5px; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .ship-meta-item .sm-value { font-size: 12px; font-weight: 700; margin-top: 1px; }
+
+  .ship-parties { display: flex; }
+  .ship-party { flex: 1; padding: 12px 14px; }
+  .ship-party:first-child { border-right: 1px solid var(--border); }
+  .ship-party .sp-label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--green); letter-spacing: 0.03em; }
+  .ship-party .sp-name { font-weight: 700; font-size: 12.5px; margin-top: 4px; }
+  .ship-party .sp-sub { font-size: 10.5px; color: var(--muted); margin-top: 2px; line-height: 1.4; }
+
+  .ship-table-scroll { overflow-x: auto; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .ship-table { border-collapse: collapse; font-size: 11px; white-space: nowrap; min-width: 640px; }
+  .ship-table th {
+    background: #f2f2ee; text-align: left; padding: 8px 10px; font-size: 9.5px; text-transform: uppercase;
+    color: var(--muted); font-weight: 700; border-bottom: 1px solid var(--border);
+  }
+  .ship-table th.num, .ship-table td.num { text-align: right; }
+  .ship-table td { padding: 8px 10px; border-bottom: 1px solid #f2f2ee; }
+  .ship-table tfoot td { font-weight: 700; border-top: 1px solid var(--border); }
+
+  .ship-charges { padding: 10px 20px; border-bottom: 1px solid var(--border); }
+  .ship-charges .sc-row { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--muted); padding: 3px 0; }
+  .ship-charges .sc-row.total { color: var(--ink); font-weight: 700; border-top: 1px solid var(--border); margin-top: 4px; padding-top: 6px; }
+
+  .ship-hsn-recap { padding: 12px 20px; }
+  .ship-hsn-recap table { width: 100%; border-collapse: collapse; font-size: 10.5px; }
+  .ship-hsn-recap th { background: var(--green-light); color: var(--green); padding: 6px 8px; text-align: right; font-weight: 700; }
+  .ship-hsn-recap th:first-child, .ship-hsn-recap td:first-child { text-align: left; }
+  .ship-hsn-recap td { padding: 6px 8px; text-align: right; border-bottom: 1px solid #f2f2ee; }
+
+  .ship-grand { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: var(--green-light); }
+  .ship-grand .sg-label { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 13px; color: var(--green); }
+  .ship-grand .sg-amount { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 18px; color: var(--green); }
+  .ship-words { padding: 8px 20px; font-size: 11px; color: var(--muted); font-style: italic; }
+
+  .ship-bank-row { display: flex; padding: 12px 20px; gap: 14px; border-top: 1px solid var(--border); align-items: center; }
+  .ship-bank-text { font-size: 10.5px; color: var(--muted); line-height: 1.6; }
+  .ship-bank-text b { color: var(--ink); }
+
+  .ship-terms { padding: 12px 20px; border-top: 1px solid var(--border); }
+  .ship-terms .st-label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  .ship-terms ul { padding-left: 16px; font-size: 10px; color: var(--muted); line-height: 1.6; }
+
+  .ship-sign { padding: 16px 20px 20px; display: flex; justify-content: space-between; align-items: flex-end; }
+  .ship-sign .ship-computer-note { font-size: 9.5px; color: var(--muted); max-width: 160px; line-height: 1.4; }
+  .ship-sign .sig-rule { width: 130px; border-top: 1px solid var(--ink); margin-bottom: 4px; }
+  .ship-sign .sig-label { font-size: 10px; color: var(--muted); text-align: center; }
+
+  /* ---- RETAIL / SIMPLE GOODS THEME ---- */
+  .retail-doc { max-width: 340px; margin: 0 auto; }
+  .retail-dash-top, .retail-dash-bottom {
+    height: 0; border-top: 2px dashed var(--border); margin: 0 16px;
+  }
+  .retail-header { text-align: center; padding: 18px 20px 12px; }
+  .retail-logo { width: 40px; height: 40px; border-radius: 8px; background: var(--amber); color: #fff; display: flex; align-items: center; justify-content: center; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 15px; margin: 0 auto 8px; }
+  .retail-biz-name { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 15px; }
+  .retail-biz-sub { font-size: 10.5px; color: var(--muted); margin-top: 3px; line-height: 1.5; }
+  .retail-tag { display: inline-block; background: var(--amber-light); color: var(--amber); font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; margin-top: 8px; }
+
+  .retail-meta { display: flex; justify-content: space-between; padding: 10px 20px; font-size: 10.5px; color: var(--muted); border-top: 1px dashed var(--border); border-bottom: 1px dashed var(--border); }
+  .retail-meta b { color: var(--ink); }
+
+  .retail-items { padding: 12px 20px; }
+  .retail-item-row { display: flex; align-items: baseline; gap: 6px; font-size: 12.5px; padding: 5px 0; }
+  .retail-item-row .ri-name { white-space: nowrap; }
+  .retail-item-row .ri-qty { font-size: 10.5px; color: var(--muted); white-space: nowrap; }
+  .retail-item-row .ri-leader { flex: 1; border-bottom: 1px dotted var(--border); margin: 0 4px; transform: translateY(-3px); }
+  .retail-item-row .ri-amt { font-weight: 600; white-space: nowrap; }
+
+  .retail-totals { padding: 8px 20px 4px; border-top: 1px dashed var(--border); }
+  .retail-totals .rt-row { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--muted); padding: 3px 0; }
+  .retail-totals .rt-grand { display: flex; justify-content: space-between; align-items: center; padding: 10px 0 4px; font-family: 'Plus Jakarta Sans', sans-serif; }
+  .retail-totals .rt-grand .rg-label { font-weight: 700; font-size: 14px; }
+  .retail-totals .rt-grand .rg-amount { font-weight: 800; font-size: 20px; color: var(--amber); }
+  .retail-gst-note { font-size: 9.5px; color: var(--muted); text-align: center; padding: 4px 20px; }
+
+  .retail-payment { text-align: center; padding: 12px 20px; }
+  .retail-payment .qr-placeholder { margin: 0 auto 6px; }
+  .retail-payment .rp-text { font-size: 10.5px; color: var(--muted); }
+
+  .retail-footer { text-align: center; padding: 14px 20px 18px; }
+  .retail-footer .rf-thanks { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 12.5px; color: var(--amber); }
+  .retail-footer .rf-note { font-size: 9.5px; color: var(--muted); margin-top: 4px; }
+
+  /* ---- SUBSCRIPTION / PERIOD THEME ---- */
+  .sub-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px 12px; }
+  .sub-biz-name { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 15px; }
+  .sub-biz-sub { font-size: 10.5px; color: var(--muted); margin-top: 2px; }
+  .sub-bill-no { font-size: 11px; color: var(--muted); text-align: right; }
+  .sub-bill-no b { color: var(--ink); }
+
+  .sub-period-hero { background: var(--purple); color: #fff; margin: 0 20px; border-radius: 12px; padding: 16px 18px; }
+  .sub-period-hero .sp-cycle-badge { display: inline-block; background: rgba(255,255,255,0.2); font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 3px 9px; border-radius: 999px; margin-bottom: 8px; }
+  .sub-period-hero .sp-period { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 20px; }
+  .sub-period-hero .sp-dates { font-size: 11px; opacity: 0.85; margin-top: 2px; }
+  .sub-period-hero .sp-customer { font-size: 12px; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.25); }
+  .sub-period-hero .sp-customer b { font-weight: 700; }
+  .sub-period-hero .sp-plan { font-size: 11px; opacity: 0.85; margin-top: 2px; }
+
+  .sub-charges { padding: 14px 20px 4px; }
+  .sub-charges .sc-row { display: flex; justify-content: space-between; font-size: 12.5px; padding: 5px 0; }
+  .sub-charges .sc-row.muted { color: var(--muted); font-size: 11.5px; }
+  .sub-charges .sc-row.total { font-weight: 700; border-top: 1px solid var(--border); margin-top: 6px; padding-top: 8px; }
+
+  .sub-perforation { display: flex; align-items: center; gap: 8px; margin: 14px 20px; }
+  .sub-perforation .perf-line { flex: 1; border-top: 2px dashed var(--border); }
+  .sub-perforation .perf-icon { font-size: 12px; color: var(--muted); }
+
+  .sub-stub { background: var(--purple-light); margin: 0 20px 18px; border-radius: 12px; padding: 14px 16px; }
+  .sub-stub .stub-label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--purple); letter-spacing: 0.04em; }
+  .sub-stub-row { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+  .sub-stub-row .stub-due-label { font-size: 11.5px; color: var(--purple); }
+  .sub-stub-row .stub-due-date { font-weight: 700; font-size: 12.5px; color: var(--purple); }
+  .sub-stub-amount { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 22px; color: var(--purple); margin-top: 4px; }
+  .sub-stub-status { display: inline-block; font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 999px; margin-top: 8px; }
+  .sub-stub-status.pending { background: var(--amber-light); color: var(--amber); }
+  .sub-stub-status.paid { background: var(--green-light); color: var(--green); }
+  .sub-stub-payment { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+  .sub-stub-payment .rp-text { font-size: 10.5px; color: var(--purple); }
+
+  /* ---- TALLY-STYLE THEME (dense compliance grid, deliberately plain) ---- */
+  .tly-doc { font-size: 10.5px; color: #000; border: 1px solid #000; }
+  .tly-grid { display: grid; border-bottom: 1px solid #000; }
+  .tly-cell { border-right: 1px solid #000; padding: 5px 7px; }
+  .tly-cell:last-child { border-right: none; }
+  .tly-cell .tly-label { font-size: 9px; color: #444; }
+  .tly-cell .tly-value { font-weight: 700; margin-top: 1px; }
+  .tly-seller-name { font-weight: 700; font-size: 12px; }
+  .tly-seller-addr { margin-top: 2px; line-height: 1.5; }
+
+  .tly-table-scroll { overflow-x: auto; }
+  .tly-table { border-collapse: collapse; width: 100%; min-width: 620px; font-size: 10px; }
+  .tly-table th { border: 1px solid #000; padding: 4px 6px; background: #f0f0f0; font-weight: 700; text-align: left; }
+  .tly-table td { border: 1px solid #000; padding: 4px 6px; }
+  .tly-table th.num, .tly-table td.num { text-align: right; }
+  .tly-table tr.tly-tax-row td { border-top: none; font-style: italic; color: #444; }
+
+  .tly-words-row { border-bottom: 1px solid #000; padding: 5px 7px; display: flex; justify-content: space-between; }
+  .tly-words-row .tly-words-label { font-size: 9px; color: #444; }
+  .tly-words-row .tly-words-value { font-weight: 700; margin-top: 1px; }
+
+  .tly-hsn-table { border-collapse: collapse; width: 100%; font-size: 9.5px; }
+  .tly-hsn-table th, .tly-hsn-table td { border: 1px solid #000; padding: 4px 6px; text-align: right; }
+  .tly-hsn-table th:first-child, .tly-hsn-table td:first-child { text-align: left; }
+  .tly-hsn-table th { background: #f0f0f0; font-weight: 700; }
+
+  .tly-bank-decl { display: flex; border-bottom: 1px solid #000; }
+  .tly-decl { flex: 1; padding: 8px; border-right: 1px solid #000; font-size: 9px; color: #444; line-height: 1.5; }
+  .tly-decl b { display: block; color: #000; font-size: 9.5px; margin-bottom: 3px; }
+  .tly-sign-box { flex: 1; padding: 8px; display: flex; flex-direction: column; justify-content: space-between; min-height: 70px; }
+  .tly-sign-box .tly-for { font-size: 9.5px; font-weight: 700; }
+  .tly-sign-box .tly-sig-label { font-size: 9px; text-align: right; color: #444; }
+
+  .tly-footer-note { text-align: center; font-size: 9px; color: #444; padding: 6px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Bill Theme</h1>
+  <p>Five layouts: services, goods/shipment, retail, subscription, Tally-style</p>
+</header>
+
+<div class="section-label">Theme (Paid Pro)</div>
+<div class="theme-strip">
+  <div class="theme-tile active" onclick="selectTheme(this)" data-doc="classic">
+    <div class="tt-ribbon"></div>
+    <div class="tt-line"></div>
+    <div class="tt-line short"></div>
+    <div class="tt-line"></div>
+    <div class="theme-tile-label">Classic</div>
+  </div>
+  <div class="theme-tile" onclick="selectTheme(this)" data-doc="ship">
+    <div class="tt-ribbon"></div>
+    <div class="tt-line"></div>
+    <div class="tt-line short"></div>
+    <div class="tt-line"></div>
+    <div class="theme-tile-label">Shipment</div>
+  </div>
+  <div class="theme-tile" onclick="selectTheme(this)" data-doc="retail">
+    <div class="tt-ribbon"></div>
+    <div class="tt-line"></div>
+    <div class="tt-line short"></div>
+    <div class="tt-line"></div>
+    <div class="theme-tile-label">Retail</div>
+  </div>
+  <div class="theme-tile" onclick="selectTheme(this)" data-doc="sub">
+    <div class="tt-ribbon"></div>
+    <div class="tt-line"></div>
+    <div class="tt-line short"></div>
+    <div class="tt-line"></div>
+    <div class="theme-tile-label">Subscription</div>
+  </div>
+  <div class="theme-tile" onclick="selectTheme(this)" data-doc="tally">
+    <div class="tt-ribbon" style="background:#000"></div>
+    <div class="tt-line"></div>
+    <div class="tt-line short"></div>
+    <div class="tt-line"></div>
+    <div class="theme-tile-label">Tally-style</div>
+  </div>
+</div>
+<p class="note" id="themeNote">5 themes available — Classic Professional, Shipment, Retail, Subscription, and Tally-style (the traditional compliance-grid look). Tap one to preview.</p>
+
+<div class="invoice-wrap" id="doc-classic">
+  <div class="invoice-doc">
+    <div class="ribbon-bar"></div>
+
+    <div class="doc-header">
+      <div class="biz-block">
+        <div class="logo-badge">CD</div>
+        <div class="biz-info">
+          <div class="biz-name">City Dental Clinic</div>
+          <div class="biz-sub">12 MG Road, Bengaluru — 560001<br>GSTIN: 29ABCDE1234F1Z5</div>
+        </div>
+      </div>
+      <div class="inv-meta-box">
+        <div class="inv-label">INVOICE</div>
+        <div class="inv-row"><b>CDC-2026-0014</b></div>
+        <div class="inv-row">Date: 14 Jul 2026</div>
+        <div class="inv-row">Due: 21 Jul 2026</div>
+      </div>
+    </div>
+
+    <div class="billto-row">
+      <div class="billto-label">Billed to</div>
+      <div class="billto-name">Rahul Sharma</div>
+      <div class="billto-sub">+91 98765 43210</div>
+    </div>
+
+    <table class="items-table">
+      <thead>
+        <tr><th>Description</th><th class="num">Qty</th><th class="num">Rate</th><th class="num">GST</th><th class="num">Amount</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Root Canal Treatment</td><td class="num">1</td><td class="num">₹4,000</td><td class="num">18%</td><td class="num">₹4,000</td></tr>
+        <tr><td>Dental Crown</td><td class="num">1</td><td class="num">₹1,500</td><td class="num">18%</td><td class="num">₹1,500</td></tr>
+      </tbody>
+    </table>
+
+    <div class="totals-block">
+      <div class="totals-row"><span>Subtotal</span><span>₹5,500</span></div>
+      <div class="gst-box">
+        <div class="gst-line"><span>CGST @ 9%</span><span>₹495</span></div>
+        <div class="gst-line"><span>SGST @ 9%</span><span>₹495</span></div>
+      </div>
+      <div class="grand-total-row">
+        <span class="gt-label">Grand Total</span>
+        <span class="gt-amount">₹6,490</span>
+      </div>
+    </div>
+
+    <div class="payment-block">
+      <div class="qr-placeholder">UPI QR</div>
+      <div class="payment-text"><b>Pay via UPI:</b> citydentalclinic@upi<br>Cash, Card & UPI accepted</div>
+    </div>
+
+    <div class="doc-footer">
+      <div class="footer-note">Payment due within 7 days. Thank you for choosing City Dental Clinic.</div>
+      <div class="signature-line">
+        <div><div class="sig-rule"></div><div class="sig-label">Authorised Signatory</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="invoice-wrap" id="doc-ship" style="display:none">
+  <div class="invoice-doc">
+    <div class="ship-banner">
+      <div class="ship-biz-name">Shree Balaji Hardware Traders</div>
+      <div class="ship-biz-tag">Wholesale Supply of Hardware & Building Materials</div>
+      <div class="ship-biz-addr">Plot No 14, MIDC Industrial Estate, Nashik, Maharashtra — 422101<br>GSTIN: 27ABCDE5678F1Z9 &nbsp;|&nbsp; Phone: 98765 43210</div>
+    </div>
+
+    <div class="ship-meta-strip">
+      <div class="ship-meta-item"><div class="sm-label">Invoice No.</div><div class="sm-value">SBH-2026-0142</div></div>
+      <div class="ship-meta-item"><div class="sm-label">Invoice Date</div><div class="sm-value">14-Jul-2026</div></div>
+      <div class="ship-meta-item"><div class="sm-label">Vehicle No.</div><div class="sm-value">MH15 AB 4521</div></div>
+      <div class="ship-meta-item"><div class="sm-label">E-Way Bill No.</div><div class="sm-value">341256789012</div></div>
+    </div>
+
+    <div class="ship-parties">
+      <div class="ship-party">
+        <div class="sp-label">Bill To</div>
+        <div class="sp-name">A.S. Construction</div>
+        <div class="sp-sub">N-3/38, DLF Phase 2<br>Gurugram, Haryana<br>GSTIN: 06AANPS7334J1Z6</div>
+      </div>
+      <div class="ship-party">
+        <div class="sp-label">Ship To</div>
+        <div class="sp-name">Site Office — Sector 45</div>
+        <div class="sp-sub">Plot 12, Sector 45<br>Gurugram, Haryana</div>
+      </div>
+    </div>
+
+    <div class="ship-table-scroll">
+      <table class="ship-table">
+        <thead>
+          <tr>
+            <th>#</th><th>Description</th><th>HSN</th><th class="num">Qty</th><th class="num">Rate</th>
+            <th class="num">Taxable Value</th><th class="num">GST%</th><th class="num">GST Amt</th><th class="num">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>AAC Block (625×250×100)</td><td>6815</td><td class="num">4.00 CUM</td><td class="num">₹2,380.96</td><td class="num">₹9,524</td><td class="num">5%</td><td class="num">₹476</td><td class="num">₹10,000</td></tr>
+          <tr><td>2</td><td>Cement Mortar Mix</td><td>3816</td><td class="num">4.00 Bag</td><td class="num">₹466.11</td><td class="num">₹1,864</td><td class="num">18%</td><td class="num">₹336</td><td class="num">₹2,200</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="ship-charges">
+      <div class="sc-row"><span>Freight & Cartage Outward</span><span>₹600.00</span></div>
+      <div class="sc-row"><span>Packing & Forwarding</span><span>₹150.00</span></div>
+      <div class="sc-row total"><span>Subtotal (Taxable Value)</span><span>₹12,138.00</span></div>
+    </div>
+
+    <div class="ship-hsn-recap">
+      <table>
+        <thead><tr><th>HSN/SAC</th><th>Taxable Val.</th><th>CGST</th><th>SGST</th></tr></thead>
+        <tbody>
+          <tr><td>6815</td><td>₹9,524</td><td>₹238</td><td>₹238</td></tr>
+          <tr><td>3816</td><td>₹1,864</td><td>₹168</td><td>₹168</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="ship-grand">
+      <span class="sg-label">Grand Total</span>
+      <span class="sg-amount">₹13,236</span>
+    </div>
+    <div class="ship-words">Rupees Thirteen Thousand Two Hundred Thirty-Six Only</div>
+
+    <div class="ship-bank-row">
+      <div class="qr-placeholder">UPI QR</div>
+      <div class="ship-bank-text">
+        <b>Bank:</b> HDFC Bank, MIDC Branch &nbsp; <b>A/C:</b> 50100123456789<br>
+        <b>IFSC:</b> HDFC0001234 &nbsp; <b>UPI:</b> shreebalaji@hdfcbank
+      </div>
+    </div>
+
+    <div class="ship-terms">
+      <div class="st-label">Terms & Conditions</div>
+      <ul>
+        <li>Interest @ 24% p.a. charged on overdue payments.</li>
+        <li>Goods once sold will not be taken back or exchanged.</li>
+        <li>Subject to Nashik jurisdiction only.</li>
+      </ul>
+    </div>
+
+    <div class="ship-sign">
+      <div class="ship-computer-note">This is a computer-generated invoice.</div>
+      <div><div class="sig-rule"></div><div class="sig-label">Authorised Signatory</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="invoice-wrap" id="doc-retail" style="display:none">
+  <div class="invoice-doc retail-doc">
+    <div class="retail-dash-top"></div>
+    <div class="retail-header">
+      <div class="retail-logo">SB</div>
+      <div class="retail-biz-name">Sunrise Bakery</div>
+      <div class="retail-biz-sub">14 Church Street, Bengaluru — 560001<br>GSTIN: 29XYZAB1234C1Z8 · Ph: 98765 12340</div>
+      <div class="retail-tag">Cash / Retail Invoice</div>
+    </div>
+
+    <div class="retail-meta">
+      <span>Bill No. <b>SB-0512</b></span>
+      <span>14-Jul-2026, 5:42 PM</span>
+    </div>
+
+    <div class="retail-items">
+      <div class="retail-item-row"><span class="ri-name">Chocolate Truffle Cake (1kg)</span><span class="ri-leader"></span><span class="ri-amt">₹850</span></div>
+      <div class="retail-item-row"><span class="ri-qty">&nbsp;&nbsp;× 1</span></div>
+      <div class="retail-item-row"><span class="ri-name">Whole Wheat Bread</span><span class="ri-leader"></span><span class="ri-amt">₹120</span></div>
+      <div class="retail-item-row"><span class="ri-qty">&nbsp;&nbsp;× 2 @ ₹60</span></div>
+      <div class="retail-item-row"><span class="ri-name">Butter Croissant</span><span class="ri-leader"></span><span class="ri-amt">₹180</span></div>
+      <div class="retail-item-row"><span class="ri-qty">&nbsp;&nbsp;× 3 @ ₹60</span></div>
+    </div>
+
+    <div class="retail-totals">
+      <div class="rt-row"><span>Subtotal</span><span>₹1,150</span></div>
+      <div class="rt-row"><span>GST (5%)</span><span>₹58</span></div>
+      <div class="rt-grand"><span class="rg-label">Total</span><span class="rg-amount">₹1,208</span></div>
+    </div>
+    <div class="retail-gst-note">GST breakdown: CGST ₹29 + SGST ₹29</div>
+
+    <div class="retail-payment">
+      <div class="qr-placeholder">UPI QR</div>
+      <div class="rp-text">Pay via UPI: sunrisebakery@upi</div>
+    </div>
+
+    <div class="retail-footer">
+      <div class="rf-thanks">Thank you, visit again! 🍞</div>
+      <div class="rf-note">Goods once sold are not returnable.</div>
+    </div>
+    <div class="retail-dash-bottom"></div>
+  </div>
+</div>
+
+<div class="invoice-wrap" id="doc-sub" style="display:none">
+  <div class="invoice-doc">
+    <div class="sub-header">
+      <div>
+        <div class="sub-biz-name">Sunshine PG</div>
+        <div class="sub-biz-sub">Sector 45, Gurugram, Haryana</div>
+      </div>
+      <div class="sub-bill-no">Bill No.<br><b>SPG-2026-0089</b></div>
+    </div>
+
+    <div class="sub-period-hero">
+      <div class="sp-cycle-badge">Monthly</div>
+      <div class="sp-period">July 2026</div>
+      <div class="sp-dates">Billing Period: 1 Jul – 31 Jul 2026</div>
+      <div class="sp-customer"><b>Amit Singh</b></div>
+      <div class="sp-plan">Single AC Room — Room 204</div>
+    </div>
+
+    <div class="sub-charges">
+      <div class="sc-row"><span>Rent — Jul 2026</span><span>₹9,000</span></div>
+      <div class="sc-row muted"><span>Electricity (metered)</span><span>₹450</span></div>
+      <div class="sc-row muted"><span>Previous balance</span><span>₹0</span></div>
+      <div class="sc-row total"><span>Total Due</span><span>₹9,450</span></div>
+    </div>
+
+    <div class="sub-perforation"><div class="perf-line"></div><span class="perf-icon">✂</span><div class="perf-line"></div></div>
+
+    <div class="sub-stub">
+      <div class="stub-label">Payment Stub</div>
+      <div class="sub-stub-amount">₹9,450</div>
+      <span class="sub-stub-status pending">Pending</span>
+      <div class="sub-stub-row">
+        <span class="stub-due-label">Due by</span>
+        <span class="stub-due-date">5 Aug 2026</span>
+      </div>
+      <div class="sub-stub-payment">
+        <div class="qr-placeholder">UPI QR</div>
+        <div class="rp-text">Pay via UPI:<br>sunshinepg@upi</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="invoice-wrap" id="doc-tally" style="display:none">
+  <div class="invoice-doc tly-doc">
+    <div style="text-align:center; padding:8px; border-bottom:1px solid #000; font-weight:700; font-size:13px;">Tax Invoice</div>
+
+    <div class="tly-grid" style="grid-template-columns: 1fr 1fr;">
+      <div class="tly-cell">
+        <div class="tly-seller-name">Balaji Building Materials</div>
+        <div class="tly-seller-addr">Plot 22, MIDC Industrial Area<br>Nashik, Maharashtra — 422101<br>GSTIN/UIN: 27ABCDE1234F1Z5<br>E-Mail: balajibm@example.com</div>
+      </div>
+      <div class="tly-grid" style="grid-template-columns: 1fr 1fr; border-bottom:none;">
+        <div class="tly-cell"><div class="tly-label">Invoice No.</div><div class="tly-value">312</div></div>
+        <div class="tly-cell"><div class="tly-label">Dated</div><div class="tly-value">14-Jul-2026</div></div>
+        <div class="tly-cell"><div class="tly-label">Delivery Note</div><div class="tly-value">—</div></div>
+        <div class="tly-cell"><div class="tly-label">Mode/Terms of Payment</div><div class="tly-value">30 Days Credit</div></div>
+        <div class="tly-cell"><div class="tly-label">Supplier's Ref.</div><div class="tly-value">—</div></div>
+        <div class="tly-cell"><div class="tly-label">Other Reference(s)</div><div class="tly-value">—</div></div>
+      </div>
+    </div>
+
+    <div class="tly-grid" style="grid-template-columns: 1fr 1fr;">
+      <div class="tly-cell">
+        <div class="tly-label">Buyer</div>
+        <div class="tly-value">A.S. Construction</div>
+        <div class="tly-seller-addr">N-3/38, DLF Phase 2<br>Gurugram, Haryana<br>GSTIN/UIN: 06AANPS7334J1Z6<br>Place of Supply: Haryana</div>
+      </div>
+      <div class="tly-grid" style="grid-template-columns: 1fr 1fr; border-bottom:none;">
+        <div class="tly-cell"><div class="tly-label">Buyer's Order No.</div><div class="tly-value">—</div></div>
+        <div class="tly-cell"><div class="tly-label">Dated</div><div class="tly-value">—</div></div>
+        <div class="tly-cell"><div class="tly-label">Despatched through</div><div class="tly-value">Road</div></div>
+        <div class="tly-cell"><div class="tly-label">Destination</div><div class="tly-value">Gurgaon</div></div>
+      </div>
+    </div>
+
+    <div class="tly-table-scroll">
+      <table class="tly-table">
+        <thead>
+          <tr><th>Sl</th><th>Description of Goods</th><th>HSN/SAC</th><th class="num">GST Rate</th><th class="num">Quantity</th><th class="num">Rate</th><th>per</th><th class="num">Amount</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>AAC Block (625×250×100)</td><td>6815</td><td class="num">5%</td><td class="num">4.000 CUM</td><td class="num">2,380.96</td><td>CUM</td><td class="num">9,523.84</td></tr>
+          <tr><td>2</td><td>Mortar</td><td>38160000</td><td class="num">18%</td><td class="num">4.00 BAG</td><td class="num">466.11</td><td>BAG</td><td class="num">1,864.44</td></tr>
+          <tr class="tly-tax-row"><td></td><td colspan="6">Output CGST @ 2.5% A/c</td><td class="num">250.64</td></tr>
+          <tr class="tly-tax-row"><td></td><td colspan="6">Output SGST @ 2.5% A/c</td><td class="num">250.64</td></tr>
+          <tr class="tly-tax-row"><td></td><td colspan="6">Output CGST @ 9% A/c</td><td class="num">176.64</td></tr>
+          <tr class="tly-tax-row"><td></td><td colspan="6">Output SGST @ 9% A/c</td><td class="num">176.64</td></tr>
+          <tr class="tly-tax-row"><td></td><td colspan="6">Freight & Cartage Outward</td><td class="num">600.00</td></tr>
+          <tr class="tly-tax-row"><td></td><td colspan="6">Round Off</td><td class="num">0.16</td></tr>
+          <tr><td></td><td style="font-weight:700">Total</td><td></td><td></td><td></td><td></td><td></td><td class="num" style="font-weight:700">₹12,843.00</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tly-words-row">
+      <div><div class="tly-words-label">Amount Chargeable (in words)</div><div class="tly-words-value">Rupees Twelve Thousand Eight Hundred Forty Three Only</div></div>
+      <div style="font-size:9px; color:#444">E. & O.E</div>
+    </div>
+
+    <div style="padding:8px;">
+      <table class="tly-hsn-table">
+        <thead><tr><th>HSN/SAC</th><th>Taxable Value</th><th>Central Tax Rate</th><th>Central Tax Amt</th><th>State Tax Rate</th><th>State Tax Amt</th></tr></thead>
+        <tbody>
+          <tr><td>6815</td><td>10,025.61</td><td>2.5%</td><td>250.64</td><td>2.5%</td><td>250.64</td></tr>
+          <tr><td>38160000</td><td>1,962.67</td><td>9%</td><td>176.64</td><td>9%</td><td>176.64</td></tr>
+          <tr style="font-weight:700"><td>Total</td><td>11,988.28</td><td></td><td>427.28</td><td></td><td>427.28</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tly-words-row">
+      <div><div class="tly-words-label">Tax Amount (in words)</div><div class="tly-words-value">Rupees Eight Hundred Fifty Four and Fifty Six Paise Only</div></div>
+    </div>
+
+    <div class="tly-bank-decl">
+      <div class="tly-decl">
+        <b>Declaration</b>
+        We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.
+        <div style="margin-top:8px"><b style="margin-bottom:0">Company's Bank Details</b>Bank: HDFC Bank &nbsp; A/c No: 50100123456789<br>Branch &amp; IFSC: MIDC Nashik &amp; HDFC0001234</div>
+      </div>
+      <div class="tly-sign-box">
+        <div class="tly-for">for Balaji Building Materials</div>
+        <div class="tly-sig-label">Authorised Signatory</div>
+      </div>
+    </div>
+
+    <div class="tly-footer-note">This is a Computer Generated Invoice</div>
+  </div>
+</div>
+
+<script>
+function selectTheme(el) {
+  if (el.classList.contains('locked')) {
+    document.getElementById('themeNote').textContent = 'This theme isn\'t available yet — join the Pro waitlist to get notified when new layouts launch.';
+    return;
+  }
+  document.querySelectorAll('.theme-tile').forEach(function(t) { t.classList.remove('active'); });
+  el.classList.add('active');
+
+  const docType = el.dataset.doc;
+  document.getElementById('doc-classic').style.display = docType === 'classic' ? 'block' : 'none';
+  document.getElementById('doc-ship').style.display = docType === 'ship' ? 'block' : 'none';
+  document.getElementById('doc-retail').style.display = docType === 'retail' ? 'block' : 'none';
+  document.getElementById('doc-sub').style.display = docType === 'sub' ? 'block' : 'none';
+  document.getElementById('doc-tally').style.display = docType === 'tally' ? 'block' : 'none';
+
+  if (docType === 'classic') {
+    document.getElementById('themeNote').textContent = 'Classic Professional — suited for services (clinics, salons, coaching): simple items list, GST summary, UPI QR.';
+  } else if (docType === 'ship') {
+    document.getElementById('themeNote').textContent = 'Shipment — suited for goods/transport businesses: buyer + consignee, vehicle/E-way bill details, freight charges, HSN-wise tax recap.';
+  } else if (docType === 'retail') {
+    document.getElementById('themeNote').textContent = 'Retail — suited for simple over-the-counter goods (bakery, dairy): a light receipt-style bill, no transport fields needed.';
+  } else if (docType === 'sub') {
+    document.getElementById('themeNote').textContent = 'Subscription — suited for recurring businesses (PG, Gym, Tiffin, monthly Coaching): billing period shown up front, plus a clear payment stub with due date and status.';
+  } else if (docType === 'tally') {
+    document.getElementById('themeNote').textContent = 'Tally-style — the dense, traditional compliance-grid format familiar to Indian accountants and CAs. Deliberately plain, not branded.';
+  }
+}
+</script>
+</body>
+</html>

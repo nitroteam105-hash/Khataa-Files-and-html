@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dairy Setup — Khaata</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1f6f54; --green-light: #e7f2ed;
+    --parchment: #fbfbf9; --ink: #1c1c1a; --muted: #6b6b64;
+    --border: #e6e4dd; --amber: #b5791f; --amber-light: #fbf1e2;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', sans-serif; background: var(--parchment); color: var(--ink);
+    max-width: 480px; margin: 0 auto; min-height: 100vh; padding-bottom: 40px;
+  }
+  header { padding: 24px 20px 12px; }
+  header h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 800; }
+  header p { font-size: 13px; color: var(--muted); margin-top: 3px; }
+
+  .section-label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin: 16px 20px 8px; }
+  .card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin: 0 20px 10px; }
+
+  .toggle-row { display: flex; justify-content: space-between; align-items: center; }
+  .toggle-row + .toggle-row { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+  .toggle-row .tr-title { font-weight: 700; font-size: 14px; }
+  .toggle-row .tr-sub { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+  .switch { width: 40px; height: 24px; background: var(--green); border-radius: 999px; position: relative; flex-shrink: 0; cursor: pointer; }
+  .switch.off { background: #d8d6cd; }
+  .switch::after { content: ''; position: absolute; top: 3px; right: 3px; width: 18px; height: 18px; background: #fff; border-radius: 50%; }
+  .switch.off::after { left: 3px; right: auto; }
+
+  .conditional-section { display: block; }
+  .conditional-section.hidden { display: none; }
+
+  .plan-card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin: 0 20px 10px; }
+  .plan-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .plan-name { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 15px; }
+  .plan-delete { font-size: 12px; color: var(--muted); cursor: pointer; }
+  .cycle-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .cycle-chip { background: var(--green-light); color: var(--green); border-radius: 10px; padding: 8px 10px; font-size: 12px; font-weight: 600; display: flex; flex-direction: column; align-items: center; min-width: 74px; cursor: pointer; }
+  .cycle-chip .cyc-label { font-size: 10.5px; text-transform: uppercase; opacity: 0.75; }
+  .cycle-chip .cyc-amt { font-size: 13px; margin-top: 2px; }
+  .cycle-chip .cyc-perday { font-size: 9px; opacity: 0.6; margin-top: 1px; }
+
+  .retail-item-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .retail-item-row:last-child { border-bottom: none; }
+  .ri-name { font-size: 14px; font-weight: 600; }
+  .ri-price { font-weight: 700; color: var(--amber); font-size: 13.5px; cursor: pointer; }
+  .ri-delete { font-size: 12px; color: var(--muted); cursor: pointer; margin-left: 10px; }
+
+  .add-row-btn { border: 1.5px dashed var(--green); color: var(--green); background: none; border-radius: 10px; padding: 11px; width: 100%; font-weight: 700; font-size: 13px; cursor: pointer; margin-top: 4px; }
+
+  .inline-form { background: var(--green-light); border: 1px solid var(--green); border-radius: 12px; padding: 14px; margin: 0 20px 10px; }
+  .inline-form label { font-size: 11px; font-weight: 700; color: var(--muted); display: block; margin-bottom: 4px; text-transform: uppercase; }
+  .inline-form input { width: 100%; padding: 9px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; font-family: 'Inter', sans-serif; margin-bottom: 8px; background: #fff; }
+  .inline-form .form-actions { display: flex; gap: 8px; }
+  .inline-form .form-actions button { flex: 1; padding: 10px; border-radius: 8px; border: none; font-weight: 700; font-size: 13px; cursor: pointer; }
+  .inline-form .btn-confirm { background: var(--green); color: #fff; }
+  .inline-form .btn-cancel { background: #fff; color: var(--muted); border: 1px solid var(--border) !important; }
+
+  .item-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .item-chip { background: var(--green-light); color: var(--green); border-radius: 999px; padding: 8px 12px; font-size: 12.5px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .item-chip .ic-remove { cursor: pointer; opacity: 0.7; font-weight: 700; }
+  .item-chip .ic-remove:hover { opacity: 1; }
+
+  .qty-unit-row { display: flex; gap: 8px; }
+  .qty-unit-row .field-half { flex: 1; }
+
+  .note { font-size: 12px; color: var(--muted); margin: 8px 20px 0; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Sunrise Dairy — Setup</h1>
+  <p>Business modes, delivery plans & retail items</p>
+</header>
+
+<div class="section-label">Business modes</div>
+<div class="card">
+  <div class="toggle-row">
+    <div><div class="tr-title">Home delivery</div><div class="tr-sub">Daily/recurring delivery, billed monthly</div></div>
+    <div class="switch" id="deliveryToggle" onclick="toggleMode('delivery')"></div>
+  </div>
+  <div class="toggle-row">
+    <div><div class="tr-title">Walk-in retail</div><div class="tr-sub">Over-the-counter sales, billed per visit</div></div>
+    <div class="switch" id="retailToggle" onclick="toggleMode('retail')"></div>
+  </div>
+</div>
+<p class="note">At least one mode should be on. Both can run together — many dairies do daily delivery routes and also sell over the counter.</p>
+
+<div class="conditional-section" id="deliverySection">
+  <div class="section-label">Delivery products</div>
+  <div id="deliveryPlansContainer"></div>
+  <div style="padding:0 20px">
+    <button class="add-row-btn" onclick="openAddDeliveryForm()">+ Add Product</button>
+  </div>
+  <p class="note">Set quantity, unit, and price per day — the monthly estimate is calculated for you automatically, using the actual days in the current month. Skip-day credits also come from this same daily rate, so it stays consistent everywhere.</p>
+</div>
+
+<div class="conditional-section" id="retailSection">
+  <div class="section-label">Retail items (rate list)</div>
+  <div class="plan-card" id="retailItemsCard"></div>
+  <div style="padding:0 20px">
+    <button class="add-row-btn" onclick="openAddRetailForm()">+ Add Retail Item</button>
+  </div>
+  <p class="note">Simple one-off pricing — no subscription, billed via the Retail bill layout per transaction.</p>
+</div>
+
+<script>
+let deliveryPlans = [
+  { name: 'Cow Milk', qty: 1, unit: 'L', dailyPrice: 50 },
+  { name: 'Toned Milk', qty: 1, unit: 'L', dailyPrice: 45 },
+  { name: 'Curd', qty: 500, unit: 'g', dailyPrice: 20 }
+];
+let retailItems = [
+  { name: 'Paneer (250g)', price: 90 },
+  { name: 'Ghee (500ml)', price: 450 },
+  { name: 'Curd Tub (1kg)', price: 80 }
+];
+
+function daysInMonth(year, monthIndex) { return new Date(year, monthIndex + 1, 0).getDate(); }
+
+const REFERENCE_TODAY = new Date('2026-07-15');
+
+function currentMonthDays() { return daysInMonth(REFERENCE_TODAY.getFullYear(), REFERENCE_TODAY.getMonth()); }
+function currentMonthLabel() { return REFERENCE_TODAY.toLocaleDateString('en-IN', { month: 'short' }); }
+
+function monthlyEstimate(dailyPrice) { return Math.round(dailyPrice * currentMonthDays()); }
+
+function toggleMode(mode) {
+  const sw = document.getElementById(mode + 'Toggle');
+  sw.classList.toggle('off');
+  const isOn = !sw.classList.contains('off');
+  document.getElementById(mode + 'Section').classList.toggle('hidden', !isOn);
+}
+
+function renderDeliveryPlans() {
+  const container = document.getElementById('deliveryPlansContainer');
+  container.innerHTML = '';
+  deliveryPlans.forEach(function(p, idx) {
+    const card = document.createElement('div');
+    card.className = 'plan-card';
+    card.innerHTML =
+      '<div class="plan-top"><div class="plan-name"></div><div class="plan-delete" onclick="deleteDeliveryPlan(' + idx + ')">✕</div></div>' +
+      '<div class="cycle-row"><div class="cycle-chip" onclick="editDeliveryPrice(' + idx + ')">' +
+      '<span class="cyc-label">Per day</span><span class="cyc-amt"></span><span class="cyc-perday"></span></div></div>';
+    card.querySelector('.plan-name').textContent = p.name + ' — ' + p.qty + p.unit + ' Daily';
+    card.querySelector('.cyc-amt').textContent = '₹' + p.dailyPrice;
+    card.querySelector('.cyc-perday').textContent = '≈ ₹' + monthlyEstimate(p.dailyPrice) + '/mo (' + currentMonthLabel() + ', ' + currentMonthDays() + 'd)';
+    container.appendChild(card);
+  });
+}
+
+function openAddDeliveryForm() {
+  closeAllForms();
+  const form = document.createElement('div');
+  form.className = 'inline-form';
+  form.id = 'addDeliveryForm';
+  form.innerHTML =
+    '<label>Product name</label><input type="text" id="newItemName" placeholder="e.g. Buffalo Milk">' +
+    '<div class="qty-unit-row">' +
+    '<div class="field-half"><label>Quantity</label><input type="text" id="newItemQty" placeholder="e.g. 1"></div>' +
+    '<div class="field-half"><label>Unit</label><select id="newItemUnit">' +
+    '<option value="L">Litre (L)</option><option value="ml">ml</option><option value="kg">kg</option><option value="g">g</option>' +
+    '</select></div></div>' +
+    '<label>Price per day (₹)</label><input type="text" id="newItemPrice" placeholder="e.g. 50">' +
+    '<div class="form-actions"><button class="btn-confirm" onclick="confirmAddDelivery()">+ Add Product</button>' +
+    '<button class="btn-cancel" onclick="closeAllForms()">Cancel</button></div>';
+  document.getElementById('deliveryPlansContainer').parentNode.insertBefore(form, document.getElementById('deliveryPlansContainer').nextSibling.nextSibling);
+}
+
+function confirmAddDelivery() {
+  const name = document.getElementById('newItemName').value.trim();
+  const qty = parseFloat(document.getElementById('newItemQty').value) || 0;
+  const unit = document.getElementById('newItemUnit').value;
+  const dailyPrice = parseFloat(document.getElementById('newItemPrice').value) || 0;
+  if (!name) { alert('Enter a product name.'); return; }
+  if (!qty) { alert('Enter a quantity.'); return; }
+  deliveryPlans.push({ name: name, qty: qty, unit: unit, dailyPrice: dailyPrice });
+  closeAllForms();
+  renderDeliveryPlans();
+}
+
+function closeAllForms() {
+  document.querySelectorAll('.inline-form').forEach(function(f) { f.remove(); });
+}
+
+function editDeliveryPrice(idx) {
+  const p = deliveryPlans[idx];
+  const price = prompt('Set price per day for "' + p.name + '" (₹):', p.dailyPrice);
+  if (price === null || price.trim() === '') return;
+  p.dailyPrice = parseFloat(price) || 0;
+  renderDeliveryPlans();
+}
+
+function deleteDeliveryPlan(idx) {
+  const p = deliveryPlans[idx];
+  if (confirm('Remove "' + p.name + ' — ' + p.qty + p.unit + ' Daily"?')) {
+    deliveryPlans.splice(idx, 1);
+    renderDeliveryPlans();
+  }
+}
+
+function renderRetailItems() {
+  const container = document.getElementById('retailItemsCard');
+  container.innerHTML = '';
+  retailItems.forEach(function(it, idx) {
+    const row = document.createElement('div');
+    row.className = 'retail-item-row';
+    row.innerHTML =
+      '<div class="ri-name"></div>' +
+      '<div style="display:flex;align-items:center"><div class="ri-price" onclick="editRetailPrice(' + idx + ')"></div>' +
+      '<span class="ri-delete" onclick="deleteRetailItem(' + idx + ')">✕</span></div>';
+    row.querySelector('.ri-name').textContent = it.name;
+    row.querySelector('.ri-price').textContent = '₹' + it.price;
+    container.appendChild(row);
+  });
+}
+
+function openAddRetailForm() {
+  closeAllForms();
+  const form = document.createElement('div');
+  form.className = 'inline-form';
+  form.id = 'addRetailForm';
+  form.innerHTML =
+    '<label>Item name</label><input type="text" id="newRetailName" placeholder="e.g. Butter 100g">' +
+    '<label>Price (₹)</label><input type="text" id="newRetailPrice" placeholder="e.g. 50">' +
+    '<div class="form-actions"><button class="btn-confirm" onclick="confirmAddRetail()">+ Add Item</button>' +
+    '<button class="btn-cancel" onclick="closeAllForms()">Cancel</button></div>';
+  document.getElementById('retailItemsCard').parentNode.insertBefore(form, document.getElementById('retailItemsCard').nextSibling.nextSibling);
+}
+
+function confirmAddRetail() {
+  const name = document.getElementById('newRetailName').value.trim();
+  const price = document.getElementById('newRetailPrice').value.trim();
+  if (!name) { alert('Enter an item name.'); return; }
+  retailItems.push({ name: name, price: parseFloat(price) || 0 });
+  closeAllForms();
+  renderRetailItems();
+}
+
+function editRetailPrice(idx) {
+  const it = retailItems[idx];
+  const price = prompt('Set price for "' + it.name + '" (₹):', it.price);
+  if (price === null || price.trim() === '') return;
+  it.price = parseFloat(price) || 0;
+  renderRetailItems();
+}
+
+function deleteRetailItem(idx) {
+  if (confirm('Remove "' + retailItems[idx].name + '"?')) {
+    retailItems.splice(idx, 1);
+    renderRetailItems();
+  }
+}
+
+renderDeliveryPlans();
+renderRetailItems();
+</script>
+</body>
+</html>

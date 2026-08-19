@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Khaata — People</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fbfbf9;--ink:#16161a;--muted:#62636a;--line:#e7e7e2;--card:#fff;
+    --accent:#1f6f54;--soft:#e8f3ee;--warm:#f4f2ec;--red:#b3261e;--redsoft:#fdecea;
+    --amber:#b36b00;--ambersoft:#fff4e5;
+    --d:'Plus Jakarta Sans',sans-serif;--b:'Inter',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:var(--b);-webkit-font-smoothing:antialiased;padding-bottom:84px;}
+  .wrap{max-width:480px;margin:0 auto;padding:0 16px;}
+  h1,h2,h3{font-family:var(--d);letter-spacing:-.01em;}
+
+  .top{position:sticky;top:0;background:var(--bg);z-index:9;padding:14px 0 10px;border-bottom:1px solid var(--line);}
+  .top-in{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+  .top h1{font-size:20px;}
+  .biz{font-size:12px;color:var(--muted);}
+  .add{background:var(--ink);color:#fff;border:none;border-radius:9px;padding:9px 15px;font-family:var(--d);font-weight:600;font-size:13.5px;cursor:pointer;}
+
+  .search{width:100%;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:11px 14px;font-size:14px;font-family:var(--b);color:var(--ink);}
+  .search:focus{outline:none;border-color:var(--accent);}
+  .filters{display:flex;gap:6px;margin-top:10px;overflow-x:auto;}
+  .filters button{white-space:nowrap;border:1px solid var(--line);background:var(--card);border-radius:99px;padding:7px 13px;font-size:12.5px;font-family:var(--d);font-weight:600;color:var(--muted);cursor:pointer;}
+  .filters button.on{background:var(--ink);color:#fff;border-color:var(--ink);}
+
+  .list{margin-top:14px;}
+  .row{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:8px;cursor:pointer;transition:.12s;}
+  .row:hover{border-color:var(--accent);}
+  .av{width:42px;height:42px;border-radius:50%;background:var(--soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--d);font-weight:700;font-size:16px;flex-shrink:0;}
+  .row .mid{flex:1;min-width:0;}
+  .row .mid h3{font-size:15px;}
+  .row .mid small{color:var(--muted);font-size:12.5px;}
+  .row .right{text-align:right;}
+  .badge{font-size:10px;padding:2px 8px;border-radius:99px;font-family:var(--d);font-weight:700;}
+  .badge.paid{background:var(--soft);color:var(--accent);}
+  .badge.due{background:var(--redsoft);color:var(--red);}
+  .badge.part{background:var(--ambersoft);color:var(--amber);}
+  .row .right small{display:block;font-size:11px;color:var(--muted);margin-top:3px;}
+
+  .empty{text-align:center;color:var(--muted);font-size:14px;padding:40px 0;}
+
+  /* PROFILE */
+  .pf-head{display:flex;align-items:center;gap:14px;padding:18px 0;}
+  .pf-av{width:60px;height:60px;border-radius:50%;background:var(--soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--d);font-weight:800;font-size:24px;}
+  .pf-head h2{font-size:20px;}
+  .pf-head small{color:var(--muted);font-size:13px;}
+  .pf-actions{display:flex;gap:8px;margin-bottom:16px;}
+  .pf-actions button{flex:1;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:11px;font-family:var(--d);font-weight:600;font-size:13px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--ink);}
+  .pf-actions button .i{font-size:17px;}
+  .pf-actions button.pri{background:var(--accent);color:#fff;border-color:var(--accent);}
+
+  .sec{font-family:var(--d);font-weight:700;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:18px 0 8px;}
+  .info{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+  .info .ir{display:flex;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--line);font-size:14px;}
+  .info .ir:last-child{border:none;}
+  .info .ir .k{color:var(--muted);}
+  .info .ir .v{font-weight:500;text-align:right;}
+  .v .chk{color:var(--accent);}.v .x{color:var(--red);}
+
+  .pay-item{display:flex;justify-content:space-between;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:11px 13px;margin-bottom:7px;}
+  .pay-item .pd{font-size:13.5px;}
+  .pay-item .pd small{display:block;color:var(--muted);font-size:11.5px;}
+  .pay-item .pa{font-family:var(--d);font-weight:700;font-size:14px;}
+  .pay-item .pa.in{color:var(--accent);}
+
+  .back{font-size:20px;color:var(--muted);cursor:pointer;}
+  .top-pf{display:flex;align-items:center;gap:12px;}
+
+  .bar{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:8px 0 10px;z-index:9;}
+  .bar a{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10.5px;color:var(--muted);cursor:pointer;font-family:var(--d);font-weight:600;flex:1;}
+  .bar a.on{color:var(--accent);}.bar a .ic{font-size:19px;}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+const PEOPLE=[
+  {id:1,name:'Ravi Kumar',unit:'101',phone:'98765 43210',status:'due',amt:6000,paid:0,join:'01 Jun 2025',cycle:'Monthly',deposit:10000,verified:true,police:true,services:['Mess'],emg:'Suresh · 90000 00000',
+   history:[{d:'May 2026',a:6000,m:'UPI'},{d:'Apr 2026',a:6000,m:'Cash'},{d:'Mar 2026',a:6000,m:'UPI'}]},
+  {id:2,name:'Priya Shah',unit:'102',phone:'98220 11111',status:'paid',amt:6000,paid:6000,join:'15 Mar 2025',cycle:'Monthly',deposit:12000,verified:true,police:true,services:['Mess','Laundry'],emg:'Anita · 91111 22222',
+   history:[{d:'Jun 2026',a:6000,m:'UPI'},{d:'May 2026',a:6000,m:'UPI'}]},
+  {id:3,name:'Arjun Nair',unit:'201',phone:'90080 33333',status:'part',amt:7000,paid:4000,join:'10 Jan 2026',cycle:'Monthly',deposit:14000,verified:true,police:false,services:[],emg:'—',
+   history:[{d:'Jun 2026',a:4000,m:'Cash'},{d:'May 2026',a:7000,m:'UPI'}]},
+  {id:4,name:'Dev Patel',unit:'205',phone:'87654 99999',status:'due',amt:6000,paid:0,join:'20 Jun 2026',cycle:'Monthly',deposit:10000,verified:false,police:false,services:['Mess'],emg:'Raj · 93333 44444',
+   history:[]},
+  {id:5,name:'Sana Iqbal',unit:'108',phone:'77665 12345',status:'paid',amt:5500,paid:5500,join:'05 Feb 2026',cycle:'Monthly',deposit:11000,verified:true,police:true,services:['Mess'],emg:'Imran · 95555 66666',
+   history:[{d:'Jun 2026',a:5500,m:'UPI'}]}
+];
+let view='list', filter='all', q='', curId=null;
+const $=id=>document.getElementById(id);
+const money=n=>'₹'+(+n).toLocaleString('en-IN');
+const initials=n=>n.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+
+function filtered(){
+  return PEOPLE.filter(p=>{
+    if(filter==='due'&&p.status==='paid')return false;
+    if(filter==='paid'&&p.status!=='paid')return false;
+    if(filter==='unverified'&&p.verified)return false;
+    if(q&&!(p.name.toLowerCase().includes(q.toLowerCase())||p.unit.includes(q)||p.phone.includes(q)))return false;
+    return true;
+  });
+}
+
+function listView(){
+  const f=filtered();
+  const counts={all:PEOPLE.length,due:PEOPLE.filter(p=>p.status!=='paid').length,unverified:PEOPLE.filter(p=>!p.verified).length};
+  const rows=f.map(p=>{
+    const bal=p.amt-p.paid;
+    const bl=p.status==='paid'?'paid':p.status==='part'?'part':'due';
+    const blt=p.status==='paid'?'PAID':p.status==='part'?'PARTIAL':'DUE';
+    return `<div class="row" onclick="openPf(${p.id})">
+      <div class="av">${initials(p.name)}</div>
+      <div class="mid"><h3>${p.name}</h3><small>Room ${p.unit} · ${p.phone}</small></div>
+      <div class="right"><span class="badge ${bl}">${blt}</span>${p.status!=='paid'?`<small>${money(bal)} due</small>`:''}</div>
+    </div>`;
+  }).join('');
+  return `<div class="top"><div class="wrap">
+    <div class="top-in"><div><h1>People</h1><div class="biz">Sunrise PG · ${PEOPLE.length} tenants</div></div>
+    <button class="add" onclick="alert('Opens add-person form')">+ Add</button></div>
+    <input class="search" placeholder="Search by name, room, phone..." value="${q}" oninput="setQ(this.value)">
+    <div class="filters">
+      <button class="${filter==='all'?'on':''}" onclick="setFilter('all')">All ${counts.all}</button>
+      <button class="${filter==='due'?'on':''}" onclick="setFilter('due')">Pending ${counts.due}</button>
+      <button class="${filter==='paid'?'on':''}" onclick="setFilter('paid')">Paid</button>
+      <button class="${filter==='unverified'?'on':''}" onclick="setFilter('unverified')">Unverified ${counts.unverified}</button>
+    </div>
+  </div></div>
+  <div class="wrap"><div class="list">${f.length?rows:'<div class="empty">No one matches.</div>'}</div></div>
+  ${navBar('people')}`;
+}
+
+function profileView(){
+  const p=PEOPLE.find(x=>x.id===curId);
+  const bal=p.amt-p.paid;
+  const hist=p.history.length?p.history.map(h=>`<div class="pay-item"><div class="pd">${h.d}<small>${h.m}</small></div><div class="pa in">${money(h.a)}</div></div>`).join(''):'<div class="empty" style="padding:18px">No payments yet.</div>';
+  return `<div class="top"><div class="wrap"><div class="top-pf">
+    <span class="back" onclick="back()">←</span><div><h1 style="font-size:17px">${p.name}</h1><div class="biz">Room ${p.unit} · ${p.cycle}</div></div>
+  </div></div></div>
+  <div class="wrap">
+    <div class="pf-head"><div class="pf-av">${initials(p.name)}</div>
+      <div><h2>${p.name}</h2><small>${p.phone}</small></div></div>
+
+    <div class="pf-actions">
+      <button class="pri" onclick="alert('Record a payment for '+'${p.name}')"><span class="i">💸</span>Collect</button>
+      <button onclick="alert('Remind '+'${p.name}'+' via WhatsApp')"><span class="i">🔔</span>Remind</button>
+      <button onclick="alert('Call '+'${p.phone}')"><span class="i">📞</span>Call</button>
+      <button onclick="alert('Generate bill')"><span class="i">🧾</span>Bill</button>
+    </div>
+
+    <div class="sec">Payment status</div>
+    <div class="info">
+      <div class="ir"><span class="k">This month</span><span class="v">${money(p.amt)}</span></div>
+      <div class="ir"><span class="k">Paid</span><span class="v">${money(p.paid)}</span></div>
+      <div class="ir"><span class="k">Balance</span><span class="v" style="color:${bal>0?'var(--red)':'var(--accent)'}">${money(bal)}</span></div>
+      <div class="ir"><span class="k">Deposit held</span><span class="v">${money(p.deposit)}</span></div>
+    </div>
+
+    <div class="sec">Details</div>
+    <div class="info">
+      <div class="ir"><span class="k">Joined</span><span class="v">${p.join}</span></div>
+      <div class="ir"><span class="k">Billing cycle</span><span class="v">${p.cycle}</span></div>
+      <div class="ir"><span class="k">Services</span><span class="v">${p.services.join(', ')||'None'}</span></div>
+      <div class="ir"><span class="k">ID verified</span><span class="v">${p.verified?'<span class="chk">✓ Yes</span>':'<span class="x">✗ No</span>'}</span></div>
+      <div class="ir"><span class="k">Police verification</span><span class="v">${p.police?'<span class="chk">✓ Done</span>':'<span class="x">✗ Pending</span>'}</span></div>
+      <div class="ir"><span class="k">Emergency contact</span><span class="v">${p.emg}</span></div>
+    </div>
+
+    <div class="sec">Payment history</div>
+    ${hist}
+    <div style="height:20px"></div>
+  </div>
+  ${navBar('people')}`;
+}
+
+function navBar(active){
+  const t=[['🏠','Home','home'],['👥','People','people'],['📒','Money','money'],['📊','Reports','reports'],['⚙️','Settings','settings']];
+  return `<div class="bar">${t.map(x=>`<a class="${x[2]===active?'on':''}"><span class="ic">${x[0]}</span>${x[1]}</a>`).join('')}</div>`;
+}
+
+function setQ(v){q=v;render();const s=$('app').querySelector('.search');}
+function setFilter(f){filter=f;render();}
+function openPf(id){curId=id;view='profile';render();}
+function back(){view='list';render();}
+
+function render(){
+  $('app').innerHTML = view==='list'?listView():profileView();
+  if(view==='list'){const s=document.querySelector('.search');if(s&&q){s.focus();s.setSelectionRange(q.length,q.length);}}
+}
+render();
+</script>
+</body>
+</html>

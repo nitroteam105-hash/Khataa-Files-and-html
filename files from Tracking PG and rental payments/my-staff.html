@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Staff</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fbfbf9;--ink:#16161a;--muted:#62636a;--line:#e7e7e2;--card:#fff;
+    --accent:#1f6f54;--soft:#e8f3ee;--warm:#f4f2ec;--red:#b3261e;--amber:#b36b00;--ambersoft:#fff4e5;--blue:#2a5db0;
+    --d:'Plus Jakarta Sans',sans-serif;--b:'Inter',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:var(--b);-webkit-font-smoothing:antialiased;padding-bottom:90px;}
+  .wrap{max-width:480px;margin:0 auto;padding:0 16px;}
+  h1,h2,h3{font-family:var(--d);letter-spacing:-.01em;}
+
+  .top{position:sticky;top:0;background:var(--bg);z-index:9;padding:14px 0 12px;border-bottom:1px solid var(--line);}
+  .top-in{display:flex;align-items:center;gap:12px;}
+  .back{font-size:20px;color:var(--muted);cursor:pointer;}
+  .top h1{font-size:19px;flex:1;}
+  .top .sub{font-size:12px;color:var(--muted);}
+
+  /* summary strip */
+  .sumstrip{display:flex;gap:10px;margin:14px 0;}
+  .sumcard{flex:1;background:var(--card);border:1px solid var(--line);border-radius:13px;padding:13px;}
+  .sumcard .lb{font-size:11.5px;color:var(--muted);font-weight:500;}
+  .sumcard .v{font-family:var(--d);font-weight:800;font-size:20px;margin-top:3px;}
+  .sumcard .v small{font-size:12px;color:var(--muted);font-weight:600;}
+
+  .search{width:100%;padding:11px 14px;border:1px solid var(--line);border-radius:11px;font-size:14.5px;font-family:var(--b);background:var(--card);margin-bottom:12px;}
+  .search:focus{outline:none;border-color:var(--accent);}
+
+  .staff{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:13px;padding:13px 14px;margin-bottom:9px;cursor:pointer;transition:.12s;}
+  .staff:hover{border-color:var(--accent);}
+  .av{width:44px;height:44px;border-radius:50%;background:var(--soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--d);font-weight:700;font-size:16px;flex-shrink:0;}
+  .staff .info{flex:1;min-width:0;}
+  .staff .nm{font-family:var(--d);font-weight:700;font-size:15px;}
+  .staff .role{font-size:12.5px;color:var(--muted);margin-top:1px;}
+  .staff .pay{text-align:right;flex-shrink:0;}
+  .staff .pay .amt{font-family:var(--d);font-weight:700;font-size:15px;}
+  .staff .pay .typ{font-size:11px;color:var(--muted);}
+  .tag{display:inline-block;font-size:10px;font-weight:700;font-family:var(--d);padding:2px 7px;border-radius:99px;margin-left:6px;vertical-align:middle;}
+  .tag.wage{background:var(--ambersoft);color:var(--amber);}
+  .tag.sal{background:var(--soft);color:var(--accent);}
+
+  .fab{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);max-width:480px;width:calc(100% - 32px);}
+  .fab button{width:100%;background:var(--accent);color:#fff;border:none;border-radius:13px;padding:15px;font-family:var(--d);font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 4px 16px rgba(31,111,84,.3);}
+
+  /* sheet */
+  .mask{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:flex-end;justify-content:center;z-index:20;}
+  .mask.show{display:flex;}
+  .sheet{background:#fff;border-radius:18px 18px 0 0;width:100%;max-width:480px;max-height:94vh;overflow:auto;padding:20px 18px 24px;}
+  .sheet h2{font-size:20px;margin-bottom:4px;}
+  .sheet .sub{font-size:13px;color:var(--muted);margin-bottom:8px;}
+  label{display:block;font-size:12px;color:var(--muted);margin:13px 0 5px;font-weight:500;}
+  input,select{width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;font-size:15px;font-family:var(--b);background:var(--card);color:var(--ink);}
+  input:focus,select:focus{outline:none;border-color:var(--accent);}
+  .row{display:flex;gap:10px;}.row>*{flex:1;}
+  .seg{display:flex;gap:6px;background:var(--warm);border-radius:10px;padding:4px;margin-top:5px;}
+  .seg button{flex:1;border:none;background:none;padding:10px;border-radius:7px;font-family:var(--d);font-weight:600;font-size:13px;color:var(--muted);cursor:pointer;}
+  .seg button.on{background:var(--card);color:var(--accent);box-shadow:0 1px 2px rgba(0,0,0,.06);}
+  .btn{width:100%;font-family:var(--d);font-weight:700;font-size:15px;border:none;border-radius:11px;padding:14px;cursor:pointer;margin-top:18px;background:var(--accent);color:#fff;}
+  .btn.sec{background:var(--card);border:1px solid var(--line);color:var(--ink);margin-top:8px;}
+  .opt-note{font-size:11.5px;color:var(--muted);margin-top:5px;}
+
+  /* profile */
+  .pf-head{text-align:center;padding:8px 0 4px;}
+  .pf-av{width:64px;height:64px;border-radius:50%;background:var(--soft);color:var(--accent);display:inline-flex;align-items:center;justify-content:center;font-family:var(--d);font-weight:800;font-size:24px;}
+  .pf-name{font-family:var(--d);font-weight:800;font-size:21px;margin-top:8px;}
+  .pf-role{font-size:13.5px;color:var(--muted);}
+  .pf-rows{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:16px;}
+  .pf-rows .r{display:flex;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--line);font-size:14px;}
+  .pf-rows .r:last-child{border:none;}
+  .pf-rows .r .k{color:var(--muted);}.pf-rows .r .v{font-weight:600;font-family:var(--d);}
+  .pf-actions{display:flex;gap:9px;margin-top:14px;}
+  .pf-actions button{flex:1;border:1px solid var(--line);background:var(--card);border-radius:11px;padding:12px;font-family:var(--d);font-weight:600;font-size:13px;cursor:pointer;color:var(--ink);}
+  .pf-actions button .i{display:block;font-size:18px;margin-bottom:3px;}
+  /* profile tabs */
+  .pf-tabs{display:flex;gap:4px;background:var(--warm);border-radius:10px;padding:4px;margin-top:14px;overflow-x:auto;}
+  .pf-tabs button{flex:1;white-space:nowrap;border:none;background:none;padding:9px 10px;border-radius:7px;font-family:var(--d);font-weight:600;font-size:12.5px;color:var(--muted);cursor:pointer;}
+  .pf-tabs button.on{background:var(--card);color:var(--accent);box-shadow:0 1px 2px rgba(0,0,0,.06);}
+  /* payment log */
+  .paylog{display:flex;justify-content:space-between;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:11px 13px;margin-bottom:8px;}
+  .paylog .pl-k{font-family:var(--d);font-weight:700;font-size:14px;}
+  .paylog .pl-d{font-size:12px;color:var(--muted);margin-top:1px;}
+  .paylog .pl-amt{font-family:var(--d);font-weight:700;font-size:15px;}
+  /* upload tiles */
+  .upl{display:flex;align-items:center;gap:12px;background:var(--card);border:1px dashed #bbb;border-radius:12px;padding:13px;cursor:pointer;margin-bottom:8px;}
+  .upl.done{border-style:solid;border-color:var(--accent);background:var(--soft);}
+  .upl .ic{font-size:21px;}.upl .tx{flex:1;}.upl .tx h3{font-size:14px;}.upl .tx small{color:var(--muted);font-size:12px;}
+  .priv{font-size:11px;color:var(--muted);margin:0 0 8px;line-height:1.5;background:var(--warm);padding:10px 12px;border-radius:10px;}
+  .dh-sub{font-family:var(--d);font-weight:700;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:18px 0 2px;padding-top:12px;border-top:1px dashed var(--line);}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+
+<div class="top"><div class="wrap">
+  <div class="top-in"><span class="back">←</span><div style="flex:1"><h1>My Staff</h1><div class="sub" id="bizsub">Apex Signs & Fabrication</div></div></div>
+</div></div>
+
+<div class="wrap">
+  <div class="sumstrip">
+    <div class="sumcard"><div class="lb">Total staff</div><div class="v" id="sCount">0</div></div>
+    <div class="sumcard"><div class="lb">Monthly wage bill</div><div class="v" id="sBill">₹0</div></div>
+  </div>
+  <input class="search" id="search" placeholder="Search staff..." oninput="renderList()">
+  <div id="list"></div>
+</div>
+
+<div class="fab"><button onclick="openAdd()">+ Add staff</button></div>
+
+<!-- add/edit sheet -->
+<div class="mask" id="addMask"><div class="sheet">
+  <h2 id="sheetTitle">Add staff</h2>
+  <div class="sub">Just the basics — you can add more later.</div>
+  <label>Full name</label><input id="f-name" placeholder="e.g. Suresh Kumar">
+  <div class="row">
+    <div><label>Role</label><input id="f-role" placeholder="e.g. Welder, Helper, Cook"></div>
+    <div><label>Phone</label><input id="f-phone" placeholder="Optional" inputmode="numeric"></div>
+  </div>
+  <label>UPI ID / number <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+  <input id="f-upi" placeholder="e.g. 9845012345@okicici or name@ybl">
+  <div class="opt-note">💡 If added, paying by UPI opens your UPI app with the worker &amp; amount pre-filled — just confirm.</div>
+  <label>Pay type</label>
+  <div class="seg">
+    <button class="on" id="pt-sal" onclick="setPayType('salary')">Monthly salary</button>
+    <button id="pt-wage" onclick="setPayType('wage')">Daily wage</button>
+  </div>
+  <label id="payLabel">Monthly salary (₹)</label>
+  <input id="f-pay" type="number" placeholder="0" inputmode="numeric">
+  <label>Joined on</label><input id="f-join" type="date">
+  <button class="btn" onclick="saveStaff(false)">Save staff</button>
+  <button class="btn sec" onclick="saveStaff(true)">Save &amp; add full details →</button>
+  <button class="btn sec" onclick="closeAdd()">Cancel</button>
+</div></div>
+
+<!-- profile sheet -->
+<div class="mask" id="pfMask"><div class="sheet" id="pfBody"></div></div>
+
+<!-- payment sheet -->
+<div class="mask" id="payMask"><div class="sheet" id="payBody"></div></div>
+
+<script>
+let staff=[
+  {id:1,name:'Suresh Kumar',role:'Senior Welder',phone:'9845012345',upi:'9845012345@okhdfcbank',payType:'salary',pay:22000,join:'2024-08-01',advance:5000,
+   att:{present:24,leave:2,tracked:true},
+   address:'12, 3rd Cross, Vijayanagar, Bangalore 560040',dob:'1989-05-14',gender:'Male',shift:'9 AM – 6 PM',
+   emg:'Latha (wife)',emgph:'9845099999',prevEmployer:'Sri Steel Works',referredBy:'Ramesh (supplier)',police:true,esi:'',
+   docs:{idType:'Aadhaar',idNo:'',idUploaded:true,panNo:'AXJPL0887E',panUploaded:true,photoUploaded:true,certUploaded:true,agreementUploaded:false,verified:true},
+   payments:[
+     {date:'2026-05-02',kind:'Salary',gross:22000,deduct:0,net:22000,mode:'UPI'},
+     {date:'2026-04-02',kind:'Salary',gross:22000,deduct:3000,net:19000,mode:'UPI'},
+     {date:'2026-03-18',kind:'Advance',gross:0,deduct:0,net:3000,mode:'Cash'}
+   ]},
+  {id:2,name:'Mahesh',role:'Helper',phone:'9845067890',upi:'',payType:'wage',pay:600,join:'2025-02-15',advance:0,
+   att:{present:22,leave:1,tracked:true},
+   address:'',dob:'',gender:'Male',shift:'',emg:'',emgph:'',prevEmployer:'',referredBy:'',police:false,esi:'',
+   docs:{idType:'Aadhaar',idNo:'',idUploaded:false,panNo:'',panUploaded:false,photoUploaded:false,certUploaded:false,agreementUploaded:false,verified:false},
+   payments:[{date:'2026-05-01',kind:'Wages',gross:15600,deduct:0,net:15600,mode:'Cash'}]},
+  {id:3,name:'Lakshmi',role:'Office / Accounts',phone:'9845011111',upi:'lakshmi@ybl',payType:'salary',pay:18000,join:'2023-11-10',advance:0,
+   att:{present:0,leave:0,tracked:false},
+   address:'45 Old Madras Road, Bangalore',dob:'1992-09-30',gender:'Female',shift:'10 AM – 5 PM',
+   emg:'Raghu',emgph:'9845022222',prevEmployer:'',referredBy:'',police:false,esi:'KA/12345/678',
+   docs:{idType:'Aadhaar',idNo:'',idUploaded:true,panNo:'BXKPL1234M',panUploaded:true,photoUploaded:true,certUploaded:false,agreementUploaded:true,verified:true},
+   payments:[{date:'2026-05-02',kind:'Salary',gross:18000,deduct:0,net:18000,mode:'Bank'}]}
+];
+let editId=null, payType='salary';
+const $=id=>document.getElementById(id);
+const money=n=>'₹'+(+n||0).toLocaleString('en-IN');
+const initials=n=>n.trim().split(/\s+/).slice(0,2).map(w=>w[0]||'').join('').toUpperCase()||'?';
+
+function monthlyBill(){
+  // salary counts directly; daily wage estimated at 26 working days
+  return staff.reduce((a,s)=>a+(s.payType==='salary'?s.pay:s.pay*26),0);
+}
+function renderSummary(){
+  $('sCount').textContent=staff.length;
+  $('sBill').innerHTML=money(monthlyBill())+' <small>/mo est.</small>';
+}
+function renderList(){
+  const q=($('search').value||'').toLowerCase();
+  const rows=staff.filter(s=>s.name.toLowerCase().includes(q)||s.role.toLowerCase().includes(q));
+  $('list').innerHTML=rows.length?rows.map(s=>`
+    <div class="staff" onclick="openProfile(${s.id})">
+      <div class="av">${initials(s.name)}</div>
+      <div class="info">
+        <div class="nm">${s.name}<span class="tag ${s.payType==='wage'?'wage':'sal'}">${s.payType==='wage'?'Daily':'Monthly'}</span></div>
+        <div class="role">${s.role||'—'}</div>
+      </div>
+      <div class="pay"><div class="amt">${money(s.pay)}</div><div class="typ">${s.payType==='wage'?'per day':'per month'}</div></div>
+    </div>`).join(''):'<div style="text-align:center;color:var(--muted);padding:30px;font-size:14px">No staff found.</div>';
+  renderSummary();
+}
+
+function setPayType(t){
+  payType=t;
+  $('pt-sal').className=t==='salary'?'on':'';
+  $('pt-wage').className=t==='wage'?'on':'';
+  $('payLabel').textContent=t==='salary'?'Monthly salary (₹)':'Daily wage (₹)';
+}
+function openAdd(){
+  editId=null;$('sheetTitle').textContent='Add staff';
+  $('f-name').value='';$('f-role').value='';$('f-phone').value='';$('f-pay').value='';$('f-upi').value='';
+  $('f-join').value=new Date().toISOString().slice(0,10);
+  setPayType('salary');
+  $('addMask').classList.add('show');
+}
+function closeAdd(){$('addMask').classList.remove('show');}
+function saveStaff(full){
+  const name=$('f-name').value.trim();
+  if(!name){alert('Please enter the staff name.');return;}
+  const rec={
+    name,role:$('f-role').value.trim(),phone:$('f-phone').value.trim(),upi:$('f-upi').value.trim(),
+    payType,pay:+$('f-pay').value||0,join:$('f-join').value||new Date().toISOString().slice(0,10)
+  };
+  let newId=editId;
+  if(editId){const i=staff.findIndex(s=>s.id===editId);staff[i]={...staff[i],...rec};}
+  else{rec.id=Date.now();newId=rec.id;rec.advance=0;rec.att={present:0,leave:0,tracked:false};rec.address='';rec.dob='';rec.gender='Male';rec.shift='';rec.emg='';rec.emgph='';rec.prevEmployer='';rec.referredBy='';rec.police=false;rec.esi='';rec.docs={idType:'Aadhaar',idNo:'',idUploaded:false,panNo:'',panUploaded:false,photoUploaded:false,certUploaded:false,agreementUploaded:false,verified:false};rec.payments=[];staff.push(rec);}
+  closeAdd();
+  renderList();
+  if(full){
+    pfId=newId; pfTab='details';
+    renderProfile();
+    $('pfMask').classList.add('show');
+    const sh=document.querySelector('#pfMask .sheet'); if(sh)sh.scrollTop=0;
+  }
+}
+let pfTab='overview', pfId=null;
+function openProfile(id){pfId=id;pfTab='overview';renderProfile();$('pfMask').classList.add('show');}
+function setTab(t){pfTab=t;renderProfile();}
+function tenureOf(s){const d=new Date(s.join),n=new Date();let m=(n.getFullYear()-d.getFullYear())*12+(n.getMonth()-d.getMonth());if(m<1)return 'this month';if(m<12)return m+' month'+(m>1?'s':'');const y=Math.floor(m/12),rem=m%12;return y+'y'+(rem?' '+rem+'m':'');}
+function renderProfile(){
+  const s=staff.find(x=>x.id===pfId);if(!s)return;
+  const tabs=['overview','payments','documents','details'].concat(s.att&&s.att.tracked?['attendance']:[]);
+  const tabLabels={overview:'Overview',payments:'Payments',documents:'Documents',details:'Details',attendance:'Attendance'};
+  const tabBar=`<div class="pf-tabs">${tabs.map(t=>`<button class="${pfTab===t?'on':''}" onclick="setTab('${t}')">${tabLabels[t]}</button>`).join('')}</div>`;
+  let body='';
+  if(pfTab==='overview'){
+    body=`
+    ${s.advance>0?`<div style="background:var(--ambersoft);border:1px solid #f0d9a8;border-radius:12px;padding:12px 14px;margin-top:14px;display:flex;justify-content:space-between;align-items:center"><div><div style="font-family:var(--d);font-weight:700;font-size:14px;color:var(--amber)">Advance pending</div><div style="font-size:12px;color:var(--muted)">To deduct from salary</div></div><div style="font-family:var(--d);font-weight:800;font-size:18px;color:var(--amber)">${money(s.advance)}</div></div>`:''}
+    <div class="pf-rows">
+      <div class="r"><span class="k">Pay</span><span class="v">${money(s.pay)} ${s.payType==='wage'?'/ day':'/ month'}</span></div>
+      ${s.payType==='wage'?`<div class="r"><span class="k">Est. monthly (26 days)</span><span class="v">${money(s.pay*26)}</span></div>`:''}
+      <div class="r"><span class="k">Phone</span><span class="v">${s.phone||'—'}</span></div>
+      <div class="r"><span class="k">UPI</span><span class="v">${s.upi||'—'}</span></div>
+      <div class="r"><span class="k">Joined</span><span class="v">${new Date(s.join).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}</span></div>
+      ${s.shift?`<div class="r"><span class="k">Shift</span><span class="v">${s.shift}</span></div>`:''}
+      <div class="r"><span class="k">With you</span><span class="v">${tenureOf(s)}</span></div>
+    </div>
+    ${s.att&&s.att.tracked?`<div class="pf-rows" style="margin-top:10px"><div class="r"><span class="k">This month — present</span><span class="v" style="color:var(--accent)">${s.att.present} days</span></div><div class="r"><span class="k">Leaves</span><span class="v">${s.att.leave}</span></div></div>`:''}
+    <div class="pf-actions">
+      <button onclick="payNow(${s.id})"><span class="i">💸</span>Pay / advance</button>
+      <button onclick="callStaff('${s.phone}')"><span class="i">📞</span>Call</button>
+      <button onclick="editStaff(${s.id})"><span class="i">✏️</span>Edit</button>
+    </div>`;
+  }
+  else if(pfTab==='payments'){
+    const totPaid=s.payments.filter(p=>p.kind!=='Advance').reduce((a,p)=>a+p.net,0);
+    body=`<div class="pf-rows" style="margin-top:14px"><div class="r"><span class="k">Total paid (recent)</span><span class="v">${money(totPaid)}</span></div>${s.advance>0?`<div class="r"><span class="k">Advance outstanding</span><span class="v" style="color:var(--amber)">${money(s.advance)}</span></div>`:''}</div>
+    <div style="margin-top:12px">${s.payments.length?s.payments.map(p=>`
+      <div class="paylog">
+        <div><div class="pl-k">${p.kind}${p.deduct>0?' <span style="color:var(--amber);font-size:11px">(−${money(p.deduct)} adv)</span>':''}</div><div class="pl-d">${new Date(p.date).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})} · ${p.mode}</div></div>
+        <div class="pl-amt">${money(p.net)}</div>
+      </div>`).join(''):'<div style="text-align:center;color:var(--muted);padding:20px;font-size:13px">No payments recorded yet.</div>'}</div>
+    <button class="btn" onclick="payNow(${s.id})">+ Record a payment</button>`;
+  }
+  else if(pfTab==='documents'){
+    const doc=(key,icon,label,sub)=>`<div class="upl ${s.docs[key]?'done':''}" onclick="toggleDoc(${s.id},'${key}')"><span class="ic">${s.docs[key]?'✅':icon}</span><div class="tx"><h3>${s.docs[key]?label+' ✓':'Add '+label}</h3><small>${s.docs[key]?'Saved to your Drive':sub}</small></div></div>`;
+    body=`<div style="margin-top:14px">
+      ${doc('photoUploaded','📷','Photo','Worker photo for records')}
+      <label>ID type</label>
+      <select onchange="setIdType(${s.id},this.value)">${['Aadhaar','Passport','Driving licence','Voter ID'].map(t=>`<option ${s.docs.idType===t?'selected':''}>${t}</option>`).join('')}</select>
+      ${doc('idUploaded','🪪','ID proof ('+s.docs.idType+')','Aadhaar / Passport / licence')}
+      ${s.docs.idType==='Aadhaar'?`<div class="priv">🔒 Aadhaar isn't stored in our database — only in your own Google Drive. We keep just a ✓ flag.</div>`:''}
+      <label>PAN number <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+      <input class="panin" value="${(s.docs.panNo||'').replace(/"/g,'&quot;')}" placeholder="ABCDE1234F" oninput="setPan(${s.id},this.value)" style="text-transform:uppercase;font-family:var(--d);font-weight:600;letter-spacing:.5px">
+      ${doc('panUploaded','🧾','PAN card photo','For salaried / TDS records')}
+      ${doc('certUploaded','📜','Certificate / licence','Trade cert, driving licence, etc.')}
+      ${doc('agreementUploaded','📄','Work agreement','Signed contract, if any')}
+      <div class="toggle" style="padding:14px 0 4px"><div class="lbl">ID verified<small>You checked the original</small></div><div class="sw ${s.docs.verified?'on':''}" onclick="event.stopPropagation();toggleVerified(${s.id})"></div></div>
+    </div>`;
+  }
+  else if(pfTab==='details'){
+    body=`<div style="margin-top:14px">
+      <div class="row">
+        <div><label>Gender</label><select id="d-gender">${['Male','Female','Other'].map(g=>`<option ${s.gender===g?'selected':''}>${g}</option>`).join('')}</select></div>
+        <div><label>Date of birth</label><input id="d-dob" type="date" value="${s.dob||''}"></div>
+      </div>
+      <label>Address</label><input id="d-address" value="${(s.address||'').replace(/"/g,'&quot;')}" placeholder="Home address">
+      <label>Work shift / timing <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+      <input id="d-shift" value="${(s.shift||'').replace(/"/g,'&quot;')}" placeholder="e.g. 9 AM – 6 PM">
+      <div class="dh-sub">Emergency contact</div>
+      <div class="row">
+        <div><input id="d-emg" value="${(s.emg||'').replace(/"/g,'&quot;')}" placeholder="Name & relation"></div>
+        <div><input id="d-emgph" value="${(s.emgph||'').replace(/"/g,'&quot;')}" placeholder="Phone" inputmode="numeric"></div>
+      </div>
+      <div class="dh-sub">References (trust)</div>
+      <label>Previous employer <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+      <input id="d-prev" value="${(s.prevEmployer||'').replace(/"/g,'&quot;')}" placeholder="Where they worked before">
+      <label>Referred by <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+      <input id="d-ref" value="${(s.referredBy||'').replace(/"/g,'&quot;')}" placeholder="Who recommended them">
+      <div class="dh-sub">Compliance (optional)</div>
+      <label>ESI / PF number</label>
+      <input id="d-esi" value="${(s.esi||'').replace(/"/g,'&quot;')}" placeholder="If applicable">
+      <div class="toggle" style="padding:12px 0 0"><div class="lbl">Police verification done<small>For security / sensitive roles</small></div><div class="sw ${s.police?'on':''}" onclick="event.stopPropagation();togglePolice(${s.id})"></div></div>
+      <button class="btn" onclick="saveDetails(${s.id})">Save details</button>
+    </div>`;
+  }
+  else if(pfTab==='attendance'){
+    body=`<div class="pf-rows" style="margin-top:14px">
+      <div class="r"><span class="k">Present (this month)</span><span class="v" style="color:var(--accent)">${s.att.present} days</span></div>
+      <div class="r"><span class="k">Leaves taken</span><span class="v">${s.att.leave} day${s.att.leave===1?'':'s'}</span></div>
+      <div class="r"><span class="k">Working days est.</span><span class="v">${s.att.present+s.att.leave}</span></div>
+    </div>
+    <div class="opt-note" style="text-align:center;margin-top:12px">Daily attendance is marked from the home screen. Month-wise history will appear here.</div>`;
+  }
+  $('pfBody').innerHTML=`
+    <div class="pf-head"><div class="pf-av">${initials(s.name)}</div><div class="pf-name">${s.name}</div><div class="pf-role">${s.role||'—'} <span class="tag ${s.payType==='wage'?'wage':'sal'}">${s.payType==='wage'?'Daily wage':'Monthly salary'}</span></div></div>
+    ${tabBar}
+    ${body}
+    <button class="btn sec" onclick="closePf()">Close</button>`;
+}
+function toggleDoc(id,key){const s=staff.find(x=>x.id===id);s.docs[key]=!s.docs[key];renderProfile();}
+function setPan(id,v){const s=staff.find(x=>x.id===id);s.docs.panNo=v.toUpperCase();}
+function setIdType(id,v){const s=staff.find(x=>x.id===id);s.docs.idType=v;renderProfile();}
+function togglePolice(id){const s=staff.find(x=>x.id===id);s.police=!s.police;renderProfile();}
+function toggleVerified(id){const s=staff.find(x=>x.id===id);s.docs.verified=!s.docs.verified;renderProfile();}
+function saveDetails(id){
+  const s=staff.find(x=>x.id===id);
+  s.gender=$('d-gender').value;s.dob=$('d-dob').value;s.address=$('d-address').value;s.shift=$('d-shift').value;
+  s.emg=$('d-emg').value;s.emgph=$('d-emgph').value;
+  s.prevEmployer=$('d-prev').value;s.referredBy=$('d-ref').value;s.esi=$('d-esi').value;
+  alert('✅ Details saved.');pfTab='overview';renderProfile();
+}
+function closePf(){$('pfMask').classList.remove('show');}
+function editStaff(id){
+  const s=staff.find(x=>x.id===id);if(!s)return;
+  closePf();editId=id;$('sheetTitle').textContent='Edit staff';
+  $('f-name').value=s.name;$('f-role').value=s.role;$('f-phone').value=s.phone;$('f-pay').value=s.pay;$('f-join').value=s.join;$('f-upi').value=s.upi||'';
+  setPayType(s.payType);
+  $('addMask').classList.add('show');
+}
+let payState={id:null,kind:'Salary',mode:'UPI',days:26,deduct:0};
+function payNow(id){
+  const s=staff.find(x=>x.id===id);if(!s)return;
+  closePf();
+  payState={id,kind:s.payType==='wage'?'Salary':'Salary',mode:'UPI',days:26,deduct:s.advance||0};
+  renderPay();
+  $('payMask').classList.add('show');
+}
+function setPayKind(k){payState.kind=k;if(k==='Advance')payState.deduct=0;else{const s=staff.find(x=>x.id===payState.id);payState.deduct=s.advance||0;}renderPay();}
+function setPayMode(m){payState.mode=m;renderPay();}
+function grossAmount(s){
+  if(payState.kind==='Advance')return 0;
+  return s.payType==='salary'?s.pay:s.pay*payState.days;
+}
+function netAmount(s){
+  if(payState.kind==='Advance')return +($('pay-amt')?$('pay-amt').value:0)||0;
+  return Math.max(0,grossAmount(s)-(payState.deduct||0));
+}
+function renderPay(){
+  const s=staff.find(x=>x.id===payState.id);if(!s)return;
+  const isWage=s.payType==='wage';
+  const gross=grossAmount(s);
+  const hasAdv=(s.advance||0)>0 && payState.kind!=='Advance';
+  $('payBody').innerHTML=`
+    <h2>Pay ${s.name}</h2>
+    <div class="sub">${s.role||''} · ${isWage?money(s.pay)+'/day':money(s.pay)+'/month'}</div>
+    <label>Payment type</label>
+    <div class="seg">
+      <button class="${payState.kind==='Salary'?'on':''}" onclick="setPayKind('Salary')">${isWage?'Wages':'Salary'}</button>
+      <button class="${payState.kind==='Advance'?'on':''}" onclick="setPayKind('Advance')">New advance</button>
+    </div>
+    ${isWage&&payState.kind!=='Advance'?`
+      <label>Days worked</label>
+      <input id="pay-days" type="number" value="${payState.days}" oninput="payState.days=+this.value||0;renderPay()">
+      <div class="opt-note">${money(s.pay)}/day × ${payState.days} days = ${money(gross)}</div>`:''}
+
+    ${payState.kind!=='Advance'?`
+      ${hasAdv?`
+      <div style="background:var(--ambersoft);border:1px solid #f0d9a8;border-radius:11px;padding:12px;margin-top:14px">
+        <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--muted)"><span>${isWage?'Wages':'Salary'}</span><span>${money(gross)}</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--amber);margin-top:4px;align-items:center"><span>Less advance (pending ${money(s.advance)})</span><span>− ${money(payState.deduct)}</span></div>
+        <label style="margin:8px 0 4px">Deduct how much advance?</label>
+        <input type="number" value="${payState.deduct}" max="${Math.min(s.advance,gross)}" oninput="payState.deduct=Math.min(+this.value||0,${Math.min(s.advance,gross)});renderPay()" style="background:#fff">
+        <div style="display:flex;justify-content:space-between;font-family:var(--d);font-weight:800;font-size:16px;margin-top:8px;padding-top:8px;border-top:1px solid #f0d9a8"><span>Net to pay</span><span>${money(Math.max(0,gross-payState.deduct))}</span></div>
+      </div>`:`
+      <label>Amount to pay (₹)</label>
+      <input id="pay-amt" type="number" value="${gross||''}" placeholder="0" inputmode="numeric">`}
+    `:`
+      <label>Advance amount (₹)</label>
+      <input id="pay-amt" type="number" placeholder="0" inputmode="numeric">
+      <div class="opt-note">Added to this worker's advance balance — deducted from a future salary/wage.</div>
+    `}
+
+    <label>Pay via</label>
+    <div class="seg">
+      <button class="${payState.mode==='Cash'?'on':''}" onclick="setPayMode('Cash')">Cash</button>
+      <button class="${payState.mode==='UPI'?'on':''}" onclick="setPayMode('UPI')">UPI</button>
+      <button class="${payState.mode==='Bank'?'on':''}" onclick="setPayMode('Bank')">Bank</button>
+    </div>
+    ${payState.mode==='UPI'?(s.upi?`<div class="opt-note">📲 Opens UPI app to pay <b>${s.upi}</b> with the amount pre-filled — you just confirm.</div>`:`<div class="opt-note" style="color:var(--amber)">⚠️ No UPI ID saved for ${s.name}. Add one (Edit) to enable one-tap UPI pay.</div>`):''}
+    <label>Date</label><input id="pay-date" type="date" value="${new Date().toISOString().slice(0,10)}">
+    <button class="btn" onclick="confirmPay(${s.id})">${payState.kind==='Advance'?'Give advance':'Record payment'}</button>
+    <button class="btn sec" onclick="closePay()">Cancel</button>`;
+}
+function confirmPay(id){
+  const s=staff.find(x=>x.id===id);
+  const date=$('pay-date')?$('pay-date').value:new Date().toISOString().slice(0,10);
+  if(payState.kind==='Advance'){
+    const adv=+$('pay-amt').value||0;
+    if(adv<=0){alert('Enter the advance amount.');return;}
+    s.advance=(s.advance||0)+adv;
+    s.payments.unshift({date,kind:'Advance',gross:0,deduct:0,net:adv,mode:payState.mode});
+    const upiLine=(payState.mode==='UPI'&&s.upi)?'\n📲 (Real app: opens UPI to '+s.upi+' for '+money(adv)+')':'';
+    closePay();renderList();
+    alert('✅ Advance recorded\n\n'+s.name+' · '+money(adv)+' via '+payState.mode+upiLine+'\n\nAdvance balance now '+money(s.advance)+'\n→ Saved to Money Out');
+    return;
+  }
+  const gross=grossAmount(s);
+  const ded=(s.advance>0)?payState.deduct:0;
+  const net=Math.max(0,gross-ded);
+  if(net<=0&&ded<=0){alert('Enter an amount.');return;}
+  if(ded>0)s.advance=Math.max(0,s.advance-ded);
+  s.payments.unshift({date,kind:payState.kind,gross,deduct:ded,net,mode:payState.mode});
+  const upiLine=(payState.mode==='UPI'&&s.upi)?'\n📲 (Real app: opens UPI to '+s.upi+' for '+money(net)+')':'';
+  closePay();renderList();
+  alert('✅ Payment recorded\n\n'+s.name+' · '+payState.kind+'\nGross '+money(gross)+(ded>0?'\nLess advance − '+money(ded):'')+'\nNet paid '+money(net)+' via '+payState.mode+upiLine+(ded>0?'\n\nAdvance balance now '+money(s.advance):'')+'\n→ Saved to Money Out · slip ready');
+}
+function closePay(){$('payMask').classList.remove('show');}
+function callStaff(p){if(!p||p==='')alert('No phone number saved.');else alert('Calling '+p+'...');}
+
+renderList();
+</script>
+</body>
+</html>

@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project — Khaata</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f4f3ee; --card:#fdfcf9; --ink:#2a2721; --muted:#8a857a; --faint:#b4afa4;
+    --line:#eceae2; --line-soft:#f2f0e8;
+    --green:#1f6f54; --green-tint:#e9f2ed; --green-strip:#8bb5a3;
+    --ochre:#a9711f; --ochre-tint:#f6ecd9; --ochre-strip:#d6a95e;
+    --terra:#a8503a; --terra-tint:#f4e4de; --terra-strip:#cf8b76;
+    --rule:#e7e3d6;
+    --shadow-card:0 1px 2px rgba(45,42,34,0.05), 0 14px 26px -10px rgba(45,42,34,0.12), inset 0 1px 0 rgba(255,255,255,0.9);
+    --shadow-hero:0 2px 4px rgba(45,42,34,0.06), 0 22px 40px -14px rgba(45,42,34,0.18), inset 0 1px 0 rgba(255,255,255,0.9);
+    --shadow-tile:0 1px 2px rgba(45,42,34,0.05), 0 8px 18px -10px rgba(45,42,34,0.12), inset 0 1px 0 rgba(255,255,255,0.9);
+  }
+  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; animation:none !important; } }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; }
+  body{ background:#e4e1d6; font-family:'Inter',sans-serif; color:var(--ink); display:flex; justify-content:center; min-height:100vh; -webkit-font-smoothing:antialiased; }
+  .app{ width:100%; max-width:480px; min-height:100vh; position:relative; background-color:var(--paper);
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    display:flex; flex-direction:column; }
+  button{ font-family:inherit; }
+  .icon-btn:focus-visible, button:focus-visible{ outline:2px solid var(--green); outline-offset:2px; border-radius:8px; }
+  .press{ transition:transform .08s ease; } .press:active{ transform:scale(0.98); }
+  .overline{ font-size:10.5px; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); font-weight:600; }
+  .tnum{ font-variant-numeric:tabular-nums; }
+  .deva{ font-family:'Noto Sans Devanagari',sans-serif; font-weight:600; }
+
+  /* Top bar — ledger page header */
+  .topbar{ display:flex; align-items:center; gap:12px; padding:20px 18px 12px; position:sticky; top:0; z-index:6;
+    background:linear-gradient(to bottom, var(--paper) 82%, transparent); }
+  .icon-btn{ background:none; border:none; cursor:pointer; color:var(--ink); padding:2px; font-size:20px; line-height:1; }
+  .topbar-title{ flex:1; min-width:0; }
+  .topbar-title h1{ font-family:'Plus Jakarta Sans',sans-serif; font-size:18px; font-weight:800; margin:0; letter-spacing:-0.01em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .topbar-title p{ margin:2px 0 0; font-size:12.5px; color:var(--muted); }
+
+  .scroll{ flex:1; padding:4px 16px 118px; }
+
+  /* Health read */
+  .health{ display:flex; align-items:flex-start; gap:9px; margin:6px 4px 12px; }
+  .health .badge{ width:9px; height:9px; border-radius:50%; margin-top:5px; flex-shrink:0; }
+  .health.ok .badge{ background:var(--green); } .health.warn .badge{ background:var(--ochre); } .health.bad .badge{ background:var(--terra); }
+  .health p{ margin:0; font-size:14px; line-height:1.4; font-weight:500; }
+  .health .em{ font-weight:700; }
+  .health.ok .em{ color:var(--green); } .health.warn .em{ color:var(--ochre); } .health.bad .em{ color:var(--terra); }
+
+  /* Ledger hero */
+  .ledger{ background:var(--card); border-radius:22px; box-shadow:var(--shadow-hero); overflow:hidden; }
+  .ledger-head{ display:flex; justify-content:space-between; align-items:center; padding:13px 18px; border-bottom:1px solid var(--rule); }
+  .ledger-head .ttl{ font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:13px; }
+  .ledger-head .date{ font-size:11.5px; color:var(--faint); }
+  .cols{ display:flex; position:relative;
+    background-image:repeating-linear-gradient(to bottom, transparent, transparent 33px, var(--rule) 33px, var(--rule) 34px);
+    background-position:0 6px; }
+  .col{ flex:1; padding:16px 18px 18px; }
+  .col + .col{ border-left:1px solid var(--rule); }
+  .col .cap{ display:flex; align-items:center; gap:7px; margin-bottom:8px; }
+  .col .cdot{ width:7px; height:7px; border-radius:50%; }
+  .col.jama .cdot{ background:var(--green); } .col.kharch .cdot{ background:var(--ochre); }
+  .col .deva{ font-size:12px; color:var(--ink); }
+  .col .en{ font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; }
+  .col .val{ font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:20px; letter-spacing:-0.01em; }
+  .col.jama .val{ color:var(--green); } .col.kharch .val{ color:var(--ochre); }
+
+  .baaki{ display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-top:2px solid var(--rule); background:#faf8f2; }
+  .baaki .lhs .deva{ font-size:13px; } .baaki .lhs .en{ font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:0.07em; margin-left:6px; }
+  .baaki .val{ font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:26px; letter-spacing:-0.02em; }
+  .baaki .val.pos{ color:var(--green); } .baaki .val.neg{ color:var(--terra); }
+
+  .budget{ padding:14px 18px 16px; }
+  .budget-row{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px; }
+  .budget-row .k{ font-size:11px; text-transform:uppercase; letter-spacing:0.07em; color:var(--muted); font-weight:600; }
+  .budget-row .v{ font-size:12.5px; color:var(--ink); font-weight:600; }
+  .budget-track{ height:8px; background:#efece4; border-radius:99px; overflow:hidden; }
+  .budget-fill{ height:100%; width:0; border-radius:99px; transition:width 1.05s cubic-bezier(.22,.7,.24,1) .3s; background:var(--green); }
+  .budget-fill.warn{ background:var(--ochre); } .budget-fill.bad{ background:var(--terra); }
+
+  /* Section head */
+  .sec-head{ display:flex; align-items:baseline; gap:8px; margin:24px 4px 11px; }
+  .sec-head h2{ font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; font-weight:800; margin:0; }
+  .sec-head .deva{ font-size:13px; color:var(--muted); }
+  .sec-head .count{ margin-left:auto; font-size:12px; color:var(--muted); font-weight:600; }
+
+  /* Aaj — action list */
+  .aaj{ display:flex; flex-direction:column; gap:10px; }
+  .act{ position:relative; display:flex; gap:12px; background:var(--card); border-radius:15px; box-shadow:var(--shadow-tile);
+    padding:13px 14px 13px 16px; overflow:hidden; }
+  .act::before{ content:''; position:absolute; left:0; top:0; bottom:0; width:4px; }
+  .act.collect::before{ background:var(--green-strip); } .act.pay::before{ background:var(--ochre-strip); } .act.renew::before{ background:var(--terra-strip); }
+  .act-ic{ width:36px; height:36px; border-radius:11px; display:flex; align-items:center; justify-content:center; font-size:17px; flex-shrink:0; }
+  .act.collect .act-ic{ background:var(--green-tint); } .act.pay .act-ic{ background:var(--ochre-tint); } .act.renew .act-ic{ background:var(--terra-tint); }
+  .act-body{ flex:1; min-width:0; }
+  .act-title{ font-size:14px; font-weight:700; letter-spacing:-0.01em; }
+  .act-title .amt{ }
+  .act.collect .act-title .amt{ color:var(--green); } .act.pay .act-title .amt{ color:var(--ochre); }
+  .act-desc{ font-size:12px; color:var(--muted); margin-top:2px; line-height:1.35; }
+  .act-btns{ display:flex; gap:8px; margin-top:10px; }
+  .abtn{ display:inline-flex; align-items:center; gap:5px; padding:7px 12px; border-radius:99px; font-size:12px; font-weight:700; cursor:pointer; border:1px solid transparent; transition:transform .08s ease; }
+  .abtn:active{ transform:scale(0.96); }
+  .abtn.primary{ background:var(--green); color:#fff; }
+  .abtn.ghost{ background:var(--card); border-color:var(--line); color:var(--ink); }
+  .abtn.ghost.ochre{ border-color:var(--ochre-strip); color:var(--ochre); }
+
+  /* Stage ribbon */
+  .ribbon-card{ background:var(--card); border-radius:16px; box-shadow:var(--shadow-tile); padding:16px; cursor:pointer; transition:transform .08s ease; }
+  .ribbon-card:active{ transform:scale(0.99); }
+  .ribbon-top{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:11px; }
+  .ribbon-now{ font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:14px; }
+  .ribbon-now .st{ color:var(--ochre); }
+  .ribbon-count{ font-size:12px; color:var(--muted); font-weight:600; }
+  .ribbon{ display:flex; gap:5px; }
+  .seg{ flex:1; height:9px; border-radius:99px; background:#e9e6dd; position:relative; overflow:hidden; }
+  .seg.done{ background:var(--green); }
+  .seg.now{ background:var(--ochre-tint); }
+  .seg.now::after{ content:''; position:absolute; left:0; top:0; bottom:0; width:55%; background:var(--ochre); border-radius:99px; }
+  .ribbon-names{ display:flex; justify-content:space-between; margin-top:8px; }
+  .ribbon-names span{ font-size:9.5px; color:var(--faint); }
+  .ribbon-names span.on{ color:var(--ochre); font-weight:700; }
+
+  /* Pulse strip */
+  .pulse{ display:flex; background:var(--card); border-radius:16px; box-shadow:var(--shadow-tile); overflow:hidden; }
+  .pulse button{ flex:1; background:none; border:none; padding:14px 8px; cursor:pointer; text-align:center; transition:transform .08s ease; }
+  .pulse button:active{ transform:scale(0.96); }
+  .pulse button + button{ border-left:1px solid var(--line-soft); }
+  .pulse .pv{ font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:16px; letter-spacing:-0.01em; }
+  .pulse .pv .u{ font-size:11px; color:var(--muted); font-weight:600; }
+  .pulse .pl{ display:block; font-size:10.5px; color:var(--muted); margin-top:3px; }
+  .pulse .pl b{ color:var(--ochre); }
+
+  /* Recent entries — ledger lines */
+  .entries{ background:var(--card); border-radius:16px; box-shadow:var(--shadow-tile); padding:4px 16px; }
+  .entry{ display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid var(--line-soft); }
+  .entry:last-of-type{ border-bottom:none; }
+  .entry .e-date{ font-size:11px; color:var(--faint); width:52px; flex-shrink:0; }
+  .entry .e-text{ flex:1; min-width:0; font-size:13px; line-height:1.3; }
+  .entry .e-text .tag{ font-size:10px; color:var(--muted); }
+  .entry .e-amt{ font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:13.5px; white-space:nowrap; }
+  .entry .e-amt.in{ color:var(--green); } .entry .e-amt.out{ color:var(--ochre); } .entry .e-amt.none{ color:var(--faint); font-size:16px; }
+  .view-all{ display:block; width:100%; text-align:center; padding:13px; background:none; border:none; color:var(--green); font-size:13px; font-weight:700; cursor:pointer; border-top:1px solid var(--line-soft); }
+
+  /* FAB + sheet */
+  .fab-wrap{ position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:480px; padding:16px 20px 24px; background:linear-gradient(to top, var(--paper) 60%, transparent); pointer-events:none; z-index:8; }
+  .fab{ pointer-events:auto; width:100%; padding:15px; background:var(--green); color:#fff; border:none; border-radius:15px; font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:15.5px; cursor:pointer; box-shadow:0 6px 18px rgba(31,111,84,0.32); transition:transform .08s ease; }
+  .fab:active{ transform:scale(0.98); }
+  .sheet-overlay{ position:fixed; inset:0; background:rgba(24,22,16,0.42); display:none; align-items:flex-end; justify-content:center; z-index:20; }
+  .sheet-overlay.show{ display:flex; animation:fade .18s ease; }
+  @keyframes fade{ from{opacity:0;} to{opacity:1;} }
+  .sheet{ width:100%; max-width:480px; background:var(--card); border-radius:24px 24px 0 0; padding:20px 20px 26px; animation:slideUp .26s cubic-bezier(.22,.7,.24,1); }
+  @keyframes slideUp{ from{transform:translateY(30px);} to{transform:translateY(0);} }
+  .sheet h2{ font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:18px; margin:0 0 16px; }
+  .record-grid{ display:grid; grid-template-columns:1fr 1fr; gap:11px; }
+  .record-btn{ display:flex; flex-direction:column; align-items:center; gap:9px; padding:20px 12px; border-radius:16px; border:1px solid var(--line); background:var(--card); cursor:pointer; transition:transform .08s ease; }
+  .record-btn:active{ transform:scale(0.97); }
+  .record-btn .r-emo{ width:46px; height:46px; border-radius:13px; display:flex; align-items:center; justify-content:center; font-size:21px; }
+  .record-btn .r-lab{ font-size:13.5px; font-weight:700; color:var(--ink); }
+  .r-money{ background:var(--green-tint); } .r-expense{ background:var(--ochre-tint); } .r-attendance{ background:#e9edea; } .r-note{ background:var(--line-soft); }
+  .sheet-cancel{ width:100%; margin-top:14px; padding:13px; border-radius:13px; border:1px solid var(--line); background:var(--card); color:var(--ink); font-weight:700; font-size:14.5px; cursor:pointer; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <button class="icon-btn" aria-label="Go back">←</button>
+    <div class="topbar-title">
+      <h1>Sharma Residence — G+2</h1>
+      <p id="clientLine">—</p>
+    </div>
+    <button class="icon-btn" aria-label="More options">⋮</button>
+  </header>
+
+  <div class="scroll">
+    <!-- Plain-language health -->
+    <div class="health" id="health"><span class="badge"></span><p id="healthText"></p></div>
+
+    <!-- Ledger hero -->
+    <section class="ledger" aria-label="Project account">
+      <div class="ledger-head"><span class="ttl">This project's khaata</span><span class="date" id="ledgerDate"></span></div>
+      <div class="cols">
+        <div class="col jama">
+          <div class="cap"><span class="cdot"></span><span class="deva">जमा</span><span class="en">Received</span></div>
+          <div class="val tnum" id="jamaVal">₹0</div>
+        </div>
+        <div class="col kharch">
+          <div class="cap"><span class="cdot"></span><span class="deva">खर्च</span><span class="en">Spent</span></div>
+          <div class="val tnum" id="kharchVal">₹0</div>
+        </div>
+      </div>
+      <div class="baaki">
+        <div class="lhs"><span class="deva">बाकी</span><span class="en">In hand</span></div>
+        <div class="val tnum" id="baakiVal">₹0</div>
+      </div>
+      <div class="budget">
+        <div class="budget-row"><span class="k">Budget used</span><span class="v tnum" id="budgetText">—</span></div>
+        <div class="budget-track"><div class="budget-fill" id="budgetFill"></div></div>
+      </div>
+    </section>
+
+    <!-- Aaj: today's actions (money-recovery first) -->
+    <div class="sec-head"><h2>Aaj</h2><span class="deva">आज</span><span class="count" id="aajCount"></span></div>
+    <div class="aaj" id="aajList"></div>
+
+    <!-- Stage ribbon -->
+    <div class="sec-head"><h2>Where the build is</h2></div>
+    <div class="ribbon-card press" id="ribbonCard" role="button" aria-label="Open stages">
+      <div class="ribbon-top"><span class="ribbon-now" id="ribbonNow"></span><span class="ribbon-count" id="ribbonCount"></span></div>
+      <div class="ribbon" id="ribbon"></div>
+    </div>
+
+    <!-- Pulse strip -->
+    <div class="sec-head"><h2>This week</h2></div>
+    <div class="pulse" id="pulse"></div>
+
+    <!-- Recent entries -->
+    <div class="sec-head"><h2>Recent entries</h2></div>
+    <div class="entries">
+      <div id="entriesList"></div>
+      <button class="view-all" onclick="console.log('nav: activity/all')">View full ledger</button>
+    </div>
+  </div>
+
+  <div class="fab-wrap"><button class="fab" id="recordBtn">+ Record</button></div>
+</div>
+
+<div class="sheet-overlay" id="recordOverlay">
+  <div class="sheet">
+    <h2>Record something</h2>
+    <div class="record-grid">
+      <button class="record-btn" data-target="money-in"><span class="r-emo r-money">💰</span><span class="r-lab">Money in</span></button>
+      <button class="record-btn" data-target="expense"><span class="r-emo r-expense">🧾</span><span class="r-lab">Expense</span></button>
+      <button class="record-btn" data-target="attendance"><span class="r-emo r-attendance">👷</span><span class="r-lab">Attendance</span></button>
+      <button class="record-btn" data-target="site-note"><span class="r-emo r-note">📝</span><span class="r-lab">Site note</span></button>
+    </div>
+    <button class="sheet-cancel" id="cancelRecord">Cancel</button>
+  </div>
+</div>
+
+<script>
+  const fmt = n => '₹' + Number(n).toLocaleString('en-IN');
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const relDay = d => d===0 ? 'Today' : d===1 ? 'Yest.' : d + 'd ago';
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const state = {
+    project:{ name:'Sharma Residence — G+2', client:'Rakesh Sharma', budget:1040000 },
+    stages:[
+      { name:'Foundation', short:'Fdn', status:'complete' },
+      { name:'Plinth', short:'Plinth', status:'in_progress' },
+      { name:'Structure', short:'Struct', status:'not_started' },
+      { name:'Brickwork', short:'Brick', status:'not_started' },
+      { name:'Plaster', short:'Plaster', status:'not_started' },
+      { name:'Flooring', short:'Floor', status:'not_started' },
+      { name:'Finishing', short:'Finish', status:'not_started' }
+    ],
+    payments:[
+      { amount:200000, daysAgo:34 }, { amount:100000, daysAgo:18 },
+      { amount:70000, daysAgo:9 }, { amount:50000, daysAgo:0 }
+    ],
+    expenses:[
+      { amount:1300, daysAgo:1 }, { amount:16800, daysAgo:2 }, { amount:24200, daysAgo:5 },
+      { amount:85000, daysAgo:9 }, { amount:48000, daysAgo:15 }, { amount:120000, daysAgo:20 },
+      { amount:41500, daysAgo:25 }, { amount:28200, daysAgo:30 }
+    ],
+    attendanceToday:9,
+    documents:{ total:8, expiring:1 },
+    dues:{ amount:100000, from:'Rakesh Sharma', unpaidDays:18 },
+    payout:{ amount:18500, pendingDays:3 },
+    approval:{ name:'Sanction plan', expiresInDays:12 },
+    entries:[
+      { kind:'in',   text:'Received from Rakesh Sharma', tag:'Money-in', amount:50000, daysAgo:0 },
+      { kind:'none', text:'Plinth beam reinforcement done', tag:'Stage', daysAgo:1 },
+      { kind:'out',  text:'Cement 40 bags', tag:'Expense', amount:16800, daysAgo:2 },
+      { kind:'none', text:'9 workers marked present', tag:'Attendance', daysAgo:2 },
+      { kind:'none', text:'Sanction plan uploaded', tag:'Document', daysAgo:4 }
+    ]
+  };
+
+  const received = () => state.payments.reduce((a,p)=>a+p.amount,0);
+  const spent = () => state.expenses.reduce((a,e)=>a+e.amount,0);
+  const net = () => received()-spent();
+  const budgetPct = () => Math.round((spent()/state.project.budget)*100);
+  const stagesDone = () => state.stages.filter(s=>s.status==='complete').length;
+  const currentStage = () => state.stages.find(s=>s.status==='in_progress') || state.stages.find(s=>s.status!=='complete');
+  const weekSpent = () => state.expenses.filter(e=>e.daysAgo<=7).reduce((a,e)=>a+e.amount,0);
+
+  function countUp(el, target, fmtFn){
+    if (reduceMotion){ el.textContent = fmtFn(target); return; }
+    const start = performance.now(), dur = 950;
+    (function tick(now){
+      const t = Math.min(1,(now-start)/dur), eased = 1-Math.pow(1-t,3);
+      el.textContent = fmtFn(Math.round(target*eased));
+      if (t<1) requestAnimationFrame(tick);
+    })(start);
+  }
+
+  function renderHero(){
+    document.getElementById('clientLine').textContent = esc(state.project.client);
+    document.getElementById('ledgerDate').textContent = new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+    const r=received(), s=spent(), n=net(), pct=budgetPct();
+    document.getElementById('jamaVal').textContent = fmt(r);
+    document.getElementById('kharchVal').textContent = fmt(s);
+    const baaki = document.getElementById('baakiVal');
+    baaki.classList.toggle('pos', n>=0); baaki.classList.toggle('neg', n<0);
+    document.getElementById('budgetText').textContent = `${fmt(s)} of ${fmt(state.project.budget)} · ${pct}%`;
+
+    const fill = document.getElementById('budgetFill');
+    fill.classList.toggle('warn', pct>=80 && pct<100);
+    fill.classList.toggle('bad', pct>=100);
+    const setW = () => fill.style.width = Math.min(100,pct)+'%';
+    reduceMotion ? setW() : requestAnimationFrame(()=>requestAnimationFrame(setW));
+
+    countUp(baaki, n, fmt);
+
+    // health read
+    const h = document.getElementById('health'), ht = document.getElementById('healthText');
+    let tone='ok', msg;
+    if (n<0){ tone='bad'; msg = `Cash is tight — <span class="em">${fmt(Math.abs(n))} more spent</span> than collected.`; }
+    else if (pct>=100){ tone='bad'; msg = `Over budget — <span class="em">${pct}% used</span>. Time to review.`; }
+    else if (pct>=80){ tone='warn'; msg = `Watch the budget — <span class="em">${pct}% used</span>, ${fmt(n)} in hand.`; }
+    else { tone='ok'; msg = `This job is healthy — <span class="em">${fmt(n)} in hand</span>, ${pct}% into budget.`; }
+    h.className = 'health ' + tone; ht.innerHTML = msg;
+  }
+
+  function renderAaj(){
+    const items=[];
+    if (state.dues && state.dues.amount>0){
+      items.push({ cls:'collect', ic:'💰',
+        title:`Collect <span class="amt">${fmt(state.dues.amount)}</span> from ${esc(state.dues.from)}`,
+        desc:`Foundation billed · unpaid ${state.dues.unpaidDays} days`,
+        btns:[{c:'primary', t:'📞 Call', a:'call'},{c:'ghost', t:'🔔 Remind', a:'remind'}] });
+    }
+    if (state.payout && state.payout.amount>0){
+      items.push({ cls:'pay', ic:'👷',
+        title:`Pay <span class="amt">${fmt(state.payout.amount)}</span> labour`,
+        desc:`Payout pending ${state.payout.pendingDays} days`,
+        btns:[{c:'ghost ochre', t:'Go to payout', a:'payout'}] });
+    }
+    if (state.approval && state.approval.expiresInDays<=30){
+      items.push({ cls:'renew', ic:'📄',
+        title:`Renew ${esc(state.approval.name)}`,
+        desc:`Expires in ${state.approval.expiresInDays} days`,
+        btns:[{c:'ghost', t:'Open document', a:'document'}] });
+    }
+    document.getElementById('aajCount').textContent = items.length ? `${items.length} to do` : '';
+    const list = document.getElementById('aajList');
+    if (!items.length){ list.innerHTML = `<div class="ribbon-card" style="text-align:center;padding:22px"><div style="font-size:26px">🌿</div><p style="margin:8px 0 0;font-size:13px;color:var(--muted)">Nothing pending today. Nice.</p></div>`; return; }
+    list.innerHTML = items.map(it=>`
+      <div class="act ${it.cls}">
+        <span class="act-ic">${it.ic}</span>
+        <div class="act-body">
+          <div class="act-title">${it.title}</div>
+          <div class="act-desc">${esc(it.desc)}</div>
+          <div class="act-btns">${it.btns.map(b=>`<button class="abtn ${b.c}" data-do="${b.a}">${b.t}</button>`).join('')}</div>
+        </div>
+      </div>`).join('');
+  }
+
+  function renderRibbon(){
+    const cs = currentStage(), done = stagesDone(), total = state.stages.length;
+    const idx = state.stages.indexOf(cs);
+    document.getElementById('ribbonNow').innerHTML = `Now: <span class="st">${esc(cs.name)}</span>`;
+    document.getElementById('ribbonCount').textContent = `${done} of ${total} stages done`;
+    document.getElementById('ribbon').innerHTML = state.stages.map(s=>{
+      const c = s.status==='complete' ? 'done' : (s===cs ? 'now' : '');
+      return `<span class="seg ${c}" title="${esc(s.name)}"></span>`;
+    }).join('');
+  }
+
+  function renderPulse(){
+    document.getElementById('pulse').innerHTML = `
+      <button data-target="attendance"><span class="pv tnum">${state.attendanceToday}</span><span class="pl">on site today</span></button>
+      <button data-target="expenses"><span class="pv tnum">${fmt(weekSpent())}</span><span class="pl">spent this week</span></button>
+      <button data-target="documents"><span class="pv tnum">${state.documents.total}</span><span class="pl"><b>${state.documents.expiring} expiring</b></span></button>`;
+  }
+
+  function renderEntries(){
+    document.getElementById('entriesList').innerHTML = state.entries.map(e=>{
+      let amt;
+      if (e.kind==='in') amt = `<span class="e-amt in">+${fmt(e.amount)}</span>`;
+      else if (e.kind==='out') amt = `<span class="e-amt out">−${fmt(e.amount)}</span>`;
+      else amt = `<span class="e-amt none">·</span>`;
+      return `<div class="entry">
+        <span class="e-date">${relDay(e.daysAgo)}</span>
+        <span class="e-text">${esc(e.text)}<br><span class="tag">${esc(e.tag)}</span></span>
+        ${amt}
+      </div>`;
+    }).join('');
+  }
+
+  function render(){ renderHero(); renderAaj(); renderRibbon(); renderPulse(); renderEntries(); }
+
+  // interactions
+  document.getElementById('aajList').addEventListener('click', e=>{
+    const b = e.target.closest('[data-do]'); if(!b) return;
+    const a = b.dataset.do;
+    if (a==='call'){ alert('Calling ' + state.dues.from + ' (mock)'); }
+    else if (a==='remind'){ alert('WhatsApp reminder sent to ' + state.dues.from + ' (mock)'); }
+    else console.log('nav:', a);
+  });
+  document.getElementById('ribbonCard').addEventListener('click', ()=>console.log('nav: stages'));
+  document.getElementById('pulse').addEventListener('click', e=>{ const t=e.target.closest('[data-target]'); if(t) console.log('nav:',t.dataset.target); });
+
+  const overlay = document.getElementById('recordOverlay');
+  document.getElementById('recordBtn').addEventListener('click', ()=>overlay.classList.add('show'));
+  document.getElementById('cancelRecord').addEventListener('click', ()=>overlay.classList.remove('show'));
+  overlay.addEventListener('click', e=>{ if(e.target===overlay) overlay.classList.remove('show'); });
+  document.querySelectorAll('.record-btn').forEach(b=>b.addEventListener('click', ()=>{ console.log('nav: record/',b.dataset.target); overlay.classList.remove('show'); }));
+
+  render();
+</script>
+</body>
+</html>

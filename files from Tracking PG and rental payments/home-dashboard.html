@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Khaata — Home</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fbfbf9;--ink:#16161a;--muted:#62636a;--line:#e7e7e2;--card:#fff;
+    --accent:#1f6f54;--soft:#e8f3ee;--warm:#f4f2ec;--red:#b3261e;--redsoft:#fdecea;
+    --amber:#b36b00;--ambersoft:#fff4e5;
+    --d:'Plus Jakarta Sans',sans-serif;--b:'Inter',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:var(--b);-webkit-font-smoothing:antialiased;padding-bottom:72px;}
+  .wrap{max-width:460px;margin:0 auto;padding:0 16px;}
+  h1,h2,h3{font-family:var(--d);letter-spacing:-.01em;}
+
+  /* TOP BAR */
+  .top{position:sticky;top:0;background:var(--bg);z-index:9;padding:12px 0 8px;border-bottom:1px solid var(--line);}
+  .top-in{display:flex;align-items:center;justify-content:space-between;}
+  .switcher{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 12px;cursor:pointer;font-family:var(--d);font-weight:700;font-size:15px;}
+  .switcher .ch{color:var(--muted);font-size:12px;}
+  .top-icons{display:flex;gap:8px;}
+  .ic-btn{width:38px;height:38px;border:1px solid var(--line);background:var(--card);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;cursor:pointer;position:relative;}
+  .ic-btn .badge{position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;font-size:9px;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--d);}
+
+  .dropdown{display:none;background:var(--card);border:1px solid var(--line);border-radius:10px;margin-top:6px;overflow:hidden;}
+  .dropdown.open{display:block;}
+  .dropdown a{display:flex;justify-content:space-between;padding:11px 14px;font-size:14px;border-bottom:1px solid var(--line);cursor:pointer;}
+  .dropdown a:last-child{border:none;}
+  .dropdown a:hover{background:var(--warm);}
+  .dropdown a.sel{color:var(--accent);font-weight:600;font-family:var(--d);}
+  .dropdown a small{color:var(--muted);}
+
+  .greet{padding:16px 0 4px;}
+  .greet h1{font-size:22px;}
+  .greet p{font-size:13.5px;color:var(--muted);}
+
+  .sec-label{font-family:var(--d);font-weight:700;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:22px 0 10px;}
+
+  /* QUICK ACTIONS */
+  .qa{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+  .qa a{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 4px;text-align:center;cursor:pointer;transition:.12s;}
+  .qa a:hover{border-color:var(--accent);transform:translateY(-1px);}
+  .qa .ic{font-size:20px;display:block;margin-bottom:5px;}
+  .qa .lb{font-size:11px;font-family:var(--d);font-weight:600;}
+
+  /* MONEY */
+  .money{background:var(--ink);color:#fff;border-radius:16px;padding:18px;}
+  .money .row1{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;}
+  .money .big{font-family:var(--d);font-weight:800;font-size:30px;}
+  .money .lb{font-size:12px;color:#b8b9bd;}
+  .money .trend{font-size:12px;color:#7fd4a8;}
+  .money .split{display:flex;gap:10px;}
+  .money .split div{flex:1;background:rgba(255,255,255,.07);border-radius:10px;padding:10px;}
+  .money .split .n{font-family:var(--d);font-weight:700;font-size:17px;}
+  .money .split .s{font-size:11px;color:#b8b9bd;}
+  .money .split .n.red{color:#ff9b91;}
+  .money .split .n.amber{color:#ffc97a;}
+
+  /* ATTENTION */
+  .att{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;}
+  .att a{display:flex;align-items:center;gap:11px;padding:13px 14px;border-bottom:1px solid var(--line);cursor:pointer;}
+  .att a:last-child{border:none;}
+  .att a:hover{background:var(--warm);}
+  .att .dot{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+  .att .dot.red{background:var(--redsoft);}.att .dot.amber{background:var(--ambersoft);}.att .dot.soft{background:var(--soft);}
+  .att .tx{flex:1;font-size:14px;}
+  .att .tx small{display:block;color:var(--muted);font-size:12px;}
+  .att .ct{font-family:var(--d);font-weight:700;font-size:14px;color:var(--ink);}
+  .att .ct.red{color:var(--red);}
+
+  /* BUSINESS CARDS */
+  .biz a{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:9px;cursor:pointer;transition:.12s;}
+  .biz a:hover{border-color:var(--accent);}
+  .biz .emoji{width:44px;height:44px;border-radius:11px;background:var(--soft);display:flex;align-items:center;justify-content:center;font-size:22px;}
+  .biz .info{flex:1;}
+  .biz .info h3{font-size:15px;}
+  .biz .info small{color:var(--muted);font-size:12.5px;}
+  .biz .amt{text-align:right;}
+  .biz .amt .p{font-family:var(--d);font-weight:700;font-size:15px;}
+  .biz .amt .d{font-size:11px;color:var(--red);}
+  .add-biz{display:block;text-align:center;border:1px dashed #bbb;border-radius:14px;padding:13px;font-size:14px;color:var(--muted);font-family:var(--d);font-weight:600;cursor:pointer;}
+
+  /* BOTTOM NAV */
+  .nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:8px 0 10px;z-index:9;}
+  .nav a{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10.5px;color:var(--muted);cursor:pointer;font-family:var(--d);font-weight:600;flex:1;}
+  .nav a.on{color:var(--accent);}
+  .nav a .ic{font-size:19px;}
+
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+</style>
+</head>
+<body>
+
+<div class="top"><div class="wrap">
+  <div class="top-in">
+    <div class="switcher" onclick="document.getElementById('dd').classList.toggle('open')">
+      <span id="curBiz">All businesses</span><span class="ch">▾</span>
+    </div>
+    <div class="top-icons">
+      <div class="ic-btn">🔍</div>
+      <div class="ic-btn">🔔<span class="badge">5</span></div>
+      <div class="ic-btn">👤</div>
+    </div>
+  </div>
+  <div class="dropdown" id="dd">
+    <a class="sel" onclick="setBiz('All businesses')">All businesses <small>combined</small></a>
+    <a onclick="setBiz('Sunrise PG')">🛏️ Sunrise PG <small>28 tenants</small></a>
+    <a onclick="setBiz('FitZone Gym')">🏋️ FitZone Gym <small>64 members</small></a>
+    <a onclick="setBiz('Amma Tiffin')">🍱 Amma Tiffin <small>40 subscribers</small></a>
+  </div>
+</div></div>
+
+<div class="wrap">
+
+  <div class="greet">
+    <h1>Hello, Suresh 👋</h1>
+    <p>Here's what's happening across your businesses today.</p>
+  </div>
+
+  <div class="sec-label">Quick actions</div>
+  <div class="qa">
+    <a><span class="ic">💸</span><span class="lb">Record payment</span></a>
+    <a><span class="ic">➕</span><span class="lb">Add person</span></a>
+    <a><span class="ic">🔔</span><span class="lb">Send reminders</span></a>
+    <a><span class="ic">📷</span><span class="lb">Scan / attend</span></a>
+  </div>
+
+  <div class="sec-label">This month</div>
+  <div class="money">
+    <div class="row1">
+      <div><div class="lb">Collected</div><div class="big">₹1,84,500</div></div>
+      <div class="trend">▲ 12% vs last month</div>
+    </div>
+    <div class="split">
+      <div><div class="n amber">₹42,000</div><div class="s">Pending</div></div>
+      <div><div class="n red">₹18,500</div><div class="s">Overdue</div></div>
+      <div><div class="n">86%</div><div class="s">Collected</div></div>
+    </div>
+  </div>
+
+  <div class="sec-label">Needs your attention</div>
+  <div class="att">
+    <a><div class="dot red">⏰</div><div class="tx">Overdue payments<small>Across all businesses</small></div><div class="ct red">7</div></a>
+    <a><div class="dot amber">📅</div><div class="tx">Plans expiring this week<small>Gym + tiffin renewals</small></div><div class="ct">5</div></a>
+    <a><div class="dot soft">🆔</div><div class="tx">Pending verifications<small>KYC / police</small></div><div class="ct">3</div></a>
+    <a><div class="dot soft">🛏️</div><div class="tx">Vacant beds<small>Sunrise PG</small></div><div class="ct">2</div></a>
+    <a><div class="dot amber">👷</div><div class="tx">Staff salary due<small>2 staff this week</small></div><div class="ct">₹14k</div></a>
+  </div>
+
+  <div class="sec-label">Your businesses</div>
+  <div class="biz">
+    <a><div class="emoji">🛏️</div><div class="info"><h3>Sunrise PG</h3><small>28 tenants · 2 vacant</small></div><div class="amt"><div class="p">₹92,000</div><div class="d">₹12k due</div></div></a>
+    <a><div class="emoji">🏋️</div><div class="info"><h3>FitZone Gym</h3><small>64 members · 5 expiring</small></div><div class="amt"><div class="p">₹58,500</div><div class="d">₹4k due</div></div></a>
+    <a><div class="emoji">🍱</div><div class="info"><h3>Amma Tiffin</h3><small>40 subscribers</small></div><div class="amt"><div class="p">₹34,000</div><div class="d">₹2.5k due</div></div></a>
+    <a class="add-biz">+ Add another business</a>
+  </div>
+
+</div>
+
+<div class="nav">
+  <a class="on"><span class="ic">🏠</span>Home</a>
+  <a><span class="ic">👥</span>People</a>
+  <a><span class="ic">📒</span>Payments</a>
+  <a><span class="ic">📊</span>Reports</a>
+  <a><span class="ic">⚙️</span>Settings</a>
+</div>
+
+<script>
+  function setBiz(name){
+    document.getElementById('curBiz').textContent=name;
+    document.getElementById('dd').classList.remove('open');
+    document.querySelectorAll('#dd a').forEach(a=>a.classList.remove('sel'));
+    event.target.closest('a').classList.add('sel');
+  }
+</script>
+</body>
+</html>

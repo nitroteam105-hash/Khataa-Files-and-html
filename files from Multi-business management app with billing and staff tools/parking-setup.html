@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parking Setup — Khaata</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1f6f54; --green-light: #e7f2ed;
+    --parchment: #fbfbf9; --ink: #1c1c1a; --muted: #6b6b64;
+    --border: #e6e4dd; --amber: #b5791f; --amber-light: #fbf1e2;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', sans-serif; background: var(--parchment); color: var(--ink);
+    max-width: 480px; margin: 0 auto; min-height: 100vh; padding-bottom: 40px;
+  }
+  header { padding: 24px 20px 12px; }
+  header h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 800; }
+  header p { font-size: 13px; color: var(--muted); margin-top: 3px; }
+
+  .section-label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin: 16px 20px 8px; }
+  .card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin: 0 20px 10px; }
+
+  .toggle-row { display: flex; justify-content: space-between; align-items: center; }
+  .toggle-row + .toggle-row { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+  .toggle-row .tr-title { font-weight: 700; font-size: 14px; }
+  .toggle-row .tr-sub { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+  .switch { width: 40px; height: 24px; background: var(--green); border-radius: 999px; position: relative; flex-shrink: 0; cursor: pointer; }
+  .switch.off { background: #d8d6cd; }
+  .switch::after { content: ''; position: absolute; top: 3px; right: 3px; width: 18px; height: 18px; background: #fff; border-radius: 50%; }
+  .switch.off::after { left: 3px; right: auto; }
+
+  .conditional-section { display: block; }
+  .conditional-section.hidden { display: none; }
+
+  .plan-card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin: 0 20px 10px; }
+  .plan-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .plan-name { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 15px; }
+  .plan-delete { font-size: 12px; color: var(--muted); cursor: pointer; }
+  .cycle-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .cycle-chip { background: var(--green-light); color: var(--green); border-radius: 10px; padding: 8px 10px; font-size: 12px; font-weight: 600; display: flex; flex-direction: column; align-items: center; min-width: 74px; cursor: pointer; }
+  .cycle-chip .cyc-label { font-size: 10.5px; text-transform: uppercase; opacity: 0.75; }
+  .cycle-chip .cyc-amt { font-size: 13px; margin-top: 2px; }
+
+  .retail-item-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .retail-item-row:last-child { border-bottom: none; }
+  .ri-name { font-size: 14px; font-weight: 600; }
+  .ri-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .ri-price { font-weight: 700; color: var(--amber); font-size: 13.5px; cursor: pointer; }
+  .ri-delete { font-size: 12px; color: var(--muted); cursor: pointer; margin-left: 10px; }
+
+  .add-row-btn { border: 1.5px dashed var(--green); color: var(--green); background: none; border-radius: 10px; padding: 11px; width: 100%; font-weight: 700; font-size: 13px; cursor: pointer; margin-top: 4px; }
+
+  .inline-form { background: var(--green-light); border: 1px solid var(--green); border-radius: 12px; padding: 14px; margin: 0 20px 10px; }
+  .inline-form label { font-size: 11px; font-weight: 700; color: var(--muted); display: block; margin-bottom: 4px; text-transform: uppercase; }
+  .inline-form input, .inline-form select { width: 100%; padding: 9px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; font-family: 'Inter', sans-serif; margin-bottom: 8px; background: #fff; }
+  .inline-form .form-actions { display: flex; gap: 8px; }
+  .inline-form .form-actions button { flex: 1; padding: 10px; border-radius: 8px; border: none; font-weight: 700; font-size: 13px; cursor: pointer; }
+  .inline-form .btn-confirm { background: var(--green); color: #fff; }
+  .inline-form .btn-cancel { background: #fff; color: var(--muted); border: 1px solid var(--border) !important; }
+
+  .note { font-size: 12px; color: var(--muted); margin: 8px 20px 0; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>City Center Parking — Setup</h1>
+  <p>Business modes & rates by vehicle type</p>
+</header>
+
+<div class="section-label">Business modes</div>
+<div class="card">
+  <div class="toggle-row">
+    <div><div class="tr-title">Monthly pass</div><div class="tr-sub">Recurring reserved slot, billed monthly</div></div>
+    <div class="switch" id="passToggle" onclick="toggleMode('pass')"></div>
+  </div>
+  <div class="toggle-row">
+    <div><div class="tr-title">Walk-in (hourly/daily)</div><div class="tr-sub">Pay-per-visit parking, no reservation</div></div>
+    <div class="switch" id="walkinToggle" onclick="toggleMode('walkin')"></div>
+  </div>
+</div>
+<p class="note">At least one mode should be on. Many parking operators run both — reserved monthly slots plus open walk-in spots.</p>
+
+<div class="conditional-section" id="passSection">
+  <div class="section-label">Monthly pass rates (by vehicle type)</div>
+  <div id="passPlansContainer"></div>
+  <div style="padding:0 20px">
+    <button class="add-row-btn" onclick="openAddPassForm()">+ Add Vehicle Type</button>
+  </div>
+  <p class="note">Same Fee Plans used across the app — one monthly rate per vehicle type. A customer picks their vehicle type and cycle when they sign up for a slot.</p>
+</div>
+
+<div class="conditional-section" id="walkinSection">
+  <div class="section-label">Walk-in rates (by vehicle type)</div>
+  <div class="plan-card" id="walkinItemsCard"></div>
+  <div style="padding:0 20px">
+    <button class="add-row-btn" onclick="openAddWalkinForm()">+ Add Walk-in Rate</button>
+  </div>
+  <p class="note">Simple one-off pricing per hour or per day — no reservation, billed via the Retail bill layout per visit.</p>
+</div>
+
+<script>
+let passPlans = [
+  { vehicle: '2-Wheeler', cycle: 'Monthly', amt: 200 },
+  { vehicle: '4-Wheeler', cycle: 'Monthly', amt: 800 }
+];
+let walkinRates = [
+  { vehicle: '2-Wheeler', unit: 'per hour', price: 10 },
+  { vehicle: '2-Wheeler', unit: 'per day', price: 40 },
+  { vehicle: '4-Wheeler', unit: 'per hour', price: 20 },
+  { vehicle: '4-Wheeler', unit: 'per day', price: 100 }
+];
+
+function toggleMode(mode) {
+  const sw = document.getElementById(mode + 'Toggle');
+  sw.classList.toggle('off');
+  const isOn = !sw.classList.contains('off');
+  document.getElementById(mode + 'Section').classList.toggle('hidden', !isOn);
+}
+
+function closeAllForms() {
+  document.querySelectorAll('.inline-form').forEach(function(f) { f.remove(); });
+}
+
+function renderPassPlans() {
+  const container = document.getElementById('passPlansContainer');
+  container.innerHTML = '';
+  passPlans.forEach(function(p, idx) {
+    const card = document.createElement('div');
+    card.className = 'plan-card';
+    card.innerHTML =
+      '<div class="plan-top"><div class="plan-name"></div><div class="plan-delete" onclick="deletePassPlan(' + idx + ')">✕</div></div>' +
+      '<div class="cycle-row"><div class="cycle-chip" onclick="editPassAmt(' + idx + ')">' +
+      '<span class="cyc-label"></span><span class="cyc-amt"></span></div></div>';
+    card.querySelector('.plan-name').textContent = p.vehicle;
+    card.querySelector('.cyc-label').textContent = p.cycle;
+    card.querySelector('.cyc-amt').textContent = '₹' + p.amt;
+    container.appendChild(card);
+  });
+}
+
+function openAddPassForm() {
+  closeAllForms();
+  const form = document.createElement('div');
+  form.className = 'inline-form';
+  form.innerHTML =
+    '<label>Vehicle type</label><input type="text" id="newPassVehicle" placeholder="e.g. Bicycle, Commercial Van">' +
+    '<label>Monthly price (₹)</label><input type="text" id="newPassAmt" placeholder="e.g. 300">' +
+    '<div class="form-actions"><button class="btn-confirm" onclick="confirmAddPass()">+ Add Vehicle Type</button>' +
+    '<button class="btn-cancel" onclick="closeAllForms()">Cancel</button></div>';
+  document.getElementById('passPlansContainer').parentNode.insertBefore(form, document.getElementById('passPlansContainer').nextSibling.nextSibling);
+}
+
+function confirmAddPass() {
+  const vehicle = document.getElementById('newPassVehicle').value.trim();
+  const amt = document.getElementById('newPassAmt').value.trim();
+  if (!vehicle) { alert('Enter a vehicle type.'); return; }
+  passPlans.push({ vehicle: vehicle, cycle: 'Monthly', amt: parseFloat(amt) || 0 });
+  closeAllForms();
+  renderPassPlans();
+}
+
+function editPassAmt(idx) {
+  const p = passPlans[idx];
+  const amt = prompt('Set monthly price for "' + p.vehicle + '" (₹):', p.amt);
+  if (amt === null || amt.trim() === '') return;
+  p.amt = parseFloat(amt) || 0;
+  renderPassPlans();
+}
+
+function deletePassPlan(idx) {
+  if (confirm('Remove "' + passPlans[idx].vehicle + '"?')) {
+    passPlans.splice(idx, 1);
+    renderPassPlans();
+  }
+}
+
+function renderWalkinRates() {
+  const container = document.getElementById('walkinItemsCard');
+  container.innerHTML = '';
+  walkinRates.forEach(function(it, idx) {
+    const row = document.createElement('div');
+    row.className = 'retail-item-row';
+    row.innerHTML =
+      '<div><div class="ri-name"></div><div class="ri-sub"></div></div>' +
+      '<div style="display:flex;align-items:center"><div class="ri-price" onclick="editWalkinPrice(' + idx + ')"></div>' +
+      '<span class="ri-delete" onclick="deleteWalkinRate(' + idx + ')">✕</span></div>';
+    row.querySelector('.ri-name').textContent = it.vehicle;
+    row.querySelector('.ri-sub').textContent = it.unit;
+    row.querySelector('.ri-price').textContent = '₹' + it.price;
+    container.appendChild(row);
+  });
+}
+
+function openAddWalkinForm() {
+  closeAllForms();
+  const form = document.createElement('div');
+  form.className = 'inline-form';
+  form.innerHTML =
+    '<label>Vehicle type</label><input type="text" id="newWalkinVehicle" placeholder="e.g. 4-Wheeler">' +
+    '<label>Unit</label><select id="newWalkinUnit"><option value="per hour">per hour</option><option value="per day">per day</option></select>' +
+    '<label>Price (₹)</label><input type="text" id="newWalkinPrice" placeholder="e.g. 20">' +
+    '<div class="form-actions"><button class="btn-confirm" onclick="confirmAddWalkin()">+ Add Rate</button>' +
+    '<button class="btn-cancel" onclick="closeAllForms()">Cancel</button></div>';
+  document.getElementById('walkinItemsCard').parentNode.insertBefore(form, document.getElementById('walkinItemsCard').nextSibling.nextSibling);
+}
+
+function confirmAddWalkin() {
+  const vehicle = document.getElementById('newWalkinVehicle').value.trim();
+  const unit = document.getElementById('newWalkinUnit').value;
+  const price = document.getElementById('newWalkinPrice').value.trim();
+  if (!vehicle) { alert('Enter a vehicle type.'); return; }
+  walkinRates.push({ vehicle: vehicle, unit: unit, price: parseFloat(price) || 0 });
+  closeAllForms();
+  renderWalkinRates();
+}
+
+function editWalkinPrice(idx) {
+  const it = walkinRates[idx];
+  const price = prompt('Set price for "' + it.vehicle + ' (' + it.unit + ')" (₹):', it.price);
+  if (price === null || price.trim() === '') return;
+  it.price = parseFloat(price) || 0;
+  renderWalkinRates();
+}
+
+function deleteWalkinRate(idx) {
+  if (confirm('Remove "' + walkinRates[idx].vehicle + ' (' + walkinRates[idx].unit + ')"?')) {
+    walkinRates.splice(idx, 1);
+    renderWalkinRates();
+  }
+}
+
+renderPassPlans();
+renderWalkinRates();
+</script>
+</body>
+</html>

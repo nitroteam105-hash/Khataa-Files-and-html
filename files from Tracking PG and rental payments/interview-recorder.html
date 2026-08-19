@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Owner Interview Recorder</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fbfbf9;--ink:#16161a;--muted:#62636a;--line:#e7e7e2;--card:#fff;
+    --accent:#1f6f54;--soft:#e8f3ee;--warm:#f4f2ec;--red:#b3261e;--amber:#b36b00;
+    --d:'Plus Jakarta Sans',sans-serif;--b:'Inter',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:var(--b);-webkit-font-smoothing:antialiased;padding-bottom:90px;}
+  .wrap{max-width:560px;margin:0 auto;padding:0 16px;}
+  h1,h2,h3{font-family:var(--d);letter-spacing:-.01em;}
+  a{color:var(--accent);cursor:pointer;}
+
+  .top{position:sticky;top:0;background:var(--bg);z-index:9;padding:14px 0;border-bottom:1px solid var(--line);margin-bottom:16px;}
+  .top-in{display:flex;align-items:center;justify-content:space-between;}
+  .top h1{font-size:19px;}
+  .top .sub{font-size:12.5px;color:var(--muted);}
+  .btn{font-family:var(--d);font-weight:600;font-size:13.5px;border:none;border-radius:9px;padding:9px 15px;cursor:pointer;}
+  .btn.dark{background:var(--ink);color:#fff;}
+  .btn.ghost{background:var(--card);border:1px solid var(--line);color:var(--ink);}
+  .btn.sm{padding:6px 11px;font-size:12.5px;}
+
+  /* LIST VIEW */
+  .new-card{background:var(--card);border:1px dashed #bbb;border-radius:14px;padding:18px;text-align:center;margin-bottom:14px;cursor:pointer;}
+  .new-card:hover{border-color:var(--accent);}
+  .new-card .ic{font-size:24px;}
+  .new-card .lb{font-family:var(--d);font-weight:700;font-size:15px;margin-top:4px;}
+  .new-card .s{font-size:12px;color:var(--muted);}
+
+  .iv{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:.12s;}
+  .iv:hover{border-color:var(--accent);}
+  .iv .emoji{width:42px;height:42px;border-radius:11px;background:var(--soft);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+  .iv .info{flex:1;min-width:0;}
+  .iv .info h3{font-size:15px;}
+  .iv .info small{color:var(--muted);font-size:12.5px;}
+  .iv .prog{text-align:right;font-size:12px;}
+  .iv .prog .pct{font-family:var(--d);font-weight:700;font-size:15px;}
+  .iv .prog .interest{display:inline-block;font-size:10px;padding:2px 7px;border-radius:99px;margin-top:3px;}
+  .interest.hot{background:#e8f3ee;color:var(--accent);}
+  .interest.warm{background:#fff4e5;color:var(--amber);}
+  .interest.cold{background:#fdecea;color:var(--red);}
+  .interest.none{background:var(--warm);color:var(--muted);}
+
+  .empty{text-align:center;color:var(--muted);font-size:14px;padding:30px 0;}
+
+  /* INTERVIEW FORM */
+  .meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px;}
+  label{display:block;font-size:12px;color:var(--muted);margin:10px 0 4px;font-weight:500;}
+  input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;font-size:14px;font-family:var(--b);background:var(--card);color:var(--ink);}
+  textarea{resize:vertical;min-height:64px;line-height:1.5;}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);}
+
+  .part{margin-top:22px;}
+  .part-h{font-family:var(--d);font-weight:700;font-size:13px;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;}
+  .part-d{font-size:12px;color:var(--muted);margin-bottom:12px;font-style:italic;}
+  .q{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px;margin-bottom:9px;}
+  .q .qt{font-size:14px;font-weight:500;margin-bottom:8px;line-height:1.4;}
+  .q .qn{color:var(--muted);font-weight:700;margin-right:5px;}
+  .q textarea{border-color:#eee;background:var(--bg);}
+
+  .signals{background:var(--soft);border-radius:12px;padding:14px;margin-top:20px;}
+  .signals h3{font-size:13px;margin-bottom:8px;}
+  .sigrow{display:flex;gap:8px;margin-bottom:8px;}
+  .sigrow button{flex:1;border:1px solid var(--line);background:var(--card);border-radius:9px;padding:9px;font-size:12.5px;font-family:var(--d);font-weight:600;cursor:pointer;}
+  .sigrow button.sel.hot{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .sigrow button.sel.warm{background:var(--amber);color:#fff;border-color:var(--amber);}
+  .sigrow button.sel.cold{background:var(--red);color:#fff;border-color:var(--red);}
+
+  /* FOOTER BAR */
+  .bar{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);padding:12px 16px;z-index:9;}
+  .bar-in{max-width:560px;margin:0 auto;display:flex;gap:10px;align-items:center;}
+  .bar .saved{font-size:12px;color:var(--accent);flex:1;}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+const PARTS=[
+  {h:'Part 1 — How they work today',d:'Ask before mentioning the app.',qs:[
+    'How do you track who has paid and who hasn\u2019t?',
+    'What do you actually use? (notebook / Excel / WhatsApp / memory / app)',
+    'How much time per month on collecting & following up?',
+    'Most frustrating part of the money side?',
+    'Anyone paid late / not paid / disputed? What happened?',
+    'Cash, UPI, or both? Rough split?',
+    'How do you track staff days & salary?',
+    'Where do you keep important documents (IDs, agreements)?'
+  ]},
+  {h:'Part 2 — The real pain',d:'Dig into what hurts.',qs:[
+    'Last 3 months — lost money/time from a tracking mistake? Story?',
+    'Magic wand: fix ONE admin thing — what?',
+    'Ever forgotten a payment / had a plan quietly lapse?',
+    'Run more than one business/location? How do you manage together?'
+  ]},
+  {h:'Part 3 — Current solutions',d:'What they tried & why it didn\u2019t stick.',qs:[
+    'Ever tried an app/software for this? Which?',
+    'Still using it? Why / why not?',
+    'If stopped — what made you go back?',
+    'What would make you switch from notebook/WhatsApp?'
+  ]},
+  {h:'Part 4 — Show the prototype',d:'Show screens, watch their face.',qs:[
+    '(Home screen) What is this? What would you do here?',
+    '(Money in/out) Is this how you think about money? Useful?',
+    'What\u2019s missing that you\u2019d absolutely need?',
+    'What here is confusing or unnecessary?',
+    'Could your staff / customers use their part?'
+  ]},
+  {h:'Part 5 — The money question',d:'The most important answers.',qs:[
+    'Would you use it?',
+    'Would you PAY for it?',
+    'How much per month feels fair?',
+    'What would make it NOT worth paying for?',
+    'Would you recommend it? To whom?'
+  ]},
+  {h:'Part 6 — Wrap up',d:'',qs:[
+    'Can I come back with the next version?',
+    'Know 2\u20133 other owners I should talk to?'
+  ]}
+];
+
+const BIZ_EMOJI={'PG':'\ud83d\udecf\ufe0f','Hostel':'\ud83c\udfe8','Gym':'\ud83c\udfcb\ufe0f','Tiffin':'\ud83c\udf71','Coaching':'\ud83d\udcda','Shop':'\ud83c\udfea','Other':'\ud83c\udfe2'};
+
+let store=loadAll();
+let cur=null;
+
+function loadAll(){try{return JSON.parse(localStorage.getItem('interviews')||'[]');}catch(e){return [];}}
+function saveAll(){try{localStorage.setItem('interviews',JSON.stringify(store));}catch(e){}}
+function totalQs(){return PARTS.reduce((a,p)=>a+p.qs.length,0);}
+function answered(iv){return Object.values(iv.answers||{}).filter(v=>v&&v.trim()).length;}
+function pct(iv){return Math.round(answered(iv)/totalQs()*100);}
+
+function newInterview(){
+  const iv={id:Date.now(),name:'',biz:'PG',date:new Date().toISOString().slice(0,10),answers:{},interest:''};
+  store.unshift(iv);saveAll();cur=iv.id;render();
+}
+function openIv(id){cur=id;render();}
+function delIv(id){if(confirm('Delete this interview?')){store=store.filter(i=>i.id!==id);saveAll();cur=null;render();}}
+function backToList(){cur=null;render();}
+
+function setField(f,v){const iv=store.find(i=>i.id===cur);iv[f]=v;saveAll();if(f==='name'||f==='biz')flashSaved();}
+function setAns(key,v){const iv=store.find(i=>i.id===cur);iv.answers[key]=v;saveAll();flashSaved();updateProgress();}
+function setInterest(v){const iv=store.find(i=>i.id===cur);iv.interest=v;saveAll();render();}
+
+let flashT;
+function flashSaved(){const e=document.getElementById('saved');if(e){e.textContent='\u2713 Saved';clearTimeout(flashT);flashT=setTimeout(()=>{if(e)e.textContent='';},1200);}}
+function updateProgress(){const iv=store.find(i=>i.id===cur);const e=document.getElementById('progLbl');if(e)e.textContent=answered(iv)+' / '+totalQs()+' answered';}
+
+function exportData(){
+  let txt='OWNER INTERVIEWS EXPORT\n'+new Date().toLocaleString()+'\n\n';
+  store.forEach(iv=>{
+    txt+='='.repeat(40)+'\n'+(iv.name||'(no name)')+' \u00b7 '+iv.biz+' \u00b7 '+iv.date+'\nInterest: '+(iv.interest||'-')+'\n\n';
+    let n=0;
+    PARTS.forEach(p=>{txt+='--- '+p.h+' ---\n';p.qs.forEach(q=>{n++;const a=iv.answers['q'+n]||'';txt+=n+'. '+q+'\n   '+(a||'(blank)')+'\n';});txt+='\n';});
+    txt+='\n';
+  });
+  const blob=new Blob([txt],{type:'text/plain'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='owner-interviews.txt';a.click();
+}
+
+/* ---- RENDER ---- */
+function render(){
+  const app=document.getElementById('app');
+  if(cur===null){ app.innerHTML=listView(); }
+  else { app.innerHTML=formView(); }
+}
+
+function listView(){
+  const hot=store.filter(i=>i.interest==='hot').length;
+  let rows=store.map(iv=>{
+    const e=BIZ_EMOJI[iv.biz]||'\ud83c\udfe2';
+    const il=iv.interest||'none';
+    const ilLabel={hot:'Hot',warm:'Warm',cold:'Cold',none:'\u2013'}[il];
+    return `<div class="iv" onclick="openIv(${iv.id})">
+      <div class="emoji">${e}</div>
+      <div class="info"><h3>${iv.name||'Untitled owner'}</h3><small>${iv.biz} \u00b7 ${iv.date}</small></div>
+      <div class="prog"><div class="pct">${pct(iv)}%</div><span class="interest ${il}">${ilLabel}</span></div>
+    </div>`;
+  }).join('');
+  return `<div class="top"><div class="wrap"><div class="top-in">
+    <div><h1>Owner Interviews</h1><div class="sub">${store.length} recorded \u00b7 ${hot} hot</div></div>
+    ${store.length?'<button class="btn ghost sm" onclick="exportData()">Export</button>':''}
+  </div></div></div>
+  <div class="wrap">
+    <div class="new-card" onclick="newInterview()"><div class="ic">\u2795</div><div class="lb">New interview</div><div class="s">Start recording an owner conversation</div></div>
+    ${store.length?rows:'<div class="empty">No interviews yet. Tap above to start your first.</div>'}
+  </div>`;
+}
+
+function formView(){
+  const iv=store.find(i=>i.id===cur);
+  let n=0;
+  let parts=PARTS.map(p=>{
+    let qs=p.qs.map(q=>{
+      n++;const key='q'+n;const val=(iv.answers[key]||'').replace(/</g,'&lt;');
+      return `<div class="q"><div class="qt"><span class="qn">${n}.</span>${q}</div>
+        <textarea placeholder="Type their answer..." oninput="setAns('${key}',this.value)">${val}</textarea></div>`;
+    }).join('');
+    return `<div class="part"><div class="part-h">${p.h}</div>${p.d?`<div class="part-d">${p.d}</div>`:''}${qs}</div>`;
+  }).join('');
+
+  return `<div class="top"><div class="wrap"><div class="top-in">
+    <div><h1 style="font-size:16px"><a onclick="backToList()">\u2190 All</a></h1><div class="sub" id="progLbl">${answered(iv)} / ${totalQs()} answered</div></div>
+    <button class="btn ghost sm" onclick="delIv(${iv.id})">Delete</button>
+  </div></div></div>
+  <div class="wrap">
+    <div class="meta-grid">
+      <div><label>Owner name / business</label><input value="${(iv.name||'').replace(/"/g,'&quot;')}" oninput="setField('name',this.value)" placeholder="e.g. Suresh / Sunrise PG"></div>
+      <div><label>Business type</label><select onchange="setField('biz',this.value)">${['PG','Hostel','Gym','Tiffin','Coaching','Shop','Other'].map(b=>`<option ${iv.biz===b?'selected':''}>${b}</option>`).join('')}</select></div>
+    </div>
+    <div><label>Date</label><input type="date" value="${iv.date}" oninput="setField('date',this.value)"></div>
+
+    ${parts}
+
+    <div class="signals">
+      <h3>Overall read \u2014 how interested were they?</h3>
+      <div class="sigrow">
+        <button class="${iv.interest==='hot'?'sel hot':''}" onclick="setInterest('hot')">\ud83d\udd25 Hot</button>
+        <button class="${iv.interest==='warm'?'sel warm':''}" onclick="setInterest('warm')">\ud83d\udfe1 Warm</button>
+        <button class="${iv.interest==='cold'?'sel cold':''}" onclick="setInterest('cold')">\u2744\ufe0f Cold</button>
+      </div>
+      <div style="font-size:11.5px;color:var(--muted);line-height:1.5">Hot = frustrated + named a price + gave referrals. Cold = polite "nice idea", happy with notebook, vague on paying.</div>
+    </div>
+  </div>
+  <div class="bar"><div class="bar-in">
+    <span class="saved" id="saved"></span>
+    <button class="btn ghost" onclick="exportData()">Export all</button>
+    <button class="btn dark" onclick="backToList()">Done</button>
+  </div></div>`;
+}
+
+render();
+</script>
+</body>
+</html>

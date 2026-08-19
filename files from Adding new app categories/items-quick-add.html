@@ -1,0 +1,144 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Quick Add Items</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#16161a;--mut:#62636a;--ln:#e7e7e2;--ac:#1f6f54;--sf:#e8f3ee;--wm:#f4f2ec;
+--rd:#b3261e;--rs:#fdecea;--am:#b36b00;--as:#fff4e5;--bl:#2a5db0;--bs:#e8eef9;
+--d:'Plus Jakarta Sans',system-ui,sans-serif;--b:'Inter',system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fbfbf9;color:var(--ink);font-family:var(--b);padding-bottom:96px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:480px;margin:0 auto;padding:0 16px}
+h1,h2,h3{font-family:var(--d);letter-spacing:-.01em}
+.top{position:sticky;top:0;background:#fbfbf9;z-index:9;padding:13px 0;border-bottom:1px solid var(--ln);display:flex;align-items:center;gap:11px}
+.top .bk{font-size:20px;color:var(--mut);cursor:pointer}.top h1{font-size:18px;flex:1}.top .s{font-size:12px;color:var(--mut)}
+/* demo */
+.demo{background:#fff;border:1px dashed #cdd3ce;border-radius:12px;padding:10px 12px;margin:12px 0}
+.demo .dh{font-size:11px;color:var(--mut);margin-bottom:8px;font-weight:600}
+.demo .drow{display:flex;gap:8px}
+.demo .drow button{flex:1;border:1px solid var(--ln);background:#fbfbf9;border-radius:9px;padding:8px;font-family:var(--d);font-weight:700;font-size:12px;color:var(--mut);cursor:pointer}
+.demo .drow button.on{background:var(--sf);border-color:var(--ac);color:var(--ac)}
+.intro{font-size:12.5px;color:var(--mut);padding:6px 2px 4px;line-height:1.5}
+/* batch defaults */
+.batch{background:#fff;border:1px solid var(--ln);border-radius:12px;padding:13px;margin:10px 0}
+.batch .bh{font-family:var(--d);font-weight:700;font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.03em;margin-bottom:10px}
+.batch .brow{display:flex;gap:9px}
+.batch .bf{flex:1}
+.batch label{font-size:11px;color:var(--mut);display:block;margin-bottom:5px}
+.batch select,.batch input{width:100%;padding:10px;border:1px solid var(--ln);border-radius:9px;font-size:14px;font-family:var(--b);background:#fff}
+.batch .hint{font-size:11px;color:var(--mut);margin-top:9px}
+.newcat{margin-top:8px}
+/* rows */
+.rows{margin-top:6px}
+.irow{background:#fff;border:1px solid var(--ln);border-radius:12px;padding:10px 11px;margin-bottom:9px}
+.irow .main{display:flex;gap:8px;align-items:center}
+.irow .num{width:20px;font-family:var(--d);font-weight:700;font-size:12px;color:var(--mut);flex-shrink:0;text-align:center}
+.irow input{border:1px solid var(--ln);border-radius:9px;font-size:15px;font-family:var(--b);padding:11px}
+.irow input:focus,.batch select:focus,.batch input:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px var(--sf)}
+.irow input.nm{flex:1;min-width:0}
+.irow .pw{position:relative;width:88px;flex-shrink:0}
+.irow .pw input{width:100%;padding-left:23px}
+.irow .pw::before{content:'\20b9';position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--mut);font-size:13px}
+.irow input.stk{width:60px;flex-shrink:0;text-align:center;padding:11px 6px}
+.irow .rm{width:32px;height:34px;border:none;background:#fbfbf9;color:var(--mut);border-radius:8px;cursor:pointer;font-size:17px;flex-shrink:0}
+.irow .rm:active{background:var(--rs);color:var(--rd)}
+.colhead{display:flex;gap:8px;align-items:center;padding:0 2px 5px 30px;font-size:10px;color:var(--mut);font-weight:600}
+.colhead .ch-nm{flex:1}.colhead .ch-pw{width:88px;text-align:center;flex-shrink:0}.colhead .ch-stk{width:60px;text-align:center;flex-shrink:0}.colhead .ch-sp{width:32px;flex-shrink:0}
+.irow .expand{display:flex;align-items:center;gap:6px;margin-top:9px;padding-left:28px}
+.irow .exbtn{border:none;background:none;color:var(--ac);font-family:var(--d);font-weight:700;font-size:11.5px;cursor:pointer;padding:2px 0}
+.irow .tag{font-size:10px;font-weight:700;color:var(--bl);background:var(--bs);padding:2px 7px;border-radius:5px}
+.detail{margin-top:10px;padding:11px;background:#fbfbf9;border-radius:10px}
+.detail label{font-size:11px;color:var(--mut);display:block;margin:0 0 5px}
+.detail .drow{display:flex;gap:9px;margin-bottom:9px}.detail .drow>div{flex:1}
+.detail input,.detail select{width:100%;padding:9px 10px;border:1px solid var(--ln);border-radius:8px;font-size:13.5px;font-family:var(--b);background:#fff}
+.detail .muline{font-size:11px;color:var(--ac);margin-top:2px}
+.addrow{width:100%;border:1.5px dashed #bfd4ca;background:var(--sf);border-radius:11px;padding:13px;font-family:var(--d);font-weight:700;font-size:14px;color:var(--ac);cursor:pointer;margin-top:2px}
+.fab{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(transparent,#fbfbf9 20%);padding:16px;display:flex;justify-content:center}
+.fab .in{max-width:480px;width:100%}
+.fab .cnt{text-align:center;font-size:12px;color:var(--mut);margin-bottom:8px}.fab .cnt b{font-family:var(--d);color:var(--ink)}
+.fab button{width:100%;background:var(--ac);color:#fff;border:none;border-radius:13px;padding:15px;font-family:var(--d);font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 4px 16px rgba(31,111,84,.3)}
+.fab button:disabled{opacity:.45;box-shadow:none}
+.hidden{display:none}
+.toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:11px 18px;border-radius:22px;font-size:13px;font-weight:600;opacity:0;transition:all .3s;z-index:40;pointer-events:none}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+</style></head><body>
+<div class="top wrap"><span class="bk">←</span><div style="flex:1"><h1>Quick Add Items</h1><div class="s">Sharma Hardware</div></div></div>
+<div class="wrap">
+  <div class="demo"><div class="dh">Demo — capabilities from setup. Toggle to see rows adapt:</div>
+    <div class="drow"><button id="capGst" class="on" onclick="toggleCap('gst')">GST</button><button id="capStock" class="on" onclick="toggleCap('stock')">Stock</button></div>
+  </div>
+  <p class="intro">Add many items fast. Set the shared defaults once, then just type name + price down the rows. Need MRP or pack-units on one? Tap <b>＋ more</b> on that row.</p>
+
+  <div class="batch">
+    <div class="bh">Defaults for this batch</div>
+    <div class="brow">
+      <div class="bf"><label>Category</label><select id="batchCat" onchange="pickBatch(this.value)"></select></div>
+      <div class="bf" id="batchGstWrap"><label>GST rate</label><select id="batchGst" onchange="batch.gst=+this.value"><option value="0">0%</option><option value="5">5%</option><option value="12">12%</option><option value="18" selected>18%</option><option value="28">28%</option></select></div>
+      <div class="bf"><label>Unit</label><select id="batchUnit" onchange="batch.unit=this.value"><option>piece</option><option>kg</option><option>litre</option><option>bag</option><option>box</option><option>packet</option></select></div>
+    </div>
+    <div id="newBatchWrap" class="newcat hidden"><input id="newBatch" placeholder="New category name" oninput="sync()"></div>
+    <div class="hint">Every row inherits these — override on any row via ＋ more. Adding one category-section at a time is quickest.</div>
+  </div>
+
+  <div class="colhead" id="colhead"></div>
+  <div class="rows" id="rows"></div>
+  <button class="addrow" onclick="addRow()">＋ Add another item</button>
+</div>
+
+<div class="fab"><div class="in"><div class="cnt" id="cnt"></div><button id="saveBtn" onclick="saveAll()">Save all</button></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+var cap={gst:true,stock:true};
+var CATS=['Cement','Steel','Paint','Plumbing','Tiles','Tools'];
+var batch={cat:'',gst:18,unit:'piece'};
+function mkRow(){return {name:'',price:'',stock:'',expanded:false,mrp:'',cost:'',hsn:'',multi:false,boxName:'box',boxFactor:'',boxPrice:''};}
+var rows=[mkRow(),mkRow(),mkRow()];
+var $=function(i){return document.getElementById(i)};
+function money(n){return '\u20b9'+(+n||0).toLocaleString('en-IN')}
+function esc(s){return (s||'').replace(/"/g,'&quot;');}
+
+function toggleCap(k){cap[k]=!cap[k];$('cap'+(k==='gst'?'Gst':'Stock')).classList.toggle('on',cap[k]);$('batchGstWrap').style.display=cap.gst?'block':'none';render();}
+function fillBatch(){$('batchCat').innerHTML='<option value="">No category</option>'+CATS.map(function(c){return '<option '+(batch.cat===c?'selected':'')+'>'+c+'</option>'}).join('')+'<option value="__new__">+ New category…</option>';}
+function pickBatch(v){if(v==='__new__'){$('newBatchWrap').classList.remove('hidden');batch.cat='__new__';}else{$('newBatchWrap').classList.add('hidden');batch.cat=v;}sync();}
+
+function render(){
+ // column header adapts to stock
+ $('colhead').innerHTML='<div class="ch-nm">Item name</div><div class="ch-pw">Price</div>'+(cap.stock?'<div class="ch-stk">Stock</div>':'')+'<div class="ch-sp"></div>';
+ $('rows').innerHTML=rows.map(function(r,i){
+  var stockInput=cap.stock?'<input class="stk" type="number" inputmode="numeric" value="'+r.stock+'" oninput="setRow('+i+',\'stock\',this.value)" placeholder="0">':'';
+  var main='<div class="main"><div class="num">'+(i+1)+'</div>'
+   +'<input class="nm" value="'+esc(r.name)+'" oninput="setRow('+i+',\'name\',this.value)" placeholder="Item name">'
+   +'<div class="pw"><input type="number" inputmode="decimal" value="'+r.price+'" oninput="setRow('+i+',\'price\',this.value)" placeholder="0"'+(r.multi?' disabled':'')+'></div>'
+   +stockInput
+   +'<button class="rm" onclick="rmRow('+i+')">\u00d7</button></div>';
+  var tags='';
+  if(r.mrp)tags+='<span class="tag">MRP '+money(r.mrp)+'</span>';
+  if(r.multi)tags+='<span class="tag">multi-unit</span>';
+  if(cap.gst&&r.hsn)tags+='<span class="tag">HSN '+r.hsn+'</span>';
+  var exp='<div class="expand"><button class="exbtn" onclick="toggleExpand('+i+')">'+(r.expanded?'\u2212 hide':'\uff0b more')+'</button>'+tags+'</div>';
+  var detail='';
+  if(r.expanded){
+   detail='<div class="detail">'
+    +'<div class="drow"><div><label>MRP</label><input type="number" inputmode="decimal" value="'+r.mrp+'" oninput="setRow('+i+',\'mrp\',this.value)" placeholder="0"></div><div><label>Cost price</label><input type="number" inputmode="decimal" value="'+r.cost+'" oninput="setRow('+i+',\'cost\',this.value)" placeholder="0"></div>'+(cap.gst?'<div><label>HSN</label><input value="'+esc(r.hsn)+'" oninput="setRow('+i+',\'hsn\',this.value)" placeholder="code"></div>':'')+'</div>'
+    +'<label style="margin-top:4px"><input type="checkbox" '+(r.multi?'checked':'')+' onclick="toggleMulti('+i+')" style="width:auto;vertical-align:middle;margin-right:6px">Sells in packs too (e.g. box of many)</label>'
+    +(r.multi?'<div class="drow" style="margin-top:8px"><div><label>Pack name</label><input value="'+esc(r.boxName)+'" oninput="setRow('+i+',\'boxName\',this.value)" placeholder="box"></div><div><label>= how many '+batch.unit+'</label><input type="number" value="'+r.boxFactor+'" oninput="setRow('+i+',\'boxFactor\',this.value)" placeholder="1"></div><div><label>Pack price</label><input type="number" value="'+r.boxPrice+'" oninput="setRow('+i+',\'boxPrice\',this.value)" placeholder="0"></div></div>'
+      +((+r.boxFactor>0&&+r.boxPrice>0)?'<div class="muline">That\u2019s '+money(r.boxPrice/r.boxFactor)+' per '+batch.unit+' \u00b7 base price above is the single-'+batch.unit+' rate</div>':'')
+      :'')
+    +'</div>';
+  }
+  return '<div class="irow">'+main+exp+detail+'</div>';
+ }).join('');
+ sync();
+}
+function setRow(i,k,v){rows[i][k]=v;sync();}
+function rmRow(i){if(rows.length<=1){rows[0]=mkRow();}else rows.splice(i,1);render();}
+function addRow(){rows.push(mkRow());render();window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});}
+function toggleExpand(i){rows[i].expanded=!rows[i].expanded;render();}
+function toggleMulti(i){rows[i].multi=!rows[i].multi;render();}
+
+function filled(r){if(!r.name.trim())return false;if(r.multi)return +r.boxPrice>0||+r.price>0;return +r.price>0;}
+function sync(){var n=rows.filter(filled).length;$('cnt').innerHTML=n?('<b>'+n+'</b> item'+(n>1?'s':'')+' ready to save'):'Fill at least one item to save';$('saveBtn').disabled=n===0;}
+function saveAll(){var n=rows.filter(filled).length;if(!n)return;if(batch.cat==='__new__'){var nc=$('newBatch').value.trim();if(nc&&CATS.indexOf(nc)<0)CATS.push(nc);}toast(n+' item'+(n>1?'s':'')+' saved'+(batch.cat&&batch.cat!=='__new__'?' to '+batch.cat:''));}
+var tT;function toast(m){var t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(tT);tT=setTimeout(function(){t.classList.remove('on')},1700);}
+fillBatch();render();
+</script></body></html>

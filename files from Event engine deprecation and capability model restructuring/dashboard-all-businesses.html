@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Businesses — Khaata</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f4f3ee; --ink:#252118; --muted:#8a857a; --faint:#b4afa4;
+    --line:#e4e1d6; --line-soft:#edeae1;
+    --green:#1f6f54; --green-tint:#e9f2ed;
+    --ochre:#a9711f; --ochre-tint:#f6ecd9;
+    --terra:#a8503a; --terra-tint:#f4e4de;
+  }
+  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; animation:none !important; } }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; }
+  body{ background:#e4e1d6; font-family:'Inter',sans-serif; color:var(--ink); display:flex; justify-content:center; min-height:100vh; -webkit-font-smoothing:antialiased; }
+  .app{ width:100%; max-width:480px; min-height:100vh; position:relative; background:var(--paper);
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+    display:flex; flex-direction:column; }
+  button{ font-family:inherit; }
+  button:focus-visible{ outline:2px solid var(--green); outline-offset:2px; border-radius:8px; }
+  .tnum{ font-variant-numeric:tabular-nums; }
+  .over{ font-size:11px; text-transform:uppercase; letter-spacing:0.11em; color:var(--muted); font-weight:700; }
+
+  .topbar{ display:flex; align-items:center; gap:12px; padding:20px 22px 8px; }
+  .tt{ flex:1; min-width:0; }
+  .tt h1{ font-family:'Plus Jakarta Sans',sans-serif; font-size:19px; font-weight:800; margin:0; letter-spacing:-0.01em; }
+  .tt p{ margin:2px 0 0; font-size:12.5px; color:var(--muted); }
+  .icon-btn{ background:none; border:none; cursor:pointer; color:var(--ink); padding:2px; font-size:20px; line-height:1; }
+
+  .scroll{ flex:1; padding:0 22px 120px; }
+
+  /* Hero rollup */
+  .hero{ padding:12px 0 22px; }
+  .hero .over{ margin-bottom:10px; }
+  .hero .big{ font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:46px; line-height:0.95; letter-spacing:-0.03em; color:var(--green); }
+  .status{ display:inline-flex; align-items:center; gap:8px; margin-top:14px; font-size:14px; font-weight:600; }
+  .status .dot{ width:9px; height:9px; border-radius:50%; }
+  .status.ok{ color:var(--green);} .status.ok .dot{ background:var(--green);}
+  .status.warn{ color:var(--ochre);} .status.warn .dot{ background:var(--ochre);}
+  .status.bad{ color:var(--terra);} .status.bad .dot{ background:var(--terra);}
+  .split{ display:flex; margin-top:22px; }
+  .split .cell{ flex:1; } .split .cell + .cell{ padding-left:22px; border-left:1px solid var(--line); margin-left:22px; }
+  .split .clab{ font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); font-weight:600; }
+  .split .cval{ font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:19px; margin-top:6px; letter-spacing:-0.01em; }
+  .split .cval.ochre{ color:var(--ochre); }
+  .meter{ margin-top:22px; }
+  .meter .mrow{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:9px; }
+  .meter .mk{ font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); font-weight:600; }
+  .meter .mv{ font-size:13px; font-weight:600; }
+  .meter-track{ height:7px; background:#e7e4da; border-radius:99px; overflow:hidden; }
+  .meter-fill{ height:100%; width:0; border-radius:99px; transition:width 1.05s cubic-bezier(.22,.7,.24,1) .25s; }
+  .meter-fill.ok{ background:var(--green);} .meter-fill.warn{ background:var(--ochre);} .meter-fill.bad{ background:var(--terra);}
+
+  .rule{ height:1px; background:var(--line); margin:8px 0; }
+  .sec{ padding:22px 0; }
+  .sec-h{ display:flex; align-items:baseline; margin-bottom:16px; }
+  .sec-h .aside{ margin-left:auto; font-size:12px; color:var(--muted); font-weight:600; }
+
+  /* Cross-business attention */
+  .att{ display:flex; align-items:center; gap:13px; padding:2px 0 16px; }
+  .att:last-child{ padding-bottom:0; }
+  .att .bar{ width:4px; align-self:stretch; border-radius:99px; background:var(--ochre); flex-shrink:0; }
+  .att .body{ flex:1; min-width:0; }
+  .att .tag{ font-size:10.5px; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted); font-weight:700; }
+  .att .title{ font-family:'Plus Jakarta Sans',sans-serif; font-size:15px; font-weight:700; letter-spacing:-0.01em; margin-top:3px; }
+  .att .title .amt{ color:var(--ochre); }
+  .att .cbtn{ padding:8px 14px; border-radius:99px; font-size:12.5px; font-weight:700; cursor:pointer; border:1px solid var(--line); background:transparent; color:var(--ink); flex-shrink:0; transition:transform .08s ease; }
+  .att .cbtn:active{ transform:scale(0.96); }
+
+  /* Business list */
+  .biz{ display:flex; align-items:center; gap:13px; padding:15px 0; border-bottom:1px solid var(--line-soft); cursor:pointer; width:100%; background:none; border-left:none; border-right:none; border-top:none; text-align:left; transition:transform .08s ease; }
+  .biz:active{ transform:scale(0.99); }
+  .biz .ic{ width:44px; height:44px; border-radius:13px; background:#eeeae1; display:flex; align-items:center; justify-content:center; font-size:21px; flex-shrink:0; }
+  .biz .body{ flex:1; min-width:0; }
+  .biz .bname{ font-family:'Plus Jakarta Sans',sans-serif; font-size:15px; font-weight:700; letter-spacing:-0.01em; }
+  .biz .btype{ font-size:11.5px; color:var(--muted); margin:1px 0 8px; }
+  .biz .bmeter{ display:flex; align-items:center; gap:9px; }
+  .biz .bmtrack{ flex:1; height:5px; background:#e7e4da; border-radius:99px; overflow:hidden; }
+  .biz .bmfill{ height:100%; border-radius:99px; }
+  .biz .bmfill.ok{ background:var(--green);} .biz .bmfill.warn{ background:var(--ochre);} .biz .bmfill.bad{ background:var(--terra);}
+  .biz .bmpct{ font-size:11px; color:var(--muted); font-weight:600; width:34px; text-align:right; }
+  .biz .bout{ text-align:right; flex-shrink:0; }
+  .biz .boutv{ font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:14px; }
+  .biz .boutv.due{ color:var(--ochre); } .biz .boutv.clear{ color:var(--green); }
+  .biz .boutl{ font-size:10px; color:var(--faint); text-transform:uppercase; letter-spacing:0.05em; margin-top:2px; }
+  .biz .chev{ color:var(--faint); font-size:18px; flex-shrink:0; }
+
+  .add-biz{ display:flex; align-items:center; gap:10px; width:100%; padding:16px 0 2px; background:none; border:none; cursor:pointer; color:var(--green); font-size:14px; font-weight:700; }
+  .add-biz .plus{ width:32px; height:32px; border-radius:10px; border:1.5px dashed var(--green-tint); display:flex; align-items:center; justify-content:center; font-size:18px; }
+
+  /* FAB + sheet */
+  .fab-wrap{ position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:480px; padding:16px 22px 24px; background:linear-gradient(to top, var(--paper) 60%, transparent); pointer-events:none; z-index:8; }
+  .fab{ pointer-events:auto; width:100%; padding:15px; background:var(--green); color:#fff; border:none; border-radius:15px; font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:15.5px; cursor:pointer; box-shadow:0 6px 18px rgba(31,111,84,0.32); transition:transform .08s ease; }
+  .fab:active{ transform:scale(0.98); }
+  .sheet-overlay{ position:fixed; inset:0; background:rgba(24,22,16,0.42); display:none; align-items:flex-end; justify-content:center; z-index:20; }
+  .sheet-overlay.show{ display:flex; animation:fade .18s ease; }
+  @keyframes fade{ from{opacity:0;} to{opacity:1;} }
+  .rsheet{ width:100%; max-width:480px; background:#fdfcf9; border-radius:24px 24px 0 0; padding:20px 20px 26px; animation:up .26s cubic-bezier(.22,.7,.24,1); }
+  @keyframes up{ from{transform:translateY(30px);} to{transform:translateY(0);} }
+  .rsheet h2{ font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:18px; margin:0 0 4px; }
+  .rsheet .hint{ font-size:13px; color:var(--muted); margin:0 0 16px; }
+  .pick{ display:flex; align-items:center; gap:12px; width:100%; padding:13px; border:1px solid var(--line); border-radius:14px; background:#fdfcf9; cursor:pointer; margin-bottom:9px; transition:transform .08s ease; text-align:left; }
+  .pick:active{ transform:scale(0.98); }
+  .pick .pe{ width:38px; height:38px; border-radius:11px; background:#eeeae1; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+  .pick .pn{ font-size:14.5px; font-weight:700; } .pick .pt{ font-size:11.5px; color:var(--muted); }
+  .sheet-cancel{ width:100%; margin-top:6px; padding:13px; border-radius:13px; border:1px solid var(--line); background:#fdfcf9; color:var(--ink); font-weight:700; font-size:14.5px; cursor:pointer; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="tt"><h1>My Businesses</h1><p id="bizCountSub">—</p></div>
+    <button class="icon-btn" aria-label="Settings">⚙️</button>
+  </header>
+
+  <div class="scroll">
+    <section class="hero">
+      <div class="over">Collected this month · all businesses</div>
+      <div class="big tnum" id="bigVal">₹0</div>
+      <div class="status" id="status"><span class="dot"></span><span id="statusText"></span></div>
+      <div class="split">
+        <div class="cell"><div class="clab">Businesses</div><div class="cval tnum" id="bizCount">—</div></div>
+        <div class="cell"><div class="clab">To collect</div><div class="cval ochre tnum" id="toCollect">—</div></div>
+      </div>
+      <div class="meter">
+        <div class="mrow"><span class="mk">Collected of expected</span><span class="mv tnum" id="meterV">—</span></div>
+        <div class="meter-track"><div class="meter-fill" id="meterFill"></div></div>
+      </div>
+    </section>
+
+    <div class="rule"></div>
+    <section class="sec">
+      <div class="sec-h"><span class="over">Needs attention</span><span class="aside" id="attAside"></span></div>
+      <div id="attList"></div>
+    </section>
+
+    <div class="rule"></div>
+    <section class="sec">
+      <div class="sec-h"><span class="over">Businesses</span></div>
+      <div id="bizList"></div>
+      <button class="add-biz" onclick="console.log('nav: add-business')"><span class="plus">+</span>Add a business</button>
+    </section>
+  </div>
+
+  <div class="fab-wrap"><button class="fab" id="recordBtn">+ Record</button></div>
+</div>
+
+<div class="sheet-overlay" id="recordOverlay">
+  <div class="rsheet">
+    <h2>Record into…</h2>
+    <p class="hint">Which business is this for?</p>
+    <div id="pickList"></div>
+    <button class="sheet-cancel" id="cancelRecord">Cancel</button>
+  </div>
+</div>
+
+<script>
+  const fmt = n => '₹' + Number(n).toLocaleString('en-IN');
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Each business: collected + outstanding this period; expected derived = collected + outstanding
+  const businesses = [
+    { id:'civil',  name:'Sharma Residence', type:'Civil · G+2 · Rakesh Sharma', emoji:'🏗️', collected:220000, outstanding:100000, issue:'Foundation billed — unpaid 18 days', action:'Chase' },
+    { id:'rental', name:'Green Meadows',    type:'Rentals · Nashik · 12 units', emoji:'🏠', collected:170000, outstanding:70000,  issue:'4 tenants haven’t paid rent',   action:'Chase' },
+    { id:'gym',    name:'Iron Temple Gym',  type:'Membership · Andheri',        emoji:'🏋️', collected:184000, outstanding:61000,  issue:'17 members due this cycle',     action:'Chase' },
+    { id:'tiffin', name:'Annapurna Tiffins',type:'Meals · Pune · 86 plans',     emoji:'🍱', collected:118000, outstanding:14000,  issue:'8 plans expiring in 2 days',    action:'Remind' }
+  ];
+
+  const expectedOf = b => b.collected + b.outstanding;
+  const pctOf = b => Math.round(b.collected / expectedOf(b) * 100);
+  const toneFor = p => p>=85 ? 'ok' : p>=65 ? 'warn' : 'bad';
+
+  const totalCollected = () => businesses.reduce((a,b)=>a+b.collected,0);
+  const totalExpected  = () => businesses.reduce((a,b)=>a+expectedOf(b),0);
+  const totalOutstanding = () => businesses.reduce((a,b)=>a+b.outstanding,0);
+
+  function countUp(el,target){
+    if(reduceMotion){ el.textContent=fmt(target); return; }
+    const start=performance.now(),dur=1000;
+    (function tick(now){ const t=Math.min(1,(now-start)/dur),e=1-Math.pow(1-t,3); el.textContent=fmt(Math.round(target*e)); if(t<1) requestAnimationFrame(tick); })(start);
+  }
+
+  function render(){
+    const tc=totalCollected(), te=totalExpected(), out=totalOutstanding(), pct=Math.round(tc/te*100), tone=toneFor(pct);
+
+    document.getElementById('bizCountSub').textContent = `${businesses.length} active`;
+    countUp(document.getElementById('bigVal'), tc);
+    document.getElementById('status').className = 'status '+tone;
+    document.getElementById('statusText').textContent = `${fmt(out)} still to collect`;
+    document.getElementById('bizCount').textContent = businesses.length;
+    document.getElementById('toCollect').textContent = fmt(out);
+    document.getElementById('meterV').textContent = `${fmt(tc)} of ${fmt(te)} · ${pct}%`;
+    const fill=document.getElementById('meterFill'); fill.className='meter-fill '+tone;
+    const setW=()=>fill.style.width=Math.min(100,pct)+'%';
+    reduceMotion?setW():requestAnimationFrame(()=>requestAnimationFrame(setW));
+
+    // Needs attention — money-recovery first, biggest outstanding on top
+    const attn = businesses.filter(b=>b.outstanding>0).sort((a,b)=>b.outstanding-a.outstanding).slice(0,3);
+    document.getElementById('attAside').textContent = `${fmt(attn.reduce((a,b)=>a+b.outstanding,0))} across ${attn.length}`;
+    document.getElementById('attList').innerHTML = attn.map(b=>`
+      <div class="att">
+        <span class="bar"></span>
+        <div class="body">
+          <div class="tag">${esc(b.name)}</div>
+          <div class="title">${esc(b.issue)} <span class="amt">${fmt(b.outstanding)}</span></div>
+        </div>
+        <button class="cbtn" data-chase="${b.id}">${esc(b.action)}</button>
+      </div>`).join('');
+
+    // Business list
+    document.getElementById('bizList').innerHTML = businesses.map(b=>{
+      const p=pctOf(b), t=toneFor(p);
+      const out = b.outstanding>0
+        ? `<div class="boutv due">${fmt(b.outstanding)}</div><div class="boutl">to collect</div>`
+        : `<div class="boutv clear">✓</div><div class="boutl">all in</div>`;
+      return `<button class="biz" data-open="${b.id}">
+        <span class="ic">${b.emoji}</span>
+        <span class="body">
+          <span class="bname">${esc(b.name)}</span>
+          <span class="btype">${esc(b.type)}</span>
+          <span class="bmeter"><span class="bmtrack"><span class="bmfill ${t}" style="width:${p}%"></span></span><span class="bmpct">${p}%</span></span>
+        </span>
+        <span class="bout">${out}</span>
+        <span class="chev">›</span>
+      </button>`;
+    }).join('');
+
+    // Record picker
+    document.getElementById('pickList').innerHTML = businesses.map(b=>`
+      <button class="pick" data-record="${b.id}">
+        <span class="pe">${b.emoji}</span>
+        <span><span class="pn">${esc(b.name)}</span><br><span class="pt">${esc(b.type)}</span></span>
+      </button>`).join('');
+  }
+
+  document.getElementById('attList').addEventListener('click', e=>{
+    const b=e.target.closest('[data-chase]'); if(!b) return;
+    alert('Opening reminders for this business (mock)'); console.log('chase:', b.dataset.chase);
+  });
+  document.getElementById('bizList').addEventListener('click', e=>{
+    const b=e.target.closest('[data-open]'); if(!b) return; console.log('nav: business/', b.dataset.open);
+  });
+
+  const overlay=document.getElementById('recordOverlay');
+  document.getElementById('recordBtn').addEventListener('click',()=>overlay.classList.add('show'));
+  document.getElementById('cancelRecord').addEventListener('click',()=>overlay.classList.remove('show'));
+  overlay.addEventListener('click',e=>{ if(e.target===overlay) overlay.classList.remove('show'); });
+  document.getElementById('pickList').addEventListener('click',e=>{ const b=e.target.closest('[data-record]'); if(!b) return; console.log('nav: record/', b.dataset.record); overlay.classList.remove('show'); });
+
+  render();
+</script>
+</body>
+</html>

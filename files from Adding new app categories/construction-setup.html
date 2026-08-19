@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Construction / Civil — Setup</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--green:#1f6f54;--green-dark:#175843;--green-soft:#e7f0ec;--green-tint:#f1f7f4;--paper:#fbfbf9;--card:#fff;--ink:#1c2420;--muted:#6b7770;--line:#e4e8e5;--amber:#b9791f;--amber-soft:#f7edda;--danger:#b23b3b;--danger-soft:#f7e6e6;--shadow:0 1px 2px rgba(28,36,32,.04),0 6px 18px rgba(28,36,32,.05)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:'Plus Jakarta Sans',sans-serif}
+.wrap{max-width:620px;margin:0 auto;padding-bottom:120px}
+.top{position:sticky;top:0;z-index:20;background:rgba(251,251,249,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top-in{max-width:620px;margin:0 auto;padding:14px 18px;display:flex;align-items:center;gap:12px}
+.back{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;font-size:18px;cursor:pointer;flex-shrink:0}
+.top-title{font-weight:700;font-size:16px;letter-spacing:-.01em}
+.top-sub{font-size:12px;color:var(--muted);font-weight:500;margin-top:1px}
+.chip{margin-left:auto;font-size:11px;font-weight:700;color:var(--green);background:var(--green-soft);padding:5px 10px;border-radius:20px;flex-shrink:0}
+.tabs{display:flex;gap:4px;padding:10px 18px 0;overflow-x:auto;scrollbar-width:none;position:sticky;top:63px;z-index:19;background:rgba(251,251,249,.92);backdrop-filter:blur(8px)}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:9px 14px;border-radius:10px 10px 0 0;font-size:13.5px;font-weight:600;color:var(--muted);white-space:nowrap;cursor:pointer;border-bottom:2px solid transparent}
+.tab.on{color:var(--green);background:var(--card);border:1px solid var(--line);border-bottom:2px solid var(--green)}
+.pane{display:none;padding:18px}.pane.on{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.intro{font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.55}
+.sect-label{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:22px 2px 10px}
+.sect-label:first-child{margin-top:0}
+/* role cards */
+.roles{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.role{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:13px;cursor:pointer;box-shadow:var(--shadow);transition:border-color .15s}
+.role.on{border-color:var(--green);background:var(--green-tint)}
+.role .r-ic{font-size:21px;margin-bottom:7px}
+.role .r-name{font-family:'Plus Jakarta Sans';font-weight:700;font-size:14px;letter-spacing:-.01em}
+.role .r-sub{font-size:11.5px;color:var(--muted);margin-top:3px;line-height:1.4}
+.role.on .r-name{color:var(--green-dark)}
+/* capability rows */
+.caprow{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:13px 15px;display:flex;align-items:center;gap:13px;margin-bottom:9px;transition:background .3s}
+.caprow.flash{background:var(--green-tint)}
+.cap-body{flex:1;min-width:0}
+.cap-title{font-weight:600;font-size:14.5px;display:flex;align-items:center;gap:7px}
+.cap-tag{font-size:9.5px;font-weight:700;letter-spacing:.04em;padding:2px 6px;border-radius:5px;background:var(--green-soft);color:var(--green-dark)}
+.cap-sub{font-size:12.5px;color:var(--muted);margin-top:2px;line-height:1.4}
+.switch{width:46px;height:28px;border-radius:20px;background:#d5dbd7;position:relative;cursor:pointer;flex-shrink:0;transition:background .2s}
+.switch.on{background:var(--green)}
+.knob{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:left .2s}
+.switch.on .knob{left:21px}
+.note{background:var(--green-tint);border:1px solid var(--green-soft);border-radius:12px;padding:12px 14px;font-size:12.5px;color:var(--green-dark);line-height:1.5;display:flex;gap:9px;margin-bottom:16px}
+.note b{font-weight:700}.note .ic{flex-shrink:0}
+/* generic list card */
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);margin-bottom:12px;overflow:hidden}
+.item{padding:13px 16px;display:flex;align-items:center;gap:12px}
+.item+.item{border-top:1px solid var(--line)}
+.item .idx{width:24px;height:24px;border-radius:7px;background:var(--green-soft);color:var(--green-dark);display:grid;place-items:center;font-family:'Plus Jakarta Sans';font-weight:800;font-size:12px;flex-shrink:0}
+.item-body{flex:1;min-width:0}
+.item-title{font-family:'Plus Jakarta Sans';font-weight:700;font-size:14.5px}
+.item-meta{font-size:12px;color:var(--muted);margin-top:1px}
+.mini-actions{display:flex;gap:4px}
+.iconbtn{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;cursor:pointer;font-size:14px;color:var(--muted)}
+.iconbtn:active{background:var(--green-tint)}.iconbtn.del:active{background:var(--danger-soft);color:var(--danger)}
+.add{width:100%;padding:13px;border:1.5px dashed var(--line);border-radius:12px;background:transparent;color:var(--green);font-family:'Plus Jakarta Sans';font-weight:700;font-size:14px;cursor:pointer}
+.add:active{background:var(--green-tint);border-color:var(--green)}
+.offstate{text-align:center;padding:34px 20px;color:var(--muted)}
+.offstate .big{font-size:30px;margin-bottom:10px}
+.offstate p{font-size:13px;max-width:300px;margin:0 auto;line-height:1.5}
+.offstate .link{color:var(--green);font-weight:700;cursor:pointer}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12.5px;font-weight:600;margin-bottom:6px}.field .hint{font-weight:400;color:var(--muted)}
+input[type=text],input[type=number]{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px;font-family:'Inter';font-size:14px;background:var(--card)}
+input:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px var(--green-soft)}
+.savebar{position:fixed;bottom:0;left:0;right:0;background:rgba(251,251,249,.94);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:12px 18px calc(12px + env(safe-area-inset-bottom));z-index:30}
+.savebar-in{max-width:620px;margin:0 auto;display:flex;gap:10px}
+.btn-ghost{padding:13px 18px;border-radius:12px;border:1px solid var(--line);background:var(--card);font-family:'Plus Jakarta Sans';font-weight:700;font-size:14px;color:var(--muted);cursor:pointer}
+.btn-primary{flex:1;padding:13px;border-radius:12px;border:none;background:var(--green);color:#fff;font-family:'Plus Jakarta Sans';font-weight:700;font-size:14.5px;cursor:pointer;box-shadow:0 4px 12px rgba(31,111,84,.25)}
+.scrim{position:fixed;inset:0;background:rgba(20,28,24,.4);z-index:40;display:none;align-items:flex-end;justify-content:center}
+.scrim.on{display:flex}
+.sheet{background:var(--paper);width:100%;max-width:620px;border-radius:20px 20px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom));max-height:88vh;overflow-y:auto;animation:up .28s cubic-bezier(.2,.8,.2,1)}
+@keyframes up{from{transform:translateY(100%)}to{transform:none}}
+.sheet-grab{width:40px;height:4px;background:#d5dbd7;border-radius:2px;margin:0 auto 16px}
+.sheet h3{font-size:18px;font-weight:800;letter-spacing:-.02em;margin-bottom:14px}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.selchip{padding:8px 13px;border:1px solid var(--line);background:var(--card);border-radius:20px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer}
+.selchip.on{border-color:var(--green);background:var(--green-tint);color:var(--green-dark)}
+.item.center{align-items:center}
+</style>
+</head>
+<body>
+<div class="top"><div class="top-in">
+  <button class="back">‹</button>
+  <div><div class="top-title">Construction / Civil</div><div class="top-sub">Business setup</div></div>
+  <span class="chip">MODE 2 · JOB</span>
+</div></div>
+
+<div class="tabs" id="tabs">
+  <div class="tab on" data-t="setup">Setup</div>
+  <div class="tab" data-t="stages">Stages</div>
+  <div class="tab" data-t="cost">Cost Heads</div>
+  <div class="tab" data-t="docs">Documents</div>
+  <div class="tab" data-t="intake">Project Fields</div>
+</div>
+
+<div class="wrap">
+
+<!-- SETUP -->
+<div class="pane on" data-p="setup">
+  <p class="intro">Civil work looks different depending on who's holding the money. Pick your role — it switches on the right tools. You can adjust any switch afterward.</p>
+  <div class="sect-label">Your Role</div>
+  <div class="roles" id="roles"></div>
+
+  <div class="note" style="margin-top:16px"><span class="ic">⚙️</span><div><b>Your role sets the switches below.</b> They're just defaults — turn anything on or off to match how you actually work.</div></div>
+
+  <div class="sect-label">What This Business Tracks</div>
+  <div id="caps"></div>
+</div>
+
+<!-- STAGES -->
+<div class="pane" data-p="stages">
+  <div id="stagesOn">
+    <p class="intro">Break a build into phases so you can see where each site stands and log spend against each. These are your defaults — every new project starts with them.</p>
+    <div class="sect-label">Default Stages</div>
+    <div class="card" id="stageList"></div>
+    <button class="add" onclick="openStage()">＋ Add stage</button>
+  </div>
+  <div id="stagesOff" class="offstate" style="display:none">
+    <div class="big">🧱</div><p>Stage tracking is off for your setup. <span class="link" onclick="gotoSetup('stages')">Turn it on</span> to break projects into phases.</p>
+  </div>
+</div>
+
+<!-- COST HEADS -->
+<div class="pane" data-p="cost">
+  <div id="costOn">
+    <p class="intro">The categories you'll file spend under, so a site's costs group cleanly instead of one long list.</p>
+    <div class="sect-label" id="matLabel">Material Heads</div>
+    <div class="card" id="matList"></div>
+    <button class="add" onclick="openCost('material')">＋ Add material head</button>
+    <div id="labourBlock">
+      <div class="sect-label">Labour Heads</div>
+      <div class="card" id="labList"></div>
+      <button class="add" onclick="openCost('labour')">＋ Add labour head</button>
+    </div>
+  </div>
+  <div id="costOff" class="offstate" style="display:none">
+    <div class="big">🧾</div><p>Cost logging is off for your setup. <span class="link" onclick="gotoSetup('material')">Turn on material or labour</span> to file spend by category.</p>
+  </div>
+</div>
+
+<!-- DOCUMENTS -->
+<div class="pane" data-p="docs">
+  <div id="docsOn">
+    <p class="intro">Two kinds of paperwork, kept apart on purpose. List the checklist here; the actual files get attached later — per party and per site.</p>
+    <div class="note"><span class="ic">🗂️</span><div><b>Party documents</b> follow the person — a contractor's licence stays with him across every site. <b>Project documents</b> belong to one site and close out with it.</div></div>
+    <div class="sect-label" id="partyLabel">Party Documents</div>
+    <div class="card" id="partyList"></div>
+    <button class="add" onclick="openDoc('party')">＋ Add party document</button>
+    <div class="sect-label">Project / Site Documents</div>
+    <div class="card" id="projList"></div>
+    <button class="add" onclick="openDoc('project')">＋ Add project document</button>
+  </div>
+  <div id="docsOff" class="offstate" style="display:none">
+    <div class="big">🗂️</div><p>Documents are off for your setup. <span class="link" onclick="gotoSetup('documents')">Turn them on</span> to keep agreements, IDs and approvals in one place.</p>
+  </div>
+</div>
+
+<!-- INTAKE -->
+<div class="pane" data-p="intake">
+  <p class="intro">What you capture when starting a new project or site. Site name is always required.</p>
+  <div class="sect-label">Fields per Project</div>
+  <div class="card" id="intakeList"></div>
+  <div class="note" style="margin-top:14px"><span class="ic">🔒</span><div><b>Site / project name</b> is always required — it's how every cost, stage and payment is grouped.</div></div>
+</div>
+
+</div>
+
+<div class="savebar"><div class="savebar-in">
+  <button class="btn-ghost">Save &amp; exit</button>
+  <button class="btn-primary">Save and continue</button>
+</div></div>
+
+<!-- STAGE SHEET -->
+<div class="scrim" id="stageSheet"><div class="sheet"><div class="sheet-grab"></div>
+  <h3 id="stageHead">Add stage</h3>
+  <div class="field"><label>Stage name</label><input type="text" id="stName" placeholder="e.g. Plastering"></div>
+  <div class="savebar-in"><button class="btn-ghost" onclick="closeSheet('stageSheet')">Cancel</button><button class="btn-primary" onclick="saveStage()">Save stage</button></div>
+</div></div>
+
+<!-- COST SHEET -->
+<div class="scrim" id="costSheet"><div class="sheet"><div class="sheet-grab"></div>
+  <h3 id="costHead">Add head</h3>
+  <div class="field"><label>Category name</label><input type="text" id="coName" placeholder="e.g. Cement"></div>
+  <div class="savebar-in"><button class="btn-ghost" onclick="closeSheet('costSheet')">Cancel</button><button class="btn-primary" onclick="saveCost()">Save head</button></div>
+</div></div>
+
+<div class="scrim" id="docSheet"><div class="sheet"><div class="sheet-grab"></div>
+  <h3 id="docHead">Add document</h3>
+  <div class="field"><label>Document name</label><input type="text" id="docName" placeholder="e.g. Soil test report"></div>
+  <div class="savebar-in"><button class="btn-ghost" onclick="closeSheet('docSheet')">Cancel</button><button class="btn-primary" onclick="saveDoc()">Save document</button></div>
+</div></div>
+
+<script>
+/* ---------- roles + capability presets ---------- */
+const ROLES={
+  contractor:{ic:'👷',name:'Civil contractor',sub:'You build for a client at a quoted price',
+    caps:{quote:1,budget:1,material:1,labour:1,stages:1,payout:0,documents:1}},
+  ownerself:{ic:'🧑‍🔧',name:'Owner-builder',sub:'You self-manage — buy material, hire labour yourself',
+    caps:{quote:0,budget:1,material:1,labour:1,stages:1,payout:0,documents:1}},
+  ownerlabour:{ic:'🤝',name:'Owner + labour contractor',sub:'You buy material; a thekedar supplies workers',
+    caps:{quote:0,budget:1,material:1,labour:0,stages:0,payout:1,documents:1}},
+  handsoff:{ic:'🔍',name:'Owner, hands-off',sub:'A builder does it all — you track payments & inspect',
+    caps:{quote:0,budget:0,material:0,labour:0,stages:1,payout:1,documents:1}},
+};
+const CAPS={
+  quote:{name:'Quote & profit',sub:'Track the price you quoted vs actual cost — the gap is your margin.'},
+  budget:{name:'Budget target',sub:'Set a budget per site and watch spend against it.'},
+  material:{name:'Material purchases',sub:'Log material bills — cement, steel, sand — as you buy.'},
+  labour:{name:'Labour & wages',sub:'Track workers, attendance and wage payouts directly.'},
+  stages:{name:'Stages / milestones',sub:'Break the build into phases to see progress and spend.'},
+  payout:{name:'Payments to builder / contractor',sub:'Money released against milestones, and what\'s still due.'},
+  documents:{name:'Documents',sub:'Agreements, IDs, licences and approvals — attached to parties and to sites.'},
+};
+let role='contractor';
+let caps={...ROLES.contractor.caps};
+
+function renderRoles(){
+  document.getElementById('roles').innerHTML=Object.entries(ROLES).map(([id,r])=>`
+    <div class="role ${role===id?'on':''}" onclick="pickRole('${id}')">
+      <div class="r-ic">${r.ic}</div><div class="r-name">${r.name}</div><div class="r-sub">${r.sub}</div>
+    </div>`).join('');
+}
+function renderCaps(flash){
+  document.getElementById('caps').innerHTML=Object.entries(CAPS).map(([id,c])=>{
+    const on=caps[id], preset=ROLES[role].caps[id]===1;
+    const tag = on&&preset ? '<span class="cap-tag">PRESET</span>' : (on!==!!ROLES[role].caps[id]?'<span class="cap-tag" style="background:var(--amber-soft);color:var(--amber)">CHANGED</span>':'');
+    return `<div class="caprow ${flash?'flash':''}" data-cap="${id}">
+      <div class="cap-body"><div class="cap-title">${c.name} ${tag}</div><div class="cap-sub">${c.sub}</div></div>
+      <div class="switch ${on?'on':''}" onclick="togCap('${id}',this)"><div class="knob"></div></div>
+    </div>`;
+  }).join('');
+  if(flash)setTimeout(()=>document.querySelectorAll('.caprow').forEach(r=>r.classList.remove('flash')),450);
+}
+function pickRole(id){role=id;caps={...ROLES[id].caps};partyDocs=[...PARTY_BY_ROLE[id]];renderRoles();renderCaps(true);renderDocs();syncTabs();}
+function togCap(id){caps[id]=caps[id]?0:1;renderCaps(false);syncTabs();}
+
+/* ---------- tabs adapt to capabilities ---------- */
+function syncTabs(){
+  const stagesOn=!!caps.stages;
+  document.getElementById('stagesOn').style.display=stagesOn?'block':'none';
+  document.getElementById('stagesOff').style.display=stagesOn?'none':'block';
+  const costOn=caps.material||caps.labour;
+  document.getElementById('costOn').style.display=costOn?'block':'none';
+  document.getElementById('costOff').style.display=costOn?'none':'block';
+  const docsOn=!!caps.documents;
+  document.getElementById('docsOn').style.display=docsOn?'block':'none';
+  document.getElementById('docsOff').style.display=docsOn?'none':'block';
+  document.getElementById('labourBlock').style.display=caps.labour?'block':'none';
+  document.getElementById('matLabel').textContent=caps.material?'Material Heads':'Labour Heads';
+  document.getElementById('costOn').querySelector('#matList').parentElement; // no-op
+  // hide material list block if material off but labour on
+  document.querySelector('#costOn [onclick="openCost(\'material\')"]').style.display=caps.material?'block':'none';
+  document.getElementById('matList').style.display=caps.material?'block':'none';
+  renderIntake();
+}
+function gotoSetup(cap){
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.pane').forEach(x=>x.classList.remove('on'));
+  document.querySelector('.tab[data-t="setup"]').classList.add('on');
+  document.querySelector('.pane[data-p="setup"]').classList.add('on');
+  window.scrollTo({top:0,behavior:'smooth'});
+  const row=document.querySelector(`.caprow[data-cap="${cap}"]`);
+  if(row){row.classList.add('flash');setTimeout(()=>row.classList.remove('flash'),900);}
+}
+
+/* ---------- tabs nav ---------- */
+document.getElementById('tabs').addEventListener('click',e=>{
+  const t=e.target.closest('.tab');if(!t)return;
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.pane').forEach(x=>x.classList.remove('on'));
+  t.classList.add('on');document.querySelector(`.pane[data-p="${t.dataset.t}"]`).classList.add('on');
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+
+/* ---------- stages ---------- */
+let stages=['Foundation','Plinth','RCC / Structure','Brickwork','Plastering','Flooring & Tiles','Electrical','Plumbing','Painting','Finishing'];
+let editStage=null;
+function renderStages(){
+  document.getElementById('stageList').innerHTML=stages.map((s,i)=>`
+    <div class="item"><div class="idx">${i+1}</div><div class="item-body"><div class="item-title">${s}</div></div>
+    <div class="mini-actions"><button class="iconbtn" onclick="openStage(${i})">✎</button><button class="iconbtn del" onclick="delStage(${i})">🗑</button></div></div>`).join('');
+}
+function openStage(i){editStage=(i===undefined)?null:i;document.getElementById('stageHead').textContent=editStage===null?'Add stage':'Edit stage';document.getElementById('stName').value=editStage===null?'':stages[i];openSheet('stageSheet');}
+function saveStage(){const v=document.getElementById('stName').value.trim()||'Untitled';if(editStage===null)stages.push(v);else stages[editStage]=v;renderStages();closeSheet('stageSheet');}
+function delStage(i){stages.splice(i,1);renderStages();}
+
+/* ---------- cost heads ---------- */
+let matHeads=['Cement','Steel / TMT','Sand','Aggregate','Bricks / Blocks','Tiles','Electrical items','Plumbing items','Paint','Hardware'];
+let labHeads=['Mason','Helper / beldar','Carpenter','Bar bender','Electrician','Plumber','Painter'];
+let costMode='material',editCost=null;
+function renderCost(){
+  document.getElementById('matList').innerHTML=matHeads.map((h,i)=>heicHtml(h,i,'material')).join('');
+  document.getElementById('labList').innerHTML=labHeads.map((h,i)=>heicHtml(h,i,'labour')).join('');
+}
+function heicHtml(h,i,mode){return `<div class="item center"><div class="item-body"><div class="item-title">${h}</div></div><div class="mini-actions"><button class="iconbtn" onclick="openCost('${mode}',${i})">✎</button><button class="iconbtn del" onclick="delCost('${mode}',${i})">🗑</button></div></div>`;}
+function openCost(mode,i){costMode=mode;editCost=(i===undefined)?null:i;document.getElementById('costHead').textContent=(editCost===null?'Add ':'Edit ')+(mode==='material'?'material head':'labour head');const arr=mode==='material'?matHeads:labHeads;document.getElementById('coName').value=editCost===null?'':arr[i];openSheet('costSheet');}
+function saveCost(){const v=document.getElementById('coName').value.trim()||'Untitled';const arr=costMode==='material'?matHeads:labHeads;if(editCost===null)arr.push(v);else arr[editCost]=v;renderCost();closeSheet('costSheet');}
+function delCost(mode,i){(mode==='material'?matHeads:labHeads).splice(i,1);renderCost();}
+
+/* ---------- documents (party adapts to role; project common) ---------- */
+const PARTY_BY_ROLE={
+  contractor:['Company licence','GST certificate','My ID proof','Construction agreement (client)','Client ID proof'],
+  ownerself:['My ID proof','Worker ID proofs','Vendor / supplier details'],
+  ownerlabour:['Thekedar agreement','Thekedar ID proof','Worker ID proofs (safety)','My ID proof'],
+  handsoff:['Construction agreement (builder)','Builder licence','Builder company details','My ID proof'],
+};
+const PROJECT_DOCS_DEFAULT=['Sanctioned building plan','Soil test report','Structural drawings','Foundation drawing','Local body / municipal approval','Commencement certificate','Completion certificate','Property title documents'];
+let partyDocs=[...PARTY_BY_ROLE.contractor];
+let projectDocs=[...PROJECT_DOCS_DEFAULT];
+let docMode='party',editDoc=null;
+function renderDocs(){
+  document.getElementById('partyList').innerHTML=partyDocs.map((d,i)=>docRow(d,i,'party')).join('')||emptyDoc();
+  document.getElementById('projList').innerHTML=projectDocs.map((d,i)=>docRow(d,i,'project')).join('')||emptyDoc();
+}
+function docRow(d,i,mode){return `<div class="item center"><div class="item-body"><div class="item-title">${d}</div></div><div class="mini-actions"><button class="iconbtn" onclick="openDoc('${mode}',${i})">✎</button><button class="iconbtn del" onclick="delDoc('${mode}',${i})">🗑</button></div></div>`;}
+function emptyDoc(){return '<div class="offstate" style="padding:16px"><p>Nothing listed yet.</p></div>';}
+function openDoc(mode,i){docMode=mode;editDoc=(i===undefined)?null:i;document.getElementById('docHead').textContent=(editDoc===null?'Add ':'Edit ')+(mode==='party'?'party document':'project document');const arr=mode==='party'?partyDocs:projectDocs;document.getElementById('docName').value=editDoc===null?'':arr[i];openSheet('docSheet');}
+function saveDoc(){const v=document.getElementById('docName').value.trim()||'Untitled';const arr=docMode==='party'?partyDocs:projectDocs;if(editDoc===null)arr.push(v);else arr[editDoc]=v;renderDocs();closeSheet('docSheet');}
+function delDoc(mode,i){(mode==='party'?partyDocs:projectDocs).splice(i,1);renderDocs();}
+
+/* ---------- intake (adapts to caps) ---------- */
+function renderIntake(){
+  const rows=[{f:'Site / project name',on:true,lock:true},{f:'Location / address',on:true}];
+  if(caps.quote)rows.push({f:'Client name & mobile',on:true},{f:'Quoted amount',on:true});
+  if(caps.budget)rows.push({f:'Budget target',on:true});
+  rows.push({f:'Start date',on:true});
+  if(caps.stages)rows.push({f:'Expected completion',on:true});
+  if(caps.payout)rows.push({f:'Payment schedule',on:true});
+  rows.push({f:'Notes',on:false});
+  document.getElementById('intakeList').innerHTML=rows.map((x,i)=>`
+    <div class="item center"><div class="item-body"><div class="item-title">${x.f}${x.lock?' <span class="cap-tag">required</span>':''}</div></div>
+    <div class="switch ${x.on?'on':''}" ${x.lock?'style="opacity:.5;pointer-events:none"':`onclick="this.classList.toggle('on')"`}><div class="knob"></div></div></div>`).join('');
+}
+
+/* ---------- modal helpers ---------- */
+function openSheet(id){document.getElementById(id).classList.add('on');document.body.style.overflow='hidden';}
+function closeSheet(id){document.getElementById(id).classList.remove('on');document.body.style.overflow='';}
+document.querySelectorAll('.scrim').forEach(s=>s.addEventListener('click',e=>{if(e.target===s)closeSheet(s.id);}));
+
+renderRoles();renderCaps(false);renderStages();renderCost();renderDocs();syncTabs();
+</script>
+</body>
+</html>

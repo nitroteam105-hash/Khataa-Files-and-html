@@ -1,0 +1,260 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Attendance & Payout</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#16161a;--mut:#62636a;--ln:#e7e7e2;--ac:#1f6f54;--sf:#e8f3ee;--wm:#f4f2ec;
+--rd:#b3261e;--rs:#fdecea;--am:#b36b00;--as:#fff4e5;--bl:#2a5db0;--bs:#e8eef9;--d:'Plus Jakarta Sans',system-ui,sans-serif;--b:'Inter',system-ui,sans-serif;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fbfbf9;color:var(--ink);font-family:var(--b);padding-bottom:30px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:480px;margin:0 auto;padding:0 16px}
+h1,h2{font-family:var(--d)}
+.top{position:sticky;top:0;background:#fbfbf9;padding:14px 0;border-bottom:1px solid var(--ln);display:flex;align-items:center;gap:10px;z-index:9}
+.top h1{font-size:19px;flex:1}.top .s{font-size:12px;color:var(--mut)}
+.tabs{display:flex;gap:6px;background:var(--wm);border-radius:11px;padding:4px;margin:14px 0}
+.tabs button{flex:1;border:none;background:none;padding:10px;border-radius:8px;font-family:var(--d);font-weight:700;font-size:13px;color:var(--mut);cursor:pointer}
+.tabs button.on{background:#fff;color:var(--ac);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.dn{display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid var(--ln);border-radius:12px;padding:9px 14px;margin-bottom:12px}
+.dn .a{width:32px;height:32px;border-radius:8px;border:1px solid var(--ln);background:#fbfbf9;font-size:16px;cursor:pointer}
+.dn .t{font-family:var(--d);font-weight:700;font-size:14px;text-align:center}.dn .t small{display:block;font-size:11px;color:var(--mut);font-weight:400}
+.ma{width:100%;background:var(--sf);color:var(--ac);border:1px solid #bfe0d1;border-radius:11px;padding:11px;font-family:var(--d);font-weight:700;font-size:14px;cursor:pointer;margin-bottom:12px}
+.row{background:#fff;border:1px solid var(--ln);border-radius:12px;padding:12px 14px;margin-bottom:9px}
+.who{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.av{width:34px;height:34px;border-radius:50%;background:var(--sf);color:var(--ac);display:flex;align-items:center;justify-content:center;font-family:var(--d);font-weight:700;font-size:13px;flex-shrink:0}
+.nm{font-family:var(--d);font-weight:700;font-size:14px;flex:1}.rt{font-size:11px;color:var(--mut)}
+.st{display:flex;gap:5px}
+.st button{flex:1;border:1px solid var(--ln);background:#fbfbf9;border-radius:8px;padding:8px 2px;font-family:var(--d);font-weight:600;font-size:12px;color:var(--mut);cursor:pointer}
+.st button.P.on{background:var(--sf);border-color:var(--ac);color:var(--ac)}
+.st button.A.on{background:var(--rs);border-color:var(--rd);color:var(--rd)}
+.st button.H.on{background:var(--as);border-color:var(--am);color:var(--am)}
+.st button.L.on{background:var(--bs);border-color:var(--bl);color:var(--bl)}
+.tg{display:inline-block;font-size:10px;font-weight:700;font-family:var(--d);padding:2px 7px;border-radius:99px}
+.tg.d{background:var(--sf);color:var(--ac)}.tg.l{background:var(--bs);color:var(--bl)}
+.nt{background:var(--wm);border-radius:10px;padding:10px 13px;font-size:12px;color:var(--mut);line-height:1.5;margin-bottom:12px}
+.sh{font-family:var(--d);font-weight:700;font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.04em;margin:18px 0 8px}
+.lr{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--ln);border-radius:12px;padding:11px 14px;margin-bottom:9px}
+.lr .i{flex:1}.lr .mt{font-size:12px;color:var(--mut);margin-top:1px}
+.lr button{background:var(--bs);color:var(--bl);border:none;border-radius:9px;padding:9px 13px;font-family:var(--d);font-weight:700;font-size:12px;cursor:pointer}
+.cd{background:#fff;border:1px solid var(--ln);border-radius:13px;padding:14px;margin-bottom:10px}
+.cd .h{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.stt{display:flex;gap:8px}.stt .x{flex:1;text-align:center;background:#fbfbf9;border-radius:9px;padding:9px 3px}
+.stt .v{font-family:var(--d);font-weight:800;font-size:17px}.stt .l{font-size:10px;color:var(--mut)}
+.stt .p .v{color:var(--ac)}.stt .a .v{color:var(--rd)}.stt .h .v{color:var(--am)}.stt .b .v{color:var(--bl)}
+.pl{margin-top:10px;padding-top:9px;border-top:1px dashed var(--ln);display:flex;justify-content:space-between;font-size:12.5px}
+.pl .am{font-family:var(--d);font-weight:800;color:var(--ac)}
+/* payout */
+.pobar{display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid var(--ln);border-radius:12px;padding:8px 12px;margin-bottom:12px}
+.pobar .a{width:30px;height:30px;border-radius:8px;border:1px solid var(--ln);background:#fbfbf9;font-size:15px;cursor:pointer}
+.pobar .t{font-family:var(--d);font-weight:700;font-size:13px;text-align:center}.pobar .t small{display:block;font-size:11px;color:var(--mut);font-weight:400}
+.pc{background:#fff;border:1px solid var(--ln);border-radius:13px;padding:13px 14px;margin-bottom:10px}
+.pc.skip{opacity:.5}
+.pc .top2{display:flex;align-items:center;gap:10px}
+.pc .toggle{width:22px;height:22px;border-radius:6px;border:1.5px solid var(--ln);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;cursor:pointer}
+.pc .toggle.on{background:var(--ac);border-color:var(--ac)}
+.pc .calc{margin-top:10px;font-size:12.5px;color:var(--mut);display:flex;justify-content:space-between}
+.pc .adv{margin-top:9px;background:var(--as);border:1px solid #f0d9a8;border-radius:10px;padding:9px 11px}
+.pc .adv .top3{display:flex;justify-content:space-between;font-size:12px;color:var(--am);align-items:center}
+.pc .adv .segsm{display:flex;gap:5px;margin-top:8px}
+.pc .adv .segsm button{flex:1;border:1px solid #e6cf9f;background:#fff;border-radius:8px;padding:7px 2px;font-family:var(--d);font-weight:700;font-size:11.5px;color:var(--am);cursor:pointer}
+.pc .adv .segsm button.on{background:var(--am);color:#fff;border-color:var(--am)}
+.pc .adv input{width:100%;margin-top:7px;padding:8px 10px;border:1px solid #e6cf9f;border-radius:8px;font-size:14px;font-family:var(--b);background:#fff}
+.pc .net{margin-top:10px;padding-top:9px;border-top:1px dashed var(--ln);display:flex;justify-content:space-between;align-items:center}
+.pc .net .l{font-size:12px;color:var(--mut)}.pc .net .v{font-family:var(--d);font-weight:800;font-size:17px;color:var(--ac)}
+.cf{position:sticky;bottom:0;background:#fbfbf9;padding:12px 0;margin-top:6px}
+.cf .sumline{display:flex;justify-content:space-between;font-size:12.5px;color:var(--mut);margin-bottom:3px;padding:0 2px}
+.cf .sumline b{color:var(--ink);font-family:var(--d)}
+.cf button{width:100%;background:var(--ac);color:#fff;border:none;border-radius:12px;padding:14px;font-family:var(--d);font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(31,111,84,.28)}
+.cf button:disabled{opacity:.45;box-shadow:none}
+.mask{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:flex-end;justify-content:center;z-index:20}
+.mask.on{display:flex}
+.sheet{background:#fff;border-radius:18px 18px 0 0;width:100%;max-width:480px;padding:20px 18px;max-height:88vh;overflow:auto}
+.sheet h2{font-size:18px;margin-bottom:10px}
+label{display:block;font-size:12px;color:var(--mut);margin:12px 0 5px}
+input,select{width:100%;padding:11px;border:1px solid var(--ln);border-radius:10px;font-size:15px;font-family:var(--b)}
+.fl{display:flex;gap:10px}.fl>*{flex:1}
+.sg{display:flex;gap:6px;background:var(--wm);border-radius:10px;padding:4px}
+.sg button{flex:1;border:none;background:none;padding:10px;border-radius:7px;font-family:var(--d);font-weight:600;font-size:13px;color:var(--mut);cursor:pointer}
+.sg button.on{background:#fff;color:var(--ac)}
+.btn{width:100%;font-family:var(--d);font-weight:700;font-size:15px;border:none;border-radius:11px;padding:13px;cursor:pointer;margin-top:14px;background:var(--ac);color:#fff}
+.btn.s{background:#fff;border:1px solid var(--ln);color:var(--ink);margin-top:8px}
+.done-ic{width:60px;height:60px;border-radius:50%;background:var(--ac);color:#fff;display:flex;align-items:center;justify-content:center;font-size:30px;margin:6px auto 14px}
+</style></head><body>
+<div class="top wrap"><span style="font-size:20px;color:var(--mut);cursor:pointer">←</span>
+<div style="flex:1"><h1>Attendance &amp; Payout</h1><div class="s">Apex Signs &amp; Fabrication</div></div>
+<span style="font-size:19px;cursor:pointer" title="Scan to mark">📷</span></div>
+<div class="wrap">
+<div class="tabs"><button class="on" id="tT" onclick="tabTo('t')">Today</button><button id="tS" onclick="tabTo('s')">This month</button><button id="tP" onclick="tabTo('p')">Payout</button></div>
+<div id="body"></div></div>
+<div class="mask" id="lm"><div class="sheet" id="lb"></div></div>
+<div class="mask" id="pm"><div class="sheet" id="pb"></div></div>
+<script>
+/* MODEL (reconciled):
+   - attendance is per-date: att:{'2026-06-24':'P'} — single source of truth. Monthly totals are DERIVED.
+   - advances are dated ENTRIES: adv:[{date,amount,note}] plus ded:[{date,amount}]. Balance = sum(adv)-sum(ded), DERIVED.
+*/
+var staff=[
+ {id:1,name:'Suresh Kumar',role:'Welder',pt:'salary',pay:22000,mode:'leave',att:{},lv:[{date:'2026-06-10',days:1,paid:false}],adv:[],ded:[]},
+ {id:2,name:'Mahesh',role:'Helper',pt:'wage',pay:600,mode:'daily',
+   att:{'2026-06-22':'A','2026-06-23':'P','2026-06-24':'P','2026-06-25':'P','2026-06-26':'H','2026-06-27':'P'},
+   lv:[],adv:[{date:'2026-06-20',amount:2000,note:'peshgi'}],ded:[]},
+ {id:3,name:'Ravi',role:'Fabricator',pt:'wage',pay:650,mode:'daily',
+   att:{'2026-06-23':'P','2026-06-24':'P','2026-06-25':'P','2026-06-26':'P','2026-06-27':'P'},
+   lv:[],adv:[{date:'2026-06-18',amount:1500,note:''},{date:'2026-06-24',amount:1000,note:''}],ded:[]},
+ {id:4,name:'Lakshmi',role:'Office',pt:'salary',pay:18000,mode:'off',att:{},lv:[],adv:[],ded:[]}
+];
+var today='2026-06-24',tab='t',WD=26;
+var poWeekStart='2026-06-22'; // Monday of the payout week
+function $(i){return document.getElementById(i)}
+function money(n){return '\u20b9'+(+n||0).toLocaleString('en-IN')}
+function ini(n){return n.trim().split(/\s+/).slice(0,2).map(function(w){return w[0]}).join('').toUpperCase()}
+function fd(s){return new Date(s).toLocaleDateString('en-IN',{weekday:'short',day:'2-digit',month:'short'})}
+function daily(){return staff.filter(function(s){return s.mode==='daily'})}
+function leaveW(){return staff.filter(function(s){return s.mode==='leave'})}
+function advBal(s){var a=(s.adv||[]).reduce(function(t,x){return t+x.amount},0);var d=(s.ded||[]).reduce(function(t,x){return t+x.amount},0);return Math.max(0,a-d);}
+function tabTo(t){tab=t;$('tT').className=t==='t'?'on':'';$('tS').className=t==='s'?'on':'';$('tP').className=t==='p'?'on':'';render()}
+
+/* ---------- TODAY ---------- */
+function todayView(){
+ var dw=daily(),lw=leaveW(),h='';
+ h+='<div class="dn"><button class="a" onclick="sd(-1)">\u2039</button><div class="t">'+fd(today)+'<small>tap a state to mark</small></div><button class="a" onclick="sd(1)">\u203a</button></div>';
+ if(dw.length){
+  h+='<button class="ma" onclick="mAll()">\u2713 Mark all present</button>';
+  h+=dw.map(function(s){
+   var st=s.att[today]||'';
+   function b(c,l){return '<button class="'+c+' '+(st===c?'on':'')+'" onclick="mk('+s.id+',\''+c+'\')">'+l+'</button>'}
+   return '<div class="row"><div class="who"><div class="av">'+ini(s.name)+'</div><div style="flex:1"><div class="nm">'+s.name+' <span class="tg d">Daily</span></div><div class="rt">'+money(s.pay)+'/day'+(advBal(s)>0?' \u00b7 <span style="color:var(--am)">advance '+money(advBal(s))+'</span>':'')+'</div></div></div><div class="st">'+b('P','Present')+b('A','Absent')+b('H','Half')+b('L','Leave')+'</div></div>';
+  }).join('');
+ } else h+='<div class="nt">No daily-attendance workers today.</div>';
+ if(lw.length){
+  h+='<div class="sh">Salaried \u2014 assumed present</div><div class="nt">Counted present automatically. Only log a leave when they\u2019re off.</div>';
+  h+=lw.map(function(s){
+   var u=s.lv.filter(function(l){return l.date.slice(0,7)===today.slice(0,7)}).reduce(function(a,l){return a+l.days},0);
+   return '<div class="lr"><div class="av">'+ini(s.name)+'</div><div class="i"><div class="nm">'+s.name+' <span class="tg l">Leave-only</span></div><div class="mt">'+u+' leave day(s) this month</div></div><button onclick="oL('+s.id+')">+ Log leave</button></div>';
+  }).join('');
+ }
+ return h;
+}
+/* ---------- MONTH ---------- */
+function sumView(){
+ var mk=today.slice(0,7),h='<div class="nt">This month: ~'+WD+' working days. Present-days here feed the Payout tab \u2014 no re-typing.</div>';
+ var tracked=staff.filter(function(s){return s.mode!=='off'});
+ if(!tracked.length)return h+'<div class="nt">No workers tracked.</div>';
+ h+=tracked.map(function(s){
+  if(s.mode==='daily'){
+   var e=Object.keys(s.att).filter(function(d){return d.slice(0,7)===mk}).map(function(d){return s.att[d]});
+   var p=e.filter(function(v){return v==='P'}).length,a=e.filter(function(v){return v==='A'}).length,hf=e.filter(function(v){return v==='H'}).length,lv=e.filter(function(v){return v==='L'}).length;
+   var pay=(p+hf*0.5)*s.pay;
+   return '<div class="cd"><div class="h"><div class="av">'+ini(s.name)+'</div><div class="nm">'+s.name+'</div><span class="tg d">Daily</span></div><div class="stt"><div class="x p"><div class="v">'+p+'</div><div class="l">Present</div></div><div class="x a"><div class="v">'+a+'</div><div class="l">Absent</div></div><div class="x h"><div class="v">'+hf+'</div><div class="l">Half</div></div><div class="x b"><div class="v">'+lv+'</div><div class="l">Leave</div></div></div><div class="pl"><span>('+p+' + '+hf+'\u00d7\u00bd) \u00d7 '+money(s.pay)+'</span><span class="am">'+money(pay)+'</span></div></div>';
+  } else {
+   var ml=s.lv.filter(function(l){return l.date.slice(0,7)===mk});
+   var pd=ml.filter(function(l){return l.paid}).reduce(function(a,l){return a+l.days},0);
+   var up=ml.filter(function(l){return !l.paid}).reduce(function(a,l){return a+l.days},0);
+   var pres=WD-pd-up,ded=Math.round(up*(s.pay/WD)),pay=s.pay-ded;
+   return '<div class="cd"><div class="h"><div class="av">'+ini(s.name)+'</div><div class="nm">'+s.name+'</div><span class="tg l">Leave-only</span></div><div class="stt"><div class="x p"><div class="v">'+pres+'</div><div class="l">Present</div></div><div class="x b"><div class="v">'+pd+'</div><div class="l">Paid leave</div></div><div class="x a"><div class="v">'+up+'</div><div class="l">Unpaid</div></div></div><div class="pl"><span>Salary '+money(s.pay)+(ded>0?' \u2212 '+money(ded):'')+'</span><span class="am">'+money(pay)+'</span></div></div>';
+  }
+ }).join('');
+ return h;
+}
+
+/* ---------- PAYOUT (weekly crew) ---------- */
+var po={}; // id -> {include, dedMode:'full'|'part'|'skip', dedAmt}
+function weekDates(start){var out=[];var d=new Date(start);for(var i=0;i<7;i++){out.push(d.toISOString().slice(0,10));d.setDate(d.getDate()+1)}return out;}
+function weekLabel(start){var ds=weekDates(start);var a=new Date(ds[0]),b=new Date(ds[6]);var f=function(x){return x.toLocaleDateString('en-IN',{day:'2-digit',month:'short'})};return f(a)+' \u2013 '+f(b);}
+function daysWorked(s,start){var ds=weekDates(start);var p=0,hf=0;ds.forEach(function(d){var v=s.att[d];if(v==='P')p++;else if(v==='H')hf++;});return{p:p,hf:hf,units:p+hf*0.5};}
+function ensurePo(s){if(!po[s.id]){var bal=advBal(s);po[s.id]={include:true,dedMode:bal>0?'full':'skip',dedAmt:bal};}return po[s.id];}
+function payableOf(s,start){return Math.round(daysWorked(s,start).units*s.pay);}
+function dedOf(s,start){var st=ensurePo(s);var bal=advBal(s),pay=payableOf(s,start);if(st.dedMode==='skip')return 0;if(st.dedMode==='full')return Math.min(bal,pay);return Math.min(st.dedAmt||0,bal,pay);}
+function netOf(s,start){return Math.max(0,payableOf(s,start)-dedOf(s,start));}
+function payoutView(){
+ var dw=daily();
+ var h='<div class="pobar"><button class="a" onclick="poShift(-7)">\u2039</button><div class="t">Week of '+weekLabel(poWeekStart)+'<small>tap days come from marked attendance</small></div><button class="a" onclick="poShift(7)">\u203a</button></div>';
+ if(!dw.length)return h+'<div class="nt">No daily-wage crew to pay.</div>';
+ h+=dw.map(function(s){
+  var st=ensurePo(s);var w=daysWorked(s,poWeekStart);var pay=payableOf(s,poWeekStart);var bal=advBal(s);var ded=dedOf(s,poWeekStart);var net=netOf(s,poWeekStart);
+  var advBlock=bal>0?('<div class="adv"><div class="top3"><span>Advance pending '+money(bal)+'</span><span>deduct '+money(ded)+'</span></div>'
+    +'<div class="segsm"><button class="'+(st.dedMode==='full'?'on':'')+'" onclick="poDed('+s.id+',\'full\')">Full</button><button class="'+(st.dedMode==='part'?'on':'')+'" onclick="poDed('+s.id+',\'part\')">Part</button><button class="'+(st.dedMode==='skip'?'on':'')+'" onclick="poDed('+s.id+',\'skip\')">Skip</button></div>'
+    +(st.dedMode==='part'?'<input type="number" value="'+(st.dedAmt||0)+'" max="'+Math.min(bal,pay)+'" oninput="poPart('+s.id+',this.value)" placeholder="Amount to deduct">':'')
+    +'</div>'):'';
+  return '<div class="pc'+(st.include?'':' skip')+'">'
+   +'<div class="top2"><div class="toggle '+(st.include?'on':'')+'" onclick="poTog('+s.id+')">'+(st.include?'\u2713':'')+'</div><div class="av">'+ini(s.name)+'</div><div style="flex:1"><div class="nm">'+s.name+'</div><div class="rt">'+money(s.pay)+'/day</div></div></div>'
+   +'<div class="calc"><span>'+w.p+' present'+(w.hf?' + '+w.hf+' half':'')+' = '+w.units+' \u00d7 '+money(s.pay)+'</span><span>'+money(pay)+'</span></div>'
+   +(st.include?advBlock+'<div class="net"><span class="l">Net to pay</span><span class="v">'+money(net)+'</span></div>':'<div class="net"><span class="l">Skipped this week</span><span class="v" style="color:var(--mut)">\u2014</span></div>')
+   +'</div>';
+ }).join('');
+ var incl=dw.filter(function(s){return ensurePo(s).include});
+ var totNet=incl.reduce(function(a,s){return a+netOf(s,poWeekStart)},0);
+ var totDed=incl.reduce(function(a,s){return a+dedOf(s,poWeekStart)},0);
+ var totPay=incl.reduce(function(a,s){return a+payableOf(s,poWeekStart)},0);
+ h+='<div class="cf"><div class="sumline"><span>'+incl.length+' worker(s) \u00b7 wages '+money(totPay)+(totDed>0?' \u2212 advance '+money(totDed):'')+'</span></div><div class="sumline"><span>Total cash out</span><b>'+money(totNet)+'</b></div><button '+(totNet<=0?'disabled':'')+' onclick="poConfirm()">Pay crew \u00b7 '+money(totNet)+'</button></div>';
+ return h;
+}
+function poShift(n){var d=new Date(poWeekStart);d.setDate(d.getDate()+n);poWeekStart=d.toISOString().slice(0,10);render();}
+function poTog(id){var s=staff.find(function(x){return x.id===id});var st=ensurePo(s);st.include=!st.include;render();}
+function poDed(id,m){var s=staff.find(function(x){return x.id===id});var st=ensurePo(s);st.dedMode=m;if(m==='part'&&!st.dedAmt)st.dedAmt=Math.min(advBal(s),payableOf(s,poWeekStart));render();}
+function poPart(id,v){var s=staff.find(function(x){return x.id===id});var st=ensurePo(s);st.dedAmt=Math.min(+v||0,advBal(s),payableOf(s,poWeekStart));render();}
+function poConfirm(){
+ var dw=daily().filter(function(s){return ensurePo(s).include&&netOf(s,poWeekStart)>=0});
+ var totNet=dw.reduce(function(a,s){return a+netOf(s,poWeekStart)},0);
+ var totDed=dw.reduce(function(a,s){return a+dedOf(s,poWeekStart)},0);
+ var lines=dw.map(function(s){return s.name+' \u2014 '+money(netOf(s,poWeekStart))+(dedOf(s,poWeekStart)>0?' (adv \u2212'+money(dedOf(s,poWeekStart))+')':'')}).join('\n');
+ $('pb').innerHTML='<div class="done-ic">\u2713</div><h2 style="text-align:center">Pay '+dw.length+' worker(s)?</h2>'
+  +'<div class="nt" style="margin-top:12px;white-space:pre-line">'+lines+'</div>'
+  +'<div class="pl" style="border-top:1px solid var(--ln);padding-top:11px"><span>Total cash out</span><span class="am" style="font-size:16px">'+money(totNet)+'</span></div>'
+  +(totDed>0?'<div class="nt" style="background:var(--as);color:var(--am)">Advances deducted this run: '+money(totDed)+' \u2014 balances will update.</div>':'')
+  +'<button class="btn" onclick="poCommit()">Confirm &amp; record</button><button class="btn s" onclick="closePO()">Back</button>';
+ $('pm').classList.add('on');
+}
+function poCommit(){
+ var start=poWeekStart;
+ daily().filter(function(s){return ensurePo(s).include}).forEach(function(s){
+   var ded=dedOf(s,start);
+   if(ded>0)s.ded.push({date:start,amount:ded});
+   // (real app: write a Money Out payment entry with gross=payable, deduct=ded, net)
+ });
+ po={}; closePO(); render();
+ setTimeout(function(){alert('\u2705 Crew paid \u2014 recorded to Money Out.\nAdvance balances updated.');},50);
+}
+function closePO(){$('pm').classList.remove('on');}
+
+/* ---------- render ---------- */
+function render(){$('body').innerHTML=tab==='t'?todayView():tab==='s'?sumView():payoutView()}
+
+/* ---------- attendance marking ---------- */
+function mk(id,c){var s=staff.find(function(x){return x.id===id});
+ if(s.att[today]===c){delete s.att[today];render();return;}
+ if(c==='A'){if(!confirm('Mark '+s.name+' absent? No wage counted for today.')){return;}}
+ if(c==='L'){if(!confirm('Mark '+s.name+' on leave for today?')){return;}}
+ s.att[today]=c;render();}
+function mAll(){daily().forEach(function(s){if(!s.att[today])s.att[today]='P'});render()}
+function sd(n){var d=new Date(today);d.setDate(d.getDate()+n);today=d.toISOString().slice(0,10);render()}
+
+/* ---------- leave sheet (unchanged) ---------- */
+var lvId=null,lvPaid=false,lvSpan='single';
+function dayCount(a,b){if(!a||!b)return 0;var d1=new Date(a),d2=new Date(b);return Math.floor((d2-d1)/86400000)+1;}
+function oL(id){lvId=id;lvPaid=false;lvSpan='single';renderL();$('lm').classList.add('on')}
+function sp(v){lvPaid=v;renderL()}
+function setSpan(v){lvSpan=v;renderL()}
+function renderL(){
+ var opts=staff.filter(function(x){return x.mode!=='off'}).map(function(x){return '<option value="'+x.id+'" '+(x.id===lvId?'selected':'')+'>'+x.name+'</option>'}).join('');
+ var s=staff.find(function(x){return x.id===lvId});
+ var ex=s?s.lv.filter(function(l){return l.date.slice(0,7)===today.slice(0,7)}):[];
+ var dateFields=lvSpan==='single'
+   ?'<label>Leave date</label><input type="date" id="ld" value="'+today+'"><label>Days</label><input type="number" id="ldy" value="1" min="0.5" step="0.5">'
+   :'<div class="fl"><div><label>From</label><input type="date" id="lf" oninput="updateHint()" value="'+today+'"></div><div><label>To</label><input type="date" id="lt" oninput="updateHint()" value="'+today+'"></div></div><div class="mt" id="rangehint" style="margin-top:6px">Select a date range</div>';
+ $('lb').innerHTML='<h2>Log leave</h2>'
+  +'<label>Employee</label><select id="lemp" onchange="lvId=+this.value;renderL()">'+opts+'</select>'
+  +'<label>Leave span</label><div class="sg"><button class="'+(lvSpan==='single'?'on':'')+'" onclick="setSpan(\'single\')">Single / days</button><button class="'+(lvSpan==='range'?'on':'')+'" onclick="setSpan(\'range\')">Date range</button></div>'
+  +dateFields
+  +'<label>Type</label><div class="sg"><button class="'+(!lvPaid?'on':'')+'" onclick="sp(false)">Unpaid</button><button class="'+(lvPaid?'on':'')+'" onclick="sp(true)">Paid</button></div>'
+  +'<button class="btn" onclick="svL()">Save leave</button><button class="btn s" onclick="cL()">Cancel</button>'
+  +(ex.length?'<div class="sh" style="margin-top:16px">Leaves this month</div>'+ex.map(function(l,i){return '<div class="lr"><div class="i"><div class="nm" style="font-size:13px">'+new Date(l.date).toLocaleDateString('en-IN',{day:'2-digit',month:'short'})+' \u00b7 '+l.days+' day</div><div class="mt">'+(l.paid?'Paid':'Unpaid')+'</div></div><button style="background:var(--rs);color:var(--rd)" onclick="rL('+i+')">Remove</button></div>'}).join(''):'');
+ if(lvSpan==='range')updateHint();
+}
+function updateHint(){var f=$('lf'),t=$('lt'),h=$('rangehint');if(!f||!t||!h)return;var n=dayCount(f.value,t.value);h.textContent=n>0?n+' day(s) selected':'To date must be on/after From';}
+function svL(){var s=staff.find(function(x){return x.id===lvId});
+ if(lvSpan==='single'){var dy=+$('ldy').value||1;if(!lvPaid&&!confirm('Save '+dy+' day(s) UNPAID leave for '+s.name+'? Deducted from salary.'))return;s.lv.push({date:$('ld').value,days:dy,paid:lvPaid});}
+ else{var f=$('lf').value,t=$('lt').value,n=dayCount(f,t);if(n<=0){alert('To date must be on or after From date.');return;}if(!lvPaid&&!confirm('Save '+n+' day(s) UNPAID leave for '+s.name+'? Deducted from salary.'))return;var d=new Date(f);for(var i=0;i<n;i++){s.lv.push({date:d.toISOString().slice(0,10),days:1,paid:lvPaid});d.setDate(d.getDate()+1);}}
+ cL();render();}
+function rL(i){var s=staff.find(function(x){return x.id===lvId});var ml=s.lv.filter(function(l){return l.date.slice(0,7)===today.slice(0,7)});var t=ml[i];s.lv=s.lv.filter(function(l){return l!==t});renderL()}
+function cL(){$('lm').classList.remove('on')}
+render();
+</script></body></html>

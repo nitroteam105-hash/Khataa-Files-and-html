@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quick survey for business owners</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fbfbf9;--ink:#16161a;--muted:#62636a;--line:#e7e7e2;--card:#fff;
+    --accent:#1f6f54;--soft:#e8f3ee;--warm:#f4f2ec;--red:#b3261e;
+    --d:'Plus Jakarta Sans',sans-serif;--b:'Inter',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:var(--b);-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:520px;margin:0 auto;padding:0 18px;}
+  h1,h2,h3{font-family:var(--d);letter-spacing:-.01em;}
+
+  /* progress bar */
+  .pbar{position:sticky;top:0;background:var(--bg);z-index:9;padding:14px 0 10px;}
+  .pbar .track{height:6px;background:var(--line);border-radius:99px;overflow:hidden;}
+  .pbar .fill{height:100%;background:var(--accent);border-radius:99px;width:0;transition:width .3s;}
+  .pbar .lbl{font-size:12px;color:var(--muted);margin-top:6px;text-align:center;font-family:var(--d);font-weight:600;}
+
+  .intro{text-align:center;padding:40px 0 20px;}
+  .intro .emoji{font-size:40px;}
+  .intro h1{font-size:27px;margin:14px 0 8px;}
+  .intro p{font-size:15.5px;color:var(--muted);line-height:1.55;}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:14px;}
+  .q-num{font-family:var(--d);font-weight:700;font-size:12px;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;}
+  .q-text{font-family:var(--d);font-weight:700;font-size:18px;line-height:1.35;margin-bottom:16px;}
+
+  /* options */
+  .opt{display:block;width:100%;text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:9px;font-size:15px;cursor:pointer;font-family:var(--b);color:var(--ink);transition:.12s;}
+  .opt:hover{border-color:var(--accent);}
+  .opt.sel{border-color:var(--accent);background:var(--soft);font-weight:600;}
+  .opt.sel::after{content:'\2713';float:right;color:var(--accent);font-weight:700;}
+
+  textarea,input{width:100%;padding:13px;border:1px solid var(--line);border-radius:12px;font-size:15px;font-family:var(--b);background:var(--bg);color:var(--ink);}
+  textarea{resize:vertical;min-height:90px;line-height:1.5;}
+  textarea:focus,input:focus{outline:none;border-color:var(--accent);}
+  .opt-hint{font-size:13px;color:var(--muted);margin-bottom:12px;}
+
+  .nav{display:flex;gap:10px;margin:18px 0 40px;}
+  .nav button{flex:1;font-family:var(--d);font-weight:700;font-size:15px;border-radius:12px;padding:14px;cursor:pointer;border:none;}
+  .nav .back{background:var(--card);border:1px solid var(--line);color:var(--ink);flex:0 0 30%;}
+  .nav .next{background:var(--accent);color:#fff;}
+  .nav .next:disabled{opacity:.4;cursor:not-allowed;}
+
+  /* done */
+  .done{text-align:center;padding:50px 0;}
+  .done .emoji{font-size:48px;}
+  .done h1{font-size:28px;margin:16px 0 8px;}
+  .done p{font-size:15.5px;color:var(--muted);line-height:1.55;margin-bottom:24px;}
+  .done .btn{display:inline-block;background:var(--ink);color:#fff;font-family:var(--d);font-weight:700;font-size:15px;border:none;border-radius:12px;padding:14px 26px;cursor:pointer;margin:5px;}
+  .done .btn.ghost{background:var(--card);border:1px solid var(--line);color:var(--ink);}
+  .summary{text-align:left;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:24px;max-height:300px;overflow:auto;font-size:13px;color:var(--muted);line-height:1.6;white-space:pre-wrap;}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+/* type: 'choice' (one pick), 'text' (open), 'price' */
+const Q=[
+  {type:'intro'},
+  {type:'meta'},
+  {n:'Q1',type:'choice',q:'How do you keep track of who has paid you and who hasn\u2019t?',
+   opts:['A notebook / register','Excel or Google Sheets','WhatsApp messages','Just memory','An app or software']},
+  {n:'Q2',type:'choice',q:'How do most customers pay you?',
+   opts:['Mostly cash','Mostly UPI / online','Both equally','Cheque / bank transfer']},
+  {n:'Q3',type:'choice',q:'How do you bill your customers today?',
+   opts:['Handwritten bill / receipt','Printed / computer bill','WhatsApp / verbal, no bill','A billing app','Don\u2019t give bills']},
+  {n:'Q4',type:'choice',q:'Do you give price quotes or estimates before a job/sale?',
+   opts:['Yes, often (job work / orders)','Sometimes','No, fixed prices','Not relevant to me']},
+  {n:'Q5',type:'choice',q:'How often do you chase customers for pending payments?',
+   opts:['Almost every day','A few times a month','Rarely','Never']},
+  {n:'Q6',type:'choice',q:'What\u2019s the most frustrating part of the money side?',
+   opts:['Remembering who owes what','Chasing payments','Keeping records tidy','Staff salary / wages','Making bills or quotes','Tracking expenses','Nothing, it\u2019s fine']},
+  {n:'Q7',type:'choice',q:'Do you have staff / workers whose pay or attendance you track?',
+   opts:['Yes, monthly salary','Yes, daily wage','Yes, a few','No staff']},
+  {n:'Q8',type:'text',q:'In the last few months, did you lose money or time because of a tracking mistake?',
+   hint:'Tell us what happened (or type \u201cno\u201d).'},
+  {n:'Q9',type:'choice',q:'Have you ever missed money you were owed \u2014 a payment, renewal, or invoice you forgot to follow up?',
+   opts:['Yes, more than once','Yes, once','No, I always catch it']},
+  {n:'Q10',type:'choice',q:'Do you run more than one business or location?',
+   opts:['Just one','Two','Three or more']},
+  {n:'Q11',type:'choice',q:'Have you ever tried an app or software to manage this?',
+   opts:['Yes, still using it','Yes, but I stopped','Never tried']},
+  {n:'Q12',type:'text',q:'If you tried one and stopped \u2014 what made you go back to the old way?',
+   hint:'Skip if it doesn\u2019t apply.'},
+  {n:'Q13',type:'choice',q:'If one simple app could track payments, bills/quotes, staff and expenses \u2014 would you use it?',
+   opts:['Yes, definitely','Maybe','Probably not']},
+  {n:'Q14',type:'price',q:'Would you pay for it? If yes, how much per month feels fair?',
+   opts:['I wouldn\u2019t pay','Up to \u20b9100/mo','\u20b9100\u2013300/mo','\u20b9300\u2013500/mo','\u20b9500+/mo']},
+  {n:'Q15',type:'text',q:'What is the ONE thing such an app must do for you to actually use it?',
+   hint:'Your most important need.'},
+  {n:'Q16',type:'text',q:'Anything else you\u2019d like to add? (optional)',
+   hint:'Or leave blank.'},
+  {type:'done'}
+];
+
+let step=0;
+const ans={meta:{name:'',biz:'PG / Hostel',bizOther:'',phone:''},responses:{}};
+const realQs=Q.filter(x=>x.n).length;
+
+function setOpt(key,val){ans.responses[key]=val;render();}
+function setText(key,val){ans.responses[key]=val;}
+function setMeta(f,v){ans.meta[f]=v;}
+function setBiz(v){ans.meta.biz=v;render();}
+function bizLabel(){return ans.meta.biz==='Other (type below)'?(ans.meta.bizOther||'Other'):ans.meta.biz;}
+
+function canNext(){
+  const q=Q[step];
+  if(q.type==='choice'||q.type==='price')return !!ans.responses[q.n];
+  return true; // intro, meta, text, done always allow
+}
+function next(){if(step<Q.length-1){step++;render();window.scrollTo(0,0);}}
+function back(){if(step>0){step--;render();window.scrollTo(0,0);}}
+
+function buildText(){
+  let t='SURVEY RESPONSE\n'+(ans.meta.name||'(no name)')+' \u00b7 '+bizLabel()+(ans.meta.phone?' \u00b7 '+ans.meta.phone:'')+'\n'+new Date().toLocaleString()+'\n\n';
+  Q.filter(x=>x.n).forEach(q=>{t+=q.n+'. '+q.q+'\n   '+(ans.responses[q.n]||'(blank)')+'\n\n';});
+  return t;
+}
+function shareWA(){
+  const t=encodeURIComponent(buildText());
+  window.open('https://wa.me/?text='+t,'_blank');
+}
+function download(){
+  const blob=new Blob([buildText()],{type:'text/plain'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='survey-'+(ans.meta.name||'owner')+'.txt';a.click();
+}
+
+function progress(){
+  // count from first real question
+  const realIndex=Q.slice(0,step).filter(x=>x.n).length;
+  return Math.round(realIndex/realQs*100);
+}
+
+function render(){
+  const q=Q[step];
+  const app=document.getElementById('app');
+
+  if(q.type==='intro'){
+    app.innerHTML=`<div class="wrap"><div class="intro">
+      <div class="emoji">\ud83d\udc4b</div>
+      <h1>2-minute survey</h1>
+      <p>We\u2019re building a simple app to help small business owners track payments, bills, and staff. Your honest answers will shape it. No wrong answers!</p>
+    </div>
+    <div class="nav"><button class="next" onclick="next()">Start \u2192</button></div></div>`;
+    return;
+  }
+  if(q.type==='meta'){
+    app.innerHTML=barHTML()+`<div class="wrap">
+      <div class="card">
+        <div class="q-num">About you</div>
+        <div class="q-text">Tell us a little about your business</div>
+        <label class="opt-hint">Your name or business name</label>
+        <input value="${(ans.meta.name||'').replace(/"/g,'&quot;')}" oninput="setMeta('name',this.value)" placeholder="e.g. Suresh / Sunrise PG" style="margin-bottom:12px">
+        <label class="opt-hint">What type of business?</label>
+        <select onchange="setBiz(this.value)" style="margin-bottom:12px;padding:13px;border:1px solid var(--line);border-radius:12px;width:100%;font-size:15px;background:var(--bg)">
+          ${['PG / Hostel','Rentals / Flats','Co-living','Gym / Fitness','Yoga / Dance','Tuition / Coaching','Tiffin / Mess','Newspaper / Milk delivery','Parking','Laundry / Dhobi','Salon / Spa','Shop','Clinic','Other (type below)'].map(b=>`<option ${ans.meta.biz===b?'selected':''}>${b}</option>`).join('')}
+        </select>
+        ${ans.meta.biz==='Other (type below)'?`<input value="${(ans.meta.bizOther||'').replace(/"/g,'&quot;')}" oninput="setMeta('bizOther',this.value)" placeholder="Type your business type" style="margin-bottom:12px">`:''}
+        <label class="opt-hint">Phone (optional \u2014 if you\u2019re happy to be contacted)</label>
+        <input value="${(ans.meta.phone||'').replace(/"/g,'&quot;')}" oninput="setMeta('phone',this.value)" placeholder="Optional">
+      </div>
+      <div class="nav"><button class="back" onclick="back()">\u2190</button><button class="next" onclick="next()">Continue \u2192</button></div>
+    </div>`;
+    return;
+  }
+  if(q.type==='done'){
+    app.innerHTML=`<div class="wrap"><div class="done">
+      <div class="emoji">\ud83d\ude4f</div>
+      <h1>Thank you!</h1>
+      <p>That\u2019s all. Your answers help us build something genuinely useful for owners like you.</p>
+      <button class="btn" onclick="shareWA()">\ud83d\udce4 Send answers on WhatsApp</button>
+      <button class="btn ghost" onclick="download()">Download answers</button>
+      <div class="summary">${buildText().replace(/</g,'&lt;')}</div>
+    </div></div>`;
+    return;
+  }
+
+  // question
+  let body='';
+  if(q.type==='choice'||q.type==='price'){
+    body=q.opts.map(o=>`<button class="opt ${ans.responses[q.n]===o?'sel':''}" onclick="setOpt('${q.n}','${o.replace(/'/g,"\\'")}')">${o}</button>`).join('');
+  } else {
+    body=`${q.hint?`<div class="opt-hint">${q.hint}</div>`:''}<textarea oninput="setText('${q.n}',this.value)" placeholder="Type here...">${(ans.responses[q.n]||'').replace(/</g,'&lt;')}</textarea>`;
+  }
+  app.innerHTML=barHTML()+`<div class="wrap">
+    <div class="card"><div class="q-num">${q.n}</div><div class="q-text">${q.q}</div>${body}</div>
+    <div class="nav"><button class="back" onclick="back()">\u2190</button>
+    <button class="next" onclick="next()" ${canNext()?'':'disabled'}>${step===Q.length-2?'Finish \u2192':'Next \u2192'}</button></div>
+  </div>`;
+}
+function barHTML(){return `<div class="pbar"><div class="wrap"><div class="track"><div class="fill" style="width:${progress()}%"></div></div><div class="lbl">${progress()}% done</div></div></div>`;}
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Notes &amp; Vouchers — Khaata</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green:#1f6f54;--green-deep:#164e3b;--green-tint:#e8f1ed;
+  --parchment:#fbfbf9;--card:#f4f3ee;
+  --ink:#1b1c1a;--ink-soft:#5c5f59;--ink-faint:#8b8e87;--line:#e3e2db;
+  --amber:#9a6b1f;--amber-tint:#f7eed9;
+  --rust:#9c4a2f;--rust-tint:#f6e6e0;
+  --r-lg:20px;--r-md:16px;--r-sm:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--parchment);color:var(--ink);font-family:'Inter',system-ui,sans-serif;font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.32;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23g)' opacity='.34'/%3E%3C/svg%3E")}
+h1,h2,h3{font-family:'Plus Jakarta Sans',system-ui,sans-serif;letter-spacing:-.018em}
+.num{font-variant-numeric:tabular-nums}
+.shell{position:relative;z-index:1;max-width:460px;margin:0 auto;min-height:100%;padding-bottom:100px}
+
+.demo{position:sticky;top:0;z-index:40;background:var(--green-deep);color:#dbe9e2;padding:8px 16px 10px}
+.demo-row{display:flex;align-items:center;gap:9px}
+.demo-row+.demo-row{margin-top:7px}
+.demo-row>span{font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;font-weight:600;opacity:.72;min-width:76px}
+.seg{display:flex;gap:5px;margin-left:auto}
+.seg button{font:inherit;font-size:11.5px;font-weight:600;cursor:pointer;background:transparent;color:#a9c7ba;
+  border:1px solid rgba(255,255,255,.22);padding:4px 10px;border-radius:99px;transition:.16s}
+.seg button.on{background:#dbe9e2;color:var(--green-deep);border-color:#dbe9e2}
+
+.top{display:flex;align-items:center;gap:12px;padding:18px 20px 8px}
+.top h1{font-size:23px;font-weight:800}
+.back{border:none;background:none;font:inherit;color:var(--green);font-weight:600;cursor:pointer;font-size:14px;padding:0}
+
+.hero{margin:6px 20px 4px;padding:20px;background:var(--card);border-radius:var(--r-lg);border:1px solid var(--line)}
+.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.11em;color:var(--ink-faint);font-weight:600}
+.big{font-family:'Plus Jakarta Sans';font-size:34px;font-weight:800;letter-spacing:-.03em;margin-top:6px;line-height:1.05}
+.hero .sub{font-size:13px;color:var(--ink-soft);margin-top:7px}
+.hero .sub b{color:var(--amber);font-weight:600}
+
+/* ledger bar — signature */
+.ledger{margin-top:13px}
+.ledger-track{display:flex;height:7px;border-radius:99px;overflow:hidden;background:#e5e4dd}
+.ledger-seg{height:100%;transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.seg-adj{background:var(--green)}
+.seg-open{background:var(--amber)}
+.ledger-key{display:flex;gap:14px;margin-top:9px;font-size:12px;color:var(--ink-soft);flex-wrap:wrap}
+.ledger-key i{width:8px;height:8px;border-radius:2px;display:inline-block;margin-right:5px;font-style:normal}
+.ledger-key b{font-weight:700;color:var(--ink)}
+
+.filters{display:flex;gap:7px;padding:16px 20px 8px;overflow-x:auto;scrollbar-width:none}
+.filters::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;font:inherit;font-size:12.5px;font-weight:500;cursor:pointer;background:transparent;
+  border:1px solid var(--line);color:var(--ink-soft);padding:6px 13px;border-radius:99px;transition:.16s;white-space:nowrap}
+.chip.on{background:var(--green);border-color:var(--green);color:#fff;font-weight:600}
+
+.list{padding:6px 20px}
+.dcard{width:100%;text-align:left;font:inherit;cursor:pointer;background:var(--card);border:1px solid var(--line);
+  border-radius:var(--r-md);padding:15px 16px;margin-bottom:10px;display:block;transition:.16s}
+.dcard:hover{border-color:#cfd4cb;transform:translateY(-1px)}
+.drow{display:flex;align-items:baseline;gap:10px}
+.dnum{font-size:11.5px;color:var(--ink-faint);font-weight:600;letter-spacing:.03em}
+.damt{margin-left:auto;font-family:'Plus Jakarta Sans';font-size:17px;font-weight:700}
+.damt.minus{color:var(--rust)}
+.dname{font-family:'Plus Jakarta Sans';font-size:16px;font-weight:700;margin-top:3px}
+.dmeta{font-size:12.5px;color:var(--ink-soft);margin-top:5px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+
+.pill{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;padding:3px 8px;border-radius:99px}
+.t-adv{background:var(--amber-tint);color:var(--amber)}
+.t-cn{background:var(--rust-tint);color:var(--rust)}
+.t-dn{background:var(--green-tint);color:var(--green-deep)}
+.s-open{background:var(--amber-tint);color:var(--amber)}
+.s-done{background:#dfeee6;color:var(--green-deep)}
+
+.flag{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;background:var(--amber-tint);
+  color:var(--amber);padding:4px 9px;border-radius:var(--r-sm);margin-top:9px}
+
+.empty{text-align:center;padding:44px 24px;color:var(--ink-faint)}
+.empty h3{font-size:16px;color:var(--ink-soft);margin-bottom:6px}
+.empty p{font-size:13.5px;line-height:1.5}
+
+.sec{font-size:11px;text-transform:uppercase;letter-spacing:.11em;color:var(--ink-faint);font-weight:700;padding:20px 20px 8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-md);margin:0 20px;padding:16px}
+.kv{display:flex;justify-content:space-between;gap:14px;padding:7px 0;font-size:14px}
+.kv+.kv{border-top:1px solid var(--line)}
+.kv .k{color:var(--ink-soft)}
+.kv .v{text-align:right;font-weight:600}
+.kv .v a{color:var(--green);text-decoration:none;border-bottom:1px solid rgba(31,111,84,.35)}
+
+.note{font-size:12.5px;color:var(--ink-soft);padding:9px 20px 0;line-height:1.45}
+.warn{margin:12px 20px 0;padding:12px 14px;border-radius:var(--r-sm);font-size:13px;line-height:1.45;font-weight:500}
+.warn.amber{background:var(--amber-tint);color:var(--amber)}
+.warn.green{background:var(--green-tint);color:var(--green-deep)}
+
+.item{background:var(--card);border:1px solid var(--line);border-radius:var(--r-md);padding:13px 15px;margin:0 20px 9px}
+.item-top{display:flex;gap:10px;align-items:baseline}
+.item-desc{font-weight:600;font-size:14.5px;flex:1}
+.item-amt{font-family:'Plus Jakarta Sans';font-weight:700;font-size:15px}
+.item-sub{font-size:12.5px;color:var(--ink-soft);margin-top:4px}
+
+.totals{background:var(--card);border:1px solid var(--line);border-radius:var(--r-md);margin:12px 20px 0;padding:16px}
+.trow{display:flex;justify-content:space-between;font-size:14px;padding:5px 0}
+.trow.grand{border-top:1.5px solid var(--ink);margin-top:9px;padding-top:11px;font-family:'Plus Jakarta Sans';font-size:19px;font-weight:800}
+
+.actions{position:fixed;bottom:0;left:0;right:0;z-index:30;background:linear-gradient(to top,var(--parchment) 62%,rgba(251,251,249,0));padding:14px 20px 18px}
+.actions-in{max-width:460px;margin:0 auto;display:flex;gap:9px}
+.btn{flex:1;font:inherit;font-weight:700;font-size:14.5px;cursor:pointer;padding:13px 16px;border-radius:var(--r-sm);
+  border:1px solid var(--green);background:var(--green);color:#fff;transition:.16s}
+.btn:hover{background:var(--green-deep);border-color:var(--green-deep)}
+.btn.ghost{background:transparent;color:var(--green)}
+.btn.ghost:hover{background:var(--green-tint)}
+
+.scrim{position:fixed;inset:0;z-index:50;background:rgba(24,26,23,.42);display:none;align-items:flex-end;justify-content:center}
+.scrim.on{display:flex}
+.sheet{background:var(--parchment);width:100%;max-width:460px;border-radius:22px 22px 0 0;padding:22px 20px 26px;
+  max-height:88vh;overflow-y:auto;animation:rise .26s cubic-bezier(.2,.8,.2,1)}
+@keyframes rise{from{transform:translateY(28px);opacity:.4}to{transform:none;opacity:1}}
+.sheet h2{font-size:19px;font-weight:800;margin-bottom:4px}
+.sheet .lede{font-size:13.5px;color:var(--ink-soft);margin-bottom:16px;line-height:1.45}
+
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;font:inherit;cursor:pointer;
+  background:var(--card);border:1.5px solid var(--line);border-radius:var(--r-md);padding:14px;margin-bottom:9px;transition:.16s}
+.opt.on{border-color:var(--green);background:var(--green-tint)}
+.radio{width:19px;height:19px;border-radius:50%;border:2px solid var(--ink-faint);flex:0 0 auto;margin-top:1px;position:relative}
+.opt.on .radio{border-color:var(--green)}
+.opt.on .radio::after{content:'';position:absolute;inset:3px;border-radius:50%;background:var(--green)}
+.opt-t{font-weight:700;font-size:14.5px;display:block}
+.opt-d{font-size:12.5px;color:var(--ink-soft);margin-top:3px;line-height:1.42;display:block}
+
+.lineopt{display:flex;gap:11px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.lineopt:last-of-type{border-bottom:none}
+.box{width:19px;height:19px;border-radius:5px;border:2px solid var(--ink-faint);flex:0 0 auto;position:relative;transition:.14s}
+.lineopt.on .box{background:var(--green);border-color:var(--green)}
+.lineopt.on .box::after{content:'';position:absolute;left:5px;top:1px;width:5px;height:10px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(43deg)}
+.lineopt .t{flex:1;font-size:14px;font-weight:500}
+.lineopt .a{font-weight:700;font-size:14px}
+.runtot{display:flex;justify-content:space-between;padding:13px 0 4px;margin-top:6px;border-top:1.5px solid var(--ink);
+  font-family:'Plus Jakarta Sans';font-weight:800;font-size:16px}
+
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(10px);z-index:60;background:var(--ink);
+  color:var(--parchment);padding:11px 18px;border-radius:99px;font-size:13.5px;font-weight:600;opacity:0;
+  pointer-events:none;transition:.24s;max-width:88vw;text-align:center}
+.toast.on{opacity:1;transform:translateX(-50%)}
+.hidden{display:none !important}
+button:focus-visible,.dcard:focus-visible{outline:2.5px solid var(--green);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
+</style>
+</head>
+<body>
+
+<div class="demo">
+  <div class="demo-row"><span>GST mode</span>
+    <div class="seg" id="modes">
+      <button data-mode="regular" class="on">Regular</button>
+      <button data-mode="composition">Composition</button>
+      <button data-mode="unregistered">Unregistered</button>
+    </div>
+  </div>
+  <div class="demo-row"><span>Supplies</span>
+    <div class="seg" id="supplies">
+      <button data-sup="services" class="on">Services</button>
+      <button data-sup="goods">Goods</button>
+    </div>
+  </div>
+</div>
+
+<div class="shell">
+  <div id="listView">
+    <div class="top"><h1>Notes &amp; vouchers</h1></div>
+
+    <div class="hero">
+      <div class="eyebrow">Advances still open</div>
+      <div class="big num" id="heroAmt">₹0</div>
+      <div class="sub" id="heroSub"></div>
+      <div class="ledger" id="heroLedger">
+        <div class="ledger-track">
+          <div class="ledger-seg seg-adj" id="segAdj" style="width:0%"></div>
+          <div class="ledger-seg seg-open" id="segOpen" style="width:0%"></div>
+        </div>
+        <div class="ledger-key">
+          <span><i class="seg-adj"></i>Adjusted <b id="keyAdj"></b></span>
+          <span><i class="seg-open"></i>Still open <b id="keyOpen"></b></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="filters" id="filters">
+      <button class="chip on" data-f="all">All</button>
+      <button class="chip" data-f="advance">Advances</button>
+      <button class="chip" data-f="credit">Credit notes</button>
+      <button class="chip" data-f="debit">Debit notes</button>
+    </div>
+
+    <div class="list" id="list"></div>
+  </div>
+
+  <div id="detailView" class="hidden">
+    <div class="top"><button class="back" onclick="showList()">← Notes &amp; vouchers</button></div>
+
+    <div class="hero">
+      <div class="eyebrow"><span id="dNum"></span> · <span id="dKind"></span></div>
+      <div class="big" id="dParty" style="font-size:26px"></div>
+      <div class="sub" id="dDate"></div>
+      <div class="ledger hidden" id="dLedger">
+        <div class="ledger-track">
+          <div class="ledger-seg seg-adj" id="dSegAdj" style="width:0%"></div>
+          <div class="ledger-seg seg-open" id="dSegOpen" style="width:0%"></div>
+        </div>
+        <div class="ledger-key">
+          <span><i class="seg-adj"></i>Adjusted <b id="dKeyAdj"></b></span>
+          <span><i class="seg-open"></i>Still open <b id="dKeyOpen"></b></span>
+        </div>
+      </div>
+    </div>
+
+    <div id="dWarn"></div>
+
+    <div class="sec" id="dRefLabel">Against</div>
+    <div class="card" id="dRef"></div>
+
+    <div class="sec" id="dItemsLabel">Items</div>
+    <div id="dItems"></div>
+
+    <div class="totals" id="dTotals"></div>
+    <p class="note" id="dNote"></p>
+
+    <div class="sec hidden" id="dHistLabel">Adjustment history</div>
+    <div class="card hidden" id="dHist"></div>
+  </div>
+</div>
+
+<div class="actions" id="actions"><div class="actions-in" id="actionsIn"></div></div>
+
+<div class="scrim" id="scrim"><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+var nf=new Intl.NumberFormat('en-IN',{maximumFractionDigits:2});
+function rs(p){ return '₹'+nf.format(Math.round(p)/100); }
+function today(){ return new Date('2026-08-11T00:00:00'); }
+function fmtDate(iso){var d=new Date(iso+'T00:00:00');
+  var m=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return d.getDate()+' '+m[d.getMonth()]+' '+d.getFullYear();}
+function daysUntil(iso){ return Math.round((new Date(iso+'T00:00:00')-today())/86400000); }
+
+var MODE='regular', SUPPLY='services', OWN_STATE='Karnataka';
+
+var bills={
+  'b1':{number:'INV/26-27/0118',party:'Meenakshi Foods',state:'Tamil Nadu',date:'2026-08-03',fy:'2026-27',
+        lines:[{id:'l1',desc:'Shop fascia board — vinyl',qty:1,rate:1180000,gst:1800},
+               {id:'l2',desc:'Directional signage set',qty:4,rate:420000,gst:1800},
+               {id:'l3',desc:'On-site installation',qty:1,rate:780000,gst:1800}]},
+  'b2':{number:'INV/26-27/0093',party:'Suresh Traders',state:'Karnataka',date:'2026-07-19',fy:'2026-27',
+        lines:[{id:'l1',desc:'ACP signboard — 8ft × 4ft',qty:2,rate:2850000,gst:1800},
+               {id:'l2',desc:'LED backlit lettering',qty:1,rate:1840000,gst:1800}]},
+  'b3':{number:'INV/25-26/0871',party:'Gokul Dairy',state:'Karnataka',date:'2026-02-14',fy:'2025-26',
+        lines:[{id:'l1',desc:'Flex banner with frame',qty:3,rate:340000,gst:1800}]}
+};
+
+var docs=[
+  {id:'d1',type:'advance',number:'ADV/26-27/0007',party:'Ashwin Motors',state:'Tamil Nadu',
+   date:'2026-07-24',grossPaise:10000000,gst:1800,adjustedPaise:4260000,
+   against:'Pylon sign project',history:[{bill:'INV/26-27/0101',date:'2026-08-01',amt:4260000}]},
+  {id:'d2',type:'advance',number:'ADV/26-27/0009',party:'Priya Silks',state:'Karnataka',
+   date:'2026-06-30',grossPaise:2500000,gst:1800,adjustedPaise:0,
+   against:'Glow sign — awaiting design approval',history:[]},
+  {id:'d3',type:'credit',number:'CN/26-27/0003',billId:'b2',reason:'Goods returned',
+   date:'2026-08-05',lineIds:['l2']},
+  {id:'d4',type:'debit',number:'DN/26-27/0001',billId:'b1',reason:'Extra work at site',
+   date:'2026-08-08',extraDesc:'Additional hoarding bracket',extraQty:2,extraRate:185000,extraGst:1800},
+  {id:'d5',type:'credit',number:'CN/26-27/0004',billId:'b3',reason:'Overcharged rate',
+   date:'2026-08-09',lineIds:['l1'],partialRatio:0.25}
+];
+
+var filter='all', current=null;
+
+/* ---- money helpers ---- */
+function taxOn(base,gst){ return MODE==='regular' ? Math.round(base*gst/10000) : 0; }
+// advance received is treated as inclusive of tax
+function advSplit(d){
+  if(MODE!=='regular'||SUPPLY==='goods') return {taxable:d.grossPaise,tax:0};
+  var taxable=Math.round(d.grossPaise*10000/(10000+d.gst));
+  return {taxable:taxable,tax:d.grossPaise-taxable};
+}
+function cnLines(d){
+  var b=bills[d.billId];
+  return b.lines.filter(function(l){ return d.lineIds.indexOf(l.id)>=0; })
+    .map(function(l){
+      var r=d.partialRatio||1;
+      return {desc:l.desc,qty:l.qty,rate:l.rate,gst:l.gst,base:Math.round(l.qty*l.rate*r),ratio:r};
+    });
+}
+function docBase(d){
+  if(d.type==='advance') return advSplit(d).taxable;
+  if(d.type==='credit') return cnLines(d).reduce(function(s,l){return s+l.base},0);
+  return d.extraQty*d.extraRate;
+}
+function docTax(d){
+  if(d.type==='advance') return advSplit(d).tax;
+  if(d.type==='credit') return cnLines(d).reduce(function(s,l){return s+taxOn(l.base,l.gst)},0);
+  return taxOn(docBase(d),d.extraGst);
+}
+function docTotal(d){ return docBase(d)+docTax(d); }
+function docParty(d){ return d.type==='advance' ? d.party : bills[d.billId].party; }
+function docState(d){ return d.type==='advance' ? d.state : bills[d.billId].state; }
+function isIgst(d){ return docState(d)!==OWN_STATE; }
+function openAdv(d){ return Math.max(0, docTotal(d)-d.adjustedPaise); }
+
+function visibleDocs(){
+  return docs.filter(function(d){ return !(d.type==='advance' && SUPPLY==='goods' && MODE==='regular' && false); });
+}
+
+/* ---- list ---- */
+function renderHero(){
+  var advs=docs.filter(function(d){return d.type==='advance'});
+  var recd=advs.reduce(function(s,d){return s+docTotal(d)},0);
+  var adj=advs.reduce(function(s,d){return s+d.adjustedPaise},0);
+  var open=recd-adj;
+  document.getElementById('heroAmt').textContent=rs(open);
+  var stale=advs.filter(function(d){ return openAdv(d)>0 && d.date<'2026-07-01'; });
+  var sub=advs.length+' advance'+(advs.length===1?'':'s')+' received, '+rs(adj)+' already billed';
+  if(stale.length) sub+=' · <b>'+stale.length+' sitting since last quarter</b>';
+  document.getElementById('heroSub').innerHTML=sub;
+  var pAdj=recd?Math.round(adj/recd*100):0;
+  document.getElementById('segAdj').style.width=pAdj+'%';
+  document.getElementById('segOpen').style.width=(100-pAdj)+'%';
+  document.getElementById('keyAdj').textContent=rs(adj);
+  document.getElementById('keyOpen').textContent=rs(open);
+}
+function renderList(){
+  renderHero();
+  var rows=docs.filter(function(d){ return filter==='all'||d.type===filter; });
+  var el=document.getElementById('list');
+  if(!rows.length){ el.innerHTML='<div class="empty"><h3>Nothing here yet</h3><p>Credit notes, debit notes and advance receipts will collect here.</p></div>'; return; }
+  el.innerHTML=rows.map(function(d){
+    var label={advance:SUPPLY==='goods'?'Advance':'Receipt voucher',credit:'Credit note',debit:'Debit note'}[d.type];
+    var cls={advance:'t-adv',credit:'t-cn',debit:'t-dn'}[d.type];
+    var amt=(d.type==='credit'?'− ':'')+rs(docTotal(d));
+    var ref=d.type==='advance'?d.against:'Against '+bills[d.billId].number;
+    var flag='';
+    if(d.type==='advance'&&openAdv(d)>0&&d.date<'2026-07-01')
+      flag='<div class="flag">Not billed against anything yet</div>';
+    var meter='';
+    if(d.type==='advance'&&d.adjustedPaise>0){
+      var p=Math.round(d.adjustedPaise/docTotal(d)*100);
+      meter='<div class="ledger"><div class="ledger-track">'+
+        '<div class="ledger-seg seg-adj" style="width:'+p+'%"></div>'+
+        '<div class="ledger-seg seg-open" style="width:'+(100-p)+'%"></div></div>'+
+        '<div class="ledger-key"><span>'+rs(d.adjustedPaise)+' billed</span><span><b>'+rs(openAdv(d))+'</b> open</span></div></div>';
+    }
+    var st=d.type==='advance'
+      ? '<span class="pill '+(openAdv(d)>0?'s-open':'s-done')+'">'+(openAdv(d)>0?'open':'fully billed')+'</span>' : '';
+    return '<button class="dcard" onclick="openDoc(\''+d.id+'\')">'+
+      '<div class="drow"><span class="dnum">'+d.number+'</span>'+
+      '<span class="damt num'+(d.type==='credit'?' minus':'')+'">'+amt+'</span></div>'+
+      '<div class="dname">'+docParty(d)+'</div>'+
+      '<div class="dmeta"><span class="pill '+cls+'">'+label+'</span>'+st+'<span>'+ref+'</span></div>'+
+      flag+meter+'</button>';
+  }).join('');
+}
+
+/* ---- detail ---- */
+function openDoc(id){
+  current=docs.filter(function(d){return d.id===id})[0];
+  document.getElementById('listView').classList.add('hidden');
+  document.getElementById('detailView').classList.remove('hidden');
+  renderDetail();
+}
+function showList(){
+  current=null;
+  document.getElementById('detailView').classList.add('hidden');
+  document.getElementById('listView').classList.remove('hidden');
+  renderList(); renderListActions();
+}
+function renderDetail(){
+  var d=current;
+  var label={advance:SUPPLY==='goods'?'Advance received':'Receipt voucher',credit:'Credit note',debit:'Debit note'}[d.type];
+  document.getElementById('dNum').textContent=d.number;
+  document.getElementById('dKind').textContent=label;
+  document.getElementById('dParty').textContent=docParty(d);
+  document.getElementById('dDate').textContent='Issued '+fmtDate(d.date);
+
+  // ledger for advances
+  var L=document.getElementById('dLedger');
+  if(d.type==='advance'&&d.adjustedPaise>0){
+    L.classList.remove('hidden');
+    var p=Math.round(d.adjustedPaise/docTotal(d)*100);
+    document.getElementById('dSegAdj').style.width=p+'%';
+    document.getElementById('dSegOpen').style.width=(100-p)+'%';
+    document.getElementById('dKeyAdj').textContent=rs(d.adjustedPaise);
+    document.getElementById('dKeyOpen').textContent=rs(openAdv(d));
+  } else L.classList.add('hidden');
+
+  // warnings
+  var wEl=document.getElementById('dWarn'), w='';
+  if(d.type==='credit'){
+    var fy=bills[d.billId].fy;
+    if(fy==='2025-26'){
+      var left=daysUntil('2026-11-30');
+      w='<div class="warn amber">This bill is from 2025–26. Credit notes for that year stop counting for tax after 30 Nov 2026 — '+left+' days left. After that you can still issue it for the customer\u2019s records, but the tax won\u2019t come back.</div>';
+    }
+  }
+  if(d.type==='advance'&&SUPPLY==='goods'&&MODE==='regular'){
+    w='<div class="warn green">No tax on this. Advances for goods are taxed when you raise the invoice, not when the money comes in — so this is just a receipt against the customer\u2019s account.</div>';
+  }
+  if(d.type==='advance'&&SUPPLY==='services'&&MODE==='regular'){
+    w='<div class="warn amber">Tax is due on this now, not when you invoice. The amount received is treated as including GST, and gets adjusted on the final bill.</div>';
+  }
+  wEl.innerHTML=w;
+
+  // reference block
+  document.getElementById('dRefLabel').textContent=d.type==='advance'?'What it\u2019s for':'Against';
+  var ref='';
+  if(d.type==='advance'){
+    ref='<div class="kv"><span class="k">Purpose</span><span class="v">'+d.against+'</span></div>'+
+        '<div class="kv"><span class="k">Received on</span><span class="v">'+fmtDate(d.date)+'</span></div>'+
+        '<div class="kv"><span class="k">Place of supply</span><span class="v">'+d.state+'</span></div>';
+  } else {
+    var b=bills[d.billId];
+    ref='<div class="kv"><span class="k">Original bill</span><span class="v"><a href="#" onclick="toast(\'Opens '+b.number+'\');return false">'+b.number+'</a></span></div>'+
+        '<div class="kv"><span class="k">Bill date</span><span class="v">'+fmtDate(b.date)+'</span></div>'+
+        '<div class="kv"><span class="k">Reason</span><span class="v">'+d.reason+'</span></div>'+
+        '<div class="kv"><span class="k">Place of supply</span><span class="v">'+b.state+'</span></div>';
+  }
+  document.getElementById('dRef').innerHTML=ref;
+
+  // items
+  var items='', il=document.getElementById('dItemsLabel');
+  if(d.type==='advance'){
+    il.textContent='Amount';
+    var sp=advSplit(d);
+    items='<div class="item"><div class="item-top"><span class="item-desc">Advance received</span>'+
+      '<span class="item-amt num">'+rs(d.grossPaise)+'</span></div>'+
+      '<div class="item-sub">'+(sp.tax>0?'Includes GST at '+(d.gst/100)+'% — worked back from the amount received':'No tax component')+'</div></div>';
+  } else if(d.type==='credit'){
+    il.textContent='What\u2019s being credited';
+    items=cnLines(d).map(function(l){
+      var sub=l.qty+' × '+rs(l.rate)+(MODE==='regular'?' · GST '+(l.gst/100)+'%':'');
+      if(l.ratio<1) sub+=' · '+Math.round(l.ratio*100)+'% of the line';
+      return '<div class="item"><div class="item-top"><span class="item-desc">'+l.desc+'</span>'+
+        '<span class="item-amt num">− '+rs(l.base)+'</span></div><div class="item-sub num">'+sub+'</div></div>';
+    }).join('');
+  } else {
+    il.textContent='What\u2019s being added';
+    items='<div class="item"><div class="item-top"><span class="item-desc">'+d.extraDesc+'</span>'+
+      '<span class="item-amt num">'+rs(docBase(d))+'</span></div>'+
+      '<div class="item-sub num">'+d.extraQty+' × '+rs(d.extraRate)+(MODE==='regular'?' · GST '+(d.extraGst/100)+'%':'')+'</div></div>';
+  }
+  document.getElementById('dItems').innerHTML=items;
+
+  // totals
+  var base=docBase(d), tax=docTax(d), sign=d.type==='credit'?'− ':'';
+  var rows='<div class="trow"><span>Taxable value</span><span class="num">'+sign+rs(base)+'</span></div>';
+  if(MODE==='regular'&&tax>0){
+    if(isIgst(d)) rows+='<div class="trow"><span>IGST</span><span class="num">'+sign+rs(tax)+'</span></div>';
+    else{
+      var cg=Math.floor(tax/2), sg=tax-cg;
+      rows+='<div class="trow"><span>CGST</span><span class="num">'+sign+rs(cg)+'</span></div>';
+      rows+='<div class="trow"><span>SGST</span><span class="num">'+sign+rs(sg)+'</span></div>';
+    }
+  }
+  rows+='<div class="trow grand"><span>'+(d.type==='credit'?'Credited':d.type==='debit'?'Added':'Received')+'</span>'+
+        '<span class="num">'+sign+rs(base+tax)+'</span></div>';
+  document.getElementById('dTotals').innerHTML=rows;
+
+  document.getElementById('dNote').textContent =
+    d.type==='credit' ? 'Rates match the original bill. A credit note can never use a rate the bill didn\u2019t.' :
+    d.type==='debit'  ? 'This adds to what the customer owes on the original bill.' :
+    (MODE!=='regular' ? 'No tax applies in this mode.' : '');
+
+  // history
+  var hl=document.getElementById('dHistLabel'), h=document.getElementById('dHist');
+  if(d.type==='advance'&&d.history.length){
+    hl.classList.remove('hidden'); h.classList.remove('hidden');
+    h.innerHTML=d.history.map(function(x){
+      return '<div class="kv"><span class="k">'+x.bill+' · '+fmtDate(x.date)+'</span><span class="v num">'+rs(x.amt)+'</span></div>';
+    }).join('')+'<div class="kv"><span class="k">Still open</span><span class="v num">'+rs(openAdv(d))+'</span></div>';
+  } else { hl.classList.add('hidden'); h.classList.add('hidden'); }
+
+  renderDetailActions();
+}
+
+function renderDetailActions(){
+  var d=current, el=document.getElementById('actionsIn');
+  if(d.type==='advance'&&openAdv(d)>0){
+    el.innerHTML='<button class="btn ghost" onclick="toast(\'Shares the voucher\')">Share</button>'+
+                 '<button class="btn" onclick="toast(\'Opens bill creation with this advance applied\')">Bill against this</button>';
+  } else {
+    el.innerHTML='<button class="btn ghost" onclick="toast(\'Shares the document\')">Share</button>'+
+                 '<button class="btn" onclick="toast(\'Opens the linked bill\')">View bill</button>';
+  }
+}
+function renderListActions(){
+  document.getElementById('actionsIn').innerHTML='<button class="btn" onclick="openNew()">New note or voucher</button>';
+}
+
+/* ---- new doc sheet ---- */
+var newType='credit', newBill='b2', picked={};
+function openNew(){
+  newType='credit'; newBill='b2'; picked={l1:true,l2:true};
+  renderSheet();
+  document.getElementById('scrim').classList.add('on');
+}
+function closeSheet(){ document.getElementById('scrim').classList.remove('on'); }
+function pickType(t){ newType=t; if(t!=='advance'){ picked={}; bills[newBill].lines.forEach(function(l){picked[l.id]=true}); } renderSheet(); }
+function pickBill(id){ newBill=id; picked={}; bills[id].lines.forEach(function(l){picked[l.id]=true}); renderSheet(); }
+function togglePick(id){ picked[id]=!picked[id]; renderSheet(); }
+
+function sheetBase(){
+  if(newType==='advance') return 5000000;
+  return bills[newBill].lines.reduce(function(s,l){ return picked[l.id]? s+l.qty*l.rate : s; },0);
+}
+function sheetTax(){
+  if(MODE!=='regular') return 0;
+  if(newType==='advance'){ if(SUPPLY==='goods') return 0; return 5000000-Math.round(5000000*10000/11800); }
+  return bills[newBill].lines.reduce(function(s,l){ return picked[l.id]? s+Math.round(l.qty*l.rate*l.gst/10000) : s; },0);
+}
+
+function renderSheet(){
+  var types=[
+    {k:'credit',t:'Credit note',d:'Reduce a bill — goods came back, or you charged too much.'},
+    {k:'debit',t:'Debit note',d:'Increase a bill — extra work, or you charged too little.'},
+    {k:'advance',t:SUPPLY==='goods'?'Advance received':'Receipt voucher',
+     d:SUPPLY==='goods'?'Money taken before the invoice. No tax until you bill.':'Money taken before the invoice. Tax is due now.'}
+  ];
+  var h='<h2>New note or voucher</h2><p class="lede">Each type gets its own numbering run, so your bill numbers stay unbroken.</p>';
+  h+=types.map(function(x){
+    return '<button class="opt'+(newType===x.k?' on':'')+'" onclick="pickType(\''+x.k+'\')">'+
+      '<span class="radio"></span><span><span class="opt-t">'+x.t+'</span>'+
+      '<span class="opt-d">'+x.d+'</span></span></button>';
+  }).join('');
+
+  if(newType!=='advance'){
+    h+='<div class="sec" style="padding:14px 0 8px">Against which bill</div>';
+    h+=Object.keys(bills).map(function(k){
+      var b=bills[k];
+      return '<button class="opt'+(newBill===k?' on':'')+'" onclick="pickBill(\''+k+'\')">'+
+        '<span class="radio"></span><span><span class="opt-t">'+b.number+'</span>'+
+        '<span class="opt-d">'+b.party+' · '+fmtDate(b.date)+'</span></span></button>';
+    }).join('');
+    if(bills[newBill].fy==='2025-26'){
+      h+='<div class="warn amber" style="margin:6px 0 0">Last year\u2019s bill — '+daysUntil('2026-11-30')+' days left for the tax to come back on a credit note.</div>';
+    }
+    h+='<div class="sec" style="padding:14px 0 4px">Which lines</div>';
+    h+=bills[newBill].lines.map(function(l){
+      return '<div class="lineopt'+(picked[l.id]?' on':'')+'" onclick="togglePick(\''+l.id+'\')">'+
+        '<span class="box"></span><span class="t">'+l.desc+'</span>'+
+        '<span class="a num">'+rs(l.qty*l.rate)+'</span></div>';
+    }).join('');
+  } else {
+    h+='<div class="sec" style="padding:14px 0 4px">Amount received</div>';
+    h+='<div class="card" style="margin:0"><div class="kv"><span class="k">From customer</span><span class="v">Ashwin Motors</span></div>'+
+       '<div class="kv"><span class="k">Amount</span><span class="v num">'+rs(5000000)+'</span></div>'+
+       (MODE==='regular'&&SUPPLY==='services'
+         ? '<div class="kv"><span class="k">GST inside it @18%</span><span class="v num">'+rs(sheetTax())+'</span></div>'
+         : '<div class="kv"><span class="k">Tax now</span><span class="v">None</span></div>')+'</div>';
+    if(SUPPLY==='goods'&&MODE==='regular')
+      h+='<div class="warn green" style="margin:10px 0 0">You sell goods, so nothing is taxed until the invoice. This is just recorded against the customer.</div>';
+  }
+
+  h+='<div class="runtot"><span>'+(newType==='credit'?'Credit':newType==='debit'?'Addition':'Receipt')+' total</span>'+
+     '<span class="num">'+(newType==='credit'?'− ':'')+rs(sheetBase()+sheetTax())+'</span></div>';
+  h+='<div style="display:flex;gap:9px;margin-top:18px">'+
+     '<button class="btn ghost" onclick="closeSheet()">Cancel</button>'+
+     '<button class="btn" onclick="createDoc()">Create</button></div>';
+  document.getElementById('sheet').innerHTML=h;
+}
+function createDoc(){
+  var pre={credit:'CN',debit:'DN',advance:'ADV'}[newType];
+  closeSheet();
+  toast(pre+'/26-27/00'+(10+docs.length)+' created');
+}
+
+var tT;
+function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('on');
+  clearTimeout(tT);tT=setTimeout(function(){t.classList.remove('on')},2600);}
+
+document.getElementById('filters').addEventListener('click',function(e){
+  var b=e.target.closest('.chip'); if(!b) return;
+  filter=b.dataset.f;
+  document.querySelectorAll('#filters .chip').forEach(function(c){c.classList.toggle('on',c===b)});
+  renderList();
+});
+document.getElementById('modes').addEventListener('click',function(e){
+  var b=e.target.closest('button'); if(!b) return;
+  MODE=b.dataset.mode;
+  document.querySelectorAll('#modes button').forEach(function(c){c.classList.toggle('on',c===b)});
+  if(current) renderDetail(); else renderList();
+  if(document.getElementById('scrim').classList.contains('on')) renderSheet();
+});
+document.getElementById('supplies').addEventListener('click',function(e){
+  var b=e.target.closest('button'); if(!b) return;
+  SUPPLY=b.dataset.sup;
+  document.querySelectorAll('#supplies button').forEach(function(c){c.classList.toggle('on',c===b)});
+  if(current) renderDetail(); else renderList();
+  if(document.getElementById('scrim').classList.contains('on')) renderSheet();
+});
+document.getElementById('scrim').addEventListener('click',function(e){ if(e.target===this) closeSheet(); });
+
+renderList(); renderListActions();
+</script>
+</body>
+</html>

@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stages &amp; Progress — Khaata</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f6f4ee;
+    --card:#fdfcf9;
+    --ink:#2a2721;
+    --muted:#8a857a;
+    --faint:#b4afa4;
+    --line:#eceae2;
+    --line-soft:#f2f0e8;
+
+    --green:#1f6f54;
+    --green-tint:#e9f2ed;
+    --green-strip:#8bb5a3;
+
+    --ochre:#a9711f;
+    --ochre-tint:#f6ecd9;
+    --ochre-strip:#d6a95e;
+
+    --terra:#a8503a;
+    --terra-tint:#f4e4de;
+
+    --gray-strip:#d8d6cd;
+
+    --shadow-card:0 1px 2px rgba(45,42,34,0.05), 0 14px 26px -10px rgba(45,42,34,0.12), inset 0 1px 0 rgba(255,255,255,0.9);
+    --shadow-hero:0 2px 4px rgba(45,42,34,0.06), 0 22px 40px -14px rgba(45,42,34,0.18), inset 0 1px 0 rgba(255,255,255,0.9);
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{ transition:none !important; animation:none !important; }
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; }
+  body{
+    background:#e4e1d6;
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+    display:flex; justify-content:center; min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{
+    width:100%; max-width:480px; min-height:100vh;
+    background-color:var(--paper);
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    display:flex; flex-direction:column; position:relative;
+  }
+  button{ font-family:inherit; }
+  .icon-btn:focus-visible, button:focus-visible, input:focus-visible{
+    outline:2px solid var(--green); outline-offset:2px; border-radius:8px;
+  }
+  .press{ transition:transform .08s ease; }
+  .press:active{ transform:scale(0.98); }
+
+  /* Top bar */
+  .topbar{
+    display:flex; align-items:center; gap:14px;
+    padding:22px 20px 8px; position:sticky; top:0; z-index:6;
+    background:linear-gradient(to bottom, var(--paper) 78%, transparent);
+  }
+  .icon-btn{ background:none; border:none; cursor:pointer; color:var(--ink); padding:2px; font-size:20px; line-height:1; }
+  .topbar-title h1{
+    font-family:'Plus Jakarta Sans',sans-serif; font-size:21px; font-weight:600; margin:0; letter-spacing:-0.01em;
+  }
+  .topbar-title p{ margin:2px 0 0; font-size:12.5px; color:var(--muted); }
+
+  /* Hero */
+  .hero{
+    margin:10px 16px 6px; padding:20px;
+    background:var(--card); border-radius:22px;
+    box-shadow:var(--shadow-hero);
+    display:flex; align-items:center; gap:20px;
+  }
+  .ring-wrap{ position:relative; width:118px; height:118px; flex-shrink:0; }
+  .ring-wrap svg{ transform:rotate(-90deg); display:block; }
+  .ring-bg{ fill:none; stroke:#ece9e0; stroke-width:11; }
+  .ring-fg{
+    fill:none; stroke:var(--green); stroke-width:11; stroke-linecap:round;
+    transition:stroke-dashoffset 1.15s cubic-bezier(.22,.7,.24,1) .25s;
+  }
+  .ring-center{
+    position:absolute; inset:0; display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+  }
+  .ring-pct{
+    font-family:'Plus Jakarta Sans',sans-serif; font-weight:600; font-size:30px;
+    line-height:1; letter-spacing:-0.02em; font-variant-numeric:tabular-nums;
+  }
+  .ring-cap{ font-size:10px; text-transform:uppercase; letter-spacing:0.09em; color:var(--muted); margin-top:4px; }
+
+  .hero-side{ flex:1; min-width:0; }
+  .hero-stat + .hero-stat{ margin-top:14px; padding-top:14px; border-top:1px solid var(--line); }
+  .overline{ font-size:10.5px; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); font-weight:600; }
+  .hero-figure{
+    font-family:'Plus Jakarta Sans',sans-serif; font-weight:600; font-size:19px; margin-top:3px;
+    letter-spacing:-0.01em; font-variant-numeric:tabular-nums;
+  }
+  .hero-figure.money{ color:var(--ochre); display:flex; align-items:center; gap:6px; }
+  .hero-figure .dot{ width:7px; height:7px; border-radius:50%; background:var(--ochre); display:inline-block; }
+
+  /* Stage list */
+  .stage-list{ flex:1; padding:12px 16px 120px; display:flex; flex-direction:column; gap:13px; }
+  .stage-card{
+    position:relative; background:var(--card); border-radius:18px;
+    box-shadow:var(--shadow-card); overflow:hidden;
+  }
+  .stage-card::before{
+    content:''; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--gray-strip);
+  }
+  .stage-card.st-in_progress::before{ background:var(--ochre-strip); }
+  .stage-card.st-complete::before{ background:var(--green-strip); }
+
+  .stage-header{ display:flex; align-items:center; gap:12px; padding:16px 16px 16px 20px; cursor:pointer; }
+  .stage-title{ flex:1; min-width:0; }
+  .stage-name{ font-family:'Plus Jakarta Sans',sans-serif; font-weight:600; font-size:16.5px; letter-spacing:-0.01em; }
+  .stage-sub{ font-size:12px; color:var(--muted); margin-top:2px; font-variant-numeric:tabular-nums; }
+
+  .status-pill{
+    display:inline-flex; align-items:center; gap:5px; flex-shrink:0;
+    font-size:11.5px; font-weight:600; padding:5px 10px; border-radius:99px;
+    background:#f1efe8; color:var(--muted);
+  }
+  .status-pill .ic{ font-size:11px; line-height:1; }
+  .st-in_progress .status-pill{ background:var(--ochre-tint); color:var(--ochre); }
+  .st-complete .status-pill{ background:var(--green-tint); color:var(--green); }
+
+  .chevron{ font-size:15px; color:var(--faint); transition:transform .22s ease; flex-shrink:0; }
+  .chevron.open{ transform:rotate(180deg); }
+
+  .stage-body{ padding:0 18px 20px 20px; animation:expandIn .24s ease both; }
+  @keyframes expandIn{ from{ opacity:0; transform:translateY(-6px); } to{ opacity:1; transform:translateY(0); } }
+
+  .section-label{ font-size:10.5px; font-weight:600; color:var(--faint); text-transform:uppercase; letter-spacing:0.08em; margin:18px 0 9px; }
+
+  /* Segmented */
+  .seg{ display:flex; gap:4px; background:var(--line-soft); padding:4px; border-radius:12px; }
+  .seg-btn{ flex:1; padding:9px 6px; font-size:13px; font-weight:600; border:none; background:transparent; border-radius:9px; cursor:pointer; color:var(--muted); transition:transform .08s ease; }
+  .seg-btn:active{ transform:scale(0.97); }
+  .seg-btn.active{ background:var(--card); color:var(--green); box-shadow:0 1px 2px rgba(45,42,34,0.1), inset 0 1px 0 rgba(255,255,255,0.9); }
+
+  /* Simple selector */
+  .simple-selector{ display:flex; gap:8px; }
+  .status-btn{ flex:1; padding:11px 6px; font-size:12.5px; font-weight:600; border:1px solid var(--line); background:var(--card); border-radius:11px; cursor:pointer; color:var(--muted); transition:transform .08s ease; }
+  .status-btn:active{ transform:scale(0.97); }
+  .status-btn.active.not-started{ background:#f3f1ea; border-color:#dbd8cf; color:var(--ink); }
+  .status-btn.active.in-progress{ background:var(--ochre-tint); border-color:var(--ochre-strip); color:var(--ochre); }
+  .status-btn.active.complete{ background:var(--green-tint); border-color:var(--green-strip); color:var(--green); }
+
+  /* Checklist */
+  .checklist{ display:flex; flex-direction:column; }
+  .task-row{ padding:11px 0; border-bottom:1px solid var(--line-soft); }
+  .task-row:last-of-type{ border-bottom:none; }
+  .task-main{ display:flex; align-items:center; gap:12px; }
+  .checkbox{
+    width:22px; height:22px; border-radius:7px; border:1.5px solid #cdcabf; background:var(--card);
+    flex-shrink:0; cursor:pointer; padding:0; position:relative; transition:transform .08s ease;
+  }
+  .checkbox:active{ transform:scale(0.9); }
+  .checkbox.done{ background:var(--green); border-color:var(--green); }
+  .checkbox svg{ position:absolute; inset:0; width:100%; height:100%; }
+  .checkbox svg path{ stroke:#fff; stroke-width:2.4; fill:none; stroke-linecap:round; stroke-linejoin:round;
+    stroke-dasharray:20; stroke-dashoffset:20; }
+  .checkbox.done svg path{ animation:draw .32s ease forwards; }
+  @keyframes draw{ to{ stroke-dashoffset:0; } }
+  .task-label{ flex:1; font-size:14.5px; cursor:pointer; line-height:1.35; }
+  .task-label.done{ color:var(--faint); text-decoration:line-through; }
+  .task-meta{ font-size:11px; color:var(--faint); white-space:nowrap; }
+
+  .add-task-row{ display:flex; gap:8px; margin-top:13px; }
+  .add-task-input{ flex:1; padding:10px 12px; border:1px solid var(--line); border-radius:11px; font-size:13.5px; font-family:'Inter',sans-serif; background:var(--card); }
+  .add-task-input::placeholder{ color:var(--faint); }
+  .add-task-btn{ padding:10px 16px; border:1px solid var(--line); background:var(--card); color:var(--green); border-radius:11px; font-size:13px; font-weight:700; cursor:pointer; transition:transform .08s ease; }
+  .add-task-btn:active{ transform:scale(0.97); }
+
+  .empty-tasks{ text-align:center; padding:18px 10px 6px; }
+  .empty-tasks .emo{ font-size:26px; }
+  .empty-tasks p{ margin:8px 0 0; font-size:13px; color:var(--muted); }
+
+  /* Detail panel */
+  .detail{ margin:11px 0 4px 34px; padding:13px; background:var(--line-soft); border-radius:13px; }
+  .detail.stage-level{ margin-left:0; }
+  .diary-list{ display:flex; flex-direction:column; gap:9px; margin-bottom:11px; }
+  .diary-entry{ font-size:13px; line-height:1.42; }
+  .diary-date{ font-weight:600; color:var(--muted); margin-right:7px; font-size:11.5px; font-variant-numeric:tabular-nums; }
+  .empty-hint{ font-size:12.5px; color:var(--faint); font-style:italic; }
+  .attachment-chips{ display:flex; flex-wrap:wrap; gap:7px; margin-bottom:11px; }
+  .chip{ font-size:11.5px; background:var(--card); border:1px solid var(--line); padding:5px 10px; border-radius:99px; color:var(--muted); }
+  .detail-actions{ display:flex; gap:7px; align-items:center; flex-wrap:wrap; }
+  .diary-input{ flex:1; min-width:110px; padding:9px 11px; border:1px solid var(--line); border-radius:10px; font-size:12.5px; font-family:'Inter',sans-serif; background:var(--card); }
+  .diary-input::placeholder{ color:var(--faint); }
+  .btn-tiny{ padding:9px 12px; border:1px solid var(--line); background:var(--card); border-radius:10px; font-size:12px; font-weight:600; cursor:pointer; color:var(--muted); white-space:nowrap; transition:transform .08s ease; }
+  .btn-tiny:active{ transform:scale(0.96); }
+
+  /* Payment */
+  .payment{ margin-top:18px; padding-top:16px; border-top:1px solid var(--line); }
+  .payment-row{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:9px; }
+  .payment-row .k{ font-size:10.5px; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); font-weight:600; }
+  .payment-row .v{ font-size:13.5px; color:var(--ink); font-weight:600; font-variant-numeric:tabular-nums; }
+  .payment-track{ height:6px; background:#efece4; border-radius:99px; overflow:hidden; }
+  .payment-fill{ height:100%; background:var(--faint); border-radius:99px; width:0; transition:width 1s ease .3s; }
+  .payment-none{ margin-top:16px; font-size:12.5px; color:var(--faint); font-style:italic; }
+
+  .ready-banner{
+    margin-top:14px; padding:12px 14px; display:flex; align-items:center; gap:10px;
+    background:var(--ochre-tint); color:var(--ochre); border-radius:13px; font-size:13px; font-weight:600; line-height:1.35;
+  }
+  .ready-banner .tick{ font-weight:700; font-size:15px; }
+
+  .delete-stage{ display:block; margin:20px auto 0; background:none; border:none; color:var(--faint); font-size:12.5px; font-weight:600; cursor:pointer; padding:6px 10px; }
+  .delete-stage:hover{ color:var(--terra); }
+
+  /* Add stage */
+  .add-stage-wrap{ position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:480px; padding:16px 20px 24px; background:linear-gradient(to top, var(--paper) 60%, transparent); pointer-events:none; z-index:8; }
+  .add-stage-btn{ pointer-events:auto; width:100%; padding:15px; background:var(--green); color:#fff; border:none; border-radius:15px; font-family:'Plus Jakarta Sans',sans-serif; font-weight:600; font-size:15.5px; cursor:pointer; box-shadow:0 6px 18px rgba(31,111,84,0.32); transition:transform .08s ease; }
+  .add-stage-btn:active{ transform:scale(0.98); }
+
+  /* Sheet */
+  .sheet-overlay{ position:fixed; inset:0; background:rgba(24,22,16,0.42); display:none; align-items:flex-end; justify-content:center; z-index:20; }
+  .sheet-overlay.show{ display:flex; animation:fade .18s ease; }
+  @keyframes fade{ from{ opacity:0; } to{ opacity:1; } }
+  .sheet{ width:100%; max-width:480px; background:var(--card); border-radius:24px 24px 0 0; padding:22px 20px 26px; animation:slideUp .26s cubic-bezier(.22,.7,.24,1); }
+  @keyframes slideUp{ from{ transform:translateY(30px); } to{ transform:translateY(0); } }
+  .sheet h2{ font-family:'Plus Jakarta Sans',sans-serif; font-weight:600; font-size:19px; margin:0 0 4px; }
+  .sheet .sheet-hint{ font-size:13px; color:var(--muted); margin:0 0 18px; line-height:1.4; }
+  .sheet label{ display:block; font-size:10.5px; font-weight:600; color:var(--faint); text-transform:uppercase; letter-spacing:0.08em; margin:16px 0 8px; }
+  .sheet input[type="text"]{ width:100%; padding:12px 13px; border:1px solid var(--line); border-radius:12px; font-size:15px; font-family:'Inter',sans-serif; background:var(--card); }
+  .sheet-actions{ display:flex; gap:10px; margin-top:24px; }
+  .btn-secondary, .btn-primary{ flex:1; padding:13px; border-radius:13px; font-weight:700; font-size:14.5px; cursor:pointer; transition:transform .08s ease; }
+  .btn-secondary:active, .btn-primary:active{ transform:scale(0.98); }
+  .btn-secondary{ background:var(--card); color:var(--ink); border:1px solid var(--line); }
+  .btn-primary{ background:var(--green); color:#fff; border:1px solid var(--green); }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <button class="icon-btn" aria-label="Go back">←</button>
+    <div class="topbar-title">
+      <h1>Stages &amp; Progress</h1>
+      <p>Sharma Residence · G+2</p>
+    </div>
+  </header>
+
+  <section class="hero" aria-label="Project progress summary">
+    <div class="ring-wrap">
+      <svg width="118" height="118" viewBox="0 0 118 118" aria-hidden="true">
+        <circle class="ring-bg" cx="59" cy="59" r="52"></circle>
+        <circle class="ring-fg" id="ringFg" cx="59" cy="59" r="52"></circle>
+      </svg>
+      <div class="ring-center">
+        <div class="ring-pct" id="ringPct">0%</div>
+        <div class="ring-cap">Complete</div>
+      </div>
+    </div>
+    <div class="hero-side">
+      <div class="hero-stat">
+        <div class="overline">Stages done</div>
+        <div class="hero-figure" id="heroStages">— / —</div>
+      </div>
+      <div class="hero-stat" id="heroBillWrap">
+        <div class="overline">Ready to bill</div>
+        <div class="hero-figure money"><span class="dot"></span><span id="heroBill">₹0</span></div>
+      </div>
+    </div>
+  </section>
+
+  <main id="stageList" class="stage-list"></main>
+
+  <div class="add-stage-wrap">
+    <button class="add-stage-btn" id="addStageBtn">+ Add stage</button>
+  </div>
+</div>
+
+<div class="sheet-overlay" id="addStageOverlay">
+  <div class="sheet">
+    <h2>Add stage</h2>
+    <p class="sheet-hint">Add any stage — including floor-specific ones like “Brickwork — 1st Floor”.</p>
+    <label>Stage name</label>
+    <input type="text" id="newStageName" placeholder="e.g. Brickwork — 1st Floor">
+    <label>Track using</label>
+    <div class="seg" id="newStageMode">
+      <button type="button" class="seg-btn active" data-value="simple">Simple status</button>
+      <button type="button" class="seg-btn" data-value="checklist">Checklist</button>
+    </div>
+    <div class="sheet-actions">
+      <button class="btn-secondary" id="cancelAddStage">Cancel</button>
+      <button class="btn-primary" id="confirmAddStage">Add stage</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let idCounter = 1000;
+  const genId = () => 'x' + (idCounter++);
+  const fmt = n => '₹' + Number(n).toLocaleString('en-IN');
+  const todayStr = () => new Date().toISOString().slice(0,10);
+  const escapeHtml = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const CHECK_SVG = '<svg viewBox="0 0 24 24"><path d="M6 12.5l3.5 3.5L18 8"/></svg>';
+
+  const SUGGESTIONS = {
+    'foundation': ['Excavation','PCC laid','Footing reinforcement','Footing concrete'],
+    'plinth': ['Plinth beam reinforcement','Plinth beam concrete','Backfilling'],
+    'structure': ['Column reinforcement','Column concrete','Slab shuttering','Slab reinforcement','Slab concrete'],
+    'brickwork': ['External walls','Internal walls','Sill & lintel band'],
+    'plaster': ['Internal plaster','External plaster'],
+    'floor': ['Base flooring','Tile / marble laying'],
+    'finish': ['Painting','Electrical fittings','Plumbing fittings','Doors & windows']
+  };
+  function getSuggestedTasks(name){
+    const lower = name.toLowerCase();
+    for (const key in SUGGESTIONS){
+      if (lower.includes(key)) return SUGGESTIONS[key].map(label => ({ id:genId(), label, done:false, diary:[], attachments:[] }));
+    }
+    return [];
+  }
+
+  const state = {
+    firstPaint: true,
+    expandedStages: new Set(['s1']),
+    expandedTasks: new Set(),
+    stages: [
+      { id:'s1', name:'Foundation', mode:'checklist', simpleStatus:null,
+        tasks:[
+          { id:'t1', label:'Excavation', done:true, diary:[{date:'2026-06-02', note:'Soil good, no rock hit'}], attachments:['site_photo_1.jpg'] },
+          { id:'t2', label:'PCC laid', done:true, diary:[], attachments:[] },
+          { id:'t3', label:'Footing reinforcement', done:true, diary:[], attachments:['rebar_check.jpg'] },
+          { id:'t4', label:'Footing concrete', done:true, diary:[{date:'2026-06-10', note:'Poured, cured 7 days before backfill'}], attachments:[] }
+        ], diary:[], attachments:[], payment:{ expected:150000, received:100000 } },
+      { id:'s2', name:'Plinth', mode:'checklist', simpleStatus:null,
+        tasks:[
+          { id:'t5', label:'Plinth beam reinforcement', done:true, diary:[], attachments:[] },
+          { id:'t6', label:'Plinth beam concrete', done:false, diary:[], attachments:[] },
+          { id:'t7', label:'Backfilling', done:false, diary:[], attachments:[] }
+        ], diary:[], attachments:[], payment:{ expected:100000, received:0 } },
+      { id:'s3', name:'Structure', mode:'checklist', simpleStatus:null,
+        tasks:[], diary:[], attachments:[], payment:{ expected:250000, received:0 } },
+      { id:'s4', name:'Brickwork', mode:'checklist', simpleStatus:null,
+        tasks:[
+          { id:'t8', label:'External walls', done:false, diary:[], attachments:[] },
+          { id:'t9', label:'Internal walls', done:false, diary:[], attachments:[] },
+          { id:'t10', label:'Sill & lintel band', done:false, diary:[], attachments:[] }
+        ], diary:[], attachments:[], payment:{ expected:180000, received:0 } },
+      { id:'s5', name:'Plaster', mode:'simple', simpleStatus:'in_progress', tasks:[], diary:[], attachments:[], payment:{ expected:120000, received:0 } },
+      { id:'s6', name:'Flooring', mode:'simple', simpleStatus:'not_started', tasks:[], diary:[], attachments:[], payment:{ expected:90000, received:0 } },
+      { id:'s7', name:'Finishing', mode:'simple', simpleStatus:'not_started', tasks:[], diary:[], attachments:[], payment:{ expected:150000, received:0 } }
+    ]
+  };
+
+  function getStatus(stage){
+    if (stage.mode === 'simple') return stage.simpleStatus || 'not_started';
+    if (stage.tasks.length === 0) return 'not_started';
+    const done = stage.tasks.filter(t => t.done).length;
+    if (done === 0) return 'not_started';
+    if (done === stage.tasks.length) return 'complete';
+    return 'in_progress';
+  }
+  function stageFraction(stage){
+    const st = getStatus(stage);
+    if (st === 'complete') return 1;
+    if (stage.mode === 'simple') return st === 'in_progress' ? 0.5 : 0;
+    return stage.tasks.length ? stage.tasks.filter(t=>t.done).length / stage.tasks.length : 0;
+  }
+  const statusLabel = s => ({not_started:'Not started', in_progress:'In progress', complete:'Complete'}[s]);
+  const statusIcon  = s => ({not_started:'○', in_progress:'◑', complete:'✓'}[s]);
+
+  function stageSubline(stage, status){
+    if (stage.mode === 'checklist' && stage.tasks.length){
+      return `${stage.tasks.filter(t=>t.done).length} of ${stage.tasks.length} tasks done`;
+    }
+    if (stage.mode === 'checklist') return 'Checklist · no tasks yet';
+    return 'Simple status';
+  }
+
+  const findStage = id => state.stages.find(s => s.id === id);
+  const findTask = (stage, id) => stage.tasks.find(t => t.id === id);
+
+  function renderModeToggle(stage){
+    return `<div class="section-label">Track using</div>
+    <div class="seg">
+      <button type="button" class="seg-btn ${stage.mode==='simple'?'active':''}" data-action="set-mode" data-stage="${stage.id}" data-value="simple">Simple</button>
+      <button type="button" class="seg-btn ${stage.mode==='checklist'?'active':''}" data-action="set-mode" data-stage="${stage.id}" data-value="checklist">Checklist</button>
+    </div>`;
+  }
+  function renderSimpleSelector(stage){
+    const s = stage.simpleStatus;
+    return `<div class="section-label">Status</div>
+    <div class="simple-selector">
+      <button type="button" class="status-btn ${s==='not_started'?'active not-started':''}" data-action="set-simple" data-stage="${stage.id}" data-value="not_started">Not started</button>
+      <button type="button" class="status-btn ${s==='in_progress'?'active in-progress':''}" data-action="set-simple" data-stage="${stage.id}" data-value="in_progress">In progress</button>
+      <button type="button" class="status-btn ${s==='complete'?'active complete':''}" data-action="set-simple" data-stage="${stage.id}" data-value="complete">Complete</button>
+    </div>`;
+  }
+  function renderTaskDetail(stage, t){
+    const diaryHtml = t.diary.length
+      ? t.diary.map(d => `<div class="diary-entry"><span class="diary-date">${d.date}</span>${escapeHtml(d.note)}</div>`).join('')
+      : '<div class="empty-hint">No site notes yet</div>';
+    const chips = t.attachments.map(a => `<span class="chip">📎 ${escapeHtml(a)}</span>`).join('');
+    return `<div class="detail">
+      <div class="diary-list">${diaryHtml}</div>
+      ${chips ? `<div class="attachment-chips">${chips}</div>` : ''}
+      <div class="detail-actions">
+        <input type="text" class="diary-input" data-stage="${stage.id}" data-task="${t.id}" placeholder="Add site note…">
+        <button type="button" class="btn-tiny" data-action="add-diary" data-stage="${stage.id}" data-task="${t.id}">Add note</button>
+        <button type="button" class="btn-tiny" data-action="add-attachment" data-stage="${stage.id}" data-task="${t.id}">📷 Attach</button>
+      </div>
+    </div>`;
+  }
+  function renderTaskRow(stage, t){
+    const key = stage.id + ':' + t.id;
+    const expanded = state.expandedTasks.has(key);
+    const meta = [ t.diary.length?`📝 ${t.diary.length}`:'', t.attachments.length?`📎 ${t.attachments.length}`:'' ].filter(Boolean).join('  ');
+    return `<div class="task-row">
+      <div class="task-main">
+        <button type="button" class="checkbox ${t.done?'done':''}" data-action="toggle-task" data-stage="${stage.id}" data-task="${t.id}" aria-label="${t.done?'Mark task not done':'Mark task done'}">${t.done?CHECK_SVG:''}</button>
+        <span class="task-label ${t.done?'done':''}" data-action="toggle-task-detail" data-stage="${stage.id}" data-task="${t.id}">${escapeHtml(t.label)}</span>
+        <span class="task-meta">${meta}</span>
+      </div>
+      ${expanded ? renderTaskDetail(stage, t) : ''}
+    </div>`;
+  }
+  function renderChecklist(stage){
+    if (!stage.tasks.length){
+      return `<div class="section-label">Tasks</div>
+      <div class="empty-tasks"><div class="emo">📝</div><p>No tasks yet — add the first one below.</p></div>
+      <div class="add-task-row">
+        <input type="text" class="add-task-input" data-stage="${stage.id}" placeholder="Add a task…">
+        <button type="button" class="add-task-btn" data-action="add-task" data-stage="${stage.id}">Add</button>
+      </div>`;
+    }
+    return `<div class="section-label">Tasks</div>
+    <div class="checklist">${stage.tasks.map(t => renderTaskRow(stage, t)).join('')}
+      <div class="add-task-row">
+        <input type="text" class="add-task-input" data-stage="${stage.id}" placeholder="Add a task…">
+        <button type="button" class="add-task-btn" data-action="add-task" data-stage="${stage.id}">Add</button>
+      </div>
+    </div>`;
+  }
+  function renderStageLevelDiary(stage){
+    const diaryHtml = stage.diary.length
+      ? stage.diary.map(d => `<div class="diary-entry"><span class="diary-date">${d.date}</span>${escapeHtml(d.note)}</div>`).join('')
+      : '<div class="empty-hint">No site notes yet</div>';
+    const chips = stage.attachments.map(a => `<span class="chip">📎 ${escapeHtml(a)}</span>`).join('');
+    return `<div class="section-label">Site diary</div>
+    <div class="detail stage-level">
+      <div class="diary-list">${diaryHtml}</div>
+      ${chips ? `<div class="attachment-chips">${chips}</div>` : ''}
+      <div class="detail-actions">
+        <input type="text" class="diary-input" data-stage="${stage.id}" placeholder="Add site note…">
+        <button type="button" class="btn-tiny" data-action="add-diary-stage" data-stage="${stage.id}">Add note</button>
+        <button type="button" class="btn-tiny" data-action="add-attachment-stage" data-stage="${stage.id}">📷 Attach</button>
+      </div>
+    </div>`;
+  }
+  function renderPayment(stage){
+    if (stage.payment.expected === 0) return `<div class="payment-none">No payment scheduled for this stage yet</div>`;
+    const pct = Math.min(100, Math.round((stage.payment.received / stage.payment.expected) * 100));
+    return `<div class="payment">
+      <div class="payment-row"><span class="k">Payment received</span><span class="v">${fmt(stage.payment.received)} / ${fmt(stage.payment.expected)}</span></div>
+      <div class="payment-track"><div class="payment-fill" data-pct="${pct}"></div></div>
+    </div>`;
+  }
+  function renderReadyToBill(stage, status){
+    const pending = stage.payment.expected - stage.payment.received;
+    if (status === 'complete' && stage.payment.expected > 0 && pending > 0){
+      return `<div class="ready-banner"><span class="tick">✓</span><span>Work complete — ${fmt(pending)} pending. Ready to bill.</span></div>`;
+    }
+    return '';
+  }
+  function renderStageBody(stage, status){
+    const useTaskLevel = stage.mode === 'checklist' && stage.tasks.length > 0;
+    return `<div class="stage-body">
+      ${renderModeToggle(stage)}
+      ${stage.mode === 'simple' ? renderSimpleSelector(stage) : renderChecklist(stage)}
+      ${!useTaskLevel ? renderStageLevelDiary(stage) : ''}
+      ${renderPayment(stage)}
+      ${renderReadyToBill(stage, status)}
+      <button type="button" class="delete-stage" data-action="delete-stage" data-stage="${stage.id}">Delete stage</button>
+    </div>`;
+  }
+  function renderStage(stage){
+    const status = getStatus(stage);
+    const expanded = state.expandedStages.has(stage.id);
+    return `<div class="stage-card st-${status}" data-stage="${stage.id}">
+      <div class="stage-header press" data-action="toggle-stage" data-stage="${stage.id}">
+        <div class="stage-title">
+          <div class="stage-name">${escapeHtml(stage.name)}</div>
+          <div class="stage-sub">${stageSubline(stage, status)}</div>
+        </div>
+        <span class="status-pill"><span class="ic">${statusIcon(status)}</span>${statusLabel(status)}</span>
+        <span class="chevron ${expanded?'open':''}" aria-hidden="true">⌄</span>
+      </div>
+      ${expanded ? renderStageBody(stage, status) : ''}
+    </div>`;
+  }
+
+  function updateHero(animate){
+    const total = state.stages.length;
+    const complete = state.stages.filter(s => getStatus(s) === 'complete').length;
+    const overall = total ? state.stages.reduce((a,s)=>a+stageFraction(s),0)/total : 0;
+    const pctTarget = Math.round(overall*100);
+
+    const bill = state.stages.reduce((a,s)=>{
+      const p = s.payment.expected - s.payment.received;
+      return a + (getStatus(s)==='complete' && p>0 ? p : 0);
+    },0);
+
+    document.getElementById('heroStages').textContent = `${complete} / ${total}`;
+    document.getElementById('heroBill').textContent = fmt(bill);
+    document.getElementById('heroBillWrap').style.display = bill>0 ? '' : 'none';
+
+    const r = 52, circ = 2*Math.PI*r;
+    const ring = document.getElementById('ringFg');
+    ring.style.strokeDasharray = circ;
+    const pctEl = document.getElementById('ringPct');
+
+    if (animate && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+      ring.style.strokeDashoffset = circ;
+      requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ ring.style.strokeDashoffset = circ*(1-overall); }); });
+      const start = performance.now(), dur = 1150, delay = 250;
+      function tick(now){
+        const t = Math.min(1, Math.max(0, (now-start-delay)/dur));
+        const eased = 1-Math.pow(1-t,3);
+        pctEl.textContent = Math.round(pctTarget*eased) + '%';
+        if (t < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    } else {
+      ring.style.strokeDashoffset = circ*(1-overall);
+      pctEl.textContent = pctTarget + '%';
+    }
+  }
+
+  function render(){
+    document.getElementById('stageList').innerHTML = state.stages.map(renderStage).join('');
+    document.querySelectorAll('.payment-fill').forEach(el=>{
+      requestAnimationFrame(()=>{ el.style.width = el.dataset.pct + '%'; });
+    });
+    updateHero(state.firstPaint);
+    state.firstPaint = false;
+  }
+
+  document.getElementById('stageList').addEventListener('click', e => {
+    const el = e.target.closest('[data-action]');
+    if (!el) return;
+    const action = el.dataset.action;
+    const stage = el.dataset.stage ? findStage(el.dataset.stage) : null;
+
+    if (action === 'toggle-stage'){
+      state.expandedStages.has(stage.id) ? state.expandedStages.delete(stage.id) : state.expandedStages.add(stage.id);
+      render();
+    } else if (action === 'delete-stage'){
+      if (confirm(`Delete "${stage.name}"? This can't be undone.`)){ state.stages = state.stages.filter(s => s.id !== stage.id); render(); }
+    } else if (action === 'set-mode'){
+      const nm = el.dataset.value;
+      if (nm === 'simple' && stage.mode !== 'simple') stage.simpleStatus = getStatus(stage);
+      else if (nm === 'checklist' && stage.mode !== 'checklist' && stage.tasks.length === 0) stage.tasks = getSuggestedTasks(stage.name);
+      stage.mode = nm; render();
+    } else if (action === 'set-simple'){
+      stage.simpleStatus = el.dataset.value; render();
+    } else if (action === 'toggle-task'){
+      const t = findTask(stage, el.dataset.task); t.done = !t.done; render();
+    } else if (action === 'toggle-task-detail'){
+      const key = stage.id + ':' + el.dataset.task;
+      state.expandedTasks.has(key) ? state.expandedTasks.delete(key) : state.expandedTasks.add(key);
+      render();
+    } else if (action === 'add-task'){
+      const input = document.querySelector(`.add-task-input[data-stage="${stage.id}"]`);
+      const label = input.value.trim();
+      if (label){ stage.tasks.push({ id:genId(), label, done:false, diary:[], attachments:[] }); render(); }
+    } else if (action === 'add-diary'){
+      const t = findTask(stage, el.dataset.task);
+      const input = document.querySelector(`.diary-input[data-stage="${stage.id}"][data-task="${el.dataset.task}"]`);
+      const note = input.value.trim();
+      if (note){ t.diary.push({ date: todayStr(), note }); state.expandedTasks.add(stage.id + ':' + t.id); render(); }
+    } else if (action === 'add-attachment'){
+      const t = findTask(stage, el.dataset.task);
+      t.attachments.push(`site_photo_${Math.floor(Math.random()*900+100)}.jpg`);
+      state.expandedTasks.add(stage.id + ':' + t.id); render();
+    } else if (action === 'add-diary-stage'){
+      const input = document.querySelector(`.detail.stage-level .diary-input[data-stage="${stage.id}"]`);
+      const note = input.value.trim();
+      if (note){ stage.diary.push({ date: todayStr(), note }); render(); }
+    } else if (action === 'add-attachment-stage'){
+      stage.attachments.push(`site_photo_${Math.floor(Math.random()*900+100)}.jpg`); render();
+    }
+  });
+
+  // Add-stage sheet
+  const overlay = document.getElementById('addStageOverlay');
+  const nameInput = document.getElementById('newStageName');
+  const modeToggle = document.getElementById('newStageMode');
+  let pendingMode = 'simple';
+  document.getElementById('addStageBtn').addEventListener('click', () => {
+    nameInput.value = ''; pendingMode = 'simple';
+    modeToggle.querySelectorAll('.seg-btn').forEach(b => b.classList.toggle('active', b.dataset.value === 'simple'));
+    overlay.classList.add('show'); nameInput.focus();
+  });
+  document.getElementById('cancelAddStage').addEventListener('click', () => overlay.classList.remove('show'));
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('show'); });
+  modeToggle.addEventListener('click', e => {
+    const btn = e.target.closest('.seg-btn'); if (!btn) return;
+    pendingMode = btn.dataset.value;
+    modeToggle.querySelectorAll('.seg-btn').forEach(b => b.classList.toggle('active', b === btn));
+  });
+  document.getElementById('confirmAddStage').addEventListener('click', () => {
+    const name = nameInput.value.trim() || 'New stage';
+    const ns = { id: genId(), name, mode: pendingMode,
+      simpleStatus: pendingMode === 'simple' ? 'not_started' : null,
+      tasks: pendingMode === 'checklist' ? getSuggestedTasks(name) : [],
+      diary: [], attachments: [], payment: { expected: 0, received: 0 } };
+    state.stages.push(ns); state.expandedStages.add(ns.id);
+    overlay.classList.remove('show'); render();
+  });
+
+  render();
+</script>
+</body>
+</html>

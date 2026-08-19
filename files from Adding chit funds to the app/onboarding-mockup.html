@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Onboarding — Ledgr</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f4f3ee; --card:#fbfaf5; --ink:#2b2a26; --muted:#7a766c; --faint:#a19c91;
+    --green:#1f6f54; --green-soft:#e6efea; --ochre:#b8862d; --ochre-soft:#f6eeda;
+    --terra:#b0503a; --terra-soft:#f8e8e3;
+    --line:rgba(43,42,38,.09); --line-strong:rgba(43,42,38,.16);
+    --shadow:0 1px 2px rgba(43,42,38,.05), 0 6px 16px -6px rgba(43,42,38,.12), inset 0 1px 0 rgba(255,255,255,.85);
+    --shadow-lift:0 2px 4px rgba(43,42,38,.06), 0 14px 30px -10px rgba(43,42,38,.18), inset 0 1px 0 rgba(255,255,255,.9);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{background:#e8e6df;font-family:'Inter',system-ui,sans-serif;color:var(--ink);
+    display:flex;justify-content:center;padding:24px 12px 48px;min-height:100vh}
+  .grain{position:fixed;inset:0;pointer-events:none;opacity:.35;z-index:99}
+
+  .phone{width:100%;max-width:412px;background:var(--paper);border-radius:28px;overflow:hidden;
+    position:relative;box-shadow:0 30px 60px -20px rgba(43,42,38,.35),0 0 0 1px rgba(43,42,38,.08);
+    display:flex;flex-direction:column;height:860px}
+
+  /* header */
+  .top{display:flex;align-items:center;gap:12px;padding:18px 16px 6px;min-height:56px}
+  .iconbtn{width:36px;height:36px;flex:0 0 36px;border-radius:11px;border:1px solid var(--line);
+    background:var(--card);display:grid;place-items:center;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.8)}
+  .iconbtn:active{transform:scale(.95)}
+  .iconbtn.hide{visibility:hidden}
+  .steps{display:flex;gap:5px;flex:1;justify-content:center}
+  .steps i{width:22px;height:4px;border-radius:99px;background:rgba(43,42,38,.13);transition:.3s}
+  .steps i.on{background:var(--green);width:30px}
+  .steps i.done{background:rgba(31,111,84,.4)}
+  .skiplink{font-size:12.5px;font-weight:600;color:var(--muted);background:none;border:0;
+    cursor:pointer;font-family:'Inter',sans-serif;padding:8px 2px}
+
+  .body{flex:1;overflow-y:auto;padding:10px 20px 20px}
+  .foot{padding:12px 20px 20px;background:linear-gradient(to top,var(--paper) 65%,rgba(244,243,238,0))}
+
+  .eyebrow{font-size:10.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--faint)}
+  h2{font-family:'Plus Jakarta Sans',sans-serif;font-size:25px;font-weight:800;letter-spacing:-.035em;
+    line-height:1.15;margin:8px 0 8px}
+  .lede{font-size:13.5px;color:var(--muted);line-height:1.55;margin:0 0 18px;font-weight:500}
+
+  .btn{border-radius:14px;padding:14px 12px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;
+    font-size:14px;cursor:pointer;border:1px solid transparent;letter-spacing:-.01em;width:100%;display:block}
+  .btn.primary{background:var(--green);color:#f6faf8;
+    box-shadow:0 6px 18px -6px rgba(31,111,84,.6),inset 0 1px 0 rgba(255,255,255,.2)}
+  .btn.primary[disabled]{background:rgba(43,42,38,.14);color:var(--faint);box-shadow:none;cursor:not-allowed}
+  .btn.outline{background:var(--card);color:var(--ink);border-color:var(--line-strong);box-shadow:var(--shadow);
+    display:flex;align-items:center;justify-content:center;gap:9px}
+  .btn:not([disabled]):active{transform:scale(.985)}
+  .textbtn{background:none;border:0;color:var(--muted);font-family:'Inter',sans-serif;font-size:13px;
+    font-weight:600;width:100%;padding:14px 0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+
+  /* --- step 1 hero --- */
+  .mark{width:52px;height:52px;border-radius:16px;background:var(--green);display:grid;place-items:center;
+    box-shadow:0 8px 20px -6px rgba(31,111,84,.55),inset 0 1px 0 rgba(255,255,255,.25);margin-bottom:20px}
+  .mark span{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:24px;color:#f6faf8;letter-spacing:-.04em}
+  .demo{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;
+    box-shadow:var(--shadow-lift);margin:4px 0 16px}
+  .demo .k{font-size:10.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--faint)}
+  .demo .big{font-family:'Plus Jakarta Sans',sans-serif;font-size:32px;font-weight:800;letter-spacing:-.03em;
+    margin:5px 0 12px;font-variant-numeric:tabular-nums;line-height:1;color:var(--terra)}
+  .mini{display:flex;align-items:center;gap:9px;padding:8px 0;border-top:1px dashed var(--line-strong)}
+  .mini .av{width:28px;height:28px;border-radius:9px;background:var(--terra-soft);color:var(--terra);
+    display:grid;place-items:center;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:11px}
+  .mini .n{flex:1;font-size:12.5px;font-weight:600}
+  .mini .n em{display:block;font-style:normal;font-size:11px;color:var(--muted);font-weight:500;margin-top:1px}
+  .mini .a{font-size:12.5px;font-weight:700;font-variant-numeric:tabular-nums}
+  .pts{margin:0;padding:0;list-style:none}
+  .pts li{display:flex;gap:10px;align-items:flex-start;font-size:13px;font-weight:500;
+    color:var(--ink);padding:7px 0;line-height:1.45}
+  .pts svg{flex:0 0 16px;margin-top:2px}
+
+  /* --- search / chips --- */
+  .search{display:flex;align-items:center;gap:9px;background:var(--card);border:1px solid var(--line-strong);
+    border-radius:14px;padding:12px 13px;box-shadow:var(--shadow);margin-bottom:14px}
+  .search input{border:0;background:transparent;outline:none;font-family:'Inter',sans-serif;font-size:13.5px;
+    width:100%;color:var(--ink);font-weight:500}
+  .search input::placeholder{color:var(--faint)}
+
+  .grid{display:flex;flex-wrap:wrap;gap:7px}
+  .type{border:1px solid var(--line-strong);background:var(--card);border-radius:12px;padding:10px 13px;
+    font-size:12.5px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;color:var(--ink);
+    box-shadow:var(--shadow);text-align:left}
+  .type[aria-pressed="true"]{background:var(--green);color:#f6faf8;border-color:var(--green);
+    box-shadow:0 6px 16px -6px rgba(31,111,84,.55)}
+  .type:active{transform:scale(.97)}
+  .catlab{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);
+    margin:16px 0 8px}
+  .catlab:first-child{margin-top:0}
+  .addown{width:100%;border:1px dashed var(--line-strong);background:rgba(184,134,45,.07);border-radius:14px;
+    padding:13px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;color:#8a6420;cursor:pointer;
+    text-align:left;display:flex;align-items:center;gap:9px;margin-top:12px}
+
+  /* --- field --- */
+  .field{background:var(--card);border:1px solid var(--line-strong);border-radius:14px;padding:12px 14px;
+    box-shadow:var(--shadow);margin-bottom:10px}
+  .field label{display:block;font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--faint);margin-bottom:5px}
+  .field input{border:0;background:transparent;outline:none;width:100%;font-family:'Plus Jakarta Sans',sans-serif;
+    font-size:17px;font-weight:700;color:var(--ink);letter-spacing:-.02em}
+  .field input::placeholder{color:rgba(161,156,145,.75);font-weight:600}
+  .opt{font-size:11px;color:var(--faint);font-weight:600;letter-spacing:.02em}
+
+  .preview{background:var(--green-soft);border:1px solid rgba(31,111,84,.2);border-radius:16px;padding:14px;
+    margin-top:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
+  .preview h5{font-family:'Plus Jakarta Sans',sans-serif;margin:0 0 9px;font-size:12.5px;font-weight:700;color:#1c5c46}
+  .preview ul{margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:6px}
+  .preview li{background:rgba(255,255,255,.7);border-radius:8px;padding:6px 10px;font-size:12px;
+    font-weight:600;color:#1c5c46}
+
+  /* --- account --- */
+  .accnote{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;
+    box-shadow:var(--shadow);margin-bottom:16px}
+  .accnote .r{display:flex;gap:10px;align-items:flex-start;font-size:12.5px;line-height:1.45;padding:5px 0;
+    color:var(--muted);font-weight:500}
+  .accnote .r b{color:var(--ink);font-weight:600}
+  .divider{display:flex;align-items:center;gap:11px;margin:14px 0;color:var(--faint);
+    font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+  .divider:before,.divider:after{content:'';flex:1;height:1px;background:var(--line-strong)}
+
+  .done{text-align:center;padding:40px 10px 0}
+  .tick{width:64px;height:64px;border-radius:22px;background:var(--green);margin:0 auto 20px;
+    display:grid;place-items:center;box-shadow:0 12px 28px -8px rgba(31,111,84,.6)}
+
+  .toast{position:fixed;left:50%;bottom:34px;transform:translate(-50%,20px);background:var(--ink);
+    color:#f7f6f1;padding:11px 18px;border-radius:12px;font-size:12.5px;font-weight:600;opacity:0;
+    pointer-events:none;transition:.25s;z-index:100;max-width:86%;text-align:center;
+    box-shadow:0 10px 30px -8px rgba(43,42,38,.5)}
+  .toast.on{opacity:1;transform:translate(-50%,0)}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<svg class="grain" xmlns="http://www.w3.org/2000/svg">
+  <filter id="g"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3"/>
+  <feColorMatrix type="saturate" values="0"/></filter>
+  <rect width="100%" height="100%" filter="url(#g)" opacity="0.055"/>
+</svg>
+
+<div class="phone">
+  <div class="top">
+    <div class="iconbtn" id="backBtn" onclick="back()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2b2a26" stroke-width="2.2"
+        stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </div>
+    <div class="steps" id="steps"></div>
+    <button class="skiplink" id="skipBtn" onclick="skipAll()">Skip</button>
+  </div>
+  <div class="body" id="body"></div>
+  <div class="foot" id="foot"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+  function esc(s){return String(s).replace(/[&<>"']/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+
+  var ENGINES = {
+    SALE:{label:'Counter sales and udhaar', gives:['Bills','Customers','Udhaar & recovery','Items']},
+    SUB :{label:'Monthly members and dues', gives:['Members','Monthly dues','Pending collection','Renewals']},
+    APPT:{label:'Appointments and bookings', gives:['Bookings','Customers','Payments','Staff diary']},
+    EVENT:{label:'Events booked in advance', gives:['Enquiries','Quotes','Advances','Event diary']},
+    JOB :{label:'Jobs and projects', gives:['Job cards','Site expenses','Payments received','Materials']}
+  };
+
+  var TYPES = [
+    {n:'Kirana / general store', e:'SALE', c:'Shops & retail'},
+    {n:'Medical store', e:'SALE', c:'Shops & retail'},
+    {n:'Hardware shop', e:'SALE', c:'Shops & retail'},
+    {n:'Garment shop', e:'SALE', c:'Shops & retail'},
+    {n:'Mobile & accessories', e:'SALE', c:'Shops & retail'},
+    {n:'Bakery / sweet shop', e:'SALE', c:'Shops & retail'},
+    {n:'Dairy / milk booth', e:'SALE', c:'Shops & retail'},
+    {n:'Stationery & printing', e:'SALE', c:'Shops & retail'},
+
+    {n:'PG / hostel', e:'SUB', c:'Monthly collections'},
+    {n:'Gym / fitness centre', e:'SUB', c:'Monthly collections'},
+    {n:'Tiffin service', e:'SUB', c:'Monthly collections'},
+    {n:'Coaching classes', e:'SUB', c:'Monthly collections'},
+    {n:'Newspaper delivery', e:'SUB', c:'Monthly collections'},
+    {n:'Cable / internet', e:'SUB', c:'Monthly collections'},
+    {n:'Water can supply', e:'SUB', c:'Monthly collections'},
+    {n:'Committee / chit group', e:'SUB', c:'Monthly collections'},
+    {n:'Society maintenance', e:'SUB', c:'Monthly collections'},
+
+    {n:'Salon / beauty parlour', e:'APPT', c:'By appointment'},
+    {n:'Clinic', e:'APPT', c:'By appointment'},
+    {n:'Dental clinic', e:'APPT', c:'By appointment'},
+    {n:'Physiotherapy', e:'APPT', c:'By appointment'},
+    {n:'Pet grooming', e:'APPT', c:'By appointment'},
+    {n:'Tattoo studio', e:'APPT', c:'By appointment'},
+
+    {n:'Tent house / decor', e:'EVENT', c:'Event based'},
+    {n:'Catering', e:'EVENT', c:'Event based'},
+    {n:'Photography / video', e:'EVENT', c:'Event based'},
+    {n:'Banquet hall', e:'EVENT', c:'Event based'},
+    {n:'DJ & sound', e:'EVENT', c:'Event based'},
+
+    {n:'Civil contractor', e:'JOB', c:'Jobs & projects'},
+    {n:'Electrician', e:'JOB', c:'Jobs & projects'},
+    {n:'Plumber', e:'JOB', c:'Jobs & projects'},
+    {n:'Interior / carpentry', e:'JOB', c:'Jobs & projects'},
+    {n:'Tailor / boutique', e:'JOB', c:'Jobs & projects'},
+    {n:'Auto garage', e:'JOB', c:'Jobs & projects'},
+    {n:'Fabrication workshop', e:'JOB', c:'Jobs & projects'}
+  ];
+
+  var state = {
+    step:1,
+    q:'',
+    type:null,          // {n,e}
+    customName:'',
+    pickingEngine:false,
+    bizName:'',
+    ownerName:''
+  };
+
+  var icons = {
+    check:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1f6f54" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>',
+    search:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a19c91" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.2-3.2"/></svg>',
+    plus:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8a6420" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+    google:'<svg width="17" height="17" viewBox="0 0 48 48"><path fill="#4285F4" d="M45 24.5c0-1.6-.1-2.7-.4-3.9H24v7.1h12c-.2 1.9-1.5 4.7-4.4 6.6l6.7 5.2C42.2 35.8 45 30.6 45 24.5z"/><path fill="#34A853" d="M24 46c5.9 0 10.9-2 14.5-5.3l-6.9-5.4c-1.8 1.3-4.3 2.2-7.6 2.2-5.8 0-10.7-3.8-12.5-9.1l-7.1 5.5C8.1 41 15.4 46 24 46z"/><path fill="#FBBC05" d="M11.5 28.4c-.5-1.4-.7-2.9-.7-4.4s.3-3 .7-4.4l-7.1-5.5C2.9 17 2 20.4 2 24s.9 7 2.4 9.9l7.1-5.5z"/><path fill="#EA4335" d="M24 10.6c4.1 0 6.9 1.8 8.5 3.3l6.2-6C34.9 4.5 29.9 2 24 2 15.4 2 8.1 7 4.4 14.1l7.1 5.5C13.3 14.4 18.2 10.6 24 10.6z"/></svg>',
+    mail:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#2b2a26" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M3 7l9 6 9-6"/></svg>',
+    tick:'<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#f6faf8" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>'
+  };
+
+  /* ---------------- steps ---------------- */
+  function stepWelcome(){
+    return {
+      body:
+        '<div class="mark"><span>L</span></div>'
+      + '<h2>Know exactly who<br>owes you money.</h2>'
+      + '<p class="lede">Ledgr keeps your bills, dues and payments in one place \u2014 and puts the '
+      + 'unpaid ones in front of you instead of leaving them in a diary.</p>'
+      + '<div class="demo">'
+      +   '<div class="k">Pending recovery</div>'
+      +   '<div class="big">\u20B91,24,500</div>'
+      +   '<div class="mini"><div class="av">RG</div><div class="n">Ramesh Gupta<em>Bill unpaid 42 days</em></div><div class="a">\u20B918,000</div></div>'
+      +   '<div class="mini"><div class="av">SD</div><div class="n">Sunita Devi<em>3 months dues pending</em></div><div class="a">\u20B912,600</div></div>'
+      +   '<div class="mini"><div class="av">FS</div><div class="n">Farhan Sheikh<em>Advance not adjusted</em></div><div class="a">\u20B99,400</div></div>'
+      + '</div>'
+      + '<ul class="pts">'
+      +   '<li>'+icons.check+'<span>Works fully offline. Your records stay on your phone.</span></li>'
+      +   '<li>'+icons.check+'<span>No transaction fees, ever. No ads anywhere.</span></li>'
+      +   '<li>'+icons.check+'<span>Run as many businesses as you like, free.</span></li>'
+      + '</ul>',
+      foot:
+        '<button class="btn primary" onclick="next()">Set up my business</button>'
+      + '<button class="textbtn" onclick="toast(\'Goes to the sign-in screen\')">I already have an account</button>'
+    };
+  }
+
+  function stepType(){
+    var b = '<h2>What kind of work<br>do you do?</h2>'
+      + '<p class="lede">This decides which screens you see first. You can change it later, or add another business.</p>'
+      + '<div class="search">'+icons.search
+      + '<input id="q" placeholder="Search 250+ business types" value="'+esc(state.q)+'"></div>';
+
+    if(state.pickingEngine){
+      b += '<div class="catlab">Which of these is closest to \u201C'+esc(state.customName)+'\u201D?</div>'
+        + '<div class="grid" style="flex-direction:column">';
+      Object.keys(ENGINES).forEach(function(k){
+        b += '<button class="type" style="width:100%" onclick="pickCustom(\''+k+'\')">'+esc(ENGINES[k].label)+'</button>';
+      });
+      b += '</div>';
+      return {body:b, foot:'<button class="textbtn" onclick="cancelCustom()">Back to the list</button>'};
+    }
+
+    var q = state.q.trim().toLowerCase();
+    var list = q ? TYPES.filter(function(t){return t.n.toLowerCase().indexOf(q)>-1;}) : TYPES;
+
+    if(list.length){
+      var cats = [];
+      list.forEach(function(t){ if(cats.indexOf(t.c)<0) cats.push(t.c); });
+      cats.forEach(function(c){
+        b += '<div class="catlab">'+esc(c)+'</div><div class="grid">';
+        list.filter(function(t){return t.c===c;}).forEach(function(t){
+          var on = state.type && state.type.n===t.n;
+          b += '<button class="type" aria-pressed="'+on+'" onclick="pickType(\''+esc(t.n).replace(/'/g,"\\'")+'\')">'+esc(t.n)+'</button>';
+        });
+        b += '</div>';
+      });
+    } else {
+      b += '<div class="catlab">No match</div>';
+    }
+
+    if(q){
+      b += '<button class="addown" onclick="startCustom()">'+icons.plus
+        + '<span>Add \u201C'+esc(state.q.trim())+'\u201D as my business type</span></button>';
+    }
+
+    return {
+      body:b,
+      foot:'<button class="btn primary" '+(state.type?'':'disabled')+' onclick="next()">Continue</button>'
+    };
+  }
+
+  function stepName(){
+    var t = state.type, eng = ENGINES[t.e];
+    var b = '<h2>What is your<br>business called?</h2>'
+      + '<p class="lede">This is what appears on your bills and reminders.</p>'
+      + '<div class="field"><label>Business name</label>'
+      + '<input id="bn" placeholder="Shanti Traders" value="'+esc(state.bizName)+'"></div>'
+      + '<div class="field"><label>Your name <span class="opt">&mdash; optional</span></label>'
+      + '<input id="on" placeholder="Mahesh Chauhan" value="'+esc(state.ownerName)+'"></div>'
+      + '<div class="preview"><h5>'+esc(t.n)+' \u2014 you\u2019ll start with</h5><ul>';
+    eng.gives.forEach(function(g){ b += '<li>'+esc(g)+'</li>'; });
+    b += '</ul></div>';
+    return {
+      body:b,
+      foot:'<button class="btn primary" '+(state.bizName.trim()?'':'disabled')+' onclick="next()">Continue</button>'
+    };
+  }
+
+  function stepAccount(){
+    return {
+      body:
+        '<h2>Want a backup?</h2>'
+      + '<p class="lede">Adding an account is optional. Everything you record works without one \u2014 an account is '
+      + 'how you get your data back if the phone is lost or replaced.</p>'
+      + '<div class="accnote">'
+      +   '<div class="r">'+icons.check+'<span><b>Without an account:</b> full use of every feature on this phone, offline, free.</span></div>'
+      +   '<div class="r">'+icons.check+'<span><b>With an account:</b> add cloud backup and a second device whenever you want it.</span></div>'
+      + '</div>'
+      + '<button class="btn outline" onclick="toast(\'Google Sign-In\')">'+icons.google+' Continue with Google</button>'
+      + '<div class="divider">or</div>'
+      + '<button class="btn outline" onclick="toast(\'Email and password form\')">'+icons.mail+' Continue with email</button>',
+      foot:
+        '<button class="btn primary" onclick="next()">Continue without an account</button>'
+      + '<button class="textbtn" onclick="toast(\'You can add an account any time from Settings\')">You can add this later from Settings</button>'
+    };
+  }
+
+  function stepDone(){
+    return {
+      body:
+        '<div class="done"><div class="tick">'+icons.tick+'</div>'
+      + '<h2 style="text-align:center">'+esc(state.bizName || 'Your business')+'<br>is ready.</h2>'
+      + '<p class="lede" style="text-align:center">Set up as '+esc(state.type ? state.type.n : 'a business')
+      + '. Add your first customer whenever you\u2019re ready \u2014 nothing needs filling in up front.</p></div>',
+      foot:'<button class="btn primary" onclick="toast(\'Lands on the home dashboard\')">Open '
+        + esc(state.bizName || 'my business')+'</button>'
+    };
+  }
+
+  /* ---------------- render ---------------- */
+  function render(){
+    var s = state.step;
+    var view = s===1?stepWelcome():s===2?stepType():s===3?stepName():s===4?stepAccount():stepDone();
+
+    var dots='';
+    for(var i=1;i<=4;i++) dots += '<i class="'+(i===s?'on':(i<s?'done':''))+'"></i>';
+    document.getElementById('steps').innerHTML = s<=4 ? dots : '';
+
+    document.getElementById('backBtn').className = 'iconbtn'+((s===1||s===5)?' hide':'');
+    var skip = document.getElementById('skipBtn');
+    skip.style.visibility = (s===2||s===3) ? 'visible' : 'hidden';
+
+    document.getElementById('body').innerHTML = view.body;
+    document.getElementById('foot').innerHTML = view.foot;
+    document.getElementById('body').scrollTop = 0;
+    bind();
+  }
+
+  function bind(){
+    var q = document.getElementById('q');
+    if(q){
+      q.addEventListener('input', function(e){
+        state.q = e.target.value;
+        var pos = e.target.selectionStart;
+        render();
+        var nq = document.getElementById('q');
+        if(nq){ nq.focus(); nq.setSelectionRange(pos,pos); }
+      });
+    }
+    var bn = document.getElementById('bn');
+    if(bn) bn.addEventListener('input', function(e){
+      state.bizName = e.target.value;
+      document.querySelector('#foot .btn').disabled = !state.bizName.trim();
+    });
+    var on = document.getElementById('on');
+    if(on) on.addEventListener('input', function(e){ state.ownerName = e.target.value; });
+  }
+
+  /* ---------------- actions ---------------- */
+  window.next = function(){ state.step = Math.min(5, state.step+1); render(); };
+  window.back = function(){ state.step = Math.max(1, state.step-1); render(); };
+  window.skipAll = function(){
+    if(!state.type) state.type = {n:'General business', e:'SALE'};
+    if(!state.bizName) state.bizName = 'My business';
+    state.step = 4; render();
+    toast('Skipped \u2014 defaults applied, editable in Settings');
+  };
+  window.pickType = function(n){
+    var t = TYPES.filter(function(x){return x.n===n;})[0];
+    if(t){ state.type = t; render(); }
+  };
+  window.startCustom = function(){
+    state.customName = state.q.trim(); state.pickingEngine = true; render();
+  };
+  window.cancelCustom = function(){ state.pickingEngine=false; render(); };
+  window.pickCustom = function(k){
+    state.type = {n:state.customName, e:k, c:'Added by you'};
+    state.pickingEngine = false; state.q=''; render();
+    toast('Saved \u2014 \u201C'+state.customName+'\u201D will show in your list next time');
+  };
+
+  var tt;
+  window.toast = function(m){
+    var el=document.getElementById('toast'); el.textContent=m; el.classList.add('on');
+    clearTimeout(tt); tt=setTimeout(function(){el.classList.remove('on');},2400);
+  };
+
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Stages & Progress</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#16161a;--mut:#62636a;--ln:#e7e7e2;--ac:#1f6f54;--sf:#e8f3ee;--wm:#f4f2ec;
+--rd:#b3261e;--rs:#fdecea;--am:#b36b00;--as:#fff4e5;--bl:#2a5db0;--bs:#e8eef9;
+--d:'Plus Jakarta Sans',system-ui,sans-serif;--b:'Inter',system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fbfbf9;color:var(--ink);font-family:var(--b);padding-bottom:90px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:480px;margin:0 auto;padding:0 16px}
+h1,h2,h3{font-family:var(--d);letter-spacing:-.01em}
+.top{position:sticky;top:0;background:#fbfbf9;z-index:9;padding:13px 0;border-bottom:1px solid var(--ln);display:flex;align-items:center;gap:11px}
+.top .bk{font-size:20px;color:var(--mut);cursor:pointer}
+.top h1{font-size:18px;flex:1}.top .s{font-size:12px;color:var(--mut)}
+.hero{background:linear-gradient(180deg,#f3f8f5,#fff);border:1px solid var(--ln);border-radius:15px;padding:16px;margin:14px 0}
+.hero .r1{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:4px}
+.hero .big{font-family:var(--d);font-weight:800;font-size:26px}.hero .pctbig{font-family:var(--d);font-weight:800;font-size:20px;color:var(--ac)}
+.hero .sub{font-size:12.5px;color:var(--mut);margin-bottom:12px}
+.hbar{height:10px;border-radius:6px;background:var(--wm);overflow:hidden;display:flex}
+.hbar i{height:100%;display:block}.hbar .done{background:var(--ac)}.hbar .prog{background:#8fc3ad}
+.hero .now{margin-top:12px;background:#fff;border:1px solid var(--ln);border-radius:11px;padding:10px 12px;display:flex;align-items:center;gap:10px}
+.hero .now .dot{width:8px;height:8px;border-radius:50%;background:var(--am);flex-shrink:0;box-shadow:0 0 0 3px var(--as)}
+.hero .now .t{font-size:12.5px}.hero .now .t b{font-family:var(--d)}
+.bill{background:var(--as);border:1px solid #f0d9a8;border-radius:12px;padding:11px 13px;margin-bottom:12px;display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--am);line-height:1.45}
+.bill b{font-weight:700}
+.sc{background:#fff;border:1px solid var(--ln);border-radius:13px;padding:13px 14px;margin-bottom:9px;cursor:pointer}
+.sc.done{border-color:#cfe6db}
+.sc .r1{display:flex;align-items:center;gap:11px}
+.sc .num{width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--d);font-weight:800;font-size:12px;color:#fff}
+.num.ns{background:#c9ccc7}.num.ip{background:var(--am)}.num.cp{background:var(--ac)}
+.sc .nm{font-family:var(--d);font-weight:700;font-size:14.5px;flex:1}
+.sc .chev{color:#c4c7c2;font-size:18px}
+.sc .subprog{font-size:11.5px;color:var(--mut);margin-top:2px;font-weight:400}
+.sc .r2{display:flex;gap:7px;margin-top:11px;align-items:center;flex-wrap:wrap}
+.badge{font-size:11px;font-weight:700;font-family:var(--d);padding:5px 10px;border-radius:99px}
+.wk-ns{background:var(--wm);color:var(--mut)}.wk-ip{background:var(--as);color:var(--am)}.wk-cp{background:var(--sf);color:var(--ac)}
+.pay{font-size:11px;font-weight:700;font-family:var(--d);padding:5px 10px;border-radius:99px}
+.pay-due{background:var(--wm);color:var(--mut)}.pay-part{background:var(--bs);color:var(--bl)}.pay-paid{background:var(--sf);color:var(--ac)}
+.readybill{margin-left:auto;font-size:10.5px;font-weight:700;font-family:var(--d);color:var(--am);background:var(--as);padding:5px 9px;border-radius:99px}
+.glance{font-size:11px;color:var(--mut);margin-top:9px;display:flex;gap:12px}
+.glance span{display:flex;align-items:center;gap:4px}
+.miniprog{height:5px;border-radius:4px;background:var(--wm);overflow:hidden;margin-top:9px}
+.miniprog i{height:100%;display:block;background:var(--ac)}
+.fab{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);max-width:480px;width:calc(100% - 32px)}
+.fab button{width:100%;background:#fff;color:var(--ac);border:1px solid #bfe0d1;border-radius:13px;padding:14px;font-family:var(--d);font-weight:700;font-size:14px;cursor:pointer}
+.mask{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:flex-end;justify-content:center;z-index:20}
+.mask.on{display:flex}
+.sheet{background:#fbfbf9;border-radius:18px 18px 0 0;width:100%;max-width:480px;max-height:94vh;overflow:auto;padding:8px 16px 24px}
+.grab{width:38px;height:4px;background:#d5d5d0;border-radius:2px;margin:8px auto 12px}
+.sheet-h{display:flex;align-items:center;gap:11px;margin-bottom:6px}
+.sheet-h .num{width:30px;height:30px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--d);font-weight:800;font-size:13px;color:#fff}
+.sheet-h h2{font-size:18px;flex:1}.sheet-h .cx{color:var(--mut);font-size:14px;font-weight:700;cursor:pointer;background:none;border:none}
+.paychip{font-size:11.5px;color:var(--mut);margin:2px 0 12px 41px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.paychip .p2{font-family:var(--d);font-weight:700;padding:2px 8px;border-radius:99px}
+.paychip a{color:var(--bl);font-weight:600;text-decoration:none;font-size:11px}
+.wsel{display:flex;gap:6px;margin:4px 0 14px}
+.wsel button{flex:1;border:1px solid var(--ln);background:#fff;border-radius:10px;padding:11px 4px;font-family:var(--d);font-weight:700;font-size:12.5px;color:var(--mut);cursor:pointer}
+.wsel button.ns.on{background:var(--wm);border-color:#c9ccc7;color:var(--ink)}
+.wsel button.ip.on{background:var(--as);border-color:var(--am);color:var(--am)}
+.wsel button.cp.on{background:var(--sf);border-color:var(--ac);color:var(--ac)}
+.wsel.locked{opacity:.6;pointer-events:none}
+.autonote{background:var(--sf);border-radius:9px;padding:9px 12px;font-size:11.5px;color:var(--ac);margin-bottom:14px;line-height:1.45}
+.sh{font-family:var(--d);font-weight:700;font-size:11.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.04em;margin:16px 2px 8px}
+.subt{display:flex;align-items:center;gap:11px;background:#fff;border:1px solid var(--ln);border-radius:11px;padding:11px 12px;margin-bottom:7px}
+.subt .ck{width:24px;height:24px;border-radius:7px;border:1.8px solid var(--ln);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;cursor:pointer}
+.subt .ck.on{background:var(--ac);border-color:var(--ac)}
+.subt .st{flex:1;font-size:13.5px;font-weight:500}.subt .st.done{color:var(--mut);text-decoration:line-through}
+.subt .meta{font-size:10.5px;color:var(--mut)}
+.subt .open{color:#c4c7c2;font-size:16px;cursor:pointer;padding-left:4px}
+.addsub{width:100%;border:1.5px dashed var(--ln);background:none;border-radius:10px;padding:10px;font-family:var(--d);font-weight:700;font-size:12.5px;color:var(--ac);cursor:pointer}
+.convert{width:100%;border:1px solid var(--ln);background:#fff;border-radius:10px;padding:11px;font-family:var(--d);font-weight:600;font-size:12.5px;color:var(--mut);cursor:pointer;margin-top:6px}
+.diary{background:#fff;border:1px solid var(--ln);border-radius:11px;padding:11px 12px;margin-bottom:7px}
+.diary .dt{font-family:var(--d);font-weight:700;font-size:11px;color:var(--ac)}
+.diary .tx{font-size:13px;margin-top:2px}
+.diary .att{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.thumb{width:46px;height:46px;border-radius:8px;background:var(--wm);display:flex;align-items:center;justify-content:center;font-size:19px;border:1px solid var(--ln)}
+.addentry{display:flex;gap:8px;margin-top:8px}
+.addentry input{flex:1;padding:11px;border:1px solid var(--ln);border-radius:10px;font-size:14px;font-family:var(--b);background:#fff}
+.addentry .att-btn{width:44px;border:1px solid var(--ln);background:#fff;border-radius:10px;font-size:18px;cursor:pointer}
+.addentry .send{width:44px;border:none;background:var(--ac);color:#fff;border-radius:10px;font-size:16px;cursor:pointer}
+.emptyd{font-size:12.5px;color:var(--mut);padding:10px 2px}
+.btnrow{display:flex;gap:8px;margin-top:16px}
+.btn{flex:1;font-family:var(--d);font-weight:700;font-size:14px;border:none;border-radius:11px;padding:13px;cursor:pointer;background:var(--ac);color:#fff}
+.btn.s{background:#fff;border:1px solid var(--ln);color:var(--ink)}
+.toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:11px 18px;border-radius:22px;font-size:13px;font-weight:600;opacity:0;transition:all .3s;z-index:40;pointer-events:none}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+</style></head><body>
+<div class="top wrap"><span class="bk">←</span><div style="flex:1"><h1>Stages &amp; Progress</h1><div class="s">Reddy Bungalow · Kompally</div></div></div>
+<div class="wrap"><div id="hero"></div><div id="billstrip"></div><div id="list"></div></div>
+<div class="fab"><button onclick="openAddStage()">+ Add stage</button></div>
+<div class="mask" id="dm"><div class="sheet" id="db"></div></div>
+<div class="mask" id="sm"><div class="sheet" id="sb"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+function e(date,text,att){return{date:date,text:text,att:att||0}}
+var stages=[
+ {name:'Booking advance',expected:150000,received:150000,subs:null,work:'cp',diary:[e('2026-05-10','Agreement signed, advance received.',1)]},
+ {name:'Foundation / plinth',expected:300000,received:300000,subs:[
+   {name:'Site excavation',done:true,diary:[e('2026-05-18','JCB dug to 5ft, soil cleared.',2)]},
+   {name:'PCC / base concrete',done:true,diary:[e('2026-05-22','PCC laid and levelled.',1)]},
+   {name:'Footing & column base',done:true,diary:[]},
+   {name:'Backfill & curing',done:false,diary:[e('2026-05-28','Curing started, day 1.',1)]}
+ ]},
+ {name:'RCC / structure',expected:450000,received:200000,subs:[
+   {name:'Column casting',done:true,diary:[]},
+   {name:'Beam & slab shuttering',done:true,diary:[e('2026-06-20','Shuttering up for 1st slab.',3)]},
+   {name:'Slab concreting',done:false,diary:[]},
+   {name:'De-shuttering & curing',done:false,diary:[]}
+ ]},
+ {name:'Brickwork & plaster',expected:300000,received:0,subs:null,work:'ns',diary:[]},
+ {name:'Finishing & handover',expected:300000,received:300000,subs:null,work:'ns',diary:[]}
+];
+var SUGGEST={
+ 'foundation':['Site excavation','PCC / base concrete','Footing & column base','Anti-termite','Backfill & curing'],
+ 'rcc':['Column casting','Beam & slab shuttering','Reinforcement','Slab concreting','De-shuttering & curing'],
+ 'structure':['Column casting','Beam & slab shuttering','Reinforcement','Slab concreting','De-shuttering & curing'],
+ 'brick':['Wall brickwork','Lintels','Internal plaster','External plaster'],
+ 'plaster':['Internal plaster','External plaster','Ceiling plaster'],
+ 'finishing':['Flooring / tiles','Painting','Doors & windows','Electrical fittings','Plumbing fittings','Final cleaning'],
+ '_default':['Material ordering','Labour','Execution','Inspection']
+};
+function suggestFor(nm){nm=(nm||'').toLowerCase();for(var k in SUGGEST){if(k!=='_default'&&nm.indexOf(k)>=0)return SUGGEST[k]}return SUGGEST['_default']}
+
+var $=function(i){return document.getElementById(i)};
+function money(n){return '\u20b9'+(+n||0).toLocaleString('en-IN')}
+function fd(s){return s?new Date(s).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):''}
+var WORK={ns:{l:'Not started',c:'wk-ns'},ip:{l:'In progress',c:'wk-ip'},cp:{l:'Complete',c:'wk-cp'}};
+function workOf(s){if(!s.subs)return s.work||'ns';var d=s.subs.filter(function(x){return x.done}).length,t=s.subs.length;if(t===0||d===0)return 'ns';if(d===t)return 'cp';return 'ip'}
+function subCount(s){if(!s.subs)return null;return{d:s.subs.filter(function(x){return x.done}).length,t:s.subs.length}}
+function stageFrac(s){var w=workOf(s);if(w==='cp')return 1;if(w==='ns')return 0;var c=subCount(s);return c&&c.t?c.d/c.t:0.5}
+function payStatus(s){if(s.received>=s.expected&&s.expected>0)return{k:'paid',l:'Paid',c:'pay-paid'};if(s.received>0)return{k:'part',l:'Part paid',c:'pay-part'};return{k:'due',l:'Unpaid',c:'pay-due'}}
+function readyToBill(s){return workOf(s)==='cp'&&s.received<s.expected}
+function diaryCount(s){if(s.subs)return s.subs.reduce(function(a,x){return a+x.diary.length},0);return (s.diary||[]).length}
+function photoCount(s){var src=s.subs?s.subs.reduce(function(a,x){return a.concat(x.diary)},[]):(s.diary||[]);return src.reduce(function(a,d){return a+(d.att||0)},0)}
+
+function renderHero(){
+ var total=stages.reduce(function(a,s){return a+s.expected},0),doneW=0,progW=0;
+ stages.forEach(function(s){var f=stageFrac(s);if(f>=1)doneW+=s.expected;else progW+=s.expected*f});
+ var pct=Math.round((doneW+progW)/total*100);
+ var nDone=stages.filter(function(s){return workOf(s)==='cp'}).length;
+ var current=stages.find(function(s){return workOf(s)!=='cp'});
+ var nowHtml=current
+   ?'<div class="now"><span class="dot"></span><div class="t">Currently on <b>'+current.name+'</b> \u2014 '+(workOf(current)==='ip'?'in progress':'not started')+'</div></div>'
+   :'<div class="now"><span class="dot" style="background:var(--ac);box-shadow:0 0 0 3px var(--sf)"></span><div class="t"><b>All stages complete.</b></div></div>';
+ $('hero').innerHTML='<div class="hero"><div class="r1"><div><div class="big">'+nDone+' of '+stages.length+'</div><div class="sub">stages complete</div></div><div class="pctbig">'+pct+'%</div></div>'
+  +'<div class="hbar"><i class="done" style="width:'+(doneW/total*100)+'%"></i><i class="prog" style="width:'+(progW/total*100)+'%"></i></div>'+nowHtml+'</div>';
+}
+function renderBill(){
+ var rb=stages.filter(readyToBill);if(!rb.length){$('billstrip').innerHTML='';return;}
+ var amt=rb.reduce(function(a,s){return a+(s.expected-s.received)},0);
+ $('billstrip').innerHTML='<div class="bill">\ud83e\uddfe<div><b>'+rb.length+' stage'+(rb.length>1?'s':'')+' done but not fully paid.</b> '+money(amt)+' ready to collect \u2014 record it on Money In.</div></div>';
+}
+function renderList(){
+ $('list').innerHTML=stages.map(function(s,i){
+  var w=workOf(s),W=WORK[w],p=payStatus(s),c=subCount(s);
+  var dc=diaryCount(s),pc=photoCount(s);
+  var glance=(dc||pc)?'<div class="glance">'+(pc?'<span>\ud83d\udcf7 '+pc+'</span>':'')+(dc?'<span>\ud83d\udcdd '+dc+'</span>':'')+'</div>':'';
+  var mini=c?'<div class="miniprog"><i style="width:'+(c.t?c.d/c.t*100:0)+'%"></i></div>':'';
+  return '<div class="sc '+(w==='cp'?'done':'')+'" onclick="openStage('+i+')"><div class="r1"><div class="num '+w+'">'+(w==='cp'?'\u2713':(i+1))+'</div><div style="flex:1"><div class="nm">'+s.name+'</div>'+(c?'<div class="subprog">'+c.d+' of '+c.t+' tasks done</div>':'')+'</div><span class="chev">\u203a</span></div>'+mini
+   +'<div class="r2"><span class="badge '+W.c+'">'+W.l+'</span><span class="pay '+p.c+'">'+p.l+'</span>'+(readyToBill(s)?'<span class="readybill">\ud83e\uddfe Ready to bill</span>':'')+'</div>'+glance+'</div>';
+ }).join('');
+}
+function render(){renderHero();renderBill();renderList()}
+
+var openIdx=null,subIdx=null,pendingAtt=0;
+function openStage(i){openIdx=i;renderStage();$('dm').classList.add('on');document.body.style.overflow='hidden'}
+function closeStage(){$('dm').classList.remove('on');document.body.style.overflow='';openIdx=null}
+function renderStage(){
+ var s=stages[openIdx],w=workOf(s),p=payStatus(s),c=subCount(s);
+ var h='<div class="grab"></div><div class="sheet-h"><div class="num '+w+'">'+(w==='cp'?'\u2713':(openIdx+1))+'</div><h2>'+s.name+'</h2><button class="cx" onclick="closeStage()">Done</button></div>';
+ h+='<div class="paychip">Payment <span class="p2 '+p.c+'">'+p.l+'</span> '+money(s.received)+' / '+money(s.expected)+' <a href="#" onclick="toast(\'Opens Money In screen\');return false">update on Money In \u203a</a></div>';
+ if(!s.subs){
+  h+='<div class="wsel">'+['ns','ip','cp'].map(function(k){return '<button class="'+k+' '+(w===k?'on':'')+'" onclick="setSimpleWork(\''+k+'\')">'+WORK[k].l+'</button>'}).join('')+'</div>';
+ } else {
+  h+='<div class="wsel locked">'+['ns','ip','cp'].map(function(k){return '<button class="'+k+' '+(w===k?'on':'')+'">'+WORK[k].l+'</button>'}).join('')+'</div><div class="autonote">\u2713 Status is set automatically from the '+c.t+' sub-tasks below \u2014 '+c.d+' done.</div>';
+ }
+ if(s.subs){
+  h+='<div class="sh">Sub-tasks</div>';
+  h+=s.subs.map(function(t,ti){var dl=t.diary.length,pl=t.diary.reduce(function(a,d){return a+(d.att||0)},0);var meta=(dl||pl)?'<div class="meta">'+(pl?'\ud83d\udcf7'+pl+' ':'')+(dl?'\ud83d\udcdd'+dl:'')+'</div>':'';return '<div class="subt"><div class="ck '+(t.done?'on':'')+'" onclick="toggleSub('+ti+')">'+(t.done?'\u2713':'')+'</div><div class="st '+(t.done?'done':'')+'">'+t.name+'</div>'+meta+'<span class="open" onclick="openSub('+ti+')">\u203a</span></div>'}).join('');
+  h+='<button class="addsub" onclick="addSub()">+ Add sub-task</button><button class="convert" onclick="toSimple()">Switch to one simple stage</button>';
+ } else {
+  h+=diarySection(s.diary,'stage');
+  h+='<button class="convert" onclick="toChecklist()">Break into sub-tasks (checklist)</button>';
+ }
+ h+='<div class="btnrow"><button class="btn s" onclick="renameStage()">Rename / amount</button><button class="btn s" style="color:var(--rd);border-color:#f0c9c9" onclick="delStage()">Delete</button></div>';
+ $('db').innerHTML=h;
+}
+function diarySection(diary,scope){
+ var h='<div class="sh">Site diary</div>';
+ if(!diary.length)h+='<div class="emptyd">No entries yet. Log progress as it happens \u2014 it builds a dated record.</div>';
+ else h+=diary.slice().reverse().map(function(d){return '<div class="diary"><div class="dt">'+fd(d.date)+'</div><div class="tx">'+d.text+'</div>'+(d.att?'<div class="att">'+Array(d.att).fill('<div class="thumb">\ud83d\uddbc\ufe0f</div>').join('')+'</div>':'')+'</div>'}).join('');
+ h+='<div class="addentry"><input id="entryIn" placeholder="Add a note\u2026"><button class="att-btn" onclick="attachEntry()">\ud83d\udcce</button><button class="send" onclick="addEntry(\''+scope+'\')">\u2191</button></div>';
+ return h;
+}
+function setSimpleWork(k){var s=stages[openIdx];if(k==='cp'&&s.received<s.expected){if(!confirm('Mark "'+s.name+'" complete?\n\nClient still owes '+money(s.expected-s.received)+' for it.'))return}s.work=k;renderStage();render()}
+function toggleSub(ti){stages[openIdx].subs[ti].done=!stages[openIdx].subs[ti].done;renderStage();render()}
+function openSub(ti){subIdx=ti;pendingAtt=0;renderSub();$('sm').classList.add('on')}
+function renderSub(){var t=stages[openIdx].subs[subIdx];$('sb').innerHTML='<div class="grab"></div><div class="sheet-h"><div class="ck '+(t.done?'on':'')+'" style="width:30px;height:30px;border-radius:8px" onclick="toggleSubIn()">'+(t.done?'\u2713':'')+'</div><h2>'+t.name+'</h2><button class="cx" onclick="closeSub()">Back</button></div>'+diarySection(t.diary,'sub')}
+function toggleSubIn(){var t=stages[openIdx].subs[subIdx];t.done=!t.done;renderSub();renderStage();render()}
+function closeSub(){$('sm').classList.remove('on');subIdx=null}
+function addSub(){var nm=prompt('Sub-task name');if(!nm||!nm.trim())return;stages[openIdx].subs.push({name:nm.trim(),done:false,diary:[]});renderStage();render()}
+function attachEntry(){pendingAtt++;toast('Attached ('+pendingAtt+')')}
+function addEntry(scope){var el=$('entryIn');var tx=(el.value||'').trim();if(!tx&&!pendingAtt)return;var entry=e('2026-06-27',tx||'(photo)',pendingAtt);pendingAtt=0;if(scope==='sub'){stages[openIdx].subs[subIdx].diary.push(entry);renderSub()}else{stages[openIdx].diary.push(entry);renderStage()}render()}
+function toChecklist(){var s=stages[openIdx];var sug=suggestFor(s.name);if(!confirm('Add suggested sub-tasks for "'+s.name+'"?\n\n\u2022 '+sug.join('\n\u2022 ')+'\n\nYou can edit or remove any.'))return;s.subs=sug.map(function(n){return{name:n,done:false,diary:[]}});delete s.work;renderStage();render();toast('Sub-tasks added')}
+function toSimple(){var s=stages[openIdx];if(!confirm('Remove sub-tasks and track as one simple stage?\n\nSub-task notes are kept under the stage.'))return;var carried=[];s.subs.forEach(function(t){t.diary.forEach(function(d){carried.push(d)})});s.work=workOf(s);s.diary=(s.diary||[]).concat(carried);s.subs=null;renderStage();render()}
+function renameStage(){var s=stages[openIdx];var nm=prompt('Stage name',s.name);if(nm&&nm.trim())s.name=nm.trim();var ex=prompt('Expected amount (\u20b9)',s.expected);if(ex!==null)s.expected=+ex||0;renderStage();render()}
+function delStage(){if(!confirm('Delete this stage and its records?'))return;stages.splice(openIdx,1);closeStage();render()}
+function openAddStage(){var nm=prompt('New stage name');if(!nm||!nm.trim())return;var ex=prompt('Expected amount (\u20b9)','0');stages.push({name:nm.trim(),expected:+ex||0,received:0,subs:null,work:'ns',diary:[]});render();toast('Stage added')}
+var tT;function toast(m){var t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(tT);tT=setTimeout(function(){t.classList.remove('on')},1500)}
+$('dm').addEventListener('click',function(ev){if(ev.target.id==='dm')closeStage()});
+$('sm').addEventListener('click',function(ev){if(ev.target.id==='sm')closeSub()});
+render();
+</script></body></html>

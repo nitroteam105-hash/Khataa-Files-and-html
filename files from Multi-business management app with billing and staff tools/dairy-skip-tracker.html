@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Today's Deliveries — Khaata</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1f6f54; --green-light: #e7f2ed;
+    --parchment: #fbfbf9; --ink: #1c1c1a; --muted: #6b6b64;
+    --border: #e6e4dd; --amber: #b5791f; --amber-light: #fbf1e2;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', sans-serif; background: var(--parchment); color: var(--ink);
+    max-width: 480px; margin: 0 auto; min-height: 100vh; padding-bottom: 40px;
+  }
+  header { padding: 24px 20px 12px; }
+  header h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 800; }
+  header p { font-size: 13px; color: var(--muted); margin-top: 3px; }
+
+  .summary-bar { display: flex; justify-content: space-between; padding: 4px 20px 12px; font-size: 13px; color: var(--muted); }
+  .summary-bar b { color: var(--ink); }
+
+  .content { padding: 0 20px; }
+  .cust-row { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; }
+  .cust-row.skipped { background: var(--amber-light); border-color: var(--amber); }
+  .cust-top { display: flex; justify-content: space-between; align-items: center; }
+  .cust-name { font-weight: 700; font-size: 14.5px; }
+  .cust-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .cust-credit { font-size: 11px; color: var(--amber); font-weight: 600; margin-top: 6px; display: none; }
+  .cust-row.skipped .cust-credit { display: block; }
+
+  .status-btn {
+    padding: 9px 14px; border-radius: 999px; border: 1.5px solid var(--border); font-size: 12.5px; font-weight: 700; cursor: pointer; background: #fff; color: var(--muted);
+  }
+  .status-btn.delivered { border-color: var(--green); background: var(--green-light); color: var(--green); }
+  .status-btn.skip-mode { border-color: var(--amber); background: var(--amber-light); color: var(--amber); }
+
+  .tomorrow-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); }
+  .tomorrow-label { font-size: 12px; color: var(--muted); font-weight: 600; }
+  .tswitch { width: 38px; height: 22px; background: #d8d6cd; border-radius: 999px; position: relative; flex-shrink: 0; cursor: pointer; }
+  .tswitch.on { background: var(--amber); }
+  .tswitch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; background: #fff; border-radius: 50%; }
+  .tswitch.on::after { left: auto; right: 2px; }
+  .tomorrow-note { font-size: 11px; color: var(--amber); font-weight: 600; margin-top: 6px; display: none; }
+  .tomorrow-note.show { display: block; }
+
+  .range-link { font-size: 11.5px; color: var(--green); font-weight: 700; cursor: pointer; margin-top: 8px; display: inline-block; }
+  .range-form { background: var(--green-light); border-radius: 10px; padding: 10px; margin-top: 8px; }
+  .range-form .rf-row { display: flex; gap: 6px; margin-bottom: 6px; }
+  .range-form input[type="date"] { flex: 1; padding: 7px 8px; border: 1px solid var(--border); border-radius: 7px; font-size: 12px; font-family: 'Inter', sans-serif; }
+  .range-form .rf-actions { display: flex; gap: 6px; }
+  .range-form button { flex: 1; padding: 8px; border-radius: 7px; border: none; font-weight: 700; font-size: 12px; cursor: pointer; }
+  .range-form .rf-confirm { background: var(--green); color: #fff; }
+  .range-form .rf-cancel { background: #fff; color: var(--muted); border: 1px solid var(--border) !important; }
+  .range-form .rf-preview { font-size: 11px; color: var(--green); margin-bottom: 6px; font-weight: 600; }
+
+  .pause-badge { background: var(--amber-light); border: 1px solid var(--amber); border-radius: 10px; padding: 8px 10px; margin-top: 8px; display: flex; justify-content: space-between; align-items: center; }
+  .pause-badge .pb-text { font-size: 11.5px; color: var(--amber); font-weight: 600; }
+  .pause-badge .pb-cancel { font-size: 11px; color: var(--amber); cursor: pointer; font-weight: 700; }
+
+  .search-wrap { padding: 0 20px 10px; }
+  .search-input { width: 100%; padding: 11px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; font-family: 'Inter', sans-serif; background: #fff; }
+
+  .area-filter { display: flex; gap: 6px; overflow-x: auto; padding: 0 20px 12px; }
+  .area-chip { flex-shrink: 0; padding: 7px 13px; border-radius: 999px; border: 1px solid var(--border); font-size: 12px; font-weight: 600; color: var(--muted); background: #fff; cursor: pointer; white-space: nowrap; }
+  .area-chip.active { background: var(--green); color: #fff; border-color: var(--green); }
+
+  .extra-link { font-size: 11.5px; color: var(--green); font-weight: 700; cursor: pointer; margin-top: 8px; display: inline-block; margin-right: 14px; }
+  .extra-form { background: var(--green-light); border-radius: 10px; padding: 10px; margin-top: 8px; }
+  .extra-form input { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 7px; font-size: 12.5px; font-family: 'Inter', sans-serif; margin-bottom: 6px; }
+  .extra-form .ef-actions { display: flex; gap: 6px; }
+  .extra-form button { flex: 1; padding: 8px; border-radius: 7px; border: none; font-weight: 700; font-size: 12px; cursor: pointer; }
+  .extra-form .ef-confirm { background: var(--green); color: #fff; }
+  .extra-form .ef-cancel { background: #fff; color: var(--muted); border: 1px solid var(--border) !important; }
+
+  .extra-badge { background: var(--green-light); border: 1px solid var(--green); border-radius: 10px; padding: 8px 10px; margin-top: 6px; display: flex; justify-content: space-between; align-items: center; }
+  .extra-badge .eb-text { font-size: 11.5px; color: var(--green); font-weight: 600; }
+  .extra-badge .eb-cancel { font-size: 11px; color: var(--green); cursor: pointer; font-weight: 700; }
+
+  .action-links { display: flex; flex-wrap: wrap; }
+
+  .empty-note { text-align: center; padding: 30px 20px; color: var(--muted); font-size: 13px; }
+
+  .note { font-size: 12px; color: var(--muted); margin: 14px 20px 0; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Today's Deliveries</h1>
+  <p>Sunrise Dairy · Tuesday, 15 Jul 2026</p>
+</header>
+
+<div class="search-wrap">
+  <input type="text" class="search-input" id="searchInput" placeholder="🔍 Search customer name..." oninput="render()">
+</div>
+<div class="area-filter" id="areaFilter"></div>
+
+<div class="summary-bar">
+  <span><b id="deliveredCount">0</b> delivered</span>
+  <span><b id="skippedCount">0</b> skipped today</span>
+  <span><b id="tomorrowCount">0</b> skip tomorrow</span>
+</div>
+
+<div class="content" id="custContainer"></div>
+
+<p class="note">Top button marks today's actual status. "Skip tomorrow" is separate — use it as soon as a customer calls ahead, so it's already set when tomorrow's list loads.</p>
+
+<script>
+const firstNames = ['Amit','Priya','Rohan','Sneha','Karan','Neha','Vikram','Anjali','Rahul','Pooja','Arjun','Divya','Sanjay','Meera','Ravi','Kavya','Suresh','Anita','Manoj','Deepa','Ajay','Ritu','Nikhil','Swati'];
+const lastNames = ['Sharma','Nair','Mehta','Reddy','Verma','Gupta','Singh','Iyer','Rao','Joshi','Kapoor','Menon'];
+const areas = ['Sector 12', 'Sector 15', 'MG Road', 'Green Park'];
+const products = [
+  { name: 'Cow Milk (1L Daily)', amt: 1500 },
+  { name: 'Toned Milk (1L Daily)', amt: 1350 },
+  { name: 'Curd (500g Daily)', amt: 600 }
+];
+
+const customers = [];
+for (let i = 0; i < 45; i++) {
+  const fn = firstNames[i % firstNames.length];
+  const ln = lastNames[(i * 5) % lastNames.length];
+  const prod = products[i % products.length];
+  customers.push({
+    id: i + 1,
+    name: fn + ' ' + ln,
+    area: areas[i % areas.length],
+    product: prod.name,
+    monthlyAmt: prod.amt,
+    status: 'delivered',
+    skipTomorrow: false,
+    pausedRange: null,
+    extras: []
+  });
+}
+
+let openRangeFormId = null;
+let openExtraFormId = null;
+let selectedArea = 'All';
+
+const REFERENCE_TODAY = new Date('2026-07-15');
+const REFERENCE_TOMORROW = new Date('2026-07-16');
+
+function daysInMonth(year, monthIndex) { return new Date(year, monthIndex + 1, 0).getDate(); }
+
+function dailyRateForDate(amt, dateObj) {
+  return amt / daysInMonth(dateObj.getFullYear(), dateObj.getMonth());
+}
+
+function perDay(amt) { return Math.round(dailyRateForDate(amt, REFERENCE_TODAY)); }
+function perDayTomorrow(amt) { return Math.round(dailyRateForDate(amt, REFERENCE_TOMORROW)); }
+
+function sumRangeCredit(amt, startStr, endStr) {
+  let total = 0;
+  let cur = new Date(startStr);
+  const end = new Date(endStr);
+  while (cur <= end) {
+    total += dailyRateForDate(amt, cur);
+    cur.setDate(cur.getDate() + 1);
+  }
+  return Math.round(total);
+}
+
+function toggleStatus(id) {
+  const c = customers.find(function(x) { return x.id === id; });
+  c.status = c.status === 'delivered' ? 'skipped' : 'delivered';
+  render();
+}
+
+function toggleTomorrow(id) {
+  const c = customers.find(function(x) { return x.id === id; });
+  c.skipTomorrow = !c.skipTomorrow;
+  render();
+}
+
+function daysBetween(start, end) {
+  const s = new Date(start), e = new Date(end);
+  return Math.round((e - s) / 86400000) + 1;
+}
+
+function openRangeForm(id) {
+  openExtraFormId = null;
+  openRangeFormId = (openRangeFormId === id) ? null : id;
+  render();
+}
+
+function updateRangePreview(id) {
+  const startEl = document.getElementById('rf-start-' + id);
+  const endEl = document.getElementById('rf-end-' + id);
+  const preview = document.getElementById('rf-preview-' + id);
+  if (!startEl.value || !endEl.value) { preview.textContent = ''; return; }
+  const c = customers.find(function(x) { return x.id === id; });
+  const n = daysBetween(startEl.value, endEl.value);
+  if (n <= 0) { preview.textContent = 'End date must be after start date.'; return; }
+  preview.textContent = n + ' day' + (n === 1 ? '' : 's') + ' \u00b7 \u20b9' + sumRangeCredit(c.monthlyAmt, startEl.value, endEl.value) + ' credit';
+}
+
+function confirmRange(id) {
+  const startEl = document.getElementById('rf-start-' + id);
+  const endEl = document.getElementById('rf-end-' + id);
+  if (!startEl.value || !endEl.value) { alert('Pick both a start and end date.'); return; }
+  const n = daysBetween(startEl.value, endEl.value);
+  if (n <= 0) { alert('End date must be after start date.'); return; }
+  const c = customers.find(function(x) { return x.id === id; });
+  c.pausedRange = { start: startEl.value, end: endEl.value, days: n, credit: sumRangeCredit(c.monthlyAmt, startEl.value, endEl.value) };
+  openRangeFormId = null;
+  render();
+}
+
+function cancelRange(id) {
+  const c = customers.find(function(x) { return x.id === id; });
+  c.pausedRange = null;
+  render();
+}
+
+function openExtraForm(id) {
+  openRangeFormId = null;
+  openExtraFormId = (openExtraFormId === id) ? null : id;
+  render();
+}
+
+function confirmExtra(id) {
+  const descEl = document.getElementById('ef-desc-' + id);
+  const amtEl = document.getElementById('ef-amt-' + id);
+  if (!descEl.value.trim() || !amtEl.value) { alert('Enter what was added and the amount.'); return; }
+  const c = customers.find(function(x) { return x.id === id; });
+  c.extras.push({ id: Date.now(), desc: descEl.value.trim(), amount: parseFloat(amtEl.value) || 0 });
+  openExtraFormId = null;
+  render();
+}
+
+function removeExtra(custId, extraId) {
+  const c = customers.find(function(x) { return x.id === custId; });
+  c.extras = c.extras.filter(function(e) { return e.id !== extraId; });
+  render();
+}
+
+function fmtDate(iso) {
+  const d = new Date(iso);
+  return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
+}
+
+function selectArea(area) {
+  selectedArea = area;
+  render();
+}
+
+function renderAreaFilter() {
+  const container = document.getElementById('areaFilter');
+  container.innerHTML = '';
+  const opts = ['All'].concat(areas);
+  opts.forEach(function(a) {
+    const chip = document.createElement('div');
+    chip.className = 'area-chip' + (selectedArea === a ? ' active' : '');
+    chip.textContent = a === 'All' ? 'All Areas' : a;
+    chip.onclick = function() { selectArea(a); };
+    container.appendChild(chip);
+  });
+}
+
+function render() {
+  renderAreaFilter();
+  const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
+  const visible = customers.filter(function(c) {
+    const matchesArea = selectedArea === 'All' || c.area === selectedArea;
+    const matchesSearch = !searchTerm || c.name.toLowerCase().indexOf(searchTerm) !== -1;
+    return matchesArea && matchesSearch;
+  });
+
+  const container = document.getElementById('custContainer');
+  container.innerHTML = '';
+
+  if (!visible.length) {
+    container.innerHTML = '<div class="empty-note">No customers match this search/area.</div>';
+  }
+
+  let delivered = 0, skipped = 0, tomorrowSkips = 0;
+  customers.forEach(function(c) {
+    if (c.status === 'delivered') delivered++; else skipped++;
+    if (c.skipTomorrow) tomorrowSkips++;
+  });
+  document.getElementById('deliveredCount').textContent = delivered;
+  document.getElementById('skippedCount').textContent = skipped;
+  document.getElementById('tomorrowCount').textContent = tomorrowSkips;
+
+  visible.forEach(function(c) {
+    const row = document.createElement('div');
+    row.className = 'cust-row' + (c.status === 'skipped' ? ' skipped' : '');
+
+    let pauseOrRangeHtml = '';
+    if (c.pausedRange) {
+      pauseOrRangeHtml =
+        '<div class="pause-badge"><span class="pb-text">\u23f8 Paused ' + fmtDate(c.pausedRange.start) + '\u2013' + fmtDate(c.pausedRange.end) +
+        ' \u00b7 ' + c.pausedRange.days + ' days \u00b7 \u20b9' + c.pausedRange.credit + ' credit</span>' +
+        '<span class="pb-cancel" onclick="cancelRange(' + c.id + ')">Cancel</span></div>';
+    } else if (openRangeFormId === c.id) {
+      pauseOrRangeHtml =
+        '<div class="range-form">' +
+        '<div class="rf-preview" id="rf-preview-' + c.id + '"></div>' +
+        '<div class="rf-row"><input type="date" id="rf-start-' + c.id + '" oninput="updateRangePreview(' + c.id + ')">' +
+        '<input type="date" id="rf-end-' + c.id + '" oninput="updateRangePreview(' + c.id + ')"></div>' +
+        '<div class="rf-actions"><button class="rf-confirm" onclick="confirmRange(' + c.id + ')">Confirm pause</button>' +
+        '<button class="rf-cancel" onclick="openRangeForm(' + c.id + ')">Cancel</button></div></div>';
+    }
+
+    let extraFormHtml = '';
+    if (openExtraFormId === c.id) {
+      extraFormHtml =
+        '<div class="extra-form">' +
+        '<input type="text" id="ef-desc-' + c.id + '" placeholder="e.g. Extra 1L Cow Milk">' +
+        '<input type="number" id="ef-amt-' + c.id + '" placeholder="Amount (\u20b9)">' +
+        '<div class="ef-actions"><button class="ef-confirm" onclick="confirmExtra(' + c.id + ')">Add extra</button>' +
+        '<button class="ef-cancel" onclick="openExtraForm(' + c.id + ')">Cancel</button></div></div>';
+    }
+
+    const extraBadges = c.extras.map(function(e) {
+      return '<div class="extra-badge"><span class="eb-text">+ ' + e.desc + ' \u00b7 \u20b9' + e.amount + '</span>' +
+        '<span class="eb-cancel" onclick="removeExtra(' + c.id + ',' + e.id + ')">Remove</span></div>';
+    }).join('');
+
+    const actionLinksHtml = (c.pausedRange ? '' : '<span class="range-link" onclick="openRangeForm(' + c.id + ')">+ Skip a week/month</span>') +
+      '<span class="extra-link" onclick="openExtraForm(' + c.id + ')">+ Add extra item</span>';
+
+    row.innerHTML =
+      '<div class="cust-top"><div><div class="cust-name"></div><div class="cust-sub"></div></div>' +
+      '<button class="status-btn"></button></div>' +
+      '<div class="cust-credit"></div>' +
+      '<div class="tomorrow-row"><span class="tomorrow-label">Skip tomorrow</span><div class="tswitch"></div></div>' +
+      '<div class="tomorrow-note">\ud83d\udcc5 No delivery tomorrow \u2014 \u20b9' + perDayTomorrow(c.monthlyAmt) + ' credit will apply automatically</div>' +
+      extraBadges + pauseOrRangeHtml + extraFormHtml +
+      '<div class="action-links">' + actionLinksHtml + '</div>';
+
+    row.querySelector('.cust-name').textContent = c.name;
+    row.querySelector('.cust-sub').textContent = c.product + ' \u00b7 ' + c.area;
+    row.querySelector('.cust-credit').textContent = 'Skip credit: \u20b9' + perDay(c.monthlyAmt) + ' applied to next bill (based on ' + daysInMonth(REFERENCE_TODAY.getFullYear(), REFERENCE_TODAY.getMonth()) + '-day month)';
+    const btn = row.querySelector('.status-btn');
+    btn.textContent = c.status === 'delivered' ? '\u2713 Delivered' : '\u23f8 Skipped';
+    btn.className = 'status-btn ' + (c.status === 'delivered' ? 'delivered' : 'skip-mode');
+    btn.onclick = function() { toggleStatus(c.id); };
+    const tsw = row.querySelector('.tswitch');
+    tsw.className = 'tswitch' + (c.skipTomorrow ? ' on' : '');
+    tsw.onclick = function() { toggleTomorrow(c.id); };
+    if (c.skipTomorrow) row.querySelector('.tomorrow-note').classList.add('show');
+    container.appendChild(row);
+  });
+}
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Dashboard — Khaata</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f4f3ee;
+    --card:#fdfcf9;
+    --ink:#2a2721;
+    --muted:#8a857a;
+    --faint:#b4afa4;
+    --line:#eceae2;
+    --line-soft:#f2f0e8;
+
+    --green:#1f6f54;
+    --green-tint:#e9f2ed;
+    --green-strip:#8bb5a3;
+
+    --ochre:#a9711f;
+    --ochre-tint:#f6ecd9;
+    --ochre-strip:#d6a95e;
+
+    --terra:#a8503a;
+    --terra-tint:#f4e4de;
+    --terra-strip:#cf8b76;
+
+    --shadow-card:0 1px 2px rgba(45,42,34,0.05), 0 14px 26px -10px rgba(45,42,34,0.12), inset 0 1px 0 rgba(255,255,255,0.9);
+    --shadow-hero:0 2px 4px rgba(45,42,34,0.06), 0 22px 40px -14px rgba(45,42,34,0.18), inset 0 1px 0 rgba(255,255,255,0.9);
+    --shadow-tile:0 1px 2px rgba(45,42,34,0.05), 0 8px 18px -10px rgba(45,42,34,0.12), inset 0 1px 0 rgba(255,255,255,0.9);
+  }
+  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; animation:none !important; } }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; }
+  body{
+    background:#e4e1d6; font-family:'Inter',sans-serif; color:var(--ink);
+    display:flex; justify-content:center; min-height:100vh; -webkit-font-smoothing:antialiased;
+  }
+  .app{
+    width:100%; max-width:480px; min-height:100vh; position:relative;
+    background-color:var(--paper);
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    display:flex; flex-direction:column;
+  }
+  button{ font-family:inherit; }
+  .icon-btn:focus-visible, button:focus-visible{ outline:2px solid var(--green); outline-offset:2px; border-radius:8px; }
+  .press{ transition:transform .08s ease; }
+  .press:active{ transform:scale(0.98); }
+  .overline{ font-size:10.5px; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); font-weight:600; }
+  .tnum{ font-variant-numeric:tabular-nums; }
+
+  /* Top bar */
+  .topbar{ display:flex; align-items:center; gap:12px; padding:20px 18px 10px; position:sticky; top:0; z-index:6;
+    background:linear-gradient(to bottom, var(--paper) 80%, transparent); }
+  .icon-btn{ background:none; border:none; cursor:pointer; color:var(--ink); padding:2px; font-size:20px; line-height:1; }
+  .topbar-title{ flex:1; min-width:0; }
+  .topbar-title h1{ font-family:'Plus Jakarta Sans',sans-serif; font-size:18px; font-weight:800; margin:0; letter-spacing:-0.01em;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .topbar-title p{ margin:2px 0 0; font-size:12.5px; color:var(--muted); }
+
+  .scroll{ flex:1; padding:6px 16px 120px; }
+
+  /* Hero */
+  .hero{ background:var(--card); border-radius:22px; box-shadow:var(--shadow-hero); padding:20px 20px 16px; }
+  .net-wrap{ text-align:left; }
+  .net-num{ font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:34px; letter-spacing:-0.02em; line-height:1.05; margin-top:5px; }
+  .net-num.pos{ color:var(--green); }
+  .net-num.neg{ color:var(--terra); }
+  .net-sub{ font-size:11.5px; color:var(--faint); margin-top:4px; }
+
+  .hero-pair{ display:flex; align-items:stretch; margin:16px 0; padding:13px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+  .pair-item{ flex:1; }
+  .pair-item .amt{ display:block; font-size:16px; font-weight:700; margin-top:4px; color:var(--ink); }
+  .pair-item .lab{ display:flex; align-items:center; gap:6px; }
+  .dot{ width:7px; height:7px; border-radius:50%; display:inline-block; }
+  .dot.in{ background:var(--green); }
+  .dot.out{ background:var(--ochre); }
+  .pair-divider{ width:1px; background:var(--line); margin:0 16px; }
+
+  .budget-row{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px; }
+  .budget-row .k{ font-size:11px; text-transform:uppercase; letter-spacing:0.07em; color:var(--muted); font-weight:600; }
+  .budget-row .v{ font-size:12.5px; color:var(--ink); font-weight:600; }
+  .budget-track{ height:8px; background:#efece4; border-radius:99px; overflow:hidden; }
+  .budget-fill{ height:100%; width:0; background:var(--green); border-radius:99px; transition:width 1.05s cubic-bezier(.22,.7,.24,1) .3s; }
+
+  .stage-chip{ display:flex; align-items:center; gap:8px; width:100%; margin-top:16px; padding:11px 14px;
+    background:var(--ochre-tint); color:var(--ochre); border:none; border-radius:13px; cursor:pointer;
+    font-size:13.5px; font-weight:600; transition:transform .08s ease; }
+  .stage-chip:active{ transform:scale(0.98); }
+  .stage-chip .cdot{ width:8px; height:8px; border-radius:50%; background:var(--ochre); }
+  .stage-chip .arrow{ margin-left:auto; color:var(--ochre-strip); font-size:16px; }
+
+  /* Section heading */
+  .sec-head{ display:flex; align-items:baseline; justify-content:space-between; margin:24px 4px 11px; }
+  .sec-head h2{ font-family:'Plus Jakarta Sans',sans-serif; font-size:13.5px; font-weight:700; margin:0; letter-spacing:0.01em; }
+  .sec-head .count{ font-size:12px; color:var(--muted); font-weight:600; }
+
+  /* Needs attention */
+  .attn-list{ display:flex; flex-direction:column; gap:10px; }
+  .attn-card{ position:relative; display:flex; align-items:center; gap:12px; background:var(--card); border-radius:15px;
+    box-shadow:var(--shadow-tile); padding:13px 14px 13px 16px; overflow:hidden; cursor:pointer; transition:transform .08s ease; text-align:left; border:none; width:100%; }
+  .attn-card:active{ transform:scale(0.98); }
+  .attn-card::before{ content:''; position:absolute; left:0; top:0; bottom:0; width:4px; }
+  .attn-card.ochre::before{ background:var(--ochre-strip); }
+  .attn-card.terra::before{ background:var(--terra-strip); }
+  .attn-ic{ width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+  .attn-card.ochre .attn-ic{ background:var(--ochre-tint); }
+  .attn-card.terra .attn-ic{ background:var(--terra-tint); }
+  .attn-body{ flex:1; min-width:0; }
+  .attn-title{ font-size:13.5px; font-weight:700; }
+  .attn-title.ochre-t{ color:var(--ochre); }
+  .attn-title.terra-t{ color:var(--terra); }
+  .attn-desc{ font-size:12px; color:var(--muted); margin-top:2px; line-height:1.35; }
+  .attn-remind{ margin-top:8px; display:inline-flex; align-items:center; gap:5px; padding:5px 10px; border-radius:99px;
+    background:var(--card); border:1px solid var(--ochre-strip); color:var(--ochre); font-size:11.5px; font-weight:700; cursor:pointer; transition:transform .08s ease; }
+  .attn-remind:active{ transform:scale(0.96); }
+  .attn-chev{ color:var(--faint); font-size:18px; flex-shrink:0; align-self:center; }
+
+  .all-clear{ background:var(--card); border-radius:15px; box-shadow:var(--shadow-tile); padding:22px; text-align:center; }
+  .all-clear .emo{ font-size:28px; }
+  .all-clear p{ margin:8px 0 0; font-size:13px; color:var(--muted); }
+
+  /* Quick pulse */
+  .pulse-grid{ display:grid; grid-template-columns:1fr 1fr; gap:11px; }
+  .tile{ background:var(--card); border-radius:16px; box-shadow:var(--shadow-tile); padding:15px; cursor:pointer;
+    display:flex; flex-direction:column; gap:9px; transition:transform .08s ease; border:none; text-align:left; }
+  .tile:active{ transform:scale(0.98); }
+  .tile-top{ display:flex; align-items:center; gap:10px; }
+  .tile-emo{ width:32px; height:32px; border-radius:9px; background:var(--line-soft); display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; }
+  .tile-num{ font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:19px; letter-spacing:-0.01em; }
+  .tile-lab{ font-size:11.5px; color:var(--muted); }
+  .tile-lab b{ color:var(--ochre); font-weight:700; }
+  .mini-ring{ position:relative; width:34px; height:34px; flex-shrink:0; }
+  .mini-ring svg{ transform:rotate(-90deg); display:block; }
+  .mini-bg{ fill:none; stroke:#ece9e0; stroke-width:5; }
+  .mini-fg{ fill:none; stroke:var(--green); stroke-width:5; stroke-linecap:round; transition:stroke-dashoffset 1s ease .35s; }
+
+  /* Recent activity */
+  .activity{ background:var(--card); border-radius:16px; box-shadow:var(--shadow-tile); padding:6px 16px; }
+  .act-row{ display:flex; align-items:flex-start; gap:11px; padding:13px 0; border-bottom:1px solid var(--line-soft); }
+  .act-row:last-child{ border-bottom:none; }
+  .act-tag{ font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; padding:4px 8px; border-radius:7px; flex-shrink:0; white-space:nowrap; margin-top:1px; }
+  .tag-money{ background:var(--green-tint); color:var(--green); }
+  .tag-expense{ background:var(--ochre-tint); color:var(--ochre); }
+  .tag-attendance{ background:#e9edea; color:#4f6b5f; }
+  .tag-stage{ background:#eeeae2; color:#7a6a4c; }
+  .tag-document{ background:#eae9e4; color:#75726a; }
+  .act-body{ flex:1; min-width:0; }
+  .act-text{ font-size:13px; line-height:1.35; }
+  .act-when{ font-size:11px; color:var(--faint); margin-top:2px; }
+  .view-all{ display:block; width:100%; text-align:center; padding:13px; background:none; border:none;
+    color:var(--green); font-size:13px; font-weight:700; cursor:pointer; border-top:1px solid var(--line-soft); margin-top:2px; }
+
+  /* FAB */
+  .fab-wrap{ position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:480px; padding:16px 20px 24px;
+    background:linear-gradient(to top, var(--paper) 60%, transparent); pointer-events:none; z-index:8; }
+  .fab{ pointer-events:auto; width:100%; padding:15px; background:var(--green); color:#fff; border:none; border-radius:15px;
+    font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:15.5px; cursor:pointer;
+    box-shadow:0 6px 18px rgba(31,111,84,0.32); transition:transform .08s ease; }
+  .fab:active{ transform:scale(0.98); }
+
+  /* Sheet */
+  .sheet-overlay{ position:fixed; inset:0; background:rgba(24,22,16,0.42); display:none; align-items:flex-end; justify-content:center; z-index:20; }
+  .sheet-overlay.show{ display:flex; animation:fade .18s ease; }
+  @keyframes fade{ from{opacity:0;} to{opacity:1;} }
+  .sheet{ width:100%; max-width:480px; background:var(--card); border-radius:24px 24px 0 0; padding:20px 20px 26px;
+    animation:slideUp .26s cubic-bezier(.22,.7,.24,1); }
+  @keyframes slideUp{ from{transform:translateY(30px);} to{transform:translateY(0);} }
+  .sheet h2{ font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:18px; margin:0 0 16px; }
+  .record-grid{ display:grid; grid-template-columns:1fr 1fr; gap:11px; }
+  .record-btn{ display:flex; flex-direction:column; align-items:center; gap:9px; padding:20px 12px; border-radius:16px;
+    border:1px solid var(--line); background:var(--card); cursor:pointer; transition:transform .08s ease; }
+  .record-btn:active{ transform:scale(0.97); }
+  .record-btn .r-emo{ width:46px; height:46px; border-radius:13px; display:flex; align-items:center; justify-content:center; font-size:21px; }
+  .record-btn .r-lab{ font-size:13.5px; font-weight:700; color:var(--ink); }
+  .r-money{ background:var(--green-tint); }
+  .r-expense{ background:var(--ochre-tint); }
+  .r-attendance{ background:#e9edea; }
+  .r-note{ background:var(--line-soft); }
+  .sheet-cancel{ width:100%; margin-top:14px; padding:13px; border-radius:13px; border:1px solid var(--line);
+    background:var(--card); color:var(--ink); font-weight:700; font-size:14.5px; cursor:pointer; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <button class="icon-btn" aria-label="Go back">←</button>
+    <div class="topbar-title">
+      <h1>Sharma Residence — G+2</h1>
+      <p id="clientLine">Client · —</p>
+    </div>
+    <button class="icon-btn" aria-label="More options">⋮</button>
+  </header>
+
+  <div class="scroll">
+    <!-- Hero -->
+    <section class="hero" aria-label="Project health">
+      <div class="net-wrap">
+        <div class="overline">Money in hand</div>
+        <div class="net-num tnum" id="netNum">₹0</div>
+        <div class="net-sub">Received − Spent</div>
+      </div>
+      <div class="hero-pair">
+        <div class="pair-item">
+          <span class="lab"><span class="dot in"></span><span class="overline">Received</span></span>
+          <span class="amt tnum" id="receivedAmt">₹0</span>
+        </div>
+        <div class="pair-divider"></div>
+        <div class="pair-item">
+          <span class="lab"><span class="dot out"></span><span class="overline">Spent</span></span>
+          <span class="amt tnum" id="spentAmt">₹0</span>
+        </div>
+      </div>
+      <div class="budget">
+        <div class="budget-row"><span class="k">Budget used</span><span class="v tnum" id="budgetText">—</span></div>
+        <div class="budget-track"><div class="budget-fill" id="budgetFill"></div></div>
+      </div>
+      <button class="stage-chip" id="stageChip" aria-label="Go to current stage">
+        <span class="cdot"></span><span id="stageChipText">—</span><span class="arrow">›</span>
+      </button>
+    </section>
+
+    <!-- Needs attention -->
+    <div class="sec-head"><h2>Needs attention</h2><span class="count" id="attnCount"></span></div>
+    <div class="attn-list" id="attnList"></div>
+
+    <!-- Quick pulse -->
+    <div class="sec-head"><h2>Quick pulse</h2></div>
+    <div class="pulse-grid" id="pulseGrid"></div>
+
+    <!-- Recent activity -->
+    <div class="sec-head"><h2>Recent activity</h2></div>
+    <div class="activity">
+      <div id="activityList"></div>
+      <button class="view-all" onclick="console.log('nav: activity/all')">View all activity</button>
+    </div>
+  </div>
+
+  <div class="fab-wrap"><button class="fab" id="recordBtn">+ Record</button></div>
+</div>
+
+<!-- Record sheet -->
+<div class="sheet-overlay" id="recordOverlay">
+  <div class="sheet">
+    <h2>Record something</h2>
+    <div class="record-grid">
+      <button class="record-btn" data-target="money-in"><span class="r-emo r-money">💰</span><span class="r-lab">Money in</span></button>
+      <button class="record-btn" data-target="expense"><span class="r-emo r-expense">🧾</span><span class="r-lab">Expense</span></button>
+      <button class="record-btn" data-target="attendance"><span class="r-emo r-attendance">👷</span><span class="r-lab">Attendance</span></button>
+      <button class="record-btn" data-target="site-note"><span class="r-emo r-note">📝</span><span class="r-lab">Site note</span></button>
+    </div>
+    <button class="sheet-cancel" id="cancelRecord">Cancel</button>
+  </div>
+</div>
+
+<script>
+  const fmt = n => '₹' + Number(n).toLocaleString('en-IN');
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const relDay = d => d===0 ? 'today' : d===1 ? 'yesterday' : d + ' days ago';
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---- Single source of truth ----
+  const state = {
+    project: { name:'Sharma Residence — G+2', client:'Rakesh Sharma', budget:1040000 },
+    stages: [
+      { name:'Foundation', status:'complete' },
+      { name:'Plinth',     status:'in_progress' },
+      { name:'Structure',  status:'not_started' },
+      { name:'Brickwork',  status:'not_started' },
+      { name:'Plaster',    status:'not_started' },
+      { name:'Flooring',   status:'not_started' },
+      { name:'Finishing',  status:'not_started' }
+    ],
+    payments: [
+      { amount:200000, from:'Rakesh Sharma', note:'Advance',        daysAgo:34 },
+      { amount:100000, from:'Rakesh Sharma', note:'Foundation part',daysAgo:18 },
+      { amount:70000,  from:'Rakesh Sharma', note:'On account',     daysAgo:9  },
+      { amount:50000,  from:'Rakesh Sharma', note:'On account',     daysAgo:0  }
+    ],
+    expenses: [
+      { label:'Misc site charges',      amount:1300,   category:'charges',  daysAgo:1  },
+      { label:'Cement 40 bags',         amount:16800,  category:'material', daysAgo:2  },
+      { label:'Sand 2 trips',           amount:24200,  category:'material', daysAgo:5  },
+      { label:'Labour payout — week 5', amount:85000,  category:'labour',   daysAgo:9  },
+      { label:'Bricks 8000 nos',        amount:48000,  category:'material', daysAgo:15 },
+      { label:'Steel 2.4 T',            amount:120000, category:'material', daysAgo:20 },
+      { label:'Shuttering hire',        amount:41500,  category:'charges',  daysAgo:25 },
+      { label:'Electricals rough-in',   amount:28200,  category:'material', daysAgo:30 }
+    ],
+    attendanceToday: 9,
+    documents: { total:8, expiring:1 },
+    // derived attention seeds (with the money/date facts)
+    dues:   { amount:100000, from:'Rakesh Sharma', reason:'Foundation complete, ready to bill' },
+    approval:{ name:'Sanction plan', expiresInDays:12 },
+    payout: { amount:18500, pendingDays:3 },
+    activity: [
+      { module:'money',      text:'₹50,000 received from Rakesh Sharma', daysAgo:0 },
+      { module:'stage',      text:'Plinth beam reinforcement marked done', daysAgo:1 },
+      { module:'expense',    text:'Cement 40 bags — ₹16,800', daysAgo:2 },
+      { module:'attendance', text:'9 workers marked present', daysAgo:2 },
+      { module:'document',   text:'Sanction plan uploaded', daysAgo:4 }
+    ]
+  };
+
+  // ---- Derivations ----
+  const received = () => state.payments.reduce((a,p)=>a+p.amount, 0);
+  const spent    = () => state.expenses.reduce((a,e)=>a+e.amount, 0);
+  const net      = () => received() - spent();
+  const budgetPct= () => Math.round((spent()/state.project.budget)*100);
+  const stagesComplete = () => state.stages.filter(s=>s.status==='complete').length;
+  const currentStage   = () => state.stages.find(s=>s.status==='in_progress') || state.stages.find(s=>s.status!=='complete');
+  const expensesThisWeek = () => state.expenses.filter(e=>e.daysAgo<=7).reduce((a,e)=>a+e.amount,0);
+
+  // ---- Renderers ----
+  function renderHero(){
+    document.getElementById('clientLine').textContent = 'Client · ' + esc(state.project.client);
+    const r = received(), s = spent(), n = net();
+    document.getElementById('receivedAmt').textContent = fmt(r);
+    document.getElementById('spentAmt').textContent = fmt(s);
+
+    const netEl = document.getElementById('netNum');
+    netEl.classList.toggle('pos', n >= 0);
+    netEl.classList.toggle('neg', n < 0);
+
+    const pct = budgetPct();
+    document.getElementById('budgetText').textContent = `${fmt(s)} of ${fmt(state.project.budget)} · ${pct}%`;
+
+    const cs = currentStage();
+    const label = { in_progress:'In progress', not_started:'Not started', complete:'Complete' }[cs.status];
+    document.getElementById('stageChipText').textContent = `${cs.name} — ${label}`;
+
+    // budget fill (animate)
+    const fill = document.getElementById('budgetFill');
+    if (reduceMotion){ fill.style.width = pct + '%'; }
+    else requestAnimationFrame(()=>requestAnimationFrame(()=>{ fill.style.width = pct + '%'; }));
+
+    // net count-up
+    if (reduceMotion){ netEl.textContent = fmt(n); }
+    else {
+      const start = performance.now(), dur = 1000;
+      (function tick(now){
+        const t = Math.min(1, (now-start)/dur);
+        const eased = 1 - Math.pow(1-t, 3);
+        netEl.textContent = fmt(Math.round(n * eased));
+        if (t < 1) requestAnimationFrame(tick);
+      })(start);
+    }
+  }
+
+  function renderAttention(){
+    const items = [];
+    if (state.dues && state.dues.amount > 0){
+      items.push({ tone:'ochre', ic:'💰', title:`${fmt(state.dues.amount)} pending from ${state.dues.from}`,
+        desc:state.dues.reason, remind:true, target:'money-in/dues' });
+    }
+    if (state.approval && state.approval.expiresInDays <= 30){
+      items.push({ tone:'terra', ic:'📄', title:`${state.approval.name} expires in ${state.approval.expiresInDays} days`,
+        desc:'Renew before it lapses to stay compliant', target:'documents/approval' });
+    }
+    if (state.payout && state.payout.amount > 0){
+      items.push({ tone:'ochre', ic:'👷', title:`${fmt(state.payout.amount)} labour payout pending`,
+        desc:`Outstanding ${state.payout.pendingDays} days`, target:'attendance/payout' });
+    }
+
+    const list = document.getElementById('attnList');
+    document.getElementById('attnCount').textContent = items.length ? `${items.length} to act on` : '';
+
+    if (!items.length){
+      list.innerHTML = `<div class="all-clear"><div class="emo">🌿</div><p>All clear — nothing needs your attention right now.</p></div>`;
+      return;
+    }
+    list.innerHTML = items.map(it => `
+      <button class="attn-card ${it.tone} press" data-target="${esc(it.target)}">
+        <span class="attn-ic">${it.ic}</span>
+        <span class="attn-body">
+          <span class="attn-title ${it.tone==='ochre'?'ochre-t':'terra-t'}">${esc(it.title)}</span>
+          <span class="attn-desc">${esc(it.desc)}</span>
+          ${it.remind ? `<span class="attn-remind" data-remind="${esc(it.target)}">🔔 Remind</span>` : ''}
+        </span>
+        <span class="attn-chev">›</span>
+      </button>`).join('');
+  }
+
+  function renderPulse(){
+    const total = state.stages.length, done = stagesComplete();
+    const r = 15, circ = 2 * Math.PI * r, frac = total ? done/total : 0;
+    const grid = document.getElementById('pulseGrid');
+    grid.innerHTML = `
+      <button class="tile" data-target="stages">
+        <div class="tile-top">
+          <span class="mini-ring">
+            <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true">
+              <circle class="mini-bg" cx="17" cy="17" r="${r}"></circle>
+              <circle class="mini-fg" id="miniFg" cx="17" cy="17" r="${r}" stroke-dasharray="${circ}" stroke-dashoffset="${circ}"></circle>
+            </svg>
+          </span>
+          <span class="tile-num tnum">${done}/${total}</span>
+        </div>
+        <span class="tile-lab">Stages complete</span>
+      </button>
+      <button class="tile" data-target="attendance">
+        <div class="tile-top"><span class="tile-emo">👷</span><span class="tile-num tnum">${state.attendanceToday}</span></div>
+        <span class="tile-lab">On site today</span>
+      </button>
+      <button class="tile" data-target="expenses">
+        <div class="tile-top"><span class="tile-emo">🧾</span><span class="tile-num tnum">${fmt(expensesThisWeek())}</span></div>
+        <span class="tile-lab">Spent this week</span>
+      </button>
+      <button class="tile" data-target="documents">
+        <div class="tile-top"><span class="tile-emo">📄</span><span class="tile-num tnum">${state.documents.total}</span></div>
+        <span class="tile-lab">Files · <b>${state.documents.expiring} expiring</b></span>
+      </button>`;
+
+    const mini = document.getElementById('miniFg');
+    if (reduceMotion){ mini.style.strokeDashoffset = circ*(1-frac); }
+    else requestAnimationFrame(()=>requestAnimationFrame(()=>{ mini.style.strokeDashoffset = circ*(1-frac); }));
+  }
+
+  function renderActivity(){
+    const tagLabel = { money:'Money-in', expense:'Expense', attendance:'Attendance', stage:'Stage', document:'Document' };
+    document.getElementById('activityList').innerHTML = state.activity.map(a => `
+      <div class="act-row">
+        <span class="act-tag tag-${a.module}">${tagLabel[a.module]}</span>
+        <span class="act-body">
+          <span class="act-text">${esc(a.text)}</span>
+          <span class="act-when">${relDay(a.daysAgo)}</span>
+        </span>
+      </div>`).join('');
+  }
+
+  function render(){ renderHero(); renderAttention(); renderPulse(); renderActivity(); }
+
+  // ---- Nav (mock) ----
+  document.getElementById('stageChip').addEventListener('click', ()=>console.log('nav: stages'));
+  document.getElementById('attnList').addEventListener('click', e=>{
+    const remind = e.target.closest('[data-remind]');
+    if (remind){ e.stopPropagation(); console.log('remind:', remind.dataset.remind); alert('Reminder sent to ' + state.dues.from + ' (mock)'); return; }
+    const card = e.target.closest('[data-target]');
+    if (card) console.log('nav:', card.dataset.target);
+  });
+  document.getElementById('pulseGrid').addEventListener('click', e=>{
+    const t = e.target.closest('[data-target]'); if (t) console.log('nav:', t.dataset.target);
+  });
+
+  // ---- Record sheet ----
+  const overlay = document.getElementById('recordOverlay');
+  document.getElementById('recordBtn').addEventListener('click', ()=>overlay.classList.add('show'));
+  document.getElementById('cancelRecord').addEventListener('click', ()=>overlay.classList.remove('show'));
+  overlay.addEventListener('click', e=>{ if (e.target === overlay) overlay.classList.remove('show'); });
+  document.querySelectorAll('.record-btn').forEach(b=>b.addEventListener('click', ()=>{
+    console.log('nav: record/', b.dataset.target); overlay.classList.remove('show');
+  }));
+
+  render();
+</script>
+</body>
+</html>

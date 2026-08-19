@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>App Structure & Status</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fbfbf9;--ink:#16161a;--muted:#62636a;--line:#e7e7e2;--card:#fff;
+    --accent:#1f6f54;--soft:#e8f3ee;--warm:#f4f2ec;
+    --done:#1f6f54;--donebg:#e8f3ee;--part:#b36b00;--partbg:#fff4e5;--todo:#8a8a8a;--todobg:#f0f0ec;
+    --d:'Plus Jakarta Sans',sans-serif;--b:'Inter',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:var(--b);-webkit-font-smoothing:antialiased;padding:0 0 60px;}
+  .wrap{max-width:760px;margin:0 auto;padding:0 18px;}
+  h1,h2,h3{font-family:var(--d);letter-spacing:-.01em;}
+
+  .head{text-align:center;padding:30px 0 18px;border-bottom:1px solid var(--line);margin-bottom:8px;}
+  .head h1{font-size:25px;}
+  .head p{color:var(--muted);font-size:14px;margin-top:6px;}
+  .legend{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px;}
+  .lg{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;font-family:var(--d);padding:5px 12px;border-radius:99px;}
+  .lg.done{background:var(--donebg);color:var(--done);}
+  .lg.part{background:var(--partbg);color:var(--part);}
+  .lg.todo{background:var(--todobg);color:var(--todo);}
+  .dot{width:8px;height:8px;border-radius:50%;}
+  .dot.done{background:var(--done);}.dot.part{background:var(--part);}.dot.todo{background:var(--todo);}
+
+  .pbar{display:flex;height:12px;border-radius:99px;overflow:hidden;margin:18px 0 4px;border:1px solid var(--line);}
+  .pbar .seg{height:100%;}
+  .pbar .seg.done{background:var(--done);}.pbar .seg.part{background:var(--part);}.pbar .seg.todo{background:var(--todo);opacity:.35;}
+  .pbar-l{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);}
+
+  .layer{margin-top:26px;}
+  .layer-h{display:flex;align-items:center;gap:10px;margin-bottom:4px;}
+  .layer-h .ix{width:26px;height:26px;border-radius:8px;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--d);font-weight:800;font-size:13px;flex-shrink:0;}
+  .layer-h h2{font-size:17px;}
+  .layer-h .meta{font-size:12px;color:var(--muted);margin-left:auto;font-family:var(--d);font-weight:600;}
+  .layer-d{font-size:13px;color:var(--muted);margin:0 0 12px 36px;}
+
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-left:36px;}
+  @media(max-width:560px){.grid{grid-template-columns:1fr;margin-left:0;}}
+  .node{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:12px 14px;border-left-width:4px;}
+  .node.done{border-left-color:var(--done);}
+  .node.part{border-left-color:var(--part);}
+  .node.todo{border-left-color:var(--todo);}
+  .node .nt{display:flex;align-items:center;gap:8px;}
+  .node .nm{font-family:var(--d);font-weight:700;font-size:14px;flex:1;}
+  .node .st{font-size:10px;font-weight:700;font-family:var(--d);text-transform:uppercase;letter-spacing:.03em;padding:2px 7px;border-radius:99px;white-space:nowrap;}
+  .node.done .st{background:var(--donebg);color:var(--done);}
+  .node.part .st{background:var(--partbg);color:var(--part);}
+  .node.todo .st{background:var(--todobg);color:var(--todo);}
+  .node .sub{font-size:12px;color:var(--muted);margin-top:5px;line-height:1.45;}
+
+  .full{margin-left:36px;}
+  @media(max-width:560px){.full{margin-left:0;}}
+
+  .note{background:var(--warm);border-radius:12px;padding:14px 16px;margin:26px 0 0;font-size:13px;color:var(--muted);line-height:1.6;}
+  .note b{color:var(--ink);font-family:var(--d);}
+  .foot{text-align:center;color:var(--muted);font-size:12px;margin-top:30px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="head">
+    <h1>App Structure — High Level</h1>
+    <p>One app, two modes (recurring + job/service) · build status</p>
+    <div class="legend">
+      <span class="lg done"><span class="dot done"></span>Built</span>
+      <span class="lg part"><span class="dot part"></span>Partial / Noted</span>
+      <span class="lg todo"><span class="dot todo"></span>Not started</span>
+    </div>
+    <div class="pbar">
+      <div class="seg done" style="width:55%"></div>
+      <div class="seg part" style="width:20%"></div>
+      <div class="seg todo" style="width:25%"></div>
+    </div>
+    <div class="pbar-l"><span>~55% built</span><span>~20% noted/partial</span><span>~25% to do</span></div>
+  </div>
+
+  <!-- LAYER 1 -->
+  <div class="layer">
+    <div class="layer-h"><span class="ix">1</span><h2>Entry &amp; Onboarding</h2><span class="meta">2 / 4</span></div>
+    <div class="layer-d">Getting an owner in and their business set up.</div>
+    <div class="grid">
+      <div class="node done"><div class="nt"><span class="nm">Landing page</span><span class="st">Built</span></div><div class="sub">Marketing, multi-business angle.</div></div>
+      <div class="node done"><div class="nt"><span class="nm">Business-type selector</span><span class="st">Built</span></div><div class="sub">62 types, 11 categories, search.</div></div>
+      <div class="node todo"><div class="nt"><span class="nm">Owner sign-up (phone+OTP)</span><span class="st">To do</span></div><div class="sub">First-time account creation. Discussed, not built.</div></div>
+      <div class="node part"><div class="nt"><span class="nm">Business setup flow</span><span class="st">Partial</span></div><div class="sub">setup-flow-mvp + building-configurator exist; full per-type setup pending.</div></div>
+    </div>
+  </div>
+
+  <!-- LAYER 2 -->
+  <div class="layer">
+    <div class="layer-h"><span class="ix">2</span><h2>Business Settings (control center)</h2><span class="meta">0 / 1</span></div>
+    <div class="layer-d">Configure once, consume everywhere — plans, rooms, beds, batches, documents, tax/GSTIN, bank, T&amp;C, parking mode, staff fields.</div>
+    <div class="full">
+      <div class="node todo"><div class="nt"><span class="nm">⭐ Business Settings page</span><span class="st">To do</span></div><div class="sub">The foundational piece nearly everything references. Plans &amp; prices, rooms/beds (own labels), batches/timings, required documents, tax %, GSTIN, logo, bank &amp; T&amp;C, parking mode, staff-field presets. Repeatedly identified as highest-value next build.</div></div>
+    </div>
+  </div>
+
+  <!-- LAYER 3 -->
+  <div class="layer">
+    <div class="layer-h"><span class="ix">3</span><h2>Mode 1 — Recurring / Subscription</h2><span class="meta">8 / 8</span></div>
+    <div class="layer-d">Members, tenants, subscribers · recurring billing · the add-person flows.</div>
+    <div class="grid">
+      <div class="node done"><div class="nt"><span class="nm">PG add-tenant</span><span class="st">Built</span></div><div class="sub">Bed-level, charges + deposit.</div></div>
+      <div class="node done"><div class="nt"><span class="nm">Working hostel</span><span class="st">Built</span></div><div class="sub">Room-type tiers set rent.</div></div>
+      <div class="node done"><div class="nt"><span class="nm">Student hostel</span><span class="st">Built</span></div><div class="sub">Guardian payer, term billing.</div></div>
+      <div class="node done"><div class="nt"><span class="nm">Co-living</span><span class="st">Built</span></div><div class="sub">All-inclusive packages.</div></div>
+      <div class="node done"><div class="nt"><span class="nm">Flat / rental</span><span class="st">Built</span></div><div class="sub">Whole-unit, maintenance.</div></div>
+      <div class="node done"><div class="nt"><span class="nm">Gym / fitness</span><span class="st">Built</span></div><div class="sub">Plan + auto-expiry.</div></div>
+      <div class="node done"><div class="nt"><span class="nm">Coaching / dance</span><span class="st">Built</span></div><div class="sub">Subjects/plan/class-pack + batch.</div></div>
+      <div class="node done"><div class="nt"><span class="nm">Tiffin / mess</span><span class="st">Built</span></div><div class="sub">Meals + delivery subscription.</div></div>
+    </div>
+    <div class="full" style="margin-top:9px">
+      <div class="node part"><div class="nt"><span class="nm">Remaining patterns (routes, society/RWA, clinic)</span><span class="st">Noted</span></div><div class="sub">Same skeleton, diminishing returns — deferred.</div></div>
+    </div>
+  </div>
+
+  <!-- LAYER 4 -->
+  <div class="layer">
+    <div class="layer-h"><span class="ix">4</span><h2>Mode 2 — Job / Service</h2><span class="meta">1 / 3</span></div>
+    <div class="layer-d">Clients, quotes, one-off invoices · welding, sign-board, carpentry, repair (your sharpest wedge).</div>
+    <div class="grid">
+      <div class="node done"><div class="nt"><span class="nm">Quote / Invoice creator</span><span class="st">Built</span></div><div class="sub">B2C/B2B, GST, credit terms, design photo, notes.</div></div>
+      <div class="node part"><div class="nt"><span class="nm">Quote pipeline / lifecycle</span><span class="st">Noted</span></div><div class="sub">Quotes list, status, follow-up, convert, win-rate, auto-expire. Designed, not built.</div></div>
+      <div class="node part"><div class="nt"><span class="nm">Simple vs Detailed/GST bill</span><span class="st">Noted</span></div><div class="sub">HSN, ship/bill-to, state→CGST/IGST, amount-in-words. Benchmarked, not built.</div></div>
+    </div>
+  </div>
+
+  <!-- LAYER 5 -->
+  <div class="layer">
+    <div class="layer-h"><span class="ix">5</span><h2>Shared Spine (both modes)</h2><span class="meta">3 / 6</span></div>
+    <div class="layer-d">Money, people, staff, billing — used by every business.</div>
+    <div class="grid">
+      <div class="node done"><div class="nt"><span class="nm">Money In / Out</span><span class="st">Built</span></div><div class="sub">Two-tab ledger, net profit.</div></div>
+      <div class="node done"><div class="nt"><span class="nm">Bill generator</span><span class="st">Built</span></div><div class="sub">Tax, discounts, logo, numbering.</div></div>
+      <div class="node done"><div class="nt"><span class="nm">Ledger / payments</span><span class="st">Built</span></div><div class="sub">Pending/paid, partial, receipt, remind.</div></div>
+      <div class="node part"><div class="nt"><span class="nm">People / members list</span><span class="st">Partial</span></div><div class="sub">people-section built; per-business wiring pending.</div></div>
+      <div class="node todo"><div class="nt"><span class="nm">Customer / client list</span><span class="st">To do</span></div><div class="sub">Saved customers (B2C+B2B w/ GSTIN), reused in billing.</div></div>
+      <div class="node todo"><div class="nt"><span class="nm">Receipt / payment confirm</span><span class="st">To do</span></div><div class="sub">Shareable receipt after payment.</div></div>
+    </div>
+  </div>
+
+  <!-- LAYER 6 -->
+  <div class="layer">
+    <div class="layer-h"><span class="ix">6</span><h2>Staff / Team</h2><span class="meta">2 / 3</span></div>
+    <div class="layer-d">Onboard and manage workers — across all business types.</div>
+    <div class="grid">
+      <div class="node done"><div class="nt"><span class="nm">Staff onboarding</span><span class="st">Built</span></div><div class="sub">Simple/Standard/Detailed presets, multi-ID, types.</div></div>
+      <div class="node done"><div class="nt"><span class="nm">My Staff (profile)</span><span class="st">Built</span></div><div class="sub">Payments, advance, UPI, docs, attendance tabs.</div></div>
+      <div class="node todo"><div class="nt"><span class="nm">Attendance (daily)</span><span class="st">To do</span></div><div class="sub">Mark/scan present — lives on daily screen.</div></div>
+    </div>
+  </div>
+
+  <!-- LAYER 7 -->
+  <div class="layer">
+    <div class="layer-h"><span class="ix">7</span><h2>Daily Operations</h2><span class="meta">1 / 3</span></div>
+    <div class="layer-d">What the owner does each day — the home screen &amp; signature actions.</div>
+    <div class="grid">
+      <div class="node done"><div class="nt"><span class="nm">Home dashboard</span><span class="st">Built</span></div><div class="sub">Switcher, snapshot, attention list.</div></div>
+      <div class="node done"><div class="nt"><span class="nm">Scan-to-confirm</span><span class="st">Built</span></div><div class="sub">Meal/entry scan deducts balance.</div></div>
+      <div class="node todo"><div class="nt"><span class="nm">Per-business daily screen</span><span class="st">To do</span></div><div class="sub">Spine + signature tiles, customizable. Mapped, not built.</div></div>
+    </div>
+  </div>
+
+  <!-- LAYER 8 -->
+  <div class="layer">
+    <div class="layer-h"><span class="ix">8</span><h2>Reports &amp; Validation</h2><span class="meta">2 / 4</span></div>
+    <div class="layer-d">Insights for the owner + tools to validate the product.</div>
+    <div class="grid">
+      <div class="node done"><div class="nt"><span class="nm">Owner survey</span><span class="st">Built</span></div><div class="sub">Tailored both modes, "Other" type.</div></div>
+      <div class="node done"><div class="nt"><span class="nm">Interview recorder</span><span class="st">Built</span></div><div class="sub">For live owner interviews.</div></div>
+      <div class="node todo"><div class="nt"><span class="nm">Reports / analytics</span><span class="st">To do</span></div><div class="sub">Income, dues, win-rate, staff cost.</div></div>
+      <div class="node todo"><div class="nt"><span class="nm">GST summary (filing)</span><span class="st">To do</span></div><div class="sub">Validate need in reviews first.</div></div>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>How to read this:</b> The app is one engine with two modes (recurring + job/service) sharing a common spine. <b>Built ≈ 55%</b> — most add-person flows, billing, staff, and the quote/invoice tool are done. <b>The biggest gap is Business Settings (Layer 2)</b> — the control center nearly every other layer depends on. <b>Current real-world step:</b> gathering owner reviews before building the noted-but-pending pieces (quote pipeline, GST bill, daily screens).
+  </div>
+
+  <div class="foot">Khaata · structure &amp; status · generated for planning</div>
+</div>
+</body>
+</html>

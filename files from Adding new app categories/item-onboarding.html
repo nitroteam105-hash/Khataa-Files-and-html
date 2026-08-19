@@ -1,0 +1,372 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Add / Edit Item</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#16161a;--mut:#62636a;--ln:#e7e7e2;--ac:#1f6f54;--sf:#e8f3ee;--wm:#f4f2ec;
+--rd:#b3261e;--rs:#fdecea;--am:#b36b00;--as:#fff4e5;--bl:#2a5db0;--bs:#e8eef9;
+--d:'Plus Jakarta Sans',system-ui,sans-serif;--b:'Inter',system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fbfbf9;color:var(--ink);font-family:var(--b);padding-bottom:90px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:480px;margin:0 auto;padding:0 16px}
+h1,h2,h3{font-family:var(--d);letter-spacing:-.01em}
+.top{position:sticky;top:0;background:#fbfbf9;z-index:9;padding:13px 0;border-bottom:1px solid var(--ln);display:flex;align-items:center;gap:11px}
+.top .bk{font-size:20px;color:var(--mut);cursor:pointer}
+.top h1{font-size:18px;flex:1}.top .s{font-size:12px;color:var(--mut)}
+/* demo capability toggles */
+.demo{background:#fff;border:1px dashed #cdd3ce;border-radius:12px;padding:11px 13px;margin:14px 0}
+.demo .dh{font-size:11px;color:var(--mut);margin-bottom:9px;font-weight:600}
+.demo .drow{display:flex;gap:8px}
+.demo .drow button{flex:1;border:1px solid var(--ln);background:#fbfbf9;border-radius:9px;padding:9px;font-family:var(--d);font-weight:700;font-size:12px;color:var(--mut);cursor:pointer}
+.demo .drow button.on{background:var(--sf);border-color:var(--ac);color:var(--ac)}
+/* photo + name */
+.idrow{display:flex;gap:12px;margin:6px 0 4px}
+.photo{width:72px;height:72px;border-radius:13px;border:1.5px dashed #c3c8c2;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:20px;color:var(--mut);cursor:pointer;flex-shrink:0;gap:2px}
+.photo small{font-size:9px}
+.photo.set{border-style:solid;border-color:var(--ac);background:var(--sf);color:var(--ac)}
+.idrow .nmwrap{flex:1}
+.card{background:#fff;border:1px solid var(--ln);border-radius:14px;padding:15px;margin-bottom:12px}
+.card>.ch{font-family:var(--d);font-weight:700;font-size:13px;margin-bottom:4px;display:flex;align-items:center;gap:7px}
+.card>.ch .cap{font-size:9.5px;font-weight:700;background:var(--sf);color:var(--ac);padding:2px 7px;border-radius:5px}
+.card>.cs{font-size:11.5px;color:var(--mut);margin-bottom:12px}
+label{display:block;font-size:12px;color:var(--mut);margin:12px 0 5px;font-weight:500}
+label:first-of-type{margin-top:0}
+label .opt{font-weight:400;color:#9aa09a}
+input,select{width:100%;padding:12px;border:1px solid var(--ln);border-radius:10px;font-size:15px;font-family:var(--b);background:#fff;color:var(--ink)}
+input:focus,select:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px var(--sf)}
+.row{display:flex;gap:10px}.row>*{flex:1}
+.rupee{position:relative}.rupee input{padding-left:26px}.rupee::before{content:'\20b9';position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--mut);font-size:14px}
+.scanwrap{position:relative}.scanwrap input{padding-right:50px}
+.scanbtn{position:absolute;right:5px;top:50%;transform:translateY(-50%);width:40px;height:40px;border:none;background:var(--sf);color:var(--ac);border-radius:9px;font-size:19px;cursor:pointer;display:flex;align-items:center;justify-content:center;letter-spacing:-2px}
+.scanbtn:active{background:#d9ebe3}
+.seg{display:flex;gap:6px;background:var(--wm);border-radius:10px;padding:4px}
+.seg button{flex:1;border:none;background:none;padding:10px 4px;border-radius:7px;font-family:var(--d);font-weight:700;font-size:12.5px;color:var(--mut);cursor:pointer}
+.seg button.on{background:#fff;color:var(--ac);box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.gstseg{display:flex;gap:6px;flex-wrap:wrap}
+.gstseg button{flex:1;min-width:52px;border:1px solid var(--ln);background:#fbfbf9;border-radius:9px;padding:9px 4px;font-family:var(--d);font-weight:700;font-size:13px;color:var(--mut);cursor:pointer}
+.gstseg button.on{background:var(--sf);border-color:var(--ac);color:var(--ac)}
+.taxcalc{background:var(--sf);border-radius:10px;padding:11px 13px;margin-top:11px;font-size:12.5px}
+.taxcalc .tl{display:flex;justify-content:space-between;padding:2px 0;color:var(--mut)}
+.taxcalc .tl b{color:var(--ink);font-family:var(--d)}
+.taxcalc .tl.big{font-size:13.5px;margin-top:4px;padding-top:6px;border-top:1px dashed #bcd6ca}.taxcalc .tl.big b{color:var(--ac)}
+.disc{font-size:11.5px;color:var(--am);margin-top:6px;font-weight:600}
+.collapse{border:none;background:none;color:var(--ac);font-family:var(--d);font-weight:700;font-size:12.5px;cursor:pointer;padding:6px 0;display:flex;align-items:center;gap:5px}
+.hint{font-size:11px;color:var(--mut);margin-top:5px;line-height:1.4}
+.margin{background:var(--bs);color:var(--bl);border-radius:8px;padding:8px 11px;font-size:12px;font-weight:600;margin-top:8px}
+.fab{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(transparent,#fbfbf9 22%);padding:16px;display:flex;justify-content:center}
+.fab .in{max-width:480px;width:100%;display:flex;gap:10px}
+.btn{flex:1;font-family:var(--d);font-weight:700;font-size:15px;border:none;border-radius:12px;padding:15px;cursor:pointer;background:var(--ac);color:#fff;box-shadow:0 4px 16px rgba(31,111,84,.3)}
+.btn:disabled{opacity:.45;box-shadow:none}
+.btn.s{flex:0 0 auto;background:#fff;border:1px solid var(--ln);color:var(--ink);box-shadow:none;padding:15px 18px}
+.hidden{display:none}
+.togrow{display:flex;align-items:center;gap:12px}
+.togrow .tb{flex:1}.togrow .tt{font-family:var(--d);font-weight:700;font-size:14px}.togrow .ts{font-size:11.5px;color:var(--mut);margin-top:2px;line-height:1.4}
+.switch{width:46px;height:28px;border-radius:20px;background:#d5dbd7;position:relative;cursor:pointer;flex-shrink:0;transition:background .2s}
+.switch.on{background:var(--ac)}
+.knob{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:left .2s}
+.switch.on .knob{left:21px}
+.sh2{font-family:var(--d);font-weight:700;font-size:12px;margin:16px 0 3px}
+.cs2{font-size:11.5px;color:var(--mut);margin-bottom:11px;line-height:1.4}
+.urow{background:#fbfbf9;border:1px solid var(--ln);border-radius:11px;padding:11px 12px;margin-bottom:8px}
+.urow .u1{display:flex;align-items:center;gap:8px;margin-bottom:9px}
+.urow .uname{flex:1;font-family:var(--d);font-weight:700;font-size:13.5px}
+.urow .base{font-size:9.5px;font-weight:700;background:var(--sf);color:var(--ac);padding:2px 7px;border-radius:5px}
+.urow .rm{width:26px;height:26px;border:none;background:var(--rs);color:var(--rd);border-radius:7px;cursor:pointer;font-size:15px}
+.urow .u2{display:flex;gap:8px}.urow .u2>div{flex:1}
+.urow .u2 label{margin:0 0 4px;font-size:11px}
+.urow .u2 input{padding:9px 10px;font-size:14px}
+.urow .conv{font-size:11px;color:var(--mut);margin-top:7px}
+.urow .conv b{color:var(--ink);font-family:var(--d)}
+.addsub{width:100%;border:1.5px dashed var(--ln);background:none;border-radius:10px;padding:10px;font-family:var(--d);font-weight:700;font-size:12.5px;color:var(--ac);cursor:pointer;margin-top:2px}
+.mustock{background:var(--as);border-radius:9px;padding:10px 12px;font-size:12px;color:var(--am);margin-top:12px;line-height:1.5}
+.mustock b{font-family:var(--d)}
+.histr{display:flex;justify-content:space-between;padding:9px 0;font-size:13px;border-bottom:1px solid var(--ln)}
+.histr:last-child{border:none}.histr span{color:var(--mut)}.histr b{font-family:var(--d)}
+.toast{position:fixed;bottom:92px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:11px 18px;border-radius:22px;font-size:13px;font-weight:600;opacity:0;transition:all .3s;z-index:40;pointer-events:none}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+</style></head><body>
+<div class="top wrap"><span class="bk">←</span><div style="flex:1"><h1 id="ttl">Add Item</h1><div class="s">Sharma General Store</div></div></div>
+<div class="wrap">
+
+  <div class="demo">
+    <div class="dh">Demo — mode + capabilities come from context/setup. Toggle to see the page adapt:</div>
+    <div class="drow" style="margin-bottom:8px">
+      <button id="modeAdd" class="on" onclick="setMode('add')">Add mode</button>
+      <button id="modeEdit" onclick="setMode('edit')">Edit mode</button>
+    </div>
+    <div class="drow">
+      <button id="capGst" class="on" onclick="toggle('gst')">GST billing</button>
+      <button id="capStock" class="on" onclick="toggle('stock')">Stock tracking</button>
+    </div>
+  </div>
+
+  <!-- identity -->
+  <div class="idrow">
+    <div class="photo" id="photo" onclick="setPhoto()"><span id="photoIc">📷</span><small id="photoTx">Photo</small></div>
+    <div class="nmwrap">
+      <label>Item name</label>
+      <input id="name" placeholder="e.g. Parle-G Biscuit 100g" oninput="sync()">
+    </div>
+  </div>
+
+  <!-- basics -->
+  <div class="card">
+    <div class="row">
+      <div><label>Unit</label><select id="unit" onchange="pickUnit(this.value)"></select></div>
+      <div><label>Category <span class="opt">— optional</span></label><select id="cat" onchange="pickCat(this.value)"></select></div>
+    </div>
+    <div id="newUnitWrap" class="hidden"><label>New unit name</label><input id="newUnit" placeholder="e.g. dozen" oninput="sync()"></div>
+    <div id="newCatWrap" class="hidden"><label>New category</label><input id="newCat" placeholder="e.g. Stationery" oninput="sync()"></div>
+    <label style="margin-top:14px">Barcode / SKU <span class="opt">— optional, enables scan-to-bill</span></label>
+    <div class="scanwrap"><input id="sku" placeholder="Scan or type a code"><button class="scanbtn" onclick="scanCode()" title="Scan barcode">▚</button></div>
+  </div>
+
+  <!-- pricing -->
+  <div class="card">
+    <div class="ch">Pricing</div>
+    <label>Selling price</label>
+    <div class="rupee"><input id="sell" type="number" inputmode="decimal" placeholder="0" oninput="sync()"></div>
+    <div id="taxCalc"></div>
+    <button class="collapse" id="moreP" onclick="toggleMore()">＋ MRP & cost price <span class="opt" style="font-weight:400">(optional)</span></button>
+    <div id="morePrice" class="hidden">
+      <label>MRP <span class="opt">— printed max price</span></label>
+      <div class="rupee"><input id="mrp" type="number" inputmode="decimal" placeholder="0" oninput="sync()"></div>
+      <div id="discLine"></div>
+      <label>Cost price <span class="opt">— what you paid; enables profit view</span></label>
+      <div class="rupee"><input id="cost" type="number" inputmode="decimal" placeholder="0" oninput="sync()"></div>
+      <div id="marginLine"></div>
+    </div>
+  </div>
+
+  <!-- MULTI-UNIT (optional toggle) -->
+  <div class="card">
+    <div class="togrow"><div class="tb"><div class="tt">Sells in multiple units / packs</div><div class="ts">e.g. a box of 25, sold by box and by piece. Off for normal single-unit items.</div></div><div class="switch" id="muSwitch" onclick="toggleMulti()"><div class="knob"></div></div></div>
+    <div id="muBody" class="hidden">
+      <label>Base unit <span class="opt">— the smallest unit; stock is counted in this</span></label>
+      <select id="baseUnit" onchange="f.baseUnit=this.value;renderUnits()"></select>
+      <div class="sh2">Sell units &amp; prices</div>
+      <div class="cs2">Each way you sell it, how many base units it equals, and its own price.</div>
+      <div id="unitList"></div>
+      <button class="addsub" onclick="addSellUnit()">＋ Add a sell unit (e.g. box, dozen)</button>
+      <div id="muStock" class="hidden"></div>
+    </div>
+  </div>
+
+  <!-- GST (capability) -->
+  <div class="card" id="gstCard">
+    <div class="ch">Tax / GST <span class="cap">GST ON</span></div>
+    <div class="cs">Set the rate and whether your selling price already includes tax.</div>
+    <label>GST rate</label>
+    <div class="gstseg" id="gstRates"></div>
+    <label style="margin-top:14px">Selling price is</label>
+    <div class="seg"><button id="tiIncl" class="on" onclick="setTaxMode('incl')">Tax included</button><button id="tiExcl" onclick="setTaxMode('excl')">Tax extra</button></div>
+    <div class="hint" id="taxModeHint"></div>
+    <label style="margin-top:14px">HSN code <span class="opt">— optional, for GST invoice</span></label>
+    <input id="hsn" placeholder="e.g. 1905">
+  </div>
+
+  <!-- Stock (capability) -->
+  <div class="card" id="stockCard">
+    <div class="ch">Stock <span class="cap">STOCK ON</span></div>
+    <div class="cs">Opening quantity in hand, and when to warn you it's running low.</div>
+    <div class="row">
+      <div><label>Opening quantity</label><input id="openQty" type="number" inputmode="decimal" placeholder="0"></div>
+      <div><label>Low-stock alert at</label><input id="lowQty" type="number" inputmode="decimal" placeholder="e.g. 10"></div>
+    </div>
+    <div class="hint">You'll get a nudge when stock drops to the alert level. Sales reduce stock automatically.</div>
+  </div>
+
+  <!-- Edit-only: history + danger -->
+  <div class="card hidden" id="editExtras">
+    <div class="ch">This item</div>
+    <div id="histRows"></div>
+    <button class="btn s" style="width:100%;color:var(--rd);border-color:#f0c9c9;margin-top:10px;box-shadow:none" onclick="archiveItem()">Archive item</button>
+    <div class="hint">Archiving hides it from billing but keeps its sales history. It won't delete past bills.</div>
+  </div>
+
+</div>
+
+<div class="fab"><div class="in">
+  <button class="btn s" onclick="toast('Saved & opens a blank item')" id="saveNew">＋ Save &amp; add another</button>
+  <button class="btn" id="saveBtn" disabled onclick="save()">Save item</button>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+var cap={gst:true,stock:true};
+var mode='add';
+// sample item used to populate Edit mode (a wholesale multi-unit item so it shows fully)
+var SAMPLE={name:'Ceramic Wall Tile 2x2',sku:'8901234567890',photo:true,unit:'box',cat:'Tiles',
+ sell:520,mrp:640,cost:410,gstRate:18,taxMode:'incl',hsn:'6907',openQty:480,lowQty:40,
+ multi:true,baseUnit:'piece',sellUnits:[{name:'piece',factor:1,price:26},{name:'box',factor:20,price:520}]};
+var UNITS=['piece','kg','gram','litre','ml','packet','box','dozen'];
+var CATS=[];
+var GST_RATES=[0,5,12,18,28];
+var f={photo:false,unit:'piece',newUnit:'',cat:'',newCat:'',gstRate:18,taxMode:'incl',
+ multi:false,baseUnit:'piece',sellUnits:[{name:'piece',factor:1,price:''},{name:'box',factor:25,price:''}]};
+
+var $=function(i){return document.getElementById(i)};
+function money(n){return '\u20b9'+(+n||0).toLocaleString('en-IN',{maximumFractionDigits:2})}
+
+function toggle(k){cap[k]=!cap[k];$('cap'+(k==='gst'?'Gst':'Stock')).classList.toggle('on',cap[k]);apply();}
+function apply(){
+ $('gstCard').classList.toggle('hidden',!cap.gst);
+ $('stockCard').classList.toggle('hidden',!cap.stock);
+ renderTaxCalc();
+ if(f.multi)renderUnits();
+}
+
+/* selects */
+function fillSelects(){
+ $('unit').innerHTML=UNITS.map(function(u){return '<option '+(f.unit===u?'selected':'')+'>'+u+'</option>'}).join('')+'<option value="__new__">+ Other unit…</option>';
+ $('cat').innerHTML='<option value="">No category</option>'+CATS.map(function(c){return '<option '+(f.cat===c?'selected':'')+'>'+c+'</option>'}).join('')+'<option value="__new__">+ Add category…</option>';
+}
+function pickUnit(v){if(v==='__new__'){$('newUnitWrap').classList.remove('hidden');f.unit='__new__';}else{$('newUnitWrap').classList.add('hidden');f.unit=v;f.newUnit='';}sync();}
+function pickCat(v){if(v==='__new__'){$('newCatWrap').classList.remove('hidden');f.cat='__new__';}else{$('newCatWrap').classList.add('hidden');f.cat=v;f.newCat='';}sync();}
+
+/* gst rates */
+function fillGst(){$('gstRates').innerHTML=GST_RATES.map(function(r){return '<button class="'+(f.gstRate===r?'on':'')+'" onclick="setGst('+r+')">'+r+'%</button>'}).join('');}
+function setGst(r){f.gstRate=r;fillGst();renderTaxCalc();}
+function setTaxMode(m){f.taxMode=m;$('tiIncl').classList.toggle('on',m==='incl');$('tiExcl').classList.toggle('on',m==='excl');renderTaxCalc();}
+
+/* pricing helpers */
+function renderTaxCalc(){
+ var sell=+$('sell').value||0;
+ if(!cap.gst||!sell||f.gstRate===0){$('taxCalc').innerHTML=f.gstRate===0&&cap.gst&&sell?'<div class="taxcalc"><div class="tl">GST 0% \u2014 no tax on this item</div></div>':'';renderMode();return;}
+ var rate=f.gstRate/100,base,tax,total;
+ if(f.taxMode==='incl'){total=sell;base=sell/(1+rate);tax=total-base;}
+ else{base=sell;tax=sell*rate;total=base+tax;}
+ var half=tax/2;
+ $('taxCalc').innerHTML='<div class="taxcalc">'
+  +'<div class="tl"><span>Base price</span><b>'+money(base)+'</b></div>'
+  +'<div class="tl"><span>CGST '+ (f.gstRate/2) +'%</span><b>'+money(half)+'</b></div>'
+  +'<div class="tl"><span>SGST '+ (f.gstRate/2) +'%</span><b>'+money(half)+'</b></div>'
+  +'<div class="tl big"><span>'+(f.taxMode==='incl'?'Selling price (incl.)':'Price to customer')+'</span><b>'+money(total)+'</b></div>'
+  +'</div>';
+ renderMode();
+}
+function renderMode(){
+ if(!cap.gst){$('taxModeHint').textContent='';return;}
+ $('taxModeHint').textContent=f.taxMode==='incl'
+  ?'Your selling price already has GST inside it — we back-calculate the tax.'
+  :'GST is added on top of your selling price at billing.';
+}
+function renderDisc(){
+ var sell=+$('sell').value||0,mrp=+$('mrp').value||0;
+ if(mrp>sell&&sell>0){var d=mrp-sell,p=Math.round(d/mrp*100);$('discLine').innerHTML='<div class="disc">Customer sees '+money(d)+' off MRP ('+p+'%)</div>';}
+ else if(mrp>0&&mrp<sell){$('discLine').innerHTML='<div class="disc" style="color:var(--rd)">Selling above MRP — check this.</div>';}
+ else $('discLine').innerHTML='';
+}
+function renderMargin(){
+ var sell=+$('sell').value||0,cost=+$('cost').value||0;
+ if(cost>0&&sell>0){
+  var base=sell;
+  if(cap.gst&&f.taxMode==='incl'&&f.gstRate>0)base=sell/(1+f.gstRate/100);
+  var pft=base-cost,p=Math.round(pft/cost*100);
+  $('marginLine').innerHTML='<div class="margin">Profit '+money(pft)+' per unit \u00b7 '+p+'% margin'+(cap.gst&&f.taxMode==='incl'?' (on pre-tax price)':'')+'</div>';
+ } else $('marginLine').innerHTML='';
+}
+
+var moreOpen=false;
+function toggleMore(){moreOpen=!moreOpen;$('morePrice').classList.toggle('hidden',!moreOpen);$('moreP').innerHTML=(moreOpen?'\u2212':'\uff0b')+' MRP & cost price <span class="opt" style="font-weight:400">(optional)</span>';}
+
+function setPhoto(){f.photo=!f.photo;$('photo').classList.toggle('set',f.photo);$('photoIc').textContent=f.photo?'\u2705':'\ud83d\udcf7';$('photoTx').textContent=f.photo?'Added':'Photo';}
+
+function scanCode(){
+ // real app: opens camera → decodes barcode → fills value.
+ var mock='890'+Math.floor(1000000000+Math.random()*8999999999);
+ $('sku').value=mock;
+ toast('Scanned '+mock);
+}
+
+function sync(){
+ renderTaxCalc();renderDisc();renderMargin();
+ var okName=$('name').value.trim();
+ var okSell=+$('sell').value>0;
+ var okUnit=f.unit!=='__new__'||$('newUnit').value.trim();
+ $('saveBtn').disabled=!(okName&&okSell&&okUnit);
+}
+function save(){
+ // learn new unit / category
+ if(f.unit==='__new__'){var nu=$('newUnit').value.trim();if(nu&&UNITS.indexOf(nu)<0&&confirm('Save "'+nu+'" as a unit for next time?'))UNITS.push(nu);}
+ if(f.cat==='__new__'){var nc=$('newCat').value.trim();if(nc&&CATS.indexOf(nc)<0&&confirm('Save "'+nc+'" as a category for next time?'))CATS.push(nc);}
+ toast('Item saved');
+}
+
+function toggleMulti(){
+ f.multi=!f.multi;
+ $('muSwitch').classList.toggle('on',f.multi);
+ $('muBody').classList.toggle('hidden',!f.multi);
+ // when multi on, the single Unit field up top is superseded by base unit
+ if(f.multi){fillBaseUnit();renderUnits();}
+ sync();
+}
+function fillBaseUnit(){
+ $('baseUnit').innerHTML=UNITS.map(function(u){return '<option '+(f.baseUnit===u?'selected':'')+'>'+u+'</option>'}).join('');
+}
+function renderUnits(){
+ $('unitList').innerHTML=f.sellUnits.map(function(u,i){
+  var isBase=(+u.factor===1);
+  var perBase=(cap.gst?'':''); // price-per-base hint
+  var pb=(+u.price>0&&+u.factor>0)?(+u.price/ +u.factor):0;
+  return '<div class="urow"><div class="u1"><div class="uname">'+(u.name||'Unit '+(i+1))+'</div>'+(isBase?'<span class="base">BASE</span>':'')+(f.sellUnits.length>1?'<button class="rm" onclick="rmUnit('+i+')">\u00d7</button>':'')+'</div>'
+   +'<div class="u2"><div><label>Unit name</label><input value="'+(u.name||'')+'" oninput="setU('+i+',\'name\',this.value)" placeholder="box"></div>'
+   +'<div><label>= how many '+f.baseUnit+'</label><input type="number" inputmode="numeric" value="'+(u.factor||'')+'" oninput="setU('+i+',\'factor\',this.value)" placeholder="1"></div>'
+   +'<div><label>Price</label><input type="number" inputmode="decimal" value="'+(u.price||'')+'" oninput="setU('+i+',\'price\',this.value)" placeholder="0"></div></div>'
+   +(pb>0&&!isBase?'<div class="conv">That\u2019s <b>'+money(pb)+'</b> per '+f.baseUnit+(cap.stock?' \u00b7 selling 1 '+(u.name||'unit')+' removes <b>'+u.factor+' '+f.baseUnit+'</b> from stock':'')+'</div>':'')
+   +'</div>';
+ }).join('');
+ // stock note
+ if(cap.stock){
+  $('muStock').classList.remove('hidden');
+  $('muStock').innerHTML='<div class="mustock">\ud83d\udce6 Stock is kept in <b>'+f.baseUnit+'</b> only. A sale in any unit converts automatically \u2014 so <b>1 box = \u221225 '+f.baseUnit+'</b>. Availability shows both ways (e.g. \u201819 boxes + 15 loose\u2019). Set opening stock in the Stock section below.</div>';
+ } else $('muStock').classList.add('hidden');
+}
+function setU(i,k,v){f.sellUnits[i][k]=(k==='name')?v:v;renderUnits();sync();}
+function addSellUnit(){f.sellUnits.push({name:'',factor:'',price:''});renderUnits();}
+function rmUnit(i){f.sellUnits.splice(i,1);renderUnits();sync();}
+
+function setMode(m){
+ mode=m;
+ $('modeAdd').classList.toggle('on',m==='add');
+ $('modeEdit').classList.toggle('on',m==='edit');
+ $('ttl').textContent=m==='edit'?'Edit Item':'Add Item';
+ $('saveBtn').textContent=m==='edit'?'Update':'Save item';
+ $('saveNew').classList.toggle('hidden',m==='edit'); // no "add another" in edit
+ $('editExtras').classList.toggle('hidden',m!=='edit');
+ if(m==='edit'){loadSample();renderHist();}else{clearForm();}
+ apply();sync();
+}
+function loadSample(){
+ var s=SAMPLE;
+ $('name').value=s.name;$('sku').value=s.sku;$('sell').value=s.sell;$('mrp').value=s.mrp;$('cost').value=s.cost;$('hsn').value=s.hsn||'';
+ $('openQty').value=s.openQty;$('lowQty').value=s.lowQty;
+ f.photo=s.photo;$('photo').classList.toggle('set',s.photo);$('photoIc').textContent=s.photo?'\u2705':'\ud83d\udcf7';$('photoTx').textContent=s.photo?'Added':'Photo';
+ f.cat=s.cat;if(CATS.indexOf(s.cat)<0)CATS.push(s.cat);
+ f.gstRate=s.gstRate;f.taxMode=s.taxMode;
+ f.multi=s.multi;f.baseUnit=s.baseUnit;f.sellUnits=JSON.parse(JSON.stringify(s.sellUnits));f.unit=s.unit;
+ // reflect into controls
+ fillSelects();fillGst();setTaxMode(s.taxMode);
+ $('muSwitch').classList.toggle('on',s.multi);$('muBody').classList.toggle('hidden',!s.multi);
+ if(s.multi){fillBaseUnit();renderUnits();}
+ // open the optional pricing panel since mrp/cost are set
+ moreOpen=false;toggleMore();
+}
+function clearForm(){
+ ['name','sku','sell','mrp','cost','hsn','openQty','lowQty'].forEach(function(id){if($(id))$(id).value='';});
+ f.photo=false;$('photo').classList.remove('set');$('photoIc').textContent='\ud83d\udcf7';$('photoTx').textContent='Photo';
+ f.cat='';f.gstRate=18;f.taxMode='incl';f.multi=false;f.baseUnit='piece';f.unit='piece';
+ f.sellUnits=[{name:'piece',factor:1,price:''},{name:'box',factor:25,price:''}];
+ $('muSwitch').classList.remove('on');$('muBody').classList.add('hidden');
+ if(moreOpen)toggleMore();
+ fillSelects();fillGst();setTaxMode('incl');
+}
+function renderHist(){
+ $('histRows').innerHTML=
+  '<div class="histr"><span>Sold this month</span><b>62 pieces \u00b7 3 boxes</b></div>'
+  +'<div class="histr"><span>In stock now</span><b>480 pieces \u00b7 24 boxes</b></div>'
+  +'<div class="histr"><span>Last sold</span><b>Yesterday</b></div>';
+}
+function archiveItem(){if(confirm('Archive "'+($('name').value||'this item')+'"?\n\nIt will be hidden from billing but its sales history stays.'))toast('Item archived');}
+
+fillSelects();fillGst();apply();sync();
+</script></body></html>

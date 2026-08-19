@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Setup MVP</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,sans-serif;}
+  body{background:#f6f6f6;color:#111;display:flex;justify-content:center;padding:16px;}
+  .app{width:100%;max-width:460px;background:#fff;border:1px solid #ddd;border-radius:8px;padding:18px;}
+  .steps{display:flex;gap:4px;margin-bottom:16px;font-size:11px;}
+  .steps div{flex:1;text-align:center;padding:5px 2px;border:1px solid #ddd;border-radius:4px;color:#999;}
+  .steps div.on{background:#111;color:#fff;border-color:#111;}
+  .steps div.done{border-color:#111;color:#111;}
+  h2{font-size:19px;margin-bottom:4px;font-weight:600;}
+  .sub{font-size:13px;color:#666;margin-bottom:16px;line-height:1.4;}
+  label{display:block;font-size:12px;color:#555;margin:10px 0 4px;}
+  input,select{width:100%;padding:9px;border:1px solid #ccc;border-radius:5px;font-size:14px;}
+  .row{display:flex;gap:8px;}.row>*{flex:1;}
+  .stepn{display:flex;align-items:center;gap:8px;}
+  .stepn button{width:34px;height:34px;border:1px solid #ccc;background:#fff;border-radius:5px;font-size:16px;cursor:pointer;}
+  .stepn input{text-align:center;}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+  .chip{border:1px solid #ccc;border-radius:6px;padding:10px 4px;text-align:center;font-size:12px;cursor:pointer;background:#fff;}
+  .chip.sel{border-color:#111;background:#111;color:#fff;}
+  .chip .e{font-size:18px;display:block;margin-bottom:3px;}
+  .item{border:1px solid #ddd;border-radius:6px;padding:10px;margin-bottom:7px;font-size:13px;}
+  .item .hd{display:flex;justify-content:space-between;align-items:center;}
+  .item .meta{color:#777;font-size:12px;margin-top:2px;}
+  .item button{background:none;border:none;color:#b00;font-size:12px;cursor:pointer;}
+  .addbtn{width:100%;border:1px dashed #aaa;background:#fafafa;border-radius:6px;padding:9px;font-size:13px;cursor:pointer;color:#333;margin-top:4px;}
+  .nav{display:flex;justify-content:space-between;margin-top:18px;gap:8px;}
+  .nav button{padding:10px 18px;border-radius:6px;font-size:14px;cursor:pointer;border:1px solid #111;}
+  .back{background:#fff;color:#111;}.next{background:#111;color:#fff;flex:1;}
+  .next:disabled{opacity:.4;cursor:not-allowed;}
+  .stat{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px;}
+  .stat div{border:1px solid #ddd;border-radius:6px;padding:12px;}
+  .stat b{font-size:22px;display:block;}.stat span{font-size:11px;color:#777;}
+  .sec{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.04em;margin:14px 0 6px;border-top:1px solid #eee;padding-top:10px;}
+  .toggle{display:flex;align-items:center;gap:8px;font-size:13px;margin:6px 0;}
+  .toggle input{width:auto;}
+  .floor-tab{display:inline-block;border:1px solid #ccc;border-radius:5px;padding:5px 10px;font-size:12px;margin:0 4px 4px 0;cursor:pointer;background:#fff;}
+  .floor-tab.sel{background:#111;color:#fff;border-color:#111;}
+  .hint{font-size:11px;color:#999;margin-top:8px;line-height:1.4;}
+  .pill{display:inline-block;font-size:11px;border:1px solid #ddd;border-radius:99px;padding:2px 8px;color:#666;}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+
+<script>
+const S = {
+  step:1,
+  biz:null,
+  labels:{space:'Building',zone:'Floor',unit:'Room',person:'Tenant',fee:'Rent'},
+  buildings:[{name:'Building 1',floors:[{rooms:[{name:'101',cap:2,rent:6000}]}]}],
+  bldgCount:1, curFloor:0,
+  people:[{name:'Aman',phone:'9876543210',email:'',idtype:'Aadhaar',idno:'XXXX-1234',unit:'101',services:['Mess'],joindate:'2026-06-01',agr:'11',rent:6000,deposit:10000,cycle:'Monthly',verified:true,police:true,emg:'Ravi',emgph:'9000000000',guar:'',moveout:''}],
+  form:null,
+  services:{included:['WiFi','Water','Security'],sub:[{n:'Mess',p:2500}],usage:[{n:'Electricity',p:'metered'}],onetime:[{n:'Security Deposit',p:10000}]},
+  staff:[{name:'Lakshmi',role:'Cook',wagetype:'Monthly',wage:8000,days:26}],
+  scan:true
+};
+
+const BIZ = [
+  {e:'🛏️',n:'PG',l:{space:'Building',zone:'Floor',unit:'Room',person:'Tenant',fee:'Rent'}},
+  {e:'🏋️',n:'Gym',l:{space:'Facility',zone:'Area',unit:'Batch',person:'Member',fee:'Fee'}},
+  {e:'📚',n:'Tuition',l:{space:'Center',zone:'Room',unit:'Batch',person:'Student',fee:'Fee'}},
+  {e:'🍱',n:'Tiffin',l:{space:'Kitchen',zone:'Menu',unit:'Plan',person:'Subscriber',fee:'Plan'}},
+  {e:'📰',n:'Newspaper',l:{space:'Depot',zone:'Route',unit:'Subscriber',person:'Subscriber',fee:'Bill'}},
+  {e:'🅿️',n:'Parking',l:{space:'Lot',zone:'Section',unit:'Slot',person:'Renter',fee:'Fee'}}
+];
+
+const $=id=>document.getElementById(id);
+const L=k=>S.labels[k];
+
+function totals(){
+  let units=0,cap=0;
+  S.buildings.forEach(b=>b.floors.forEach(f=>f.rooms.forEach(r=>{units++;cap+=(+r.cap||0);})));
+  return {bldg:S.buildings.length,floors:S.buildings.reduce((a,b)=>a+b.floors.length,0),units,cap,people:S.people.length};
+}
+
+/* ---- STEP 1: pick business ---- */
+function step1(){
+  return `<h2>What do you manage?</h2><div class="sub">Pick one. The app relabels itself to match.</div>
+  <div class="grid">${BIZ.map((b,i)=>`<div class="chip ${S.biz===i?'sel':''}" onclick="pick(${i})"><span class="e">${b.e}</span>${b.n}</div>`).join('')}</div>
+  <div class="hint">Demo shows 6 of 62 types. Selecting one changes every label in the next screens.</div>`;
+}
+function pick(i){S.biz=i;S.labels=BIZ[i].l;draw();}
+
+/* ---- STEP 2: space setup ---- */
+function step2(){
+  const t=totals();
+  return `<h2>Set up your ${L('space').toLowerCase()}</h2>
+  <div class="sub">Add ${L('space').toLowerCase()}s, ${L('zone').toLowerCase()}s, and ${L('unit').toLowerCase()}s.</div>
+  <label>Number of ${L('space').toLowerCase()}s</label>
+  <div class="stepn"><button onclick="bldg(-1)">−</button><input id="bc" value="${S.buildings.length}" readonly><button onclick="bldg(1)">+</button></div>
+  <div class="sec">${L('zone')}s & ${L('unit')}s — ${S.buildings[0].name}</div>
+  <div>${S.buildings[0].floors.map((f,fi)=>`<span class="floor-tab ${S.curFloor===fi?'sel':''}" onclick="selFloor(${fi})">${L('zone')} ${fi+1}</span>`).join('')}
+  <span class="floor-tab" onclick="addFloor()">+ ${L('zone')}</span></div>
+  <div style="margin-top:10px">${S.buildings[0].floors[S.curFloor].rooms.map((r,ri)=>`
+    <div class="item"><div class="hd"><b>${r.name||L('unit')+' '+(ri+1)}</b><button onclick="delRoom(${ri})">remove</button></div>
+    <div class="meta">capacity ${r.cap} · ${L('fee').toLowerCase()} ₹${r.rent}</div></div>`).join('')}
+  <button class="addbtn" onclick="addRoom()">+ Add ${L('unit').toLowerCase()}</button></div>
+  <div class="stat" style="margin-top:14px"><div><b>${t.units}</b><span>${L('unit')}s</span></div><div><b>${t.cap}</b><span>Capacity</span></div></div>`;
+}
+function bldg(d){let n=Math.max(1,S.buildings.length+d);
+  while(S.buildings.length<n)S.buildings.push({name:'Building '+(S.buildings.length+1),floors:[{rooms:[{name:'',cap:1,rent:0}]}]});
+  S.buildings.length=n;draw();}
+function selFloor(i){S.curFloor=i;draw();}
+function addFloor(){S.buildings[0].floors.push({rooms:[{name:'',cap:1,rent:0}]});S.curFloor=S.buildings[0].floors.length-1;draw();}
+function addRoom(){const f=S.buildings[0].floors[S.curFloor];f.rooms.push({name:String((S.curFloor+1)*100+f.rooms.length+1),cap:2,rent:6000});draw();}
+function delRoom(ri){S.buildings[0].floors[S.curFloor].rooms.splice(ri,1);draw();}
+
+/* ---- STEP 3: people ---- */
+function step3(){
+  if(S.form) return personForm();
+  return `<h2>Add your ${L('person').toLowerCase()}s</h2>
+  <div class="sub">Each ${L('person').toLowerCase()} links to a ${L('unit').toLowerCase()} and their plan.</div>
+  ${S.people.map((p,i)=>`<div class="item"><div class="hd"><b>${p.name}</b><button onclick="delP(${i})">remove</button></div>
+  <div class="meta">${p.phone||'no phone'} · ${L('unit')} ${p.unit||'—'} · joined ${p.joindate}</div>
+  <div class="meta">${p.verified?'✓ ID verified':'⚠ not verified'} · ${p.police?'✓ police':'⚠ police pending'} · deposit ₹${p.deposit}</div>
+  <div class="meta">cycle: ${p.cycle} · services: ${p.services.join(', ')||'none'} ${p.moveout?'· move-out '+p.moveout:''}</div></div>`).join('')}
+  <button class="addbtn" onclick="openForm()">+ Add ${L('person').toLowerCase()}</button>
+  <div class="hint">Full record per person below — identity, verification, agreement, money, lifecycle.</div>`;
+}
+function personForm(){
+  const f=S.form, u=[];
+  S.buildings.forEach(b=>b.floors.forEach(fl=>fl.rooms.forEach(r=>u.push(r.name))));
+  const svc=S.services.sub.map(s=>s.n);
+  return `<h2>New ${L('person').toLowerCase()}</h2><div class="sub">Every field this record holds.</div>
+  <div class="sec">Identity</div>
+  <label>Full name</label><input id="f_name" value="${f.name}">
+  <div class="row"><div><label>Phone</label><input id="f_phone" value="${f.phone}"></div>
+  <div><label>Email</label><input id="f_email" value="${f.email}"></div></div>
+  <label>Photo</label><input id="f_photo" type="file">
+  <div class="sec">Verification</div>
+  <div class="row"><div><label>ID type</label><select id="f_idtype"><option>Aadhaar</option><option>PAN</option><option>Passport</option></select></div>
+  <div><label>ID number</label><input id="f_idno" value="${f.idno}"></div></div>
+  <div class="toggle"><input type="checkbox" id="f_verified" ${f.verified?'checked':''}><label style="margin:0">ID verified</label></div>
+  <div class="toggle"><input type="checkbox" id="f_police" ${f.police?'checked':''}><label style="margin:0">Police verification done</label></div>
+  <div class="sec">Safety</div>
+  <div class="row"><div><label>Emergency contact</label><input id="f_emg" value="${f.emg}"></div>
+  <div><label>Emergency phone</label><input id="f_emgph" value="${f.emgph}"></div></div>
+  <label>Guarantor (optional)</label><input id="f_guar" value="${f.guar}">
+  <div class="sec">Assignment & agreement</div>
+  <div class="row"><div><label>Assigned ${L('unit').toLowerCase()}</label><select id="f_unit">${u.map(x=>`<option ${f.unit===x?'selected':''}>${x}</option>`).join('')}</select></div>
+  <div><label>Join date</label><input id="f_join" type="date" value="${f.joindate}"></div></div>
+  <div class="row"><div><label>Agreement months</label><input id="f_agr" value="${f.agr}"></div>
+  <div><label>Move-in photos</label><input id="f_inphoto" type="file"></div></div>
+  <div class="sec">Money</div>
+  <div class="row"><div><label>${L('fee')} (₹)</label><input id="f_rent" value="${f.rent}"></div>
+  <div><label>Deposit (₹)</label><input id="f_dep" value="${f.deposit}"></div></div>
+  <label>Payment cycle</label><select id="f_cycle"><option>Monthly</option><option>Quarterly</option><option>Yearly</option></select>
+  <label>Subscribed services</label>
+  <div>${svc.map(s=>`<label class="toggle"><input type="checkbox" class="f_svc" value="${s}" ${f.services.includes(s)?'checked':''}> ${s}</label>`).join('')||'<span class="hint">none defined yet</span>'}</div>
+  <div class="sec">Lifecycle (filled later)</div>
+  <div class="hint">Notice period · move-out date · move-out condition photos · deposit refund/deductions · payment history · scan/attendance log — auto-tracked once active.</div>
+  <div class="nav"><button class="back" onclick="cancelForm()">Cancel</button><button class="next" onclick="saveForm()">Save ${L('person').toLowerCase()}</button></div>`;
+}
+function openForm(){S.form={name:'',phone:'',email:'',idno:'',verified:false,police:false,emg:'',emgph:'',guar:'',unit:'',joindate:'2026-06-20',agr:'11',rent:'',deposit:'',services:[]};draw();}
+function cancelForm(){S.form=null;draw();}
+function saveForm(){
+  const g=id=>$(id)?$(id).value:'';
+  const svc=[...document.querySelectorAll('.f_svc:checked')].map(x=>x.value);
+  S.people.push({
+    name:g('f_name')||'Unnamed',phone:g('f_phone'),email:g('f_email'),
+    idtype:g('f_idtype'),idno:g('f_idno'),verified:$('f_verified').checked,police:$('f_police').checked,
+    emg:g('f_emg'),emgph:g('f_emgph'),guar:g('f_guar'),
+    unit:g('f_unit'),joindate:g('f_join'),agr:g('f_agr'),
+    rent:g('f_rent'),deposit:g('f_dep')||0,cycle:g('f_cycle'),services:svc,moveout:''
+  });
+  S.form=null;draw();
+}
+function delP(i){S.people.splice(i,1);draw();}
+
+/* ---- STEP 4: staff (attendance-by-scan) ---- */
+function stepStaff(){
+  return `<h2>Add your staff</h2>
+  <div class="sub">Workers scan a QR when they arrive. Salary auto-calculates from days/sessions — no manual marking.</div>
+  ${S.staff.map((w,i)=>{
+    const pay = w.wagetype==='Monthly' ? Math.round(w.wage/30*w.days) : w.wage*w.days;
+    return `<div class="item"><div class="hd"><b>${w.name}</b><button onclick="delW(${i})">remove</button></div>
+    <div class="meta">${w.role} · ${w.wagetype==='Monthly'?'₹'+w.wage+'/mo':'₹'+w.wage+'/day'}</div>
+    <div class="meta">scanned ${w.days} ${w.wagetype==='Monthly'?'days':'days/sessions'} → payable ₹${pay.toLocaleString()}</div></div>`;
+  }).join('')}
+  <button class="addbtn" onclick="addW()">+ Add staff</button>
+  <div class="sec">How it works</div>
+  <div class="hint">Worker arrives → scans the door/gate QR (or owner scans them) → one scan = one day logged. At month end, days × rate = salary. A time/location check stops scanning from home.</div>`;
+}
+function addW(){
+  const n=prompt('Staff name?');if(!n)return;
+  const role=prompt('Role? (Cook, Maid, Guard, Trainer...)')||'Helper';
+  const wt=confirm('OK = Monthly salary, Cancel = Daily wage')?'Monthly':'Daily';
+  const wage=+prompt(wt+' amount (₹)?')||0;
+  S.staff.push({name:n,role,wagetype:wt,wage,days:0});draw();
+}
+function delW(i){S.staff.splice(i,1);draw();}
+
+/* ---- STEP 5: fees & services ---- */
+function step4(){
+  return `<h2>Fees & services</h2><div class="sub">Define what's included, optional, or charged per use.</div>
+  <div class="sec">Included (free with ${L('fee').toLowerCase()})</div>
+  ${S.services.included.map(s=>`<span class="pill">${s}</span> `).join('')}
+  <div class="sec">Subscription (monthly opt-in)</div>
+  ${S.services.sub.map((s,i)=>`<div class="item"><div class="hd"><b>${s.n}</b><span>₹${s.p}/mo</span></div></div>`).join('')}
+  <button class="addbtn" onclick="addSvc('sub')">+ Add subscription</button>
+  <div class="sec">Usage-based (per-use)</div>
+  ${S.services.usage.map(s=>`<div class="item"><div class="hd"><b>${s.n}</b><span>${s.p}</span></div></div>`).join('')}
+  <button class="addbtn" onclick="addSvc('usage')">+ Add usage charge</button>
+  <div class="sec">One-time</div>
+  ${S.services.onetime.map(s=>`<div class="item"><div class="hd"><b>${s.n}</b><span>₹${s.p}</span></div></div>`).join('')}
+  <div class="sec">Service delivery</div>
+  <div class="toggle"><input type="checkbox" id="sc" ${S.scan?'checked':''} onchange="S.scan=this.checked"> <label style="margin:0">Scan-to-confirm (QR before serving / entry)</label></div>
+  <div class="hint">Billing engine, reminders, receipts & ledger are shared across all business types.</div>`;
+}
+function addSvc(t){const n=prompt('Service name?');if(!n)return;const p=prompt('Price (₹)?')||0;
+  if(t==='sub')S.services.sub.push({n,p});else S.services.usage.push({n,p:'₹'+p+'/use'});draw();}
+
+/* ---- STEP 5: dashboard ---- */
+function step5(){
+  const t=totals();
+  const rev=S.people.reduce((a,p)=>{let r=0;S.buildings.forEach(b=>b.floors.forEach(f=>f.rooms.forEach(rm=>{if(rm.name===p.unit)r+=+rm.rent;})));return a+r;},0);
+  const svcRev=S.people.reduce((a,p)=>a+p.services.reduce((x,sn)=>{const s=S.services.sub.find(z=>z.n===sn);return x+(s?+s.p:0);},0),0);
+  return `<h2>${BIZ[S.biz].n} dashboard</h2><div class="sub">Setup complete. Here's your live overview.</div>
+  <div class="stat">
+  <div><b>${t.units}</b><span>${L('unit')}s</span></div>
+  <div><b>${t.cap}</b><span>Capacity</span></div>
+  <div><b>${t.people}</b><span>${L('person')}s</span></div>
+  <div><b>₹${(rev+svcRev).toLocaleString()}</b><span>Monthly billing</span></div></div>
+  <div class="sec">This month</div>
+  <div class="item"><div class="hd"><b>Collected</b><span>₹0 / ₹${(rev+svcRev).toLocaleString()}</span></div><div class="meta">0 paid · ${t.people} pending</div></div>
+  ${S.staff.length?`<div class="item"><div class="hd"><b>Staff payroll</b><span>₹${S.staff.reduce((a,w)=>a+(w.wagetype==='Monthly'?Math.round(w.wage/30*w.days):w.wage*w.days),0).toLocaleString()}</span></div><div class="meta">${S.staff.length} staff · paid from scan days</div></div>`:''}
+  <div class="sec">Features active</div>
+  <span class="pill">Auto invoices</span> <span class="pill">Reminders</span> <span class="pill">Receipts</span>
+  <span class="pill">Cash + UPI tracking</span> <span class="pill">Deposit ledger</span> ${S.scan?'<span class="pill">Scan-to-confirm</span>':''}
+  <span class="pill">Staff attendance scan</span> <span class="pill">Defaulter flag</span> <span class="pill">Reports</span>
+  <div class="hint">Same engine runs all 62 business types — only labels & this dashboard's terms change.</div>`;
+}
+
+/* ---- shell ---- */
+function draw(){
+  const names=['Business','Space','People','Staff','Fees','Done'];
+  let body=[step1,step2,step3,stepStaff,step4,step5][S.step-1]();
+  $('app').innerHTML=`
+  <div class="steps">${names.map((n,i)=>`<div class="${S.step===i+1?'on':S.step>i+1?'done':''}">${i+1}. ${n}</div>`).join('')}</div>
+  ${body}
+  <div class="nav">
+    ${S.step>1?'<button class="back" onclick="go(-1)">← Back</button>':''}
+    <button class="next" onclick="go(1)" ${S.step===1&&S.biz===null?'disabled':''}>${S.step<6?'Continue →':'Start over'}</button>
+  </div>`;
+}
+function go(d){
+  if(S.step===6&&d===1){S.step=1;S.biz=null;draw();return;}
+  S.step=Math.max(1,Math.min(6,S.step+d));draw();
+}
+draw();
+</script>
+</body>
+</html>

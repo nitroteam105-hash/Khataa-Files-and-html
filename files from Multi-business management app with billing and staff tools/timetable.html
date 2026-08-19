@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Timetable — Khaata</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1f6f54; --green-light: #e7f2ed;
+    --parchment: #fbfbf9; --ink: #1c1c1a; --muted: #6b6b64;
+    --border: #e6e4dd; --amber: #b5791f; --amber-light: #fbf1e2;
+    --purple: #6b5b95; --purple-light: #f0eef8;
+    --red: #c0392b; --red-light: #fbeae7;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', sans-serif; background: var(--parchment); color: var(--ink);
+    max-width: 480px; margin: 0 auto; min-height: 100vh; padding-bottom: 40px;
+  }
+  header { padding: 24px 20px 12px; }
+  header h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 800; }
+  header p { font-size: 13px; color: var(--muted); margin-top: 3px; }
+
+  .biz-select { display: flex; gap: 6px; padding: 0 20px 12px; overflow-x: auto; }
+  .biz-opt { flex-shrink: 0; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--border); font-size: 12.5px; font-weight: 600; color: var(--muted); background: #fff; cursor: pointer; white-space: nowrap; }
+  .biz-opt.active { background: var(--green); color: #fff; border-color: var(--green); }
+
+  .view-toggle { display: flex; gap: 6px; padding: 0 20px 10px; }
+  .view-btn { flex: 1; text-align: center; padding: 9px; border-radius: 8px; border: 1px solid var(--border); font-size: 12.5px; font-weight: 600; color: var(--muted); cursor: pointer; background: #fff; }
+  .view-btn.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+  .content { padding: 0 20px; }
+  .section-label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin: 14px 0 8px; }
+
+  .room-filter { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; }
+  .room-chip-btn { flex-shrink: 0; padding: 7px 12px; border-radius: 999px; border: 1px solid var(--border); font-size: 12px; font-weight: 600; color: var(--muted); background: #fff; cursor: pointer; white-space: nowrap; }
+  .room-chip-btn.active { background: var(--green); color: #fff; border-color: var(--green); }
+  .room-chip-btn.has-conflict { border-color: var(--red); color: var(--red); background: var(--red-light); }
+  .room-chip-btn.has-conflict.active { background: var(--red); color: #fff; border-color: var(--red); }
+
+  .day-filter { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 4px; }
+  .day-chip-btn { flex-shrink: 0; padding: 7px 12px; border-radius: 999px; border: 1px solid var(--border); font-size: 12px; font-weight: 600; color: var(--muted); background: #fff; cursor: pointer; white-space: nowrap; }
+  .day-chip-btn.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .day-chip-btn.empty-day { opacity: 0.4; }
+
+  .cal-grid { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; }
+  .cal-room-lane { flex-shrink: 0; width: 150px; }
+  .cal-room-label { font-size: 11.5px; font-weight: 700; color: var(--muted); text-align: center; margin-bottom: 6px; text-transform: uppercase; background: #f2f2ee; border-radius: 6px; padding: 4px; }
+  .cal-room-label.has-conflict { color: var(--red); background: var(--red-light); }
+
+  .conflict-banner {
+    background: var(--red-light); color: var(--red); border-radius: 10px; padding: 12px 14px;
+    font-size: 12.5px; font-weight: 600; margin-bottom: 10px; display: none;
+  }
+
+  .tt-row { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 10px; }
+  .tt-row.conflict { border-color: var(--red); background: var(--red-light); }
+  .tt-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+  .tt-name { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 14px; }
+  .tt-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .conflict-flag { font-size: 10.5px; font-weight: 700; color: var(--red); background: #fff; border: 1px solid var(--red); border-radius: 999px; padding: 2px 8px; white-space: nowrap; }
+  .tt-select { width: 100%; padding: 9px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; font-family: 'Inter', sans-serif; background: #fff; }
+
+  .cal-day { margin-bottom: 14px; }
+  .cal-day-label { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 13px; color: var(--green); margin-bottom: 6px; }
+  .cal-slot { background: var(--green-light); border-radius: 10px; padding: 10px 12px; margin-bottom: 6px; font-size: 12.5px; }
+  .cal-slot.conflict { background: var(--red-light); border: 1px solid var(--red); }
+  .cal-slot .cs-time { font-weight: 700; color: var(--green); }
+  .cal-slot.conflict .cs-time { color: var(--red); }
+  .cal-slot .cs-name { font-weight: 600; margin: 2px 0; }
+  .cal-slot .cs-instructor { color: var(--muted); font-size: 11.5px; }
+  .cal-slot.conflict .cs-instructor { color: var(--red); font-weight: 600; }
+
+  .note { font-size: 12px; color: var(--muted); margin-top: 10px; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Timetable</h1>
+  <p>Assign instructors to each batch and spot scheduling clashes</p>
+</header>
+
+<div class="biz-select">
+  <div class="biz-opt active">Bright Minds Academy</div>
+  <div class="biz-opt">FlexFit Gym</div>
+</div>
+
+<div class="view-toggle">
+  <div class="view-btn active" onclick="showView('list', this)">☰ List</div>
+  <div class="view-btn" onclick="showView('cal', this)">▦ Calendar</div>
+</div>
+
+<div class="content">
+  <div class="conflict-banner" id="conflictBanner">⚠ Some instructors are double-booked — flagged below, but you can still save.</div>
+
+  <div class="section-label">Day</div>
+  <div class="day-filter" id="dayFilter"></div>
+
+  <div id="listView">
+    <div class="section-label">Filter by room</div>
+    <div class="room-filter" id="roomFilter"></div>
+    <div class="section-label">Slots</div>
+    <div id="ttRows"></div>
+  </div>
+
+  <div id="calView" style="display:none">
+    <div class="section-label">Rooms side by side</div>
+    <div id="ttCalendar"></div>
+  </div>
+
+  <p class="note">Conflicts are a soft warning — you can still assign the same instructor to overlapping slots if that's intentional (e.g. covering two rooms briefly). Nothing is blocked.</p>
+</div>
+
+<script>
+const subjects = ['Math', 'Science', 'English', 'Hindi'];
+const timeSlots = ['4-5 PM', '5-6 PM', '6-7 PM'];
+const instructorsBySubject = {
+  Math:    ['rao1', 'rao2', 'rao3', 'rao4'],
+  Science: ['iyer1', 'iyer2', 'iyer3', 'iyer4'],
+  English: ['nair1', 'nair2'], // intentionally short-staffed to show real conflicts
+  Hindi:   ['sharma1', 'sharma2', 'sharma3']
+};
+const staffPool = [
+  { id: 'rao1', name: 'Mr. Rao' }, { id: 'rao2', name: 'Mr. Suresh' }, { id: 'rao3', name: 'Ms. Patel' }, { id: 'rao4', name: 'Mr. Khan' },
+  { id: 'iyer1', name: 'Ms. Iyer' }, { id: 'iyer2', name: 'Mr. Das' }, { id: 'iyer3', name: 'Ms. Menon' }, { id: 'iyer4', name: 'Mr. Bose' },
+  { id: 'nair1', name: 'Ms. Nair' }, { id: 'nair2', name: 'Mr. Pillai' },
+  { id: 'sharma1', name: 'Ms. Sharma' }, { id: 'sharma2', name: 'Mr. Verma' }, { id: 'sharma3', name: 'Ms. Joshi' }
+];
+
+const weekDays = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+// Two distinct day-groups with DIFFERENT subject rotations, so the week genuinely varies:
+// MWF runs Math/Science/English rotation; TTh runs Science/Hindi/Math rotation; weekends closed.
+const dayGroups = [
+  { days: ['Mon','Wed','Fri'], subjectSet: ['Math','Science','English'] },
+  { days: ['Tue','Thu'],       subjectSet: ['Science','Hindi','Math'] }
+];
+
+let batches = [];
+let idCounter = 1;
+const roomCount = 10;
+for (let r = 1; r <= roomCount; r++) {
+  dayGroups.forEach(function(group) {
+    for (let s = 0; s < 3; s++) {
+      const subject = group.subjectSet[(r + s) % group.subjectSet.length];
+      const time = timeSlots[s];
+      const pool = instructorsBySubject[subject];
+      const instructor = pool[(r - 1) % pool.length];
+      batches.push({
+        id: idCounter++,
+        room: 'Room ' + r,
+        subject: subject,
+        label: 'Batch',
+        grade: 'Mixed',
+        days: group.days.slice(),
+        time: time,
+        instructor: instructor
+      });
+    }
+  });
+}
+
+let selectedRoom = 'All';
+let selectedDay = 'Mon';
+
+function showView(view, el) {
+  document.querySelectorAll('.view-btn').forEach(function(b) { b.classList.remove('active'); });
+  el.classList.add('active');
+  document.getElementById('listView').style.display = view === 'list' ? 'block' : 'none';
+  document.getElementById('calView').style.display = view === 'cal' ? 'block' : 'none';
+  if (view === 'cal') renderCalendar();
+}
+
+function parseTimeRange(str) {
+  const m = str.match(/(\d{1,2})(?::(\d{2}))?\s*-\s*(\d{1,2})(?::(\d{2}))?\s*(AM|PM)/i);
+  if (!m) return null;
+  let h1 = parseInt(m[1], 10), m1 = m[2] ? parseInt(m[2], 10) : 0;
+  let h2 = parseInt(m[3], 10), m2 = m[4] ? parseInt(m[4], 10) : 0;
+  const isPM = /PM/i.test(m[5]);
+  function to24(h, pm) {
+    if (h === 12) return pm ? 12 : 0;
+    return pm ? h + 12 : h;
+  }
+  const start = to24(h1, isPM) * 60 + m1;
+  let end = to24(h2, isPM) * 60 + m2;
+  if (end <= start) end += 12 * 60;
+  return { start: start, end: end };
+}
+
+function batchesOverlap(a, b) {
+  if (!a.instructor || !b.instructor || a.instructor !== b.instructor) return false;
+  const sharedDay = a.days.some(function(d) { return b.days.includes(d); });
+  if (!sharedDay) return false;
+  const ra = parseTimeRange(a.time), rb = parseTimeRange(b.time);
+  if (!ra || !rb) return false;
+  return ra.start < rb.end && rb.start < ra.end;
+}
+
+function computeConflicts(pool) {
+  const conflictIds = new Set();
+  for (let i = 0; i < pool.length; i++) {
+    for (let j = i + 1; j < pool.length; j++) {
+      if (batchesOverlap(pool[i], pool[j])) {
+        conflictIds.add(pool[i].id);
+        conflictIds.add(pool[j].id);
+      }
+    }
+  }
+  return conflictIds;
+}
+
+function renderDayFilter() {
+  const container = document.getElementById('dayFilter');
+  container.innerHTML = '';
+  weekDays.forEach(function(d) {
+    const hasClasses = batches.some(function(b) { return b.days.includes(d); });
+    const btn = document.createElement('div');
+    btn.className = 'day-chip-btn' + (d === selectedDay ? ' active' : '') + (!hasClasses ? ' empty-day' : '');
+    btn.textContent = d + (!hasClasses ? ' (off)' : '');
+    btn.onclick = function() { selectedDay = d; renderDayFilter(); renderRoomFilter(); renderList(); };
+    container.appendChild(btn);
+  });
+}
+
+function getConflictedRoomsForDay(day) {
+  const dayBatches = batches.filter(function(b) { return b.days.includes(day); });
+  const conflicts = computeConflicts(dayBatches);
+  const rooms = new Set();
+  dayBatches.forEach(function(b) { if (conflicts.has(b.id)) rooms.add(b.room); });
+  return rooms;
+}
+
+function renderRoomFilter() {
+  const container = document.getElementById('roomFilter');
+  container.innerHTML = '';
+  const conflictedRooms = getConflictedRoomsForDay(selectedDay);
+  const rooms = ['All'];
+  for (let r = 1; r <= roomCount; r++) rooms.push('Room ' + r);
+  rooms.forEach(function(r) {
+    const btn = document.createElement('div');
+    const hasConflict = r !== 'All' && conflictedRooms.has(r);
+    btn.className = 'room-chip-btn' + (r === selectedRoom ? ' active' : '') + (hasConflict ? ' has-conflict' : '');
+    btn.textContent = (r === 'All' ? 'All Rooms' : r) + (hasConflict ? ' ⚠' : '');
+    btn.onclick = function() { selectedRoom = r; renderRoomFilter(); renderList(); };
+    container.appendChild(btn);
+  });
+}
+
+function renderList() {
+  const dayBatches = batches.filter(function(b) { return b.days.includes(selectedDay); });
+  const conflicts = computeConflicts(dayBatches);
+  document.getElementById('conflictBanner').style.display = conflicts.size ? 'block' : 'none';
+  const container = document.getElementById('ttRows');
+  container.innerHTML = '';
+  const visible = selectedRoom === 'All' ? dayBatches : dayBatches.filter(function(b) { return b.room === selectedRoom; });
+  if (!visible.length) {
+    container.innerHTML = '<p class="note">No classes scheduled on ' + selectedDay + '.</p>';
+    return;
+  }
+  visible.forEach(function(b) {
+    const row = document.createElement('div');
+    row.className = 'tt-row' + (conflicts.has(b.id) ? ' conflict' : '');
+    row.innerHTML =
+      '<div class="tt-top">' +
+        '<div><div class="tt-name">' + b.room + ' \u00b7 ' + b.subject + ' <span style="font-weight:400;color:var(--muted);font-size:11.5px">(' + b.grade + ')</span></div>' +
+        '<div class="tt-meta">' + b.days.join('/') + ' \u00b7 ' + b.time + '</div></div>' +
+        (conflicts.has(b.id) ? '<span class="conflict-flag">\u26a0 Clash</span>' : '') +
+      '</div>' +
+      '<select class="tt-select" data-id="' + b.id + '">' +
+        '<option value="">\u2014 Unassigned \u2014</option>' +
+        staffPool.map(function(s) { return '<option value="' + s.id + '"' + (s.id === b.instructor ? ' selected' : '') + '>' + s.name + '</option>'; }).join('') +
+      '</select>';
+    row.querySelector('select').addEventListener('change', function(e) {
+      const id = parseInt(e.target.dataset.id, 10);
+      const batch = batches.find(function(x) { return x.id === id; });
+      batch.instructor = e.target.value;
+      renderList();
+      renderRoomFilter();
+    });
+    container.appendChild(row);
+  });
+}
+
+function renderCalendar() {
+  const dayBatches = batches.filter(function(b) { return b.days.includes(selectedDay); });
+  const conflicts = computeConflicts(dayBatches);
+  document.getElementById('conflictBanner').style.display = conflicts.size ? 'block' : 'none';
+  const container = document.getElementById('ttCalendar');
+  container.innerHTML = '';
+
+  if (!dayBatches.length) {
+    container.innerHTML = '<p class="note">No classes scheduled on ' + selectedDay + '.</p>';
+    return;
+  }
+
+  const grid = document.createElement('div');
+  grid.className = 'cal-grid';
+  for (let r = 1; r <= roomCount; r++) {
+    const roomName = 'Room ' + r;
+    const roomBatches = dayBatches.filter(function(b) { return b.room === roomName; });
+    if (!roomBatches.length) continue;
+    const lane = document.createElement('div');
+    lane.className = 'cal-room-lane';
+    lane.innerHTML = '<div class="cal-room-label"></div>';
+    const roomLabel = lane.querySelector('.cal-room-label');
+    const roomHasConflict = roomBatches.some(function(b) { return conflicts.has(b.id); });
+    if (roomHasConflict) roomLabel.classList.add('has-conflict');
+    roomLabel.textContent = roomName + (roomHasConflict ? ' ⚠' : '');
+    roomBatches.forEach(function(b) {
+      const staffName = staffPool.find(function(s) { return s.id === b.instructor; });
+      const slot = document.createElement('div');
+      slot.className = 'cal-slot' + (conflicts.has(b.id) ? ' conflict' : '');
+      slot.innerHTML = '<div class="cs-time"></div><div class="cs-name"></div><div class="cs-instructor"></div>';
+      slot.querySelector('.cs-time').textContent = b.time + (conflicts.has(b.id) ? ' \u26a0' : '');
+      slot.querySelector('.cs-name').textContent = b.subject;
+      slot.querySelector('.cs-instructor').textContent = staffName ? staffName.name : 'Unassigned';
+      lane.appendChild(slot);
+    });
+    grid.appendChild(lane);
+  }
+  container.appendChild(grid);
+}
+
+renderDayFilter();
+renderRoomFilter();
+renderList();
+</script>
+</body>
+</html>

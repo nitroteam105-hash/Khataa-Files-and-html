@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bright Minds Academy — Add Student</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fbfbf9;--ink:#16161a;--muted:#62636a;--line:#e7e7e2;--card:#fff;
+    --accent:#1f6f54;--soft:#e8f3ee;--warm:#f4f2ec;--red:#b3261e;--amber:#b36b00;--ambersoft:#fff4e5;
+    --d:'Plus Jakarta Sans',sans-serif;--b:'Inter',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:var(--b);-webkit-font-smoothing:antialiased;padding-bottom:88px;}
+  .wrap{max-width:480px;margin:0 auto;padding:0 16px;}
+  h1,h2,h3{font-family:var(--d);letter-spacing:-.01em;}
+
+  .top{position:sticky;top:0;background:var(--bg);z-index:9;padding:14px 0 12px;border-bottom:1px solid var(--line);}
+  .top-in{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+  .back{font-size:20px;color:var(--muted);cursor:pointer;}
+  .top h1{font-size:18px;}.top .sub{font-size:12px;color:var(--muted);}
+  .dots{display:flex;gap:6px;}
+  .dots .dt{flex:1;height:5px;border-radius:99px;background:var(--line);}
+  .dots .dt.on{background:var(--accent);}.dots .dt.done{background:var(--accent);opacity:.5;}
+
+  .step-h{margin:18px 0 4px;}
+  .step-h .n{font-family:var(--d);font-weight:700;font-size:12px;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;}
+  .step-h h2{font-size:22px;margin-top:5px;}
+  .step-h p{font-size:13.5px;color:var(--muted);margin-top:3px;}
+
+  label{display:block;font-size:12.5px;color:var(--muted);margin:14px 0 5px;font-weight:500;}
+  input,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;font-size:15px;font-family:var(--b);background:var(--card);color:var(--ink);}
+  input:focus,select:focus{outline:none;border-color:var(--accent);}
+  .row{display:flex;gap:10px;}.row>*{flex:1;}
+  .opt-note{font-size:11.5px;color:var(--muted);}
+
+  .plans{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:6px;}
+  .plan{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:14px;cursor:pointer;position:relative;}
+  .plan.sel{border-color:var(--accent);background:var(--soft);}
+  .plan.sel::after{content:'✓';position:absolute;top:9px;right:11px;color:var(--accent);font-weight:700;}
+  .plan .dur{font-family:var(--d);font-weight:700;font-size:14px;}
+  .plan .sub2{font-size:11px;color:var(--muted);margin-top:1px;}
+  .plan .pr{font-family:var(--d);font-weight:800;font-size:16px;color:var(--accent);margin-top:6px;}
+
+  .cyc-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+  .cyc{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 12px;font-size:12.5px;font-weight:600;cursor:pointer;}
+  .cyc.sel{border-color:var(--accent);background:var(--soft);color:var(--accent);}
+
+  .expiry{display:flex;justify-content:space-between;align-items:center;background:var(--ink);color:#fff;border-radius:12px;padding:14px 16px;margin-top:14px;}
+  .expiry .lb{font-size:12px;color:#b8b9bd;}
+  .expiry .v{font-family:var(--d);font-weight:700;font-size:16px;}
+
+  .onetime-h{font-family:var(--d);font-weight:700;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:20px 0 4px;padding-top:14px;border-top:1px dashed var(--line);}
+
+  .upload{display:flex;align-items:center;gap:12px;background:var(--card);border:1px dashed #bbb;border-radius:12px;padding:14px;cursor:pointer;margin-top:5px;}
+  .upload .ic{font-size:22px;}.upload .tx{flex:1;}.upload .tx h3{font-size:14px;}.upload .tx small{color:var(--muted);font-size:12px;}
+  .upload.done{border-style:solid;border-color:var(--accent);background:var(--soft);}
+  .priv{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.5;background:var(--warm);padding:10px 12px;border-radius:10px;}
+
+  .collapse-h{display:flex;justify-content:space-between;align-items:center;cursor:pointer;padding:12px 0;}
+  .collapse-h .lbl{font-size:14.5px;font-weight:600;font-family:var(--d);}
+  .collapse-h .lbl small{display:block;font-size:12px;color:var(--muted);font-weight:400;font-family:var(--b);}
+  .collapse-body{display:none;}.collapse-body.show{display:block;}
+  .sw{width:46px;height:26px;border-radius:99px;background:var(--line);position:relative;cursor:pointer;flex-shrink:0;}
+  .sw.on{background:var(--accent);}
+  .sw::after{content:'';position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.15s;}
+  .sw.on::after{left:23px;}
+
+  .guardnote{font-size:11.5px;color:var(--amber);background:var(--ambersoft);border-radius:10px;padding:10px 12px;margin:10px 0;line-height:1.5;}
+
+  .cf-row{display:flex;gap:8px;align-items:center;margin-bottom:8px;}
+  .cf-row input{flex:1;}
+  .cf-row .rm{width:38px;height:44px;border:1px solid var(--line);background:var(--card);border-radius:9px;color:var(--red);font-size:14px;cursor:pointer;flex-shrink:0;}
+  .add-cf{width:100%;border:1px dashed #bbb;background:var(--bg);border-radius:10px;padding:11px;font-size:13.5px;cursor:pointer;color:var(--accent);font-family:var(--d);font-weight:600;}
+
+  .rev{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:10px;}
+  .rev .rr{display:flex;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--line);font-size:14px;}
+  .rev .rr:last-child{border:none;}
+  .rev .rr .k{color:var(--muted);}.rev .rr .v{font-weight:500;text-align:right;}
+  .rev-h{font-family:var(--d);font-weight:700;font-size:12px;color:var(--muted);text-transform:uppercase;margin:16px 0 7px;letter-spacing:.04em;}
+
+  .bar{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);padding:12px 16px;z-index:9;}
+  .bar-in{max-width:480px;margin:0 auto;display:flex;gap:10px;align-items:center;}
+  .btn{font-family:var(--d);font-weight:700;font-size:15px;border:none;border-radius:11px;padding:14px;cursor:pointer;}
+  .btn.next{background:var(--accent);color:#fff;flex:1;}
+  .btn.back2{background:var(--card);border:1px solid var(--line);color:var(--ink);flex:0 0 26%;}
+  .btn.skip{background:none;color:var(--muted);font-weight:600;font-size:13px;border:none;}
+  .savebar{text-align:center;margin-top:8px;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+const STEPS=['Basics','Enrollment','Academic & ID','Guardian','Review'];
+let step=0;
+const BATCHES=[
+  {id:'math-a',subject:'Math',label:'Batch A',meta:'Grade 10 · Mon/Wed/Fri 5–6 PM',cycles:[{label:'Monthly',amt:1200},{label:'Quarterly',amt:3200}]},
+  {id:'sci-b',subject:'Science',label:'Batch B',meta:'Grade 9 · Tue/Thu 4–5 PM',cycles:[{label:'Monthly',amt:1000}]},
+  {id:'eng-a',subject:'English',label:'Batch A',meta:'Grade 8 · Mon/Wed 5–6 PM',cycles:[{label:'Monthly',amt:900},{label:'Quarterly',amt:2400}]}
+];
+const d={
+  name:'',phone:'',dob:'',
+  batchId:BATCHES[0].id,cycleLabel:BATCHES[0].cycles[0].label,
+  joinfee:0,discount:0,disctype:'flat',_discOpen:false,
+  school:'',grade:'',schoolId:'',address:'',
+  idtype:'Aadhaar',idno:'',idUploaded:false,
+  guardianName:'',guardianContact:'',
+  customFields:[]
+};
+const $=id=>document.getElementById(id);
+const money=n=>'₹'+(+n||0).toLocaleString('en-IN');
+function set(f,v){d[f]=v;}
+function batch(){return BATCHES.find(b=>b.id===d.batchId);}
+function cycle(){return batch().cycles.find(c=>c.label===d.cycleLabel)||batch().cycles[0];}
+function discountAmt(){const base=cycle().amt;return d.disctype==='pct'?Math.round(base*Math.min(d.discount,100)/100):Math.min(d.discount,base);}
+function dueNow(){return cycle().amt-discountAmt()+(+d.joinfee||0);}
+function age(){
+  if(!d.dob)return null;
+  const born=new Date(d.dob);const now=new Date('2026-07-15');
+  let a=now.getFullYear()-born.getFullYear();
+  const m=now.getMonth()-born.getMonth();
+  if(m<0||(m===0&&now.getDate()<born.getDate()))a--;
+  return a;
+}
+function isMinor(){const a=age();return a!==null&&a<18;}
+
+function basics(){
+  return `<div class="step-h"><span class="n">Step 1 of 5</span><h2>Student basics</h2><p>The essentials to create the record.</p></div>
+  <label>Full name</label><input value="${d.name}" oninput="set('name',this.value);refreshNext()" placeholder="e.g. Ravi Kumar">
+  <label>Mobile</label><input value="${d.phone}" oninput="set('phone',this.value);refreshNext()" placeholder="10-digit mobile" inputmode="numeric">
+  <label>Date of birth <span class="opt-note">(optional — used to flag if a guardian is needed)</span></label>
+  <input type="date" value="${d.dob}" oninput="set('dob',this.value)">`;
+}
+
+function enrollment(){
+  const cards=BATCHES.map(b=>`<div class="plan ${d.batchId===b.id?'sel':''}" onclick="pickBatch('${b.id}')">
+    <div class="dur">${b.subject} — ${b.label}</div><div class="sub2">${b.meta}</div>
+    <div class="pr">${money(b.cycles[0].amt)}</div></div>`).join('');
+  const cycles=batch().cycles.map(c=>`<div class="cyc ${d.cycleLabel===c.label?'sel':''}" onclick="pickCycle('${c.label}')">${c.label} · ${money(c.amt)}</div>`).join('');
+  return `<div class="step-h"><span class="n">Step 2 of 5</span><h2>Enroll in a subject</h2><p>Pick a batch — fee options appear below it.</p></div>
+  <div class="plans">${cards}</div>
+  <div class="cyc-row">${cycles}</div>
+  <div class="expiry"><div><div class="lb">This cycle's fee</div><div class="v">${cycle().label}</div></div><div class="v">${money(cycle().amt)}</div></div>
+
+  <div class="collapse-h" onclick="toggleDiscount()" style="border-top:1px dashed var(--line);margin-top:14px">
+    <div class="lbl">Joining discount<small>Sibling discount, referral, early-payment, etc.</small></div>
+    <div class="sw ${d._discOpen?'on':''}"></div>
+  </div>
+  <div class="collapse-body ${d._discOpen?'show':''}">
+    <div class="row">
+      <input type="number" value="${d.discount||''}" placeholder="0" oninput="set('discount',+this.value);render()">
+      <button onclick="set('disctype','flat');render()" style="width:46px;flex:0 0 46px;border:1px solid var(--line);background:${d.disctype==='flat'?'var(--ink)':'var(--card)'};color:${d.disctype==='flat'?'#fff':'var(--ink)'};border-radius:9px;font-family:var(--d);font-weight:700;cursor:pointer">₹</button>
+      <button onclick="set('disctype','pct');render()" style="width:46px;flex:0 0 46px;border:1px solid var(--line);background:${d.disctype==='pct'?'var(--ink)':'var(--card)'};color:${d.disctype==='pct'?'#fff':'var(--ink)'};border-radius:9px;font-family:var(--d);font-weight:700;cursor:pointer">%</button>
+    </div>
+  </div>
+
+  <div class="onetime-h">One-time</div>
+  <label>Registration / admission fee <span class="opt-note">(optional)</span></label>
+  <input type="number" value="${d.joinfee}" oninput="set('joinfee',+this.value)">`;
+}
+
+function academicId(){
+  return `<div class="step-h"><span class="n">Step 3 of 5</span><h2>Academic & ID</h2><p>All optional — fill what this business needs.</p></div>
+  <label>School / College</label><input value="${d.school}" oninput="set('school',this.value)" placeholder="e.g. DPS Sector 45">
+  <label>Grade / Class</label><input value="${d.grade}" oninput="set('grade',this.value)" placeholder="e.g. Grade 10">
+  <label>School ID / Roll No.</label><input value="${d.schoolId}" oninput="set('schoolId',this.value)" placeholder="Optional">
+  <label>Address</label><input value="${d.address}" oninput="set('address',this.value)" placeholder="Optional">
+
+  <div class="onetime-h">ID proof</div>
+  <div class="row">
+    <div><label>ID type</label><select onchange="set('idtype',this.value)">${['Aadhaar','PAN','Driving licence','Other'].map(t=>`<option ${d.idtype===t?'selected':''}>${t}</option>`).join('')}</select></div>
+    <div><label>ID number</label><input value="${d.idno}" oninput="set('idno',this.value)" placeholder="Optional"></div>
+  </div>
+  <div class="upload ${d.idUploaded?'done':''}" onclick="fakeUpload()"><span class="ic">${d.idUploaded?'✅':'🪪'}</span><div class="tx"><h3>${d.idUploaded?'ID uploaded':'Upload ID'}</h3><small>${d.idUploaded?'Saved to your Drive':'Photo or scan'}</small></div></div>
+  ${d.idtype==='Aadhaar'?`<div class="priv">🔒 Aadhaar is <b>not stored in our database</b> — only in your own Google Drive. We keep just a ✓ flag.</div>`:''}`;
+}
+
+function guardian(){
+  const minor=isMinor();
+  return `<div class="step-h"><span class="n">Step 4 of 5</span><h2>Parent / Guardian</h2><p>${minor?'Recommended — student appears to be under 18.':'Optional for this student.'}</p></div>
+  ${minor?`<div class="guardnote">Based on the date of birth entered, this student is under 18 — guardian contact is recommended.</div>`:''}
+  <label>Guardian name</label><input value="${d.guardianName}" oninput="set('guardianName',this.value)" placeholder="Parent/guardian full name">
+  <label>Guardian contact</label><input value="${d.guardianContact}" oninput="set('guardianContact',this.value)" placeholder="10-digit number">
+
+  <div class="onetime-h">Additional fields</div>
+  <div id="cfRows">${d.customFields.map((c,i)=>`<div class="cf-row"><input placeholder="Field name" value="${c.name}" oninput="setCf(${i},'name',this.value)"><input placeholder="Value" value="${c.value}" oninput="setCf(${i},'value',this.value)"><button class="rm" onclick="rmCf(${i})">✕</button></div>`).join('')}</div>
+  <button class="add-cf" onclick="addCf()">+ Add field</button>
+  <p class="opt-note" style="margin-top:8px">Still deciding what else to collect? Add it here for this student.</p>`;
+}
+
+function review(){
+  const chk=b=>b?'<span style="color:var(--accent)">✓</span>':'<span style="color:var(--muted)">—</span>';
+  return `<div class="step-h"><span class="n">Step 5 of 5</span><h2>Review & save</h2><p>Quick check before you save.</p></div>
+  <div class="rev-h">Student</div>
+  <div class="rev">
+    <div class="rr"><span class="k">Name</span><span class="v">${d.name||'—'}</span></div>
+    <div class="rr"><span class="k">Mobile</span><span class="v">${d.phone||'—'}</span></div>
+    <div class="rr"><span class="k">Date of birth</span><span class="v">${d.dob||'—'}</span></div>
+  </div>
+  <div class="rev-h">Enrollment</div>
+  <div class="rev">
+    <div class="rr"><span class="k">Batch</span><span class="v">${batch().subject} — ${batch().label}</span></div>
+    <div class="rr"><span class="k">Cycle</span><span class="v">${cycle().label} · ${money(cycle().amt)}</span></div>
+    ${d.discount>0?`<div class="rr"><span class="k">Discount</span><span class="v" style="color:var(--accent)">− ${money(discountAmt())}</span></div>`:''}
+    <div class="rr"><span class="k">Registration fee</span><span class="v">${money(d.joinfee)}</span></div>
+  </div>
+  <div class="rev-h">Academic & ID</div>
+  <div class="rev">
+    <div class="rr"><span class="k">School / Grade</span><span class="v">${d.school||'—'} / ${d.grade||'—'}</span></div>
+    <div class="rr"><span class="k">ID (${d.idtype})</span><span class="v">${chk(d.idUploaded)}</span></div>
+  </div>
+  <div class="rev-h">Guardian</div>
+  <div class="rev">
+    <div class="rr"><span class="k">Guardian</span><span class="v">${d.guardianName?d.guardianName+' · '+d.guardianContact:'—'}</span></div>
+  </div>`;
+}
+
+function pickBatch(id){d.batchId=id;d.cycleLabel=BATCHES.find(b=>b.id===id).cycles[0].label;render();}
+function pickCycle(label){d.cycleLabel=label;render();}
+function toggleDiscount(){d._discOpen=!d._discOpen;if(!d._discOpen)d.discount=0;render();}
+function fakeUpload(){d.idUploaded=true;render();}
+function addCf(){d.customFields.push({name:'',value:''});render();}
+function setCf(i,f,v){d.customFields[i][f]=v;}
+function rmCf(i){d.customFields.splice(i,1);render();}
+function refreshNext(){const b=document.querySelector('.btn.next');if(!b)return;const ok=step!==0||(d.name.trim()&&d.phone.trim());b.disabled=!ok;b.style.opacity=ok?'1':'.4';}
+
+function render(){
+  if(step==='done'){renderDone();return;}
+  const body=[basics,enrollment,academicId,guardian,review][step]();
+  const dots=STEPS.map((s,i)=>`<div class="dt ${i===step?'on':i<step?'done':''}"></div>`).join('');
+  const isLast=step===STEPS.length-1;
+  const canNext=step!==0||(d.name.trim()&&d.phone.trim());
+  $('app').innerHTML=`
+  <div class="top"><div class="wrap">
+    <div class="top-in"><span class="back" onclick="goBack()">←</span>
+    <div><h1>Add student</h1><div class="sub">Bright Minds Academy · ${STEPS[step]}</div></div></div>
+    <div class="dots">${dots}</div>
+  </div></div>
+  <div class="wrap">${body}</div>
+  <div class="bar"><div class="bar-in">
+    ${step>0?'<button class="btn back2" onclick="prev()">←</button>':''}
+    <button class="btn next" onclick="next()" ${canNext?'':'disabled style="opacity:.4"'}>${isLast?'✓ Add student':'Continue →'}</button>
+  </div>
+  ${!isLast&&step>0?'<div class="savebar"><button class="btn skip" onclick="finish(true)">Save now, add rest later</button></div>':''}
+  </div>`;
+}
+function next(){if(step===0&&!(d.name.trim()&&d.phone.trim())){alert('Please enter name and mobile to continue.');return;}if(step<STEPS.length-1){step++;render();window.scrollTo(0,0);}else finish(false);}
+function prev(){if(step>0){step--;render();window.scrollTo(0,0);}}
+function goBack(){if(step===0)alert('Back to Students list');else prev();}
+function finish(early){step='done';d._early=early;renderDone();window.scrollTo(0,0);}
+
+function renderDone(){
+  const due=dueNow();
+  $('app').innerHTML=`
+  <div class="wrap" style="text-align:center;padding-top:50px">
+    <div style="font-size:50px">✅</div>
+    <h2 style="font-size:25px;margin:14px 0 6px;font-family:var(--d)">${d.name||'Student'} added!</h2>
+    <p style="color:var(--muted);font-size:15px;line-height:1.5">${batch().subject} — ${batch().label} · <b style="color:var(--accent)">${cycle().label}</b>${d._early?'<br><span style="font-size:13px">Basic info saved — add the rest anytime.</span>':''}</p>
+
+    <div style="background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:24px 0;text-align:left">
+      <div style="font-family:var(--d);font-weight:700;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px">Due now</div>
+      <div class="rr" style="display:flex;justify-content:space-between;font-size:14px;padding:4px 0;color:var(--muted)"><span>${cycle().label} fee</span><span>${money(cycle().amt)}</span></div>
+      ${d.discount>0?`<div class="rr" style="display:flex;justify-content:space-between;font-size:14px;padding:4px 0;color:var(--accent)"><span>Discount</span><span>− ${money(discountAmt())}</span></div>`:''}
+      <div class="rr" style="display:flex;justify-content:space-between;font-size:14px;padding:4px 0;color:var(--muted)"><span>Registration fee</span><span>${money(d.joinfee)}</span></div>
+      <div class="rr" style="display:flex;justify-content:space-between;font-family:var(--d);font-weight:800;font-size:19px;border-top:1px solid var(--line);margin-top:6px;padding-top:9px"><span>Total</span><span>${money(due)}</span></div>
+    </div>
+
+    <button class="btn next" style="width:100%;margin-bottom:10px" onclick="collectAndBill()">💸 Collect payment & generate bill</button>
+    <button class="btn back2" style="width:100%;flex:none" onclick="alert('Skipped — you can bill anytime from their profile.')">Skip for now</button>
+  </div>`;
+}
+function collectAndBill(){
+  alert('Opens the bill generator, pre-filled:\\n\\n'+cycle().label+' fee'+(d.discount>0?'\\n− '+money(discountAmt())+' discount':'')+'\\n+ '+money(d.joinfee)+' registration fee\\n= '+money(dueNow())+' due\\n\\nUses the Subscription bill layout, since this is a recurring plan.');
+}
+render();
+</script>
+</body>
+</html>

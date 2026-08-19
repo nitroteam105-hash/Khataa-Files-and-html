@@ -1,0 +1,246 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Money In</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#16161a;--mut:#62636a;--ln:#e7e7e2;--ac:#1f6f54;--sf:#e8f3ee;--wm:#f4f2ec;
+--rd:#b3261e;--rs:#fdecea;--am:#b36b00;--as:#fff4e5;--bl:#2a5db0;--bs:#e8eef9;--vi:#6b5bab;--vs:#eeeaf7;
+--d:'Plus Jakarta Sans',system-ui,sans-serif;--b:'Inter',system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fbfbf9;color:var(--ink);font-family:var(--b);padding-bottom:88px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:480px;margin:0 auto;padding:0 16px}
+h1,h2,h3{font-family:var(--d);letter-spacing:-.01em}
+.top{position:sticky;top:0;background:#fbfbf9;z-index:9;padding:13px 0;border-bottom:1px solid var(--ln);display:flex;align-items:center;gap:11px}
+.top .bk{font-size:20px;color:var(--mut);cursor:pointer}
+.top h1{font-size:18px;flex:1}.top .s{font-size:12px;color:var(--mut)}
+/* role toggle (demo only) */
+.roletog{display:flex;gap:6px;background:var(--wm);border-radius:10px;padding:4px;margin:14px 0 4px}
+.roletog button{flex:1;border:none;background:none;padding:9px;border-radius:7px;font-family:var(--d);font-weight:700;font-size:12.5px;color:var(--mut);cursor:pointer}
+.roletog button.on{background:#fff;color:var(--ac);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.demohint{font-size:11px;color:var(--mut);text-align:center;margin-bottom:12px}
+/* hero card */
+.hero{background:#fff;border:1px solid var(--ln);border-radius:15px;padding:16px;margin-bottom:14px}
+.hero.owner{background:linear-gradient(180deg,#f3f8f5,#fff)}
+.hero .big{font-family:var(--d);font-weight:800;font-size:28px;letter-spacing:-.02em}
+.hero .biglbl{font-size:12.5px;color:var(--mut);font-weight:600;margin-bottom:2px}
+.hero .split{display:flex;gap:10px;margin-top:14px}
+.hero .split .x{flex:1;background:#fbfbf9;border-radius:11px;padding:10px 11px}
+.hero .split .v{font-family:var(--d);font-weight:800;font-size:16px}
+.hero .split .l{font-size:11px;color:var(--mut);margin-top:1px}
+.hero .split .v.in{color:var(--ac)}.hero .split .v.out{color:var(--rd)}.hero .split .v.bal{color:var(--am)}
+.hbar{height:8px;border-radius:5px;background:var(--wm);overflow:hidden;margin-top:14px}
+.hbar i{height:100%;display:block;background:var(--ac)}
+.hnote{font-size:12px;margin-top:10px;padding:9px 12px;border-radius:9px;line-height:1.45}
+.hnote.ok{background:var(--sf);color:var(--ac)}
+.hnote.warn{background:var(--as);color:var(--am)}
+.hnote.bad{background:var(--rs);color:var(--rd)}
+/* section head */
+.sh{font-family:var(--d);font-weight:700;font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.04em;margin:18px 2px 9px}
+/* stage rows */
+.stage{background:#fff;border:1px solid var(--ln);border-radius:12px;padding:12px 14px;margin-bottom:9px}
+.stage .r1{display:flex;align-items:center;gap:10px}
+.stage .dot{width:26px;height:26px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--d);font-weight:800;font-size:11px;color:#fff}
+.dot.paid{background:var(--ac)}.dot.part{background:var(--am)}.dot.due{background:#c9ccc7}
+.stage .nm{font-family:var(--d);font-weight:700;font-size:14px;flex:1}
+.stage .st{font-size:10.5px;font-weight:700;font-family:var(--d);padding:2px 8px;border-radius:99px}
+.st.paid{background:var(--sf);color:var(--ac)}.st.part{background:var(--as);color:var(--am)}.st.due{background:var(--wm);color:var(--mut)}
+.stage .r2{display:flex;justify-content:space-between;margin-top:9px;font-size:12.5px;color:var(--mut)}
+.stage .r2 b{font-family:var(--d);color:var(--ink)}
+.stage .sbar{height:5px;border-radius:4px;background:var(--wm);overflow:hidden;margin-top:8px}
+.stage .sbar i{height:100%;display:block;background:var(--ac)}
+.stage .rec{margin-top:10px;width:100%;background:var(--sf);color:var(--ac);border:1px solid #bfe0d1;border-radius:9px;padding:9px;font-family:var(--d);font-weight:700;font-size:12.5px;cursor:pointer}
+/* payment / fund log */
+.pay{display:flex;align-items:center;gap:11px;background:#fff;border:1px solid var(--ln);border-radius:12px;padding:11px 13px;margin-bottom:8px}
+.pay .ic{width:36px;height:36px;border-radius:9px;background:var(--sf);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.pay .ic.fund{background:var(--bs)}
+.pay .mid{flex:1;min-width:0}
+.pay .t{font-family:var(--d);font-weight:700;font-size:13.5px}
+.pay .sub{font-size:11.5px;color:var(--mut);margin-top:1px}
+.pay .amt{font-family:var(--d);font-weight:800;font-size:15px;color:var(--ac)}
+.tagpill{font-size:9.5px;font-weight:700;font-family:var(--d);padding:1px 6px;border-radius:5px;margin-left:5px;background:var(--wm);color:var(--mut)}
+.fab{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);max-width:480px;width:calc(100% - 32px)}
+.fab button{width:100%;background:var(--ac);color:#fff;border:none;border-radius:13px;padding:15px;font-family:var(--d);font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 4px 16px rgba(31,111,84,.3)}
+.mask{position:fixed;inset:0;background:rgba(0,0,0,.42);display:none;align-items:flex-end;justify-content:center;z-index:20}
+.mask.on{display:flex}
+.sheet{background:#fff;border-radius:18px 18px 0 0;width:100%;max-width:480px;max-height:92vh;overflow:auto;padding:20px 18px 22px}
+.sheet h2{font-size:19px;margin-bottom:4px}.sheet .subt{font-size:12.5px;color:var(--mut);margin-bottom:8px}
+label{display:block;font-size:12px;color:var(--mut);margin:13px 0 5px;font-weight:500}
+input,select{width:100%;padding:11px;border:1px solid var(--ln);border-radius:10px;font-size:15px;font-family:var(--b);background:#fff;color:var(--ink)}
+input:focus,select:focus{outline:none;border-color:var(--ac)}
+.seg{display:flex;gap:6px;background:var(--wm);border-radius:10px;padding:4px;flex-wrap:wrap}
+.seg button{flex:1;border:none;background:none;padding:10px 4px;border-radius:7px;font-family:var(--d);font-weight:700;font-size:12.5px;color:var(--mut);cursor:pointer;min-width:60px}
+.seg button.on{background:#fff;color:var(--ac);box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.upl{display:flex;align-items:center;gap:11px;background:#fff;border:1px dashed #bbb;border-radius:11px;padding:11px 13px;cursor:pointer;margin-top:6px}
+.upl.done{border-style:solid;border-color:var(--ac);background:var(--sf)}
+.upl .e{font-size:19px}.upl .tx{flex:1;font-size:13px}.upl .tx small{display:block;color:var(--mut);font-size:11.5px}
+.btn{width:100%;font-family:var(--d);font-weight:700;font-size:15px;border:none;border-radius:11px;padding:14px;cursor:pointer;margin-top:16px;background:var(--ac);color:#fff}
+.btn:disabled{opacity:.45}.btn.s{background:#fff;border:1px solid var(--ln);color:var(--ink);margin-top:8px}
+</style></head><body>
+<div class="top wrap"><span class="bk">←</span><div style="flex:1"><h1 id="ttl">Money In</h1><div class="s">Reddy Bungalow · Kompally</div></div></div>
+
+<div class="wrap">
+  <div class="roletog"><button class="on" id="rC" onclick="setRole('contractor')">Contractor view</button><button id="rO" onclick="setRole('owner')">Owner view</button></div>
+  <div class="demohint">Demo toggle — in the app this is set by your business role.</div>
+  <div id="body"></div>
+</div>
+
+<div class="fab"><button id="fab" onclick="openAdd()">+ Record money in</button></div>
+
+<div class="mask" id="am"><div class="sheet" id="ab"></div></div>
+
+<script>
+var QUOTE=1500000;         // contractor: client quote
+var SPENT=176600;          // pulled from the site-expenses screen (Material+Labour+Charges)
+var role='contractor';
+
+/* contractor: stage schedule + received payments */
+var stages=[
+ {name:'Booking advance',expected:150000},
+ {name:'Foundation / plinth',expected:300000},
+ {name:'RCC / structure',expected:450000},
+ {name:'Brickwork & plaster',expected:300000},
+ {name:'Finishing & handover',expected:300000},
+];
+var payments=[
+ {id:1,stage:'Booking advance',amount:150000,mode:'Bank',date:'2026-05-12',ref:true},
+ {id:2,stage:'Foundation / plinth',amount:300000,mode:'Bank',date:'2026-06-02',ref:true},
+ {id:3,stage:'RCC / structure',amount:200000,mode:'UPI',date:'2026-06-22',ref:false},
+ {id:4,stage:null,amount:50000,mode:'Cash',date:'2026-06-25',ref:false}, // on-account
+];
+
+/* owner: funds put into the project */
+var fundSources=['Own savings','Home loan disbursement','From family','Sale of asset'];
+var funds=[
+ {id:1,source:'Own savings',amount:500000,mode:'Bank',date:'2026-05-01'},
+ {id:2,source:'Home loan disbursement 1',amount:400000,mode:'Bank',date:'2026-06-01'},
+ {id:3,source:'From father',amount:100000,mode:'UPI',date:'2026-06-20'},
+];
+
+var $=function(i){return document.getElementById(i)};
+function money(n){return '\u20b9'+(+n||0).toLocaleString('en-IN')}
+function moneyK(n){n=+n||0;if(n>=100000)return '\u20b9'+(n/100000).toFixed(n%100000?1:0)+'L';if(n>=1000)return '\u20b9'+(n/1000).toFixed(n%1000?1:0)+'k';return '\u20b9'+n}
+function fd(s){return new Date(s).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}
+function receivedTotal(){return payments.reduce(function(a,p){return a+p.amount},0)}
+function fundsTotal(){return funds.reduce(function(a,f){return a+f.amount},0)}
+function stageReceived(nm){return payments.filter(function(p){return p.stage===nm}).reduce(function(a,p){return a+p.amount},0)}
+
+function setRole(r){role=r;$('rC').className=r==='contractor'?'on':'';$('rO').className=r==='owner'?'on':'';$('ttl').textContent=r==='contractor'?'Client Billing':'Project Funds';$('fab').textContent=r==='contractor'?'+ Record payment':'+ Add funds';render()}
+
+/* ---------- contractor view ---------- */
+function contractorView(){
+ var rec=receivedTotal(),bal=QUOTE-rec,pct=Math.round(rec/QUOTE*100);
+ var h='<div class="hero"><div class="biglbl">Received from client</div><div class="big">'+money(rec)+'</div>'
+  +'<div class="hbar"><i style="width:'+pct+'%"></i></div>'
+  +'<div class="split"><div class="x"><div class="v">'+money(QUOTE)+'</div><div class="l">Quoted</div></div>'
+  +'<div class="x"><div class="v in">'+money(rec)+'</div><div class="l">Received ('+pct+'%)</div></div>'
+  +'<div class="x"><div class="v bal">'+money(bal)+'</div><div class="l">Balance due</div></div></div></div>';
+
+ h+='<div class="sh">Payment schedule</div>';
+ h+=stages.map(function(s){
+  var got=stageReceived(s.name),status=got>=s.expected?'paid':got>0?'part':'due';
+  var lbl={paid:'Paid',part:'Part',due:'Due'}[status];
+  var p=Math.min(100,Math.round(got/s.expected*100));
+  return '<div class="stage"><div class="r1"><div class="dot '+status+'">'+(status==='paid'?'\u2713':p+'%')+'</div><div class="nm">'+s.name+'</div><span class="st '+status+'">'+lbl+'</span></div>'
+   +'<div class="r2"><span>Expected <b>'+money(s.expected)+'</b></span><span>Received <b>'+money(got)+'</b></span></div>'
+   +'<div class="sbar"><i style="width:'+p+'%"></i></div>'
+   +(status!=='paid'?'<button class="rec" onclick="openAdd(\''+s.name.replace(/'/g,"")+'\')">+ Record payment for this stage</button>':'')+'</div>';
+ }).join('');
+
+ var onacc=payments.filter(function(p){return !p.stage});
+ h+='<div class="sh">All receipts</div>';
+ h+=payments.slice().sort(function(a,b){return b.date<a.date?-1:1}).map(function(p){
+  return '<div class="pay"><div class="ic">\ud83d\udcb0</div><div class="mid"><div class="t">'+(p.stage||'On-account payment')+(p.stage?'':' <span class="tagpill">untagged</span>')+'</div><div class="sub">'+fd(p.date)+' \u00b7 '+p.mode+(p.ref?' \u00b7 \ud83d\udcce receipt':'')+'</div></div><div class="amt">'+money(p.amount)+'</div></div>';
+ }).join('');
+ return h;
+}
+
+/* ---------- owner view ---------- */
+function ownerView(){
+ var inn=fundsTotal(),avail=inn-SPENT,pct=Math.round(SPENT/inn*100);
+ var noteCls=avail<0?'bad':avail<inn*0.15?'warn':'ok';
+ var noteTxt=avail<0?'\u26a0\ufe0f You\u2019ve spent more than you\u2019ve put in. Add funds to cover the shortfall.':avail<inn*0.15?'\u26a0\ufe0f Running low \u2014 only '+money(avail)+' left before you need more funds.':'\u2713 '+money(avail)+' available to spend on this build.';
+ var h='<div class="hero owner"><div class="biglbl">Available to spend</div><div class="big" style="color:'+(avail<0?'var(--rd)':'var(--ac)')+'">'+money(avail)+'</div>'
+  +'<div class="hbar"><i style="width:'+Math.min(100,pct)+'%"></i></div>'
+  +'<div class="split"><div class="x"><div class="v in">'+money(inn)+'</div><div class="l">Funds put in</div></div>'
+  +'<div class="x"><div class="v out">'+money(SPENT)+'</div><div class="l">Spent so far</div></div>'
+  +'<div class="x"><div class="v bal">'+money(avail)+'</div><div class="l">Left in pot</div></div></div>'
+  +'<div class="hnote '+noteCls+'">'+noteTxt+'</div></div>';
+ h+='<div class="sh">Funds added</div>';
+ h+=funds.slice().sort(function(a,b){return b.date<a.date?-1:1}).map(function(f){
+  return '<div class="pay"><div class="ic fund">\ud83c\udfe6</div><div class="mid"><div class="t">'+f.source+'</div><div class="sub">'+fd(f.date)+' \u00b7 '+f.mode+'</div></div><div class="amt">'+money(f.amount)+'</div></div>';
+ }).join('');
+ h+='<div class="sh">Where it went</div><div class="pay"><div class="ic" style="background:var(--rs)">\ud83e\uddfe</div><div class="mid"><div class="t">Total site expenses</div><div class="sub">From the expense screen \u00b7 tap to view</div></div><div class="amt" style="color:var(--rd)">'+money(SPENT)+'</div></div>';
+ return h;
+}
+
+function render(){$('body').innerHTML=role==='contractor'?contractorView():ownerView()}
+
+/* ---------- add ---------- */
+var g={stage:'',source:'',amount:'',mode:'Bank',date:'2026-06-27',ref:false,newName:'',newStage:'',newExp:''};
+function openAdd(stage){
+ g={stage:stage||'',source:'',amount:'',mode:'Bank',date:'2026-06-27',ref:false,newName:'',newStage:'',newExp:''};
+ renderAdd();$('am').classList.add('on');
+}
+function pickSrc(v){g.source=v;if(v!=='__new__')g.newName='';renderAdd();}
+function pickStage(v){g.stage=v;if(v!=='__new__'){g.newStage='';g.newExp='';}renderAdd();}
+function canSaveFund(){if(!(+g.amount>0))return false;if(g.source==='__new__')return !!(g.newName&&g.newName.trim());return !!g.source;}
+function canSavePay(){if(!(+g.amount>0))return false;if(g.stage==='__new__')return !!(g.newStage&&g.newStage.trim());return true;}
+function closeAdd(){$('am').classList.remove('on')}
+function renderAdd(){
+ if(role==='contractor'){
+  var isNewStage=(g.stage==='__new__');
+  var stageOpts='<option value="">On-account (no stage)</option>'
+   +stages.map(function(s){return '<option '+(g.stage===s.name?'selected':'')+'>'+s.name+'</option>'}).join('')
+   +'<option value="__new__" '+(isNewStage?'selected':'')+'>+ New stage…</option>';
+  $('ab').innerHTML='<h2>Record payment</h2><div class="subt">Money received from the client.</div>'
+   +'<label>Against stage</label><select onchange="pickStage(this.value)">'+stageOpts+'</select>'
+   +(isNewStage?'<label>New stage name</label><input value="'+(g.newStage||'')+'" oninput="g.newStage=this.value;syncG()" placeholder="e.g. Compound wall">'
+     +'<label>Expected amount for this stage (\u20b9)</label><input type="number" inputmode="numeric" value="'+(g.newExp||'')+'" oninput="g.newExp=this.value" placeholder="e.g. 200000">':'')
+   +'<label>Amount received (\u20b9)</label><input type="number" inputmode="numeric" value="'+g.amount+'" oninput="g.amount=this.value;syncG()" placeholder="0">'
+   +'<label>Received via</label><div class="seg">'+['Cash','UPI','Bank','Cheque'].map(function(m){return '<button class="'+(g.mode===m?'on':'')+'" onclick="g.mode=\''+m+'\';renderAdd()">'+m+'</button>'}).join('')+'</div>'
+   +'<label>Date</label><input type="date" value="'+g.date+'" oninput="g.date=this.value">'
+   +'<div class="upl '+(g.ref?'done':'')+'" onclick="g.ref=!g.ref;renderAdd()"><span class="e">'+(g.ref?'\u2705':'\ud83d\udcce')+'</span><div class="tx">'+(g.ref?'Receipt attached':'Attach receipt')+'<small>Optional</small></div></div>'
+   +'<button class="btn" id="gSave" '+(canSavePay()?'':'disabled')+' onclick="saveG()">Record payment</button><button class="btn s" onclick="closeAdd()">Cancel</button>';
+ } else {
+  var isNewSrc=(g.source==='__new__');
+  var srcOpts='<option value="">Choose…</option>'
+   +fundSources.map(function(s){return '<option '+(g.source===s?'selected':'')+'>'+s+'</option>'}).join('')
+   +'<option value="__new__" '+(isNewSrc?'selected':'')+'>+ Other source…</option>';
+  $('ab').innerHTML='<h2>Add funds</h2><div class="subt">Money you\u2019re putting into this build.</div>'
+   +'<label>Source</label><select onchange="pickSrc(this.value)">'+srcOpts+'</select>'
+   +(isNewSrc?'<label>New source name</label><input value="'+(g.newName||'')+'" oninput="g.newName=this.value;syncG()" placeholder="e.g. Gold loan, chit fund">':'')
+   +'<label>Amount (\u20b9)</label><input type="number" inputmode="numeric" value="'+g.amount+'" oninput="g.amount=this.value;syncG()" placeholder="0">'
+   +'<label>Received via</label><div class="seg">'+['Cash','UPI','Bank','Cheque'].map(function(m){return '<button class="'+(g.mode===m?'on':'')+'" onclick="g.mode=\''+m+'\';renderAdd()">'+m+'</button>'}).join('')+'</div>'
+   +'<label>Date</label><input type="date" value="'+g.date+'" oninput="g.date=this.value">'
+   +'<button class="btn" id="gSave" '+(canSaveFund()?'':'disabled')+' onclick="saveG()">Add funds</button><button class="btn s" onclick="closeAdd()">Cancel</button>';
+ }
+}
+function syncG(){var b=$('gSave');if(b)b.disabled=role==='contractor'?!canSavePay():!canSaveFund();}
+function saveG(){
+ if(!(+g.amount>0))return;
+ if(role==='contractor'){
+   var stg=g.stage;
+   if(g.stage==='__new__'){
+     var sn=(g.newStage||'').trim();if(!sn)return;
+     var exists=stages.some(function(s){return s.name.toLowerCase()===sn.toLowerCase()});
+     if(!exists&&confirm('Add "'+sn+'" to the payment schedule for next time?')){
+       stages.push({name:sn,expected:+g.newExp||0});
+     }
+     stg=sn;
+   }
+   payments.push({id:Date.now(),stage:stg||null,amount:+g.amount,mode:g.mode,date:g.date,ref:g.ref});
+ }
+ else{
+   var src=g.source;
+   if(g.source==='__new__'){
+     var nm=(g.newName||'').trim();if(!nm)return;
+     var exists=fundSources.some(function(s){return s.toLowerCase()===nm.toLowerCase()});
+     if(!exists&&confirm('Save "'+nm+'" to your fund sources for next time?')){fundSources.push(nm);}
+     src=nm;
+   }
+   if(!src)return;
+   funds.push({id:Date.now(),source:src,amount:+g.amount,mode:g.mode,date:g.date});
+ }
+ closeAdd();render();
+}
+render();
+</script></body></html>

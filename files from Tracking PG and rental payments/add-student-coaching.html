@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Coaching — Add Student</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fbfbf9;--ink:#16161a;--muted:#62636a;--line:#e7e7e2;--card:#fff;
+    --accent:#1f6f54;--soft:#e8f3ee;--warm:#f4f2ec;--red:#b3261e;--amber:#b36b00;--ambersoft:#fff4e5;
+    --d:'Plus Jakarta Sans',sans-serif;--b:'Inter',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:var(--b);-webkit-font-smoothing:antialiased;padding-bottom:88px;}
+  .wrap{max-width:480px;margin:0 auto;padding:0 16px;}
+  h1,h2,h3{font-family:var(--d);letter-spacing:-.01em;}
+
+  .top{position:sticky;top:0;background:var(--bg);z-index:9;padding:14px 0 12px;border-bottom:1px solid var(--line);}
+  .top-in{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+  .back{font-size:20px;color:var(--muted);cursor:pointer;}
+  .top h1{font-size:18px;}.top .sub{font-size:12px;color:var(--muted);}
+  .dots{display:flex;gap:6px;}
+  .dots .d{flex:1;height:5px;border-radius:99px;background:var(--line);}
+  .dots .d.on{background:var(--accent);}.dots .d.done{background:var(--accent);opacity:.5;}
+
+  .step-h{margin:18px 0 4px;}
+  .step-h .n{font-family:var(--d);font-weight:700;font-size:12px;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;}
+  .step-h h2{font-size:22px;margin-top:5px;}
+  .step-h p{font-size:13.5px;color:var(--muted);margin-top:3px;}
+
+  label{display:block;font-size:12.5px;color:var(--muted);margin:14px 0 5px;font-weight:500;}
+  input,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;font-size:15px;font-family:var(--b);background:var(--card);color:var(--ink);}
+  input:focus,select:focus{outline:none;border-color:var(--accent);}
+  .row{display:flex;gap:10px;}.row>*{flex:1;}
+  .opt-note{font-size:11.5px;color:var(--muted);}
+  .block-h{font-family:var(--d);font-weight:700;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:20px 0 2px;padding-top:14px;border-top:1px dashed var(--line);}
+
+  /* fee mode segmented */
+  .seg{display:flex;gap:6px;background:var(--warm);border-radius:10px;padding:4px;margin-top:5px;}
+  .seg button{flex:1;border:none;background:none;padding:9px;border-radius:7px;font-family:var(--d);font-weight:600;font-size:13px;color:var(--muted);cursor:pointer;}
+  .seg button.on{background:var(--card);color:var(--accent);box-shadow:0 1px 2px rgba(0,0,0,.06);}
+
+  /* subject pick list */
+  .subj{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--line);background:var(--card);border-radius:11px;padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:.12s;}
+  .subj:hover{border-color:var(--accent);}
+  .subj.sel{border-color:var(--accent);background:var(--soft);}
+  .subj .nm{font-size:14.5px;font-weight:500;}
+  .subj .nm small{display:block;color:var(--muted);font-size:12px;}
+  .subj .fee{font-family:var(--d);font-weight:700;font-size:14px;}
+  .subj .box{width:22px;height:22px;border-radius:6px;border:1.5px solid var(--line);display:inline-flex;align-items:center;justify-content:center;margin-right:10px;font-size:13px;color:#fff;vertical-align:middle;}
+  .subj.sel .box{background:var(--accent);border-color:var(--accent);}
+  .subj-left{display:flex;align-items:center;}
+
+  /* course plan cards */
+  .plans{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:6px;}
+  .plan{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:13px;cursor:pointer;transition:.12s;position:relative;}
+  .plan:hover{border-color:var(--accent);}
+  .plan.sel{border-color:var(--accent);background:var(--soft);}
+  .plan.sel::after{content:'✓';position:absolute;top:9px;right:11px;color:var(--accent);font-weight:700;}
+  .plan .ty{font-family:var(--d);font-weight:700;font-size:14px;}
+  .plan .pr{font-family:var(--d);font-weight:800;font-size:16px;color:var(--accent);margin-top:3px;}
+  .plan .sh{font-size:11px;color:var(--muted);}
+
+  .mtotal{display:flex;justify-content:space-between;align-items:center;background:var(--ink);color:#fff;border-radius:12px;padding:14px 16px;margin-top:12px;font-family:var(--d);font-weight:700;}
+  .mtotal span:last-child{font-size:20px;font-weight:800;}
+  .onetime-h{font-family:var(--d);font-weight:700;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:20px 0 4px;padding-top:14px;border-top:1px dashed var(--line);}
+
+  .upload{display:flex;align-items:center;gap:12px;background:var(--card);border:1px dashed #bbb;border-radius:12px;padding:14px;cursor:pointer;margin-top:5px;}
+  .upload .ic{font-size:22px;}.upload .tx{flex:1;}.upload .tx h3{font-size:14px;}.upload .tx small{color:var(--muted);font-size:12px;}
+  .upload.done{border-style:solid;border-color:var(--accent);background:var(--soft);}
+  .priv{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.5;background:var(--warm);padding:10px 12px;border-radius:10px;}
+  .toggle{display:flex;align-items:center;justify-content:space-between;padding:12px 0;}
+  .toggle .lbl{font-size:14.5px;font-weight:600;font-family:var(--d);}
+  .toggle .lbl small{display:block;font-size:12px;color:var(--muted);font-weight:400;font-family:var(--b);}
+  .sw{width:46px;height:26px;border-radius:99px;background:var(--line);position:relative;cursor:pointer;transition:.15s;flex-shrink:0;}
+  .sw.on{background:var(--accent);}
+  .sw::after{content:'';position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.15s;}
+  .sw.on::after{left:23px;}
+  .payer-pick{display:flex;gap:6px;margin-top:5px;}
+  .payer-pick button{flex:1;border:1px solid var(--line);background:var(--card);border-radius:9px;padding:10px;font-family:var(--d);font-weight:600;font-size:13px;color:var(--muted);cursor:pointer;}
+  .payer-pick button.on{border-color:var(--accent);background:var(--soft);color:var(--accent);}
+
+  .rev{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:10px;}
+  .rev .rr{display:flex;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--line);font-size:14px;}
+  .rev .rr:last-child{border:none;}
+  .rev .rr .k{color:var(--muted);}.rev .rr .v{font-weight:500;text-align:right;}
+  .rev-h{font-family:var(--d);font-weight:700;font-size:12px;color:var(--muted);text-transform:uppercase;margin:16px 0 7px;letter-spacing:.04em;}
+
+  .bar{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);padding:12px 16px;z-index:9;}
+  .bar-in{max-width:480px;margin:0 auto;display:flex;gap:10px;align-items:center;}
+  .btn{font-family:var(--d);font-weight:700;font-size:15px;border:none;border-radius:11px;padding:14px;cursor:pointer;}
+  .btn.next{background:var(--accent);color:#fff;flex:1;}
+  .btn.back{background:var(--card);border:1px solid var(--line);color:var(--ink);flex:0 0 26%;}
+  .btn.skip{background:none;color:var(--muted);font-weight:600;font-size:13px;border:none;}
+  .savebar{text-align:center;margin-top:8px;}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+const STEPS=['Student','Course & fee','Documents','Review'];
+let step=0;
+// subjects (per-subject fee) and course plans (single fee) — both set in Settings in real app
+const SUBJECTS=[
+  {nm:'Physics',batch:'Mon-Wed-Fri 5–6 PM',fee:1200},
+  {nm:'Chemistry',batch:'Tue-Thu 5–6 PM',fee:1200},
+  {nm:'Mathematics',batch:'Mon-Wed-Fri 6–7 PM',fee:1400},
+  {nm:'Biology',batch:'Tue-Thu 6–7 PM',fee:1300},
+  {nm:'English',batch:'Sat 10–12 AM',fee:900}
+];
+const PLANS=[
+  {ty:'Full course',sh:'All subjects, 1 yr',fee:42000},
+  {ty:'Monthly (all)',sh:'All subjects /mo',fee:4500},
+  {ty:'Crash course',sh:'3 months',fee:15000},
+  {ty:'Single subject',sh:'Pick 1, /mo',fee:1500}
+];
+const PACKS=[
+  {ty:'Drop-in',sh:'1 class',classes:1,fee:300},
+  {ty:'5-class pack',sh:'Use anytime',classes:5,fee:1300},
+  {ty:'10-class pack',sh:'Best value',classes:10,fee:2400},
+  {ty:'20-class pack',sh:'Regulars',classes:20,fee:4400}
+];
+const BATCHES=['Morning (7–9 AM)','Afternoon (2–4 PM)','Evening (5–7 PM)','Weekend'];
+const d={
+  name:'',grade:'Class 10',sphone:'',
+  pname:'',pphone:'',payer:'Parent',
+  feeMode:'subjects', subjects:[0,2], planIdx:1, packIdx:2, batch:'Evening (5–7 PM)',
+  feeCycle:'Monthly', admission:1000, materials:0, materialsOn:false,
+  idUploaded:false,photoUploaded:false
+};
+const $=id=>document.getElementById(id);
+const money=n=>'₹'+(+n||0).toLocaleString('en-IN');
+function set(f,v){d[f]=v;}
+function feeTotal(){
+  if(d.feeMode==='subjects')return d.subjects.reduce((a,i)=>a+SUBJECTS[i].fee,0);
+  if(d.feeMode==='pack')return PACKS[d.packIdx].fee;
+  return PLANS[d.planIdx].fee;
+}
+function cycleWord(){
+  if(d.feeMode==='pack'){return PACKS[d.packIdx].classes===1?'class':PACKS[d.packIdx].classes+'-class pack';}
+  if(d.feeMode==='plan'){const t=PLANS[d.planIdx].ty;if(t==='Full course')return 'course';if(t==='Crash course')return 'course';}
+  return d.feeCycle==='Term'?'term':'month';
+}
+
+function student(){
+  return `<div class="step-h"><span class="n">Step 1 of 4</span><h2>Student & contact</h2><p>Who's enrolling, and who to contact.</p></div>
+  <label>Student name</label><input value="${d.name}" oninput="set('name',this.value);refreshNext()" placeholder="e.g. Aarav Gupta">
+  <div class="row">
+    <div><label>Class / level</label><input value="${d.grade}" oninput="set('grade',this.value)" placeholder="e.g. Class 10 / B.Sc"></div>
+    <div><label>Student phone</label><input value="${d.sphone}" oninput="set('sphone',this.value)" placeholder="Optional" inputmode="numeric"></div>
+  </div>
+  <div class="block-h">Parent / Guardian</div>
+  <div class="row">
+    <div><label>Parent name</label><input value="${d.pname}" oninput="set('pname',this.value)" placeholder="Optional for adults"></div>
+    <div><label>Parent phone</label><input value="${d.pphone}" oninput="set('pphone',this.value);refreshNext()" inputmode="numeric"></div>
+  </div>
+  <label>Who is the main contact & payer?</label>
+  <div class="payer-pick">
+    <button class="${d.payer==='Parent'?'on':''}" onclick="set('payer','Parent');render()">Parent</button>
+    <button class="${d.payer==='Student'?'on':''}" onclick="set('payer','Student');render()">Student</button>
+  </div>
+  <div class="opt-note" style="margin-top:6px">Bills & reminders go to the ${d.payer.toLowerCase()}.</div>`;
+}
+function courseStep(){
+  const subjList=SUBJECTS.map((s,i)=>{const on=d.subjects.includes(i);
+    return `<div class="subj ${on?'sel':''}" onclick="toggleSubject(${i})">
+      <div class="subj-left"><span class="box">${on?'✓':''}</span><div class="nm">${s.nm}<small>${s.batch}</small></div></div>
+      <div class="fee">${money(s.fee)}/mo</div></div>`;}).join('');
+  const planCards=PLANS.map((p,i)=>`<div class="plan ${d.planIdx===i?'sel':''}" onclick="set('planIdx',${i});render()">
+    <div class="ty">${p.ty}</div><div class="pr">${money(p.fee)}</div><div class="sh">${p.sh}</div></div>`).join('');
+  const packCards=PACKS.map((p,i)=>`<div class="plan ${d.packIdx===i?'sel':''}" onclick="set('packIdx',${i});render()">
+    <div class="ty">${p.ty}</div><div class="pr">${money(p.fee)}</div><div class="sh">${p.sh} · ${money(Math.round(p.fee/p.classes))}/class</div></div>`).join('');
+  return `<div class="step-h"><span class="n">Step 2 of 4</span><h2>Course & fee</h2><p>Subjects, a course plan, or a class pack.</p></div>
+  <div class="seg">
+    <button class="${d.feeMode==='subjects'?'on':''}" onclick="set('feeMode','subjects');render()">Subjects</button>
+    <button class="${d.feeMode==='plan'?'on':''}" onclick="set('feeMode','plan');render()">Plan</button>
+    <button class="${d.feeMode==='pack'?'on':''}" onclick="set('feeMode','pack');render()">Class pack</button>
+  </div>
+  ${d.feeMode==='subjects'
+    ? `<div style="margin-top:12px">${subjList}</div>`
+    : d.feeMode==='pack'
+    ? `<div class="plans">${packCards}</div><div class="opt-note" style="margin-top:6px">Classes count down as the student attends (scan or mark). Good for dance, music, drop-in.</div>`
+    : `<div class="plans">${planCards}</div>`}
+  <label style="margin-top:14px">Batch / timing</label>
+  <select onchange="set('batch',this.value)">${BATCHES.map(b=>`<option ${d.batch===b?'selected':''}>${b}</option>`).join('')}</select>
+  ${d.feeMode==='subjects'||(d.feeMode==='plan'&&(PLANS[d.planIdx].ty.includes('Monthly')||PLANS[d.planIdx].ty==='Single subject'))?`
+  <label>Fee cycle</label>
+  <div class="seg"><button class="${d.feeCycle==='Monthly'?'on':''}" onclick="set('feeCycle','Monthly');render()">Monthly</button><button class="${d.feeCycle==='Term'?'on':''}" onclick="set('feeCycle','Term');render()">Per term</button></div>`:''}
+  <div class="mtotal"><span>Fee (${d.feeMode==='pack'?cycleWord():'per '+cycleWord()})</span><span id="mtot">${money(feeTotal())}</span></div>
+  <div class="onetime-h">One-time</div>
+  <label>Admission fee</label><input type="number" value="${d.admission}" oninput="set('admission',+this.value)">
+  <div class="toggle"><div class="lbl">Materials / books fee<small>One-time, if applicable</small></div><div class="sw ${d.materialsOn?'on':''}" onclick="toggleMaterials()"></div></div>
+  ${d.materialsOn?`<input type="number" value="${d.materials}" oninput="set('materials',+this.value)" placeholder="Materials fee">`:''}`;
+}
+function documents(){
+  return `<div class="step-h"><span class="n">Step 3 of 4</span><h2>Documents</h2><p>Light — just ID and a photo.</p></div>
+  <div class="upload ${d.idUploaded?'done':''}" onclick="fakeUpload('idUploaded')"><span class="ic">${d.idUploaded?'✅':'🪪'}</span><div class="tx"><h3>${d.idUploaded?'ID uploaded':'Student / parent ID'}</h3><small>${d.idUploaded?'Saved to your Drive':'Aadhaar, school ID, etc.'}</small></div></div>
+  <div class="priv">🔒 Aadhaar (if used) is not stored in our database — only in your own Google Drive.</div>
+  <div class="upload ${d.photoUploaded?'done':''}" onclick="fakeUpload('photoUploaded')"><span class="ic">${d.photoUploaded?'✅':'📷'}</span><div class="tx"><h3>${d.photoUploaded?'Photo added':'Student photo'}</h3><small>For records & attendance</small></div></div>`;
+}
+function review(){
+  const chk=b=>b?'<span style="color:var(--accent)">✓</span>':'<span style="color:var(--muted)">—</span>';
+  const courseDesc = d.feeMode==='subjects'
+    ? d.subjects.map(i=>SUBJECTS[i].nm).join(', ')||'No subjects'
+    : d.feeMode==='pack'
+    ? PACKS[d.packIdx].ty
+    : PLANS[d.planIdx].ty;
+  return `<div class="step-h"><span class="n">Step 4 of 4</span><h2>Review & add</h2><p>Quick check before saving.</p></div>
+  <div class="rev-h">Student</div>
+  <div class="rev">
+    <div class="rr"><span class="k">Name</span><span class="v">${d.name||'—'}</span></div>
+    <div class="rr"><span class="k">Class</span><span class="v">${d.grade}</span></div>
+    <div class="rr"><span class="k">Payer / contact</span><span class="v">${d.payer}${d.payer==='Parent'&&d.pname?' ('+d.pname+')':''}</span></div>
+    <div class="rr"><span class="k">Contact phone</span><span class="v">${d.payer==='Parent'?(d.pphone||'—'):(d.sphone||'—')}</span></div>
+  </div>
+  <div class="rev-h">Course & fee</div>
+  <div class="rev">
+    <div class="rr"><span class="k">${d.feeMode==='subjects'?'Subjects':d.feeMode==='pack'?'Pack':'Plan'}</span><span class="v" style="max-width:60%">${courseDesc}</span></div>
+    <div class="rr"><span class="k">Batch</span><span class="v">${d.batch}</span></div>
+    <div class="rr"><span class="k" style="font-weight:700;color:var(--ink)">${d.feeMode==='pack'?'Pack fee':'Fee / '+cycleWord()}</span><span class="v" style="font-weight:800;color:var(--accent)">${money(feeTotal())}</span></div>
+    <div class="rr"><span class="k">Admission (one-time)</span><span class="v">${money(d.admission)}</span></div>
+    ${d.materialsOn?`<div class="rr"><span class="k">Materials</span><span class="v">${money(d.materials)}</span></div>`:''}
+  </div>
+  <div class="rev-h">Documents</div>
+  <div class="rev">
+    <div class="rr"><span class="k">ID</span><span class="v">${chk(d.idUploaded)}</span></div>
+    <div class="rr"><span class="k">Photo</span><span class="v">${chk(d.photoUploaded)}</span></div>
+  </div>`;
+}
+
+function toggleSubject(i){const k=d.subjects.indexOf(i);if(k<0)d.subjects.push(i);else d.subjects.splice(k,1);render();}
+function toggleMaterials(){d.materialsOn=!d.materialsOn;if(!d.materialsOn)d.materials=0;render();}
+function fakeUpload(f){d[f]=true;render();}
+function refreshNext(){const b=document.querySelector('.btn.next');if(!b)return;const ok=canNext();b.disabled=!ok;b.style.opacity=ok?'1':'.4';}
+function canNext(){
+  if(step===0)return d.name.trim() && (d.payer==='Parent'?d.pphone.trim():true);
+  if(step===1&&d.feeMode==='subjects')return d.subjects.length>0;
+  return true;
+}
+
+function render(){
+  if(step==='done'){renderDone();return;}
+  const body=[student,courseStep,documents,review][step]();
+  const dots=STEPS.map((s,i)=>`<div class="d ${i===step?'on':i<step?'done':''}"></div>`).join('');
+  const isLast=step===STEPS.length-1;
+  $('app').innerHTML=`
+  <div class="top"><div class="wrap">
+    <div class="top-in"><span class="back" onclick="goBack()">←</span>
+    <div><h1>Add student</h1><div class="sub">Bright Future Coaching · ${STEPS[step]}</div></div></div>
+    <div class="dots">${dots}</div>
+  </div></div>
+  <div class="wrap">${body}</div>
+  <div class="bar"><div class="bar-in">
+    ${step>0?'<button class="btn back" onclick="prev()">←</button>':''}
+    <button class="btn next" onclick="next()" ${canNext()?'':'disabled style="opacity:.4"'}>${isLast?'✓ Add student':'Continue →'}</button>
+  </div>
+  ${!isLast&&step>0?'<div class="savebar"><button class="btn skip" onclick="finish(true)">Save now, add rest later</button></div>':''}
+  </div>`;
+}
+function next(){if(!canNext()){alert(step===0?'Enter student name (and parent phone if parent is payer).':'Pick at least one subject.');return;}if(step<STEPS.length-1){step++;render();window.scrollTo(0,0);}else finish(false);}
+function prev(){if(step>0){step--;render();window.scrollTo(0,0);}}
+function goBack(){if(step===0)alert('Back to Students list');else prev();}
+function finish(early){step='done';d._early=early;renderDone();window.scrollTo(0,0);}
+function firstPayment(){return feeTotal()+(+d.admission||0)+(d.materialsOn?(+d.materials||0):0);}
+function renderDone(){
+  const due=firstPayment();
+  const courseDesc=d.feeMode==='subjects'?d.subjects.map(i=>SUBJECTS[i].nm).join(', '):d.feeMode==='pack'?PACKS[d.packIdx].ty:PLANS[d.planIdx].ty;
+  $('app').innerHTML=`<div class="wrap" style="text-align:center;padding-top:50px">
+    <div style="font-size:50px">✅</div>
+    <h2 style="font-size:25px;margin:14px 0 6px;font-family:var(--d)">${d.name||'Student'} enrolled!</h2>
+    <p style="color:var(--muted);font-size:15px;line-height:1.5">${courseDesc} · ${d.batch}<br><span style="font-size:13px">Payer: ${d.payer}${d.payer==='Parent'&&d.pname?' ('+d.pname+')':''}</span></p>
+    <div style="background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:24px 0;text-align:left">
+      <div style="font-family:var(--d);font-weight:700;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px">Due at enrolment</div>
+      <div style="display:flex;justify-content:space-between;font-size:14px;padding:4px 0;color:var(--muted)"><span>${d.feeMode==='pack'?courseDesc:'First '+cycleWord()+' fee'}</span><span>${money(feeTotal())}</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:14px;padding:4px 0;color:var(--muted)"><span>Admission fee</span><span>${money(d.admission)}</span></div>
+      ${d.materialsOn?`<div style="display:flex;justify-content:space-between;font-size:14px;padding:4px 0;color:var(--muted)"><span>Materials</span><span>${money(d.materials)}</span></div>`:''}
+      <div style="display:flex;justify-content:space-between;font-family:var(--d);font-weight:800;font-size:19px;border-top:1px solid var(--line);margin-top:6px;padding-top:9px"><span>Total</span><span>${money(due)}</span></div>
+    </div>
+    <button class="btn next" style="width:100%;margin-bottom:10px" onclick="collectAndBill()">💸 Collect payment & generate bill</button>
+    <button class="btn back" style="width:100%;flex:none" onclick="alert('Skipped — you can bill anytime from their profile.')">Skip for now</button>
+  </div>`;
+}
+function collectAndBill(){alert('Opens the bill generator, pre-filled (billed to '+d.payer.toLowerCase()+'):\n\nFirst '+cycleWord()+' fee '+money(feeTotal())+'\n+ Admission '+money(d.admission)+'\n= '+money(firstPayment())+' due');}
+render();
+</script>
+</body>
+</html>

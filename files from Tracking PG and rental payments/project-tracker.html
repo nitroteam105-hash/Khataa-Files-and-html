@@ -1,0 +1,144 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Khaata — Project Tracker</title>
+<style>
+:root{--ink:#16161a;--mut:#62636a;--ln:#e7e7e2;--ac:#1f6f54;--sf:#e8f3ee;--wm:#f4f2ec;--am:#b36b00;--as:#fff4e5;--bl:#2a5db0;--bs:#e8eef9;--rd:#b3261e;--d:'Plus Jakarta Sans',system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fbfbf9;color:var(--ink);font-family:system-ui,sans-serif;padding-bottom:60px}
+.wrap{max-width:560px;margin:0 auto;padding:0 14px}
+h1{font-family:var(--d);font-size:20px}
+.hd{padding:16px 0 10px;border-bottom:1px solid var(--ln);position:sticky;top:0;background:#fbfbf9;z-index:5}
+.pb{height:9px;border-radius:99px;background:var(--ln);margin:10px 0 4px;overflow:hidden}
+.pb i{display:block;height:100%;background:var(--ac)}
+.pt{font-size:12px;color:var(--mut);display:flex;justify-content:space-between}
+.tools{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.tools input[type=text]{flex:1;min-width:120px;padding:8px 10px;border:1px solid var(--ln);border-radius:9px;font-size:13px}
+.chip{border:1px solid var(--ln);background:#fff;border-radius:99px;padding:6px 11px;font-size:12px;font-weight:600;color:var(--mut);cursor:pointer;font-family:var(--d)}
+.chip.on{background:var(--sf);border-color:var(--ac);color:var(--ac)}
+.sec{background:#fff;border:1px solid var(--ln);border-radius:13px;margin-top:14px;overflow:hidden}
+.sh{display:flex;align-items:center;gap:8px;padding:12px 14px;background:var(--wm);cursor:pointer}
+.sh h2{font-family:var(--d);font-size:14.5px;flex:1}
+.sh .ct{font-size:11.5px;color:var(--mut);font-family:var(--d);font-weight:700}
+.row{display:flex;align-items:flex-start;gap:8px;padding:11px 14px;border-top:1px solid var(--ln)}
+.rn{flex:1;font-size:13.5px;line-height:1.35}
+.rn .nm{font-weight:600}
+.tag{display:inline-block;font-size:9.5px;font-weight:700;font-family:var(--d);padding:1px 7px;border-radius:99px;background:var(--bs);color:var(--bl);margin-left:5px;vertical-align:middle}
+.tag.star{background:var(--as);color:var(--am)}
+.cm{font-size:11.5px;color:var(--mut);margin-top:3px}
+.lk{font-size:11.5px;margin-top:2px}.lk a{color:var(--bl)}
+.st{border:none;border-radius:8px;padding:6px 9px;font-size:11px;font-weight:700;font-family:var(--d);cursor:pointer;white-space:nowrap}
+.s0{background:#f0f0ec;color:var(--mut)}.s1{background:var(--as);color:var(--am)}.s2{background:var(--bs);color:var(--bl)}.s3{background:var(--sf);color:var(--ac)}
+.ic{background:none;border:none;font-size:14px;cursor:pointer;color:var(--mut);padding:4px}
+.add{width:100%;border:none;background:none;color:var(--ac);font-family:var(--d);font-weight:700;font-size:12.5px;padding:11px;cursor:pointer;border-top:1px dashed var(--ln)}
+.foot{display:flex;gap:8px;margin-top:16px}
+.foot button{flex:1;border:1px solid var(--ln);background:#fff;border-radius:10px;padding:11px;font-family:var(--d);font-weight:700;font-size:13px;cursor:pointer;color:var(--ink)}
+.legend{font-size:11px;color:var(--mut);margin-top:10px;line-height:1.6}
+.hide{display:none}
+</style></head><body>
+<div class="hd"><div class="wrap">
+<h1>Khaata — Project Tracker</h1>
+<div class="pb"><i id="pbar" style="width:0%"></i></div>
+<div class="pt"><span id="ptxt"></span><span id="pdate"></span></div>
+<div class="tools">
+<input type="text" id="q" placeholder="Search pages…" oninput="render()">
+<button class="chip on" data-f="all" onclick="setF('all',this)">All</button>
+<button class="chip" data-f="0" onclick="setF('0',this)">Not started</button>
+<button class="chip" data-f="1" onclick="setF('1',this)">In progress</button>
+<button class="chip" data-f="2" onclick="setF('2',this)">Review</button>
+<button class="chip" data-f="3" onclick="setF('3',this)">Done</button>
+</div></div></div>
+<div class="wrap"><div id="secs"></div>
+<button class="add" style="border:1px dashed var(--ln);border-radius:12px;margin-top:14px;background:#fff" onclick="addSec()">+ Add section</button>
+<div class="foot"><button onclick="expData()">⬇ Export backup</button><button onclick="document.getElementById('imp').click()">⬆ Import</button></div>
+<input type="file" id="imp" class="hide" accept=".json" onchange="impData(this)">
+<div class="legend">Tap a status pill to cycle: Not started → In progress → In review → Completed. 💬 comment · 🔗 screenshot link · ✕ delete (custom rows). Blue tag = shared engine (build once, reuse); amber ⭐ = unique signature page. Data saves in this browser — export a backup to move devices.</div>
+</div>
+<script>
+var ST=['Not started','In progress','In review','Completed'];
+var SECS=[
+{id:'core',name:'1. Core / App-wide',rows:[
+ ['landing','Landing page','',3],['login','Login / OTP sign-up','',0],['selector','Business category selector','',3],
+ ['settings','Business Settings','star',0],['homedash','Home dashboard (switcher)','',3],
+ ['money','Money In/Out ledger','money',3],['billgen','Bill generator','bill',3],['receipt','Receipt / payment confirm','bill',0],
+ ['people','Customer / people list','people',1],['remind','Reminders (WhatsApp)','remind',0],
+ ['docs','Documents vault (Drive)','docs',0],['reports','Reports / summary','report',0],['scan','Scan-to-confirm engine','scan',3]]},
+{id:'staff',name:'2. Staff module (all businesses)',rows:[
+ ['stonb','Staff onboarding','',3],['stoffb','Staff offboarding (settle dues)','',0],
+ ['stdash','My Staff dashboard','',3],['stpay','Staff payments / advances','',3],['statt','Attendance (3 modes)','',3]]},
+{id:'pg',name:'3. PG',rows:[
+ ['pg-setup','Business setup (rooms/beds)','config',1],['pg-onb','Tenant onboarding','onboard',3],
+ ['pg-offb','Tenant offboarding (deposit)','offboard',0],['pg-daily','Daily dashboard','star',0],['pg-bills','Rent bills / collection','bill',0]]},
+{id:'hw',name:'4. Hostel — working',rows:[
+ ['hw-setup','Business setup','config',0],['hw-onb','Resident onboarding','onboard',3],['hw-offb','Resident offboarding','offboard',0],['hw-daily','Daily dashboard (as PG)','daily',0]]},
+{id:'hs',name:'5. Hostel — student',rows:[
+ ['hs-setup','Business setup','config',0],['hs-onb','Student onboarding','onboard',3],['hs-offb','Student offboarding','offboard',0],['hs-daily','Daily dashboard (as PG)','daily',0]]},
+{id:'cl',name:'6. Co-living',rows:[
+ ['cl-setup','Business setup','config',0],['cl-onb','Resident onboarding','onboard',3],['cl-offb','Resident offboarding','offboard',0],['cl-daily','Daily dashboard (as PG)','daily',0]]},
+{id:'fl',name:'7. Flat / rental',rows:[
+ ['fl-setup','Business setup (units)','config',0],['fl-onb','Tenant onboarding','onboard',3],['fl-offb','Tenant offboarding','offboard',0],['fl-daily','Daily dashboard (lease/maint.)','star',0]]},
+{id:'gym',name:'8. Gym / fitness',rows:[
+ ['gym-setup','Business setup (plans)','config',0],['gym-onb','Member onboarding','onboard',3],['gym-offb','Member offboarding','offboard',0],['gym-daily','Daily dashboard (check-ins/expiry)','star',0]]},
+{id:'co',name:'9. Coaching / dance',rows:[
+ ['co-setup','Business setup (batches)','config',0],['co-onb','Student onboarding','onboard',3],['co-offb','Student offboarding','offboard',0],['co-daily','Daily dashboard (batch attendance)','star',0]]},
+{id:'tf',name:'10. Tiffin / mess',rows:[
+ ['tf-setup','Business setup (meals/plans)','config',0],['tf-onb','Subscriber onboarding','onboard',3],['tf-offb','Subscriber offboarding','offboard',0],['tf-daily','Daily dashboard (meals/pause)','star',0]]},
+{id:'pk',name:'11. Parking',rows:[
+ ['pk-setup','Business setup (slots/mode)','config',0],['pk-onb','Renter onboarding','onboard',3],['pk-offb','Renter offboarding','offboard',0],['pk-daily','Daily dashboard (slots/visitor)','star',0]]},
+{id:'m2',name:'12. Job / Service (wedge)',rows:[
+ ['m2-client','Client list (B2C/B2B)','people',0],['m2-qi','Quote / Invoice creator','',3],
+ ['m2-pipe','Quote pipeline (status/convert)','',0],['m2-gst','Detailed / GST bill (item GST, IGST, e-way)','',0],
+ ['m2-daily','Job daily dashboard','star',0]]},
+{id:'gtm',name:'13. Validation & GTM',rows:[
+ ['gtm-survey','Owner survey','',3],['gtm-int','Interview recorder','',3],
+ ['gtm-replit','Replit web demo','',1],['gtm-rev','Owner reviews collected','',0]]}
+];
+var KEY='khaata-tracker';
+var S=JSON.parse(localStorage.getItem(KEY)||'{"r":{},"cs":[],"cr":{}}');
+var F='all';
+function $(i){return document.getElementById(i)}
+function save(){localStorage.setItem(KEY,JSON.stringify(S))}
+function get(id,def){return S.r[id]!==undefined&&S.r[id].st!==undefined?S.r[id].st:def}
+function rec(id){if(!S.r[id])S.r[id]={};return S.r[id]}
+function allSecs(){
+ var list=SECS.map(function(s){return{id:s.id,name:s.name,rows:s.rows.map(function(r){return{id:r[0],nm:r[1],tag:r[2],def:r[3],custom:false}}).concat((S.cr[s.id]||[]).map(function(c){return{id:c.id,nm:c.nm,tag:'',def:0,custom:true}}))}});
+ S.cs.forEach(function(cs){list.push({id:cs.id,name:cs.nm,rows:(S.cr[cs.id]||[]).map(function(c){return{id:c.id,nm:c.nm,tag:'',def:0,custom:true}})})});
+ return list;
+}
+function render(){
+ var q=($('q').value||'').toLowerCase();
+ var done=0,tot=0,h='';
+ allSecs().forEach(function(sec){
+  var rows=sec.rows.filter(function(r){return r.nm.toLowerCase().indexOf(q)>=0});
+  var secDone=sec.rows.filter(function(r){return get(r.id,r.def)===3}).length;
+  tot+=sec.rows.length;done+=secDone;
+  var vis=rows.filter(function(r){return F==='all'||get(r.id,r.def)===+F});
+  if(!vis.length&&(q||F!=='all'))return;
+  h+='<div class="sec"><div class="sh"><h2>'+sec.name+'</h2><span class="ct">'+secDone+' / '+sec.rows.length+'</span></div>';
+  vis.forEach(function(r){
+   var st=get(r.id,r.def),m=S.r[r.id]||{};
+   h+='<div class="row"><div class="rn"><span class="nm">'+r.nm+'</span>'
+    +(r.tag?'<span class="tag'+(r.tag==='star'?' star':'')+'">'+(r.tag==='star'?'⭐ signature':'🔁 '+r.tag)+'</span>':'')
+    +(m.cm?'<div class="cm">💬 '+m.cm+'</div>':'')
+    +(m.lk?'<div class="lk">🔗 <a href="'+m.lk+'" target="_blank">screenshot</a></div>':'')
+    +'</div><button class="st s'+st+'" onclick="cyc(\''+r.id+'\','+r.def+')">'+ST[st]+'</button>'
+    +'<button class="ic" onclick="cmt(\''+r.id+'\')">💬</button><button class="ic" onclick="lnk(\''+r.id+'\')">🔗</button>'
+    +(r.custom?'<button class="ic" style="color:var(--rd)" onclick="delRow(\''+sec.id+'\',\''+r.id+'\')">✕</button>':'')
+    +'</div>';
+  });
+  h+='<button class="add" onclick="addRow(\''+sec.id+'\')">+ Add page</button></div>';
+ });
+ $('secs').innerHTML=h;
+ var pc=tot?Math.round(done/tot*100):0;
+ $('pbar').style.width=pc+'%';$('ptxt').textContent=done+' of '+tot+' completed ('+pc+'%)';
+ $('pdate').textContent=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+}
+function cyc(id,def){var r=rec(id);var cur=r.st!==undefined?r.st:def;r.st=(cur+1)%4;r.ts=Date.now();save();render()}
+function cmt(id){var r=rec(id);var v=prompt('Comment:',r.cm||'');if(v===null)return;r.cm=v.trim();save();render()}
+function lnk(id){var r=rec(id);var v=prompt('Screenshot / page link (URL):',r.lk||'');if(v===null)return;r.lk=v.trim();save();render()}
+function addRow(sid){var n=prompt('New page name:');if(!n)return;if(!S.cr[sid])S.cr[sid]=[];S.cr[sid].push({id:'c'+Date.now(),nm:n.trim()});save();render()}
+function delRow(sid,id){if(!confirm('Delete this page?'))return;S.cr[sid]=(S.cr[sid]||[]).filter(function(c){return c.id!==id});delete S.r[id];save();render()}
+function addSec(){var n=prompt('New section name:');if(!n)return;S.cs.push({id:'cs'+Date.now(),nm:n.trim()});save();render()}
+function setF(f,el){F=f;document.querySelectorAll('.chip').forEach(function(c){c.className='chip'});el.className='chip on';render()}
+function expData(){var a=document.createElement('a');a.href='data:application/json,'+encodeURIComponent(JSON.stringify(S));a.download='khaata-tracker-backup.json';a.click()}
+function impData(inp){var f=inp.files[0];if(!f)return;var rd=new FileReader();rd.onload=function(){try{S=JSON.parse(rd.result);save();render();alert('Imported ✓')}catch(e){alert('Invalid file')}};rd.readAsText(f)}
+render();
+</script></body></html>

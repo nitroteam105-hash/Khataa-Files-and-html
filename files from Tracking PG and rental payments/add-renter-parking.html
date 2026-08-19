@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parking — Add Renter</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fbfbf9;--ink:#16161a;--muted:#62636a;--line:#e7e7e2;--card:#fff;
+    --accent:#1f6f54;--soft:#e8f3ee;--warm:#f4f2ec;--red:#b3261e;--amber:#b36b00;--ambersoft:#fff4e5;
+    --d:'Plus Jakarta Sans',sans-serif;--b:'Inter',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:var(--b);-webkit-font-smoothing:antialiased;padding-bottom:88px;}
+  .wrap{max-width:480px;margin:0 auto;padding:0 16px;}
+  h1,h2,h3{font-family:var(--d);letter-spacing:-.01em;}
+
+  .top{position:sticky;top:0;background:var(--bg);z-index:9;padding:14px 0 12px;border-bottom:1px solid var(--line);}
+  .top-in{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+  .back{font-size:20px;color:var(--muted);cursor:pointer;}
+  .top h1{font-size:18px;}.top .sub{font-size:12px;color:var(--muted);}
+  .dots{display:flex;gap:6px;}
+  .dots .d{flex:1;height:5px;border-radius:99px;background:var(--line);}
+  .dots .d.on{background:var(--accent);}.dots .d.done{background:var(--accent);opacity:.5;}
+
+  .step-h{margin:18px 0 4px;}
+  .step-h .n{font-family:var(--d);font-weight:700;font-size:12px;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;}
+  .step-h h2{font-size:22px;margin-top:5px;}
+  .step-h p{font-size:13.5px;color:var(--muted);margin-top:3px;}
+
+  label{display:block;font-size:12.5px;color:var(--muted);margin:14px 0 5px;font-weight:500;}
+  input,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;font-size:15px;font-family:var(--b);background:var(--card);color:var(--ink);}
+  input:focus,select:focus{outline:none;border-color:var(--accent);}
+  input.plate{text-transform:uppercase;letter-spacing:1px;font-family:var(--d);font-weight:700;}
+  .row{display:flex;gap:10px;}.row>*{flex:1;}
+  .opt-note{font-size:11.5px;color:var(--muted);}
+  .onetime-h{font-family:var(--d);font-weight:700;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:20px 0 4px;padding-top:14px;border-top:1px dashed var(--line);}
+
+  /* vehicle type */
+  .vtypes{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px;}
+  .vtype{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:12px 4px;text-align:center;cursor:pointer;transition:.12s;}
+  .vtype:hover{border-color:var(--accent);}
+  .vtype.sel{border-color:var(--accent);background:var(--soft);}
+  .vtype .ic{font-size:22px;}
+  .vtype .nm{font-family:var(--d);font-weight:700;font-size:11px;margin-top:3px;}
+
+  /* slot type cards */
+  .slots{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:6px;}
+  .slot{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:13px;cursor:pointer;transition:.12s;position:relative;}
+  .slot:hover{border-color:var(--accent);}
+  .slot.sel{border-color:var(--accent);background:var(--soft);}
+  .slot.sel::after{content:'✓';position:absolute;top:9px;right:11px;color:var(--accent);font-weight:700;}
+  .slot .ty{font-family:var(--d);font-weight:700;font-size:14px;}
+  .slot .pr{font-family:var(--d);font-weight:800;font-size:16px;color:var(--accent);margin-top:3px;}
+  .slot .sh{font-size:11px;color:var(--muted);}
+
+  .seg{display:flex;gap:6px;background:var(--warm);border-radius:10px;padding:4px;margin-top:5px;}
+  .seg button{flex:1;border:none;background:none;padding:9px;border-radius:7px;font-family:var(--d);font-weight:600;font-size:13px;color:var(--muted);cursor:pointer;}
+  .seg button.on{background:var(--card);color:var(--accent);box-shadow:0 1px 2px rgba(0,0,0,.06);}
+
+  .mtotal{display:flex;justify-content:space-between;align-items:center;background:var(--ink);color:#fff;border-radius:12px;padding:14px 16px;margin-top:12px;font-family:var(--d);font-weight:700;}
+  .mtotal span:last-child{font-size:20px;font-weight:800;}
+
+  .toggle{display:flex;align-items:center;justify-content:space-between;padding:12px 0;}
+  .toggle .lbl{font-size:14.5px;font-weight:600;font-family:var(--d);}
+  .toggle .lbl small{display:block;font-size:12px;color:var(--muted);font-weight:400;font-family:var(--b);}
+  .sw{width:46px;height:26px;border-radius:99px;background:var(--line);position:relative;cursor:pointer;transition:.15s;flex-shrink:0;}
+  .sw.on{background:var(--accent);}
+  .sw::after{content:'';position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.15s;}
+  .sw.on::after{left:23px;}
+
+  .rev{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:10px;}
+  .rev .rr{display:flex;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--line);font-size:14px;}
+  .rev .rr:last-child{border:none;}
+  .rev .rr .k{color:var(--muted);}.rev .rr .v{font-weight:500;text-align:right;}
+  .rev-h{font-family:var(--d);font-weight:700;font-size:12px;color:var(--muted);text-transform:uppercase;margin:16px 0 7px;letter-spacing:.04em;}
+
+  .bar{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);padding:12px 16px;z-index:9;}
+  .bar-in{max-width:480px;margin:0 auto;display:flex;gap:10px;align-items:center;}
+  .btn{font-family:var(--d);font-weight:700;font-size:15px;border:none;border-radius:11px;padding:14px;cursor:pointer;}
+  .btn.next{background:var(--accent);color:#fff;flex:1;}
+  .btn.back{background:var(--card);border:1px solid var(--line);color:var(--ink);flex:0 0 26%;}
+  .btn.skip{background:none;color:var(--muted);font-weight:600;font-size:13px;border:none;}
+  .savebar{text-align:center;margin-top:8px;}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+const STEPS=['Renter','Vehicle & slot','Access','Review'];
+let step=0;
+const VTYPES=[
+  {key:'2w',ic:'🏍️',nm:'2-Wheeler'},
+  {key:'car',ic:'🚗',nm:'Car'},
+  {key:'suv',ic:'🚙',nm:'SUV'},
+  {key:'comm',ic:'🚚',nm:'Commercial'}
+];
+const SLOTS=[
+  {ty:'Open',sh:'Uncovered',rent:1500},
+  {ty:'Covered',sh:'Shaded',rent:2200},
+  {ty:'Basement',sh:'Secure, covered',rent:2800},
+  {ty:'Reserved',sh:'Dedicated spot',rent:3500}
+];
+const d={
+  name:'',phone:'',flat:'',
+  vtypeIdx:1,plate:'',model:'',
+  slotIdx:1,slotNo:'B-12',cycle:'Monthly',rent:2200,deposit:2200,
+  access:'Sticker/Tag', start:'2026-06-24',
+  twentyFour:true
+};
+const $=id=>document.getElementById(id);
+const money=n=>'₹'+(+n||0).toLocaleString('en-IN');
+function set(f,v){d[f]=v;}
+function slot(){return SLOTS[d.slotIdx];}
+
+function renter(){
+  return `<div class="step-h"><span class="n">Step 1 of 4</span><h2>Renter</h2><p>Who's parking here.</p></div>
+  <label>Full name</label><input value="${d.name}" oninput="set('name',this.value);refreshNext()" placeholder="e.g. Vikram Singh">
+  <label>Phone number</label><input value="${d.phone}" oninput="set('phone',this.value);refreshNext()" placeholder="10-digit mobile" inputmode="numeric">
+  <label>Flat / office / reference <span class="opt-note">(optional)</span></label>
+  <input value="${d.flat}" oninput="set('flat',this.value)" placeholder="e.g. Flat 304 / Acme Corp">`;
+}
+function vehicleStep(){
+  const vcards=VTYPES.map((v,i)=>`<div class="vtype ${d.vtypeIdx===i?'sel':''}" onclick="set('vtypeIdx',${i});render()">
+    <div class="ic">${v.ic}</div><div class="nm">${v.nm}</div></div>`).join('');
+  const scards=SLOTS.map((s,i)=>`<div class="slot ${d.slotIdx===i?'sel':''}" onclick="pickSlot(${i})">
+    <div class="ty">${s.ty}</div><div class="pr">${money(s.rent)}</div><div class="sh">${s.sh} · /mo</div></div>`).join('');
+  return `<div class="step-h"><span class="n">Step 2 of 4</span><h2>Vehicle & slot</h2><p>The vehicle and where it parks.</p></div>
+  <label>Vehicle type</label>
+  <div class="vtypes">${vcards}</div>
+  <label>Number plate</label><input class="plate" value="${d.plate}" oninput="set('plate',this.value.toUpperCase())" placeholder="KA 01 AB 1234">
+  <label>Make / model <span class="opt-note">(optional)</span></label><input value="${d.model}" oninput="set('model',this.value)" placeholder="e.g. Honda City">
+  <label>Slot type <span class="opt-note">(sets the rent)</span></label>
+  <div class="slots">${scards}</div>
+  <div class="row" style="margin-top:12px">
+    <div><label>Slot no.</label><input value="${d.slotNo}" oninput="set('slotNo',this.value)"></div>
+    <div><label>Monthly rent</label><input type="number" value="${d.rent}" oninput="set('rent',+this.value);updTotal()"></div>
+  </div>
+  <label>Billing cycle</label>
+  <div class="seg">
+    <button class="${d.cycle==='Monthly'?'on':''}" onclick="set('cycle','Monthly');render()">Monthly</button>
+    <button class="${d.cycle==='Quarterly'?'on':''}" onclick="set('cycle','Quarterly');render()">Quarterly</button>
+    <button class="${d.cycle==='Yearly'?'on':''}" onclick="set('cycle','Yearly');render()">Yearly</button>
+  </div>
+  <div class="mtotal"><span>Rent / ${d.cycle.toLowerCase().replace('ly','')}</span><span id="mtot">${money(d.rent)}</span></div>
+  <div class="onetime-h">One-time</div>
+  <label>Security deposit <span class="opt-note">(optional)</span></label>
+  <input type="number" value="${d.deposit}" oninput="set('deposit',+this.value)">`;
+}
+function access(){
+  return `<div class="step-h"><span class="n">Step 3 of 4</span><h2>Access</h2><p>How they enter and exit.</p></div>
+  <label>Access method</label>
+  <select onchange="set('access',this.value)">${['Sticker/Tag','RFID card','Boom barrier app','Manual (guard logs)','QR scan'].map(a=>`<option ${d.access===a?'selected':''}>${a}</option>`).join('')}</select>
+  <label>Start date</label><input type="date" value="${d.start}" oninput="set('start',this.value)">
+  <div class="toggle"><div class="lbl">24×7 access<small>Off = restricted hours only</small></div><div class="sw ${d.twentyFour?'on':''}" onclick="toggleSw('twentyFour')"></div></div>
+  <div class="opt-note">Entry / exit can be logged by scan or guard from the home screen.</div>`;
+}
+function review(){
+  return `<div class="step-h"><span class="n">Step 4 of 4</span><h2>Review & add</h2><p>Quick check before saving.</p></div>
+  <div class="rev-h">Renter</div>
+  <div class="rev">
+    <div class="rr"><span class="k">Name</span><span class="v">${d.name||'—'}</span></div>
+    <div class="rr"><span class="k">Phone</span><span class="v">${d.phone||'—'}</span></div>
+    <div class="rr"><span class="k">Reference</span><span class="v">${d.flat||'—'}</span></div>
+  </div>
+  <div class="rev-h">Vehicle & slot</div>
+  <div class="rev">
+    <div class="rr"><span class="k">Vehicle</span><span class="v">${VTYPES[d.vtypeIdx].nm}${d.model?' · '+d.model:''}</span></div>
+    <div class="rr"><span class="k">Number plate</span><span class="v" style="font-family:var(--d);font-weight:700">${d.plate||'—'}</span></div>
+    <div class="rr"><span class="k">Slot</span><span class="v">${slot().ty} · ${d.slotNo}</span></div>
+    <div class="rr"><span class="k" style="font-weight:700;color:var(--ink)">Rent / ${d.cycle.toLowerCase().replace('ly','')}</span><span class="v" style="font-weight:800;color:var(--accent)">${money(d.rent)}</span></div>
+    <div class="rr"><span class="k">Deposit (one-time)</span><span class="v">${money(d.deposit)}</span></div>
+  </div>
+  <div class="rev-h">Access</div>
+  <div class="rev">
+    <div class="rr"><span class="k">Method</span><span class="v">${d.access}</span></div>
+    <div class="rr"><span class="k">Hours</span><span class="v">${d.twentyFour?'24×7':'Restricted'}</span></div>
+    <div class="rr"><span class="k">Starts</span><span class="v">${new Date(d.start).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}</span></div>
+  </div>`;
+}
+
+function pickSlot(i){d.slotIdx=i;d.rent=SLOTS[i].rent;render();}
+function updTotal(){const e=$('mtot');if(e)e.textContent=money(d.rent);}
+function toggleSw(f){d[f]=!d[f];render();}
+function refreshNext(){const b=document.querySelector('.btn.next');if(!b)return;const ok=canNext();b.disabled=!ok;b.style.opacity=ok?'1':'.4';}
+function canNext(){
+  if(step===0)return d.name.trim()&&d.phone.trim();
+  if(step===1)return d.plate.trim()!=='';
+  return true;
+}
+
+function render(){
+  if(step==='done'){renderDone();return;}
+  const body=[renter,vehicleStep,access,review][step]();
+  const dots=STEPS.map((s,i)=>`<div class="d ${i===step?'on':i<step?'done':''}"></div>`).join('');
+  const isLast=step===STEPS.length-1;
+  $('app').innerHTML=`
+  <div class="top"><div class="wrap">
+    <div class="top-in"><span class="back" onclick="goBack()">←</span>
+    <div><h1>Add renter</h1><div class="sub">City Parking · ${STEPS[step]}</div></div></div>
+    <div class="dots">${dots}</div>
+  </div></div>
+  <div class="wrap">${body}</div>
+  <div class="bar"><div class="bar-in">
+    ${step>0?'<button class="btn back" onclick="prev()">←</button>':''}
+    <button class="btn next" onclick="next()" ${canNext()?'':'disabled style="opacity:.4"'}>${isLast?'✓ Add renter':'Continue →'}</button>
+  </div>
+  ${!isLast&&step>0?'<div class="savebar"><button class="btn skip" onclick="finish(true)">Save now, add rest later</button></div>':''}
+  </div>`;
+}
+function next(){if(!canNext()){alert(step===0?'Enter name and phone.':'Enter the vehicle number plate.');return;}if(step<STEPS.length-1){step++;render();window.scrollTo(0,0);}else finish(false);}
+function prev(){if(step>0){step--;render();window.scrollTo(0,0);}}
+function goBack(){if(step===0)alert('Back to Renters list');else prev();}
+function finish(early){step='done';d._early=early;renderDone();window.scrollTo(0,0);}
+function firstPayment(){return (+d.rent||0)+(+d.deposit||0);}
+function renderDone(){
+  const due=firstPayment();
+  $('app').innerHTML=`<div class="wrap" style="text-align:center;padding-top:50px">
+    <div style="font-size:50px">✅</div>
+    <h2 style="font-size:25px;margin:14px 0 6px;font-family:var(--d)">${d.name||'Renter'} added!</h2>
+    <p style="color:var(--muted);font-size:15px;line-height:1.5">${VTYPES[d.vtypeIdx].nm} · ${d.plate} · Slot ${d.slotNo} (${slot().ty})<br><span style="font-size:13px">${money(d.rent)}/${d.cycle.toLowerCase().replace('ly','')} · ${d.access}</span></p>
+    <div style="background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:24px 0;text-align:left">
+      <div style="font-family:var(--d);font-weight:700;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px">Due now</div>
+      <div style="display:flex;justify-content:space-between;font-size:14px;padding:4px 0;color:var(--muted)"><span>First ${d.cycle.toLowerCase().replace('ly','')} rent</span><span>${money(d.rent)}</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:14px;padding:4px 0;color:var(--muted)"><span>Deposit</span><span>${money(d.deposit)}</span></div>
+      <div style="display:flex;justify-content:space-between;font-family:var(--d);font-weight:800;font-size:19px;border-top:1px solid var(--line);margin-top:6px;padding-top:9px"><span>Total</span><span>${money(due)}</span></div>
+    </div>
+    <button class="btn next" style="width:100%;margin-bottom:10px" onclick="collectAndBill()">💸 Collect payment & generate bill</button>
+    <button class="btn back" style="width:100%;flex:none" onclick="alert('Skipped — slot is allotted. Bill anytime.')">Skip for now</button>
+  </div>`;
+}
+function collectAndBill(){alert('Opens the bill generator, pre-filled:\n\nFirst '+d.cycle.toLowerCase().replace('ly','')+' rent '+money(d.rent)+'\n+ Deposit '+money(d.deposit)+'\n= '+money(firstPayment())+' due');}
+render();
+</script>
+</body>
+</html>

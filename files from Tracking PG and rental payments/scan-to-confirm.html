@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scan to Confirm</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Inter:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --parchment:#fdfcfc;--sand:#f5f3f1;--border:#e5e5e5;
+    --ink:#000;--drift:#777169;--fog:#a59f97;--white:#fff;
+    --ok:#1a7f4b;--no:#b3261e;
+    --d:'DM Sans',sans-serif;--b:'Inter',sans-serif;--m:'IBM Plex Mono',monospace;
+    --card:rgba(0,0,0,.4) 0 0 1px 0,rgba(0,0,0,.04) 0 1px 1px 0,rgba(0,0,0,.04) 0 2px 4px 0;
+    --inset:rgba(0,0,0,.075) 0 0 0 .5px inset;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--parchment);color:var(--ink);font-family:var(--b);
+    -webkit-font-smoothing:antialiased;min-height:100vh;display:flex;justify-content:center;
+    padding:40px 20px;}
+  .shell{width:100%;max-width:420px;}
+  .tag{font-family:var(--m);font-size:12px;color:var(--drift);letter-spacing:.04em;}
+  h1{font-family:var(--d);font-weight:300;font-size:32px;letter-spacing:-.64px;margin:10px 0 6px;}
+  .sub{font-size:15px;color:var(--drift);margin-bottom:28px;line-height:1.5;}
+
+  .scanner{background:var(--sand);border-radius:24px;padding:28px 24px;text-align:center;margin-bottom:18px;}
+  .frame{width:150px;height:150px;margin:0 auto 18px;border-radius:18px;background:var(--white);
+    box-shadow:var(--inset);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+  .frame svg{opacity:.18;}
+  .laser{position:absolute;left:14px;right:14px;height:2px;background:var(--ink);opacity:.5;
+    top:20px;animation:scan 1.6s ease-in-out infinite;}
+  @keyframes scan{0%,100%{top:20px}50%{top:128px}}
+  .frame.idle .laser{display:none}
+
+  .btn{font-family:var(--b);font-size:15px;font-weight:500;background:var(--ink);color:var(--white);
+    border:1px solid var(--border);border-radius:9999px;padding:12px 28px;cursor:pointer;transition:.15s;}
+  .btn:hover{background:#222}.btn:active{transform:scale(.97)}
+  .btn.ghost{background:transparent;color:var(--ink);box-shadow:var(--inset);}
+  .btn.ghost:hover{background:var(--white)}
+
+  .result{background:var(--white);border-radius:20px;padding:22px;box-shadow:var(--card);margin-bottom:18px;
+    display:none;}
+  .result.show{display:block;animation:pop .2s ease;}
+  @keyframes pop{from{transform:scale(.97);opacity:0}to{transform:scale(1);opacity:1}}
+  .r-top{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+  .r-badge{width:44px;height:44px;border-radius:9999px;display:flex;align-items:center;justify-content:center;
+    font-size:22px;flex-shrink:0;color:var(--white);}
+  .r-badge.ok{background:var(--ok)}.r-badge.no{background:var(--no)}
+  .r-name{font-family:var(--d);font-weight:500;font-size:18px;}
+  .r-msg{font-size:13px;color:var(--drift);margin-top:1px;}
+  .r-row{display:flex;justify-content:space-between;font-size:14px;padding:9px 0;border-top:1px solid var(--border);}
+  .r-row span:first-child{color:var(--drift)}
+  .r-row .mono{font-family:var(--m);font-size:13px;}
+  .bar{height:6px;background:var(--sand);border-radius:9999px;overflow:hidden;margin-top:6px;}
+  .bar i{display:block;height:100%;background:var(--ink);border-radius:9999px;transition:width .4s;}
+
+  .log{margin-top:8px;}
+  .log-h{font-family:var(--m);font-size:11px;color:var(--fog);letter-spacing:.06em;margin-bottom:8px;}
+  .log-item{display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--border);color:var(--drift);}
+  .log-item .mono{font-family:var(--m);font-size:12px;color:var(--ink);}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <span class="tag">Mess · Lunch counter</span>
+  <h1>Scan to confirm</h1>
+  <p class="sub">Scan a subscriber's QR before serving. One scan deducts one meal.</p>
+
+  <div class="scanner">
+    <div class="frame idle" id="frame">
+      <div class="laser"></div>
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 14v.01M17 21h.01M21 17v4"/></svg>
+    </div>
+    <button class="btn" id="scanBtn">Scan next subscriber</button>
+  </div>
+
+  <div class="result" id="result"></div>
+
+  <div class="log">
+    <div class="log-h">TODAY'S SCANS · <span id="todayCount">0</span></div>
+    <div id="logList"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // simulated subscriber pool (id, name, mealsTotal, mealsUsed, status)
+  const subs = [
+    {id:'M-104',name:'Ravi Kumar',total:30,used:11,status:'active'},
+    {id:'M-088',name:'Priya Shah',total:30,used:29,status:'active'},
+    {id:'M-152',name:'Arjun Nair',total:30,used:30,status:'active'},  // exhausted
+    {id:'M-070',name:'Sana Iqbal',total:30,used:6,status:'expired'},  // plan expired
+    {id:'M-119',name:'Dev Patel',total:30,used:18,status:'active'}
+  ];
+  let i = 0, today = 0;
+  const servedThisRun = {};
+
+  const frame=document.getElementById('frame'), btn=document.getElementById('scanBtn'),
+        res=document.getElementById('result'), logList=document.getElementById('logList'),
+        todayCount=document.getElementById('todayCount');
+
+  function now(){return new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});}
+
+  function show(s){
+    let ok=true, msg='Meal confirmed', remaining;
+    if(s.status==='expired'){ok=false;msg='Plan expired — renew required';}
+    else if(s.used>=s.total){ok=false;msg='No meals left (30/30 used)';}
+    else if(servedThisRun[s.id]){ok=false;msg='Already scanned this session';}
+
+    if(ok){ s.used++; servedThisRun[s.id]=true; today++; todayCount.textContent=today;
+      const t=now();
+      logList.insertAdjacentHTML('afterbegin',
+        '<div class="log-item"><span class="mono">'+s.id+' · '+s.name+'</span><span>'+t+'</span></div>');
+    }
+    remaining = s.total - s.used;
+    const pct = Math.round((s.used/s.total)*100);
+
+    res.className='result show';
+    res.innerHTML=
+      '<div class="r-top"><div class="r-badge '+(ok?'ok':'no')+'">'+(ok?'✓':'✕')+'</div>'+
+      '<div><div class="r-name">'+s.name+'</div><div class="r-msg">'+msg+'</div></div></div>'+
+      '<div class="r-row"><span>Subscriber</span><span class="mono">'+s.id+'</span></div>'+
+      '<div class="r-row"><span>Meal</span><span class="mono">Lunch · '+now()+'</span></div>'+
+      '<div class="r-row"><span>Meals remaining</span><span class="mono">'+remaining+' / '+s.total+'</span></div>'+
+      '<div class="bar"><i style="width:'+pct+'%"></i></div>';
+  }
+
+  btn.addEventListener('click',function(){
+    frame.classList.remove('idle');
+    btn.disabled=true; btn.textContent='Scanning...';
+    setTimeout(function(){
+      const s=subs[i % subs.length]; i++;
+      show(s);
+      frame.classList.add('idle');
+      btn.disabled=false; btn.textContent='Scan next subscriber';
+    },900);
+  });
+})();
+</script>
+</body>
+</html>

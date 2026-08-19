@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Photography — Setup</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green:#1f6f54; --green-dark:#175843; --green-soft:#e7f0ec; --green-tint:#f1f7f4;
+  --paper:#fbfbf9; --card:#ffffff; --ink:#1c2420; --muted:#6b7770; --line:#e4e8e5;
+  --amber:#b9791f; --amber-soft:#f7edda; --danger:#b23b3b; --danger-soft:#f7e6e6;
+  --shadow:0 1px 2px rgba(28,36,32,.04),0 6px 18px rgba(28,36,32,.05);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4,.dsp{font-family:'Plus Jakarta Sans',sans-serif}
+.wrap{max-width:620px;margin:0 auto;padding-bottom:120px}
+
+/* top bar */
+.top{position:sticky;top:0;z-index:20;background:rgba(251,251,249,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top-in{max-width:620px;margin:0 auto;padding:14px 18px;display:flex;align-items:center;gap:12px}
+.back{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;font-size:18px;color:var(--ink);cursor:pointer;flex-shrink:0}
+.top-title{font-weight:700;font-size:16px;letter-spacing:-.01em}
+.top-sub{font-size:12px;color:var(--muted);font-weight:500;margin-top:1px}
+.chip{margin-left:auto;font-size:11px;font-weight:700;color:var(--green);background:var(--green-soft);padding:5px 10px;border-radius:20px;letter-spacing:.02em;flex-shrink:0}
+
+/* tabs */
+.tabs{display:flex;gap:4px;padding:10px 18px 0;overflow-x:auto;scrollbar-width:none;position:sticky;top:63px;z-index:19;background:rgba(251,251,249,.92);backdrop-filter:blur(8px)}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:9px 14px;border-radius:10px 10px 0 0;font-size:13.5px;font-weight:600;color:var(--muted);white-space:nowrap;cursor:pointer;border-bottom:2px solid transparent}
+.tab.on{color:var(--green);background:var(--card);border:1px solid var(--line);border-bottom:2px solid var(--green)}
+
+.pane{display:none;padding:18px}
+.pane.on{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+.intro{font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.55}
+.sect-label{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:22px 2px 10px}
+.sect-label:first-child{margin-top:0}
+
+/* cards */
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);margin-bottom:12px;overflow:hidden}
+.item{padding:14px 16px;display:flex;align-items:flex-start;gap:12px}
+.item + .item{border-top:1px solid var(--line)}
+.item-body{flex:1;min-width:0}
+.item-title{font-family:'Plus Jakarta Sans';font-weight:700;font-size:15px;letter-spacing:-.01em}
+.item-meta{font-size:12.5px;color:var(--muted);margin-top:3px;line-height:1.45}
+.tagrow{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.tag{font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;background:var(--green-tint);color:var(--green-dark)}
+.tag.amber{background:var(--amber-soft);color:var(--amber)}
+.price{font-family:'Plus Jakarta Sans';font-weight:800;font-size:15px;color:var(--ink);white-space:nowrap}
+.mini-actions{display:flex;gap:4px;margin-top:2px}
+.iconbtn{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;cursor:pointer;font-size:14px;color:var(--muted)}
+.iconbtn:active{background:var(--green-tint)}
+.iconbtn.del:active{background:var(--danger-soft);color:var(--danger)}
+
+.add{width:100%;padding:13px;border:1.5px dashed var(--line);border-radius:12px;background:transparent;color:var(--green);font-family:'Plus Jakarta Sans';font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px}
+.add:active{background:var(--green-tint);border-color:var(--green)}
+
+/* toggle rows */
+.trow{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:14px 16px;display:flex;align-items:center;gap:14px;margin-bottom:10px}
+.trow-body{flex:1}
+.trow-title{font-weight:600;font-size:14.5px}
+.trow-sub{font-size:12.5px;color:var(--muted);margin-top:2px;line-height:1.45}
+.switch{width:46px;height:28px;border-radius:20px;background:#d5dbd7;position:relative;cursor:pointer;flex-shrink:0;transition:background .2s}
+.switch.on{background:var(--green)}
+.knob{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:left .2s}
+.switch.on .knob{left:21px}
+
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12.5px;font-weight:600;color:var(--ink);margin-bottom:6px}
+.field .hint{font-weight:400;color:var(--muted)}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{flex:1;min-width:70px;padding:10px;border:1px solid var(--line);background:var(--card);border-radius:10px;font-family:'Inter';font-size:13px;font-weight:600;color:var(--muted);cursor:pointer}
+.seg button.on{border-color:var(--green);background:var(--green-tint);color:var(--green-dark)}
+input[type=text],input[type=number]{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px;font-family:'Inter';font-size:14px;background:var(--card);color:var(--ink)}
+input:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px var(--green-soft)}
+.inline2{display:flex;gap:10px}
+.inline2 .field{flex:1}
+
+.note{background:var(--green-tint);border:1px solid var(--green-soft);border-radius:12px;padding:12px 14px;font-size:12.5px;color:var(--green-dark);line-height:1.5;display:flex;gap:9px}
+.note b{font-weight:700}
+.note .ic{flex-shrink:0}
+
+/* save bar */
+.savebar{position:fixed;bottom:0;left:0;right:0;background:rgba(251,251,249,.94);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:12px 18px;z-index:30}
+.savebar-in{max-width:620px;margin:0 auto;display:flex;gap:10px}
+.btn-ghost{padding:13px 18px;border-radius:12px;border:1px solid var(--line);background:var(--card);font-family:'Plus Jakarta Sans';font-weight:700;font-size:14px;color:var(--muted);cursor:pointer}
+.btn-primary{flex:1;padding:13px;border-radius:12px;border:none;background:var(--green);color:#fff;font-family:'Plus Jakarta Sans';font-weight:700;font-size:14.5px;cursor:pointer;box-shadow:0 4px 12px rgba(31,111,84,.25)}
+.btn-primary:active{background:var(--green-dark)}
+
+/* modal */
+.scrim{position:fixed;inset:0;background:rgba(20,28,24,.4);z-index:40;display:none;align-items:flex-end;justify-content:center}
+.scrim.on{display:flex}
+.sheet{background:var(--paper);width:100%;max-width:620px;border-radius:20px 20px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom));max-height:88vh;overflow-y:auto;animation:up .28s cubic-bezier(.2,.8,.2,1)}
+@keyframes up{from{transform:translateY(100%)}to{transform:none}}
+.sheet-grab{width:40px;height:4px;background:#d5dbd7;border-radius:2px;margin:0 auto 16px}
+.sheet h3{font-size:18px;font-weight:800;letter-spacing:-.02em;margin-bottom:4px}
+.sheet .sub{font-size:13px;color:var(--muted);margin-bottom:18px}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.selchip{padding:8px 13px;border:1px solid var(--line);background:var(--card);border-radius:20px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer}
+.selchip.on{border-color:var(--green);background:var(--green-tint);color:var(--green-dark)}
+.empty{text-align:center;padding:26px 16px;color:var(--muted);font-size:13px}
+.empty .big{font-size:26px;margin-bottom:8px}
+</style>
+</head>
+<body>
+<div class="top"><div class="top-in">
+  <button class="back" aria-label="Back">‹</button>
+  <div><div class="top-title">Photography Studio</div><div class="top-sub">Business setup</div></div>
+  <span class="chip">EVENT</span>
+</div></div>
+
+<div class="tabs" id="tabs">
+  <div class="tab on" data-t="pkg">Packages</div>
+  <div class="tab" data-t="book">Booking &amp; Advance</div>
+  <div class="tab" data-t="addon">Add-ons</div>
+  <div class="tab" data-t="intake">Client Intake</div>
+</div>
+
+<div class="wrap">
+
+<!-- PACKAGES -->
+<div class="pane on" data-p="pkg">
+  <p class="intro">Set up the shoots you offer. Each package has a fixed price you'll quote when a client books a date — you can still adjust per booking later.</p>
+  <div class="sect-label">Your Packages</div>
+  <div class="card" id="pkgList"></div>
+  <button class="add" onclick="openPkg()">＋ Add package</button>
+
+  <div class="note" style="margin-top:16px">
+    <span class="ic">📦</span>
+    <div><b>Delivery timeline</b> is tracked per package (e.g. album 30 days after event). You'll see pending deliveries on your dashboard so nothing slips after the balance is paid.</div>
+  </div>
+</div>
+
+<!-- BOOKING & ADVANCE -->
+<div class="pane" data-p="book">
+  <p class="intro">How you take bookings and advances. These become the defaults on every new booking.</p>
+
+  <div class="field">
+    <label>Default advance at booking</label>
+    <div class="seg" id="advSeg">
+      <button data-a="25">25%</button>
+      <button class="on" data-a="30">30%</button>
+      <button data-a="50">50%</button>
+      <button data-a="fixed">Fixed ₹</button>
+    </div>
+  </div>
+  <div class="field" id="advFixedWrap" style="display:none">
+    <label>Fixed advance amount</label>
+    <input type="number" placeholder="e.g. 10000" inputmode="numeric">
+  </div>
+
+  <div class="field">
+    <label>Balance due <span class="hint">— when the rest is collected</span></label>
+    <div class="seg" id="balSeg">
+      <button class="on" data-b="event">On event day</button>
+      <button data-b="delivery">On delivery</button>
+      <button data-b="custom">Custom</button>
+    </div>
+  </div>
+
+  <div class="sect-label">Booking Rules</div>
+  <div class="trow">
+    <div class="trow-body">
+      <div class="trow-title">Block booked dates</div>
+      <div class="trow-sub">Warn me before I take two shoots on the same day. Multi-day shoots block the whole range.</div>
+    </div>
+    <div class="switch on" onclick="tog(this)"><div class="knob"></div></div>
+  </div>
+  <div class="trow">
+    <div class="trow-body">
+      <div class="trow-title">Allow multi-day events</div>
+      <div class="trow-sub">Weddings often span 2–3 days. Booking captures a start and end date.</div>
+    </div>
+    <div class="switch on" onclick="tog(this)"><div class="knob"></div></div>
+  </div>
+  <div class="trow">
+    <div class="trow-body">
+      <div class="trow-title">Track delivery due date</div>
+      <div class="trow-sub">After the event, remind me when edited photos / album are due to the client.</div>
+    </div>
+    <div class="switch on" onclick="tog(this)"><div class="knob"></div></div>
+  </div>
+</div>
+
+<!-- ADD-ONS -->
+<div class="pane" data-p="addon">
+  <p class="intro">Extra charges you can add on top of a package at booking time. Suggestions below — keep what fits, add your own.</p>
+  <div class="sect-label">Your Add-ons</div>
+  <div class="card" id="addonList"></div>
+  <button class="add" onclick="openAddon()">＋ Add charge</button>
+</div>
+
+<!-- INTAKE -->
+<div class="pane" data-p="intake">
+  <p class="intro">Which details you'll capture when a client books. Name and mobile are always on — they power reminders and the client ledger.</p>
+  <div class="sect-label">Depth</div>
+  <div class="seg" id="depthSeg" style="margin-bottom:18px">
+    <button data-d="s">Simple</button>
+    <button class="on" data-d="st">Standard</button>
+    <button data-d="d">Detailed</button>
+  </div>
+
+  <div class="sect-label">Fields captured at booking</div>
+  <div class="card" id="intakeList"></div>
+  <div class="note" style="margin-top:14px">
+    <span class="ic">🔒</span>
+    <div><b>Name</b> and <b>Mobile</b> stay required on every depth — they're load-bearing for reminders and the ledger.</div>
+  </div>
+</div>
+
+</div>
+
+<div class="savebar"><div class="savebar-in">
+  <button class="btn-ghost">Save &amp; exit</button>
+  <button class="btn-primary">Save and continue</button>
+</div></div>
+
+<!-- PACKAGE SHEET -->
+<div class="scrim" id="pkgSheet">
+  <div class="sheet">
+    <div class="sheet-grab"></div>
+    <h3 id="pkgHead">Add package</h3>
+    <div class="sub">A named shoot with a base price.</div>
+    <div class="field"><label>Package name</label><input type="text" id="pkgName" placeholder="e.g. Wedding Full Day"></div>
+    <div class="field">
+      <label>Event type</label>
+      <div class="chips" id="pkgType">
+        <div class="selchip on">Wedding</div><div class="selchip">Pre-wedding</div>
+        <div class="selchip">Birthday</div><div class="selchip">Corporate</div>
+        <div class="selchip">Maternity</div><div class="selchip">Other</div>
+      </div>
+    </div>
+    <div class="inline2">
+      <div class="field"><label>Base price (₹)</label><input type="number" id="pkgPrice" placeholder="80000" inputmode="numeric"></div>
+      <div class="field"><label>Duration</label>
+        <div class="seg" id="pkgDur"><button class="on">1 day</button><button>Multi-day</button></div>
+      </div>
+    </div>
+    <div class="field"><label>Deliverables <span class="hint">— shown on the quote</span></label><input type="text" id="pkgDeliv" placeholder="e.g. 300 edited photos + 1 album, in 30 days"></div>
+    <div class="savebar-in" style="margin-top:6px">
+      <button class="btn-ghost" onclick="closeSheet('pkgSheet')">Cancel</button>
+      <button class="btn-primary" onclick="savePkg()">Save package</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADDON SHEET -->
+<div class="scrim" id="addonSheet">
+  <div class="sheet">
+    <div class="sheet-grab"></div>
+    <h3>Add charge</h3>
+    <div class="sub">An optional extra you can attach when booking.</div>
+    <div class="field"><label>Charge name</label><input type="text" id="adName" placeholder="e.g. Drone coverage"></div>
+    <div class="inline2">
+      <div class="field"><label>Amount (₹)</label><input type="number" id="adPrice" placeholder="8000" inputmode="numeric"></div>
+      <div class="field"><label>Type</label>
+        <div class="seg" id="adType"><button class="on">Flat</button><button>Per day</button></div>
+      </div>
+    </div>
+    <div class="savebar-in" style="margin-top:6px">
+      <button class="btn-ghost" onclick="closeSheet('addonSheet')">Cancel</button>
+      <button class="btn-primary" onclick="saveAddon()">Save charge</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---- tabs ---- */
+document.getElementById('tabs').addEventListener('click',e=>{
+  const t=e.target.closest('.tab'); if(!t)return;
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.pane').forEach(x=>x.classList.remove('on'));
+  t.classList.add('on');
+  document.querySelector(`.pane[data-p="${t.dataset.t}"]`).classList.add('on');
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+
+/* ---- generic toggles ---- */
+function tog(el){el.classList.toggle('on')}
+document.querySelectorAll('.seg').forEach(seg=>{
+  seg.addEventListener('click',e=>{
+    const b=e.target.closest('button'); if(!b)return;
+    seg.querySelectorAll('button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    if(seg.id==='advSeg'){document.getElementById('advFixedWrap').style.display = b.dataset.a==='fixed'?'block':'none';}
+    if(seg.id==='depthSeg') applyDepth(b.dataset.d);
+  });
+});
+document.querySelectorAll('.chips').forEach(c=>c.addEventListener('click',e=>{
+  const chip=e.target.closest('.selchip'); if(!chip)return; chip.classList.toggle('on');
+}));
+
+/* ---- packages data ---- */
+let pkgs=[
+  {name:'Wedding Full Day',type:'Wedding',price:80000,dur:'1 day',deliv:'300 edited photos + album · 30 days'},
+  {name:'Pre-Wedding Shoot',type:'Pre-wedding',price:25000,dur:'1 day',deliv:'60 edited photos · 15 days'},
+];
+let editPkg=null;
+function renderPkg(){
+  const el=document.getElementById('pkgList');
+  if(!pkgs.length){el.innerHTML='<div class="empty"><div class="big">📸</div>No packages yet. Add your first shoot.</div>';return;}
+  el.innerHTML=pkgs.map((p,i)=>`
+    <div class="item">
+      <div class="item-body">
+        <div class="item-title">${p.name}</div>
+        <div class="item-meta">${p.deliv||''}</div>
+        <div class="tagrow"><span class="tag">${p.type}</span><span class="tag amber">${p.dur}</span></div>
+      </div>
+      <div style="text-align:right">
+        <div class="price">₹${(+p.price).toLocaleString('en-IN')}</div>
+        <div class="mini-actions"><button class="iconbtn" onclick="openPkg(${i})">✎</button><button class="iconbtn del" onclick="delPkg(${i})">🗑</button></div>
+      </div>
+    </div>`).join('');
+}
+function openPkg(i){
+  editPkg=(i===undefined)?null:i;
+  document.getElementById('pkgHead').textContent = editPkg===null?'Add package':'Edit package';
+  const p = editPkg===null?{}:pkgs[i];
+  pkgName.value=p.name||''; pkgPrice.value=p.price||''; pkgDeliv.value=p.deliv||'';
+  document.querySelectorAll('#pkgType .selchip').forEach(c=>c.classList.toggle('on',c.textContent===(p.type||'Wedding')));
+  document.querySelectorAll('#pkgDur button').forEach(b=>b.classList.toggle('on',b.textContent===(p.dur||'1 day')));
+  openSheet('pkgSheet');
+}
+function savePkg(){
+  const t=document.querySelector('#pkgType .selchip.on');
+  const obj={name:pkgName.value||'Untitled package',type:t?t.textContent:'Other',
+    price:pkgPrice.value||0,dur:document.querySelector('#pkgDur button.on').textContent,deliv:pkgDeliv.value};
+  if(editPkg===null)pkgs.push(obj);else pkgs[editPkg]=obj;
+  renderPkg();closeSheet('pkgSheet');
+}
+function delPkg(i){pkgs.splice(i,1);renderPkg();}
+
+/* ---- add-ons ---- */
+let addons=[
+  {name:'Drone coverage',price:8000,type:'Flat'},
+  {name:'Extra album',price:6000,type:'Flat'},
+  {name:'Additional shooter',price:5000,type:'Per day'},
+];
+let editAd=null;
+function renderAddon(){
+  const el=document.getElementById('addonList');
+  if(!addons.length){el.innerHTML='<div class="empty"><div class="big">✨</div>No add-ons yet.</div>';return;}
+  el.innerHTML=addons.map((a,i)=>`
+    <div class="item">
+      <div class="item-body"><div class="item-title">${a.name}</div><div class="tagrow"><span class="tag">${a.type}</span></div></div>
+      <div style="text-align:right"><div class="price">₹${(+a.price).toLocaleString('en-IN')}</div>
+      <div class="mini-actions"><button class="iconbtn" onclick="openAddon(${i})">✎</button><button class="iconbtn del" onclick="delAddon(${i})">🗑</button></div></div>
+    </div>`).join('');
+}
+function openAddon(i){
+  editAd=(i===undefined)?null:i;const a=editAd===null?{}:addons[i];
+  adName.value=a.name||'';adPrice.value=a.price||'';
+  document.querySelectorAll('#adType button').forEach(b=>b.classList.toggle('on',b.textContent===(a.type||'Flat')));
+  openSheet('addonSheet');
+}
+function saveAddon(){
+  const obj={name:adName.value||'Untitled',price:adPrice.value||0,type:document.querySelector('#adType button.on').textContent};
+  if(editAd===null)addons.push(obj);else addons[editAd]=obj;
+  renderAddon();closeSheet('addonSheet');
+}
+function delAddon(i){addons.splice(i,1);renderAddon();}
+
+/* ---- intake ---- */
+const intakeFields=[
+  {f:'Full name',on:true,lock:true},{f:'Mobile number',on:true,lock:true},
+  {f:'Event date',on:true},{f:'Venue / location',on:true},
+  {f:'WhatsApp number',on:true},{f:'Alternate contact',on:false},
+  {f:'Email',on:false},{f:'How they found you',on:false},{f:'Notes / references',on:false},
+];
+const depthMap={s:['Event date'],st:['Event date','Venue / location','WhatsApp number'],d:['Event date','Venue / location','WhatsApp number','Alternate contact','Email','How they found you','Notes / references']};
+function renderIntake(){
+  document.getElementById('intakeList').innerHTML=intakeFields.map((x,i)=>`
+    <div class="item" style="align-items:center">
+      <div class="item-body"><div class="trow-title">${x.f}${x.lock?' <span class="tag" style="margin-left:4px">required</span>':''}</div></div>
+      <div class="switch ${x.on?'on':''}" ${x.lock?'style="opacity:.5;pointer-events:none"':`onclick="togIntake(${i},this)"`}><div class="knob"></div></div>
+    </div>`).join('');
+}
+function togIntake(i,el){intakeFields[i].on=!intakeFields[i].on;el.classList.toggle('on');}
+function applyDepth(d){
+  const want=depthMap[d];
+  intakeFields.forEach(x=>{if(!x.lock)x.on=want.includes(x.f);});
+  renderIntake();
+}
+
+/* ---- modal helpers ---- */
+function openSheet(id){document.getElementById(id).classList.add('on');document.body.style.overflow='hidden';}
+function closeSheet(id){document.getElementById(id).classList.remove('on');document.body.style.overflow='';}
+document.querySelectorAll('.scrim').forEach(s=>s.addEventListener('click',e=>{if(e.target===s)closeSheet(s.id);}));
+
+renderPkg();renderAddon();renderIntake();
+</script>
+</body>
+</html>

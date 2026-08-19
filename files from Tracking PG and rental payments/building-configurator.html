@@ -1,0 +1,811 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Drafting Table — Building Configurator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0B2E4F;
+    --ink-deep:#071F38;
+    --ink-deeper:#051628;
+    --paper:#EAF4FB;
+    --paper-dim:#A9C7DF;
+    --line:#3E6E96;
+    --line-soft:#274F70;
+    --accent:#FF8A3D;
+    --accent-soft:#FFD9B3;
+    --accent-deep:#E0701F;
+    --ok:#6FCF97;
+    --radius:12px;
+    --font-display:'Space Grotesk',sans-serif;
+    --font-body:'Inter',sans-serif;
+    --font-mono:'IBM Plex Mono',monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background-color:var(--ink);
+    background-image:
+      linear-gradient(rgba(143,189,227,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(143,189,227,0.05) 1px, transparent 1px);
+    background-size:28px 28px;
+    color:var(--paper);
+    font-family:var(--font-body);
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  button{font-family:inherit;}
+  input{font-family:inherit;}
+  :focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+
+  .app{max-width:1180px;margin:0 auto;padding:20px 20px 28px;}
+
+  /* HEADER */
+  .topbar{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
+  .logo{
+    width:34px;height:34px;border-radius:8px;background:var(--accent);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .logo svg{width:18px;height:18px;}
+  .topbar h1{font-family:var(--font-display);font-size:18px;font-weight:600;margin:0;letter-spacing:0.2px;}
+  .topbar .tagline{font-family:var(--font-mono);font-size:11px;color:var(--paper-dim);margin:0;letter-spacing:0.5px;text-transform:uppercase;}
+  .topbar-meta{margin-left:auto;}
+  .topbar-badge{
+    font-family:var(--font-mono);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;
+    color:var(--paper-dim);border:1px solid var(--line-soft);padding:4px 9px;border-radius:99px;
+  }
+
+  /* STEP RAIL */
+  .steprail{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
+  .rail-tab{
+    display:flex;align-items:center;gap:7px;padding:8px 13px;border-radius:9px;border:1px solid transparent;
+    background:transparent;color:var(--paper-dim);cursor:not-allowed;transition:all .15s ease;
+  }
+  .rail-tab .rail-num{font-family:var(--font-mono);font-size:10px;opacity:.75;}
+  .rail-tab .rail-label{font-family:var(--font-display);font-size:13px;font-weight:600;}
+  .rail-tab.locked{opacity:.4;}
+  .rail-tab:not(.locked){cursor:pointer;}
+  .rail-tab.done{color:var(--paper);border-color:var(--line-soft);background:rgba(111,168,220,0.08);}
+  .rail-tab.current{color:var(--ink-deep);background:var(--accent);border-color:var(--accent);}
+  .rail-tab.current .rail-num{opacity:.7;}
+  .rail-tab:not(.locked):hover{transform:translateY(-1px);}
+
+  /* WORKSPACE */
+  .workspace{display:grid;grid-template-columns:340px 1fr;gap:16px;align-items:start;}
+  @media (max-width:880px){ .workspace{grid-template-columns:1fr;} }
+
+  .card{
+    background:var(--ink-deep);border:1px solid var(--line-soft);border-radius:var(--radius);
+    padding:22px;
+  }
+
+  .panel{min-height:420px;display:flex;flex-direction:column;}
+  .sheet-tag{
+    font-family:var(--font-mono);font-size:10.5px;letter-spacing:0.12em;color:var(--accent);
+    text-transform:uppercase;
+  }
+  .panel-head h2{font-family:var(--font-display);font-size:24px;margin:6px 0 4px;}
+  .panel-head .sub{font-size:13.5px;color:var(--paper-dim);margin:0 0 16px;line-height:1.5;}
+  .panel-subhead{
+    font-family:var(--font-mono);font-size:11.5px;letter-spacing:0.06em;text-transform:uppercase;
+    color:var(--paper-dim);margin:18px 0 10px;padding-top:14px;border-top:1px dashed var(--line-soft);
+  }
+  .hint{font-size:12.5px;color:var(--paper-dim);margin-top:14px;line-height:1.5;}
+
+  /* TABS (buildings) */
+  .tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px;}
+  .tab{
+    display:flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:11.5px;
+    padding:6px 10px;border-radius:7px;border:1px solid var(--line-soft);background:transparent;
+    color:var(--paper-dim);cursor:pointer;transition:all .15s ease;
+  }
+  .tab:hover{border-color:var(--accent);color:var(--paper);}
+  .tab.active{background:rgba(255,138,61,0.14);border-color:var(--accent);color:var(--paper);}
+  .tab-dot{width:6px;height:6px;border-radius:50%;background:var(--line-soft);}
+  .tab-dot.progress{background:var(--accent);}
+  .tab-dot.done{background:var(--ok);}
+  .tab-add{border-style:dashed;}
+
+  /* STEPPER */
+  .stepper-row{display:flex;align-items:center;gap:10px;}
+  .stepper-btn{
+    width:38px;height:38px;border-radius:9px;border:1px solid var(--line-soft);background:var(--ink-deeper);
+    color:var(--paper);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+    transition:all .12s ease;
+  }
+  .stepper-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .stepper-btn:active{transform:scale(0.94);}
+  .stepper-input{
+    width:64px;height:38px;text-align:center;font-family:var(--font-display);font-size:18px;font-weight:600;
+    background:var(--ink-deeper);border:1px solid var(--line-soft);border-radius:9px;color:var(--paper);
+    -moz-appearance:textfield;
+  }
+  .stepper-input::-webkit-outer-spin-button,.stepper-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  .stepper-unit{font-family:var(--font-mono);font-size:12px;color:var(--paper-dim);}
+
+  /* FLOOR LIST */
+  .floor-list{display:flex;flex-direction:column;gap:5px;max-height:160px;overflow-y:auto;margin-bottom:6px;padding-right:2px;}
+  .floor-row{
+    display:flex;justify-content:space-between;align-items:center;width:100%;
+    background:var(--ink-deeper);border:1px solid var(--line-soft);border-radius:8px;
+    padding:8px 11px;cursor:pointer;color:var(--paper);text-align:left;transition:all .12s ease;
+  }
+  .floor-row:hover{border-color:var(--accent);}
+  .floor-row.active{border-color:var(--accent);background:rgba(255,138,61,0.12);}
+  .floor-row-num{font-family:var(--font-mono);font-size:12px;font-weight:600;}
+  .floor-row-rooms{font-family:var(--font-mono);font-size:11px;color:var(--paper-dim);}
+
+  /* ROOM ROWS */
+  .room-rows{display:flex;flex-direction:column;gap:8px;max-height:230px;overflow-y:auto;padding-right:2px;}
+  .room-row{display:flex;gap:8px;align-items:center;}
+  .room-name-input{
+    flex:1;min-width:0;background:var(--ink-deeper);border:1px solid var(--line-soft);border-radius:8px;
+    color:var(--paper);font-family:var(--font-mono);font-size:13px;padding:9px 10px;
+  }
+  .room-name-input:focus-visible, .room-name-input.pulse{border-color:var(--accent);}
+  .occ-field{display:flex;align-items:center;gap:6px;background:var(--ink-deeper);border:1px solid var(--line-soft);
+    border-radius:8px;padding:5px 8px;}
+  .occ-input{
+    width:34px;text-align:center;background:transparent;border:none;color:var(--paper);
+    font-family:var(--font-mono);font-size:13px;-moz-appearance:textfield;
+  }
+  .occ-input::-webkit-outer-spin-button,.occ-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  .occ-unit{font-family:var(--font-mono);font-size:9.5px;color:var(--paper-dim);text-transform:uppercase;}
+
+  .totals-footer{
+    margin-top:14px;padding-top:12px;border-top:1px dashed var(--line-soft);
+    font-family:var(--font-mono);font-size:12px;color:var(--accent-soft);
+  }
+
+  /* REVIEW */
+  .review-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+  .stat-card{background:var(--ink-deeper);border:1px solid var(--line-soft);border-radius:9px;padding:13px;}
+  .stat-num{display:block;font-family:var(--font-display);font-size:26px;font-weight:700;color:var(--accent);}
+  .stat-label{font-family:var(--font-mono);font-size:10.5px;color:var(--paper-dim);text-transform:uppercase;letter-spacing:0.06em;}
+  .ghost-btn{
+    width:100%;background:transparent;border:1px dashed var(--line-soft);color:var(--paper-dim);
+    border-radius:8px;padding:10px;font-family:var(--font-mono);font-size:11.5px;cursor:pointer;
+    text-transform:uppercase;letter-spacing:0.05em;
+  }
+  .ghost-btn:hover{color:var(--paper);border-color:var(--accent);}
+  .json-view{
+    margin-top:10px;background:var(--ink-deeper);border:1px solid var(--line-soft);border-radius:9px;
+    padding:12px;font-family:var(--font-mono);font-size:10.5px;color:var(--paper-dim);
+    max-height:220px;overflow:auto;white-space:pre;
+  }
+
+  /* CANVAS */
+  .canvas-card{padding:0;overflow:hidden;display:flex;flex-direction:column;}
+  .canvas-scroll{overflow-x:auto;overflow-y:hidden;display:flex;align-items:center;min-height:300px;}
+  .canvas-scroll svg{display:block;}
+  .canvas-tip{
+    padding:11px 18px;border-top:1px solid var(--line-soft);font-family:var(--font-mono);
+    font-size:11.5px;color:var(--paper-dim);background:var(--ink-deeper);
+  }
+  .canvas-tip strong{color:var(--accent-soft);}
+
+  /* SVG element styling */
+  .ground-line{stroke:var(--paper-dim);stroke-width:1.5;}
+  .ground-hatch{stroke:var(--paper-dim);stroke-width:1.2;}
+  .building-name{font-family:var(--font-mono);font-size:11px;fill:var(--paper-dim);letter-spacing:0.04em;}
+  .plot-rect{fill:rgba(234,244,251,0.03);stroke:var(--line-soft);stroke-width:1.5;stroke-dasharray:5 4;}
+  .plot-roof{fill:none;stroke:var(--line-soft);stroke-width:1.5;stroke-dasharray:5 4;}
+  .plot-q{font-family:var(--font-display);font-size:20px;fill:var(--line-soft);font-weight:600;}
+  .roof{fill:var(--paper-dim);}
+  .floor-band{fill:rgba(234,244,251,0.04);stroke:var(--line);stroke-width:1.3;transition:fill .15s ease;}
+  .floor-band.active{fill:rgba(255,138,61,0.10);}
+  .floor-band.selectable{cursor:pointer;}
+  .floor-band.selectable:hover{fill:rgba(255,138,61,0.16);}
+  .floor-tag{font-family:var(--font-mono);font-size:10px;fill:var(--paper-dim);}
+  .room-divider{stroke:var(--line-soft);stroke-width:1;}
+  .room-label{font-family:var(--font-mono);font-size:9px;fill:var(--paper);pointer-events:none;}
+  .occ-badge{fill:var(--ink-deeper);stroke:var(--accent);stroke-width:1.2;pointer-events:none;}
+  .occ-badge-text{font-family:var(--font-mono);font-size:8px;fill:var(--accent-soft);pointer-events:none;}
+  .room-hit{cursor:pointer;}
+  .room-hit:hover ~ .room-label{fill:var(--accent-soft);}
+  .building-clickable{cursor:pointer;}
+  .sel-bracket path{stroke:var(--accent);stroke-width:2;fill:none;stroke-linecap:round;}
+  .building-bracket{fill:none;stroke:var(--accent-soft);stroke-width:1.2;stroke-dasharray:4 4;rx:8;}
+  .floor-callout-bg{fill:var(--accent);}
+  .floor-callout-text{font-family:var(--font-mono);font-size:9px;fill:var(--ink-deep);font-weight:600;}
+
+  /* FOOTER NAV */
+  .footer-bar{
+    display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:16px;
+    flex-wrap:wrap;
+  }
+  .nav-counts{font-family:var(--font-mono);font-size:11.5px;color:var(--paper-dim);text-align:center;flex:1;}
+  .nav-btn{
+    font-family:var(--font-display);font-size:14px;font-weight:600;border-radius:9px;padding:11px 20px;
+    cursor:pointer;border:1px solid transparent;transition:all .12s ease;
+  }
+  .nav-btn.primary{background:var(--accent);color:var(--ink-deep);}
+  .nav-btn.primary:hover{background:var(--accent-deep);}
+  .nav-btn.ghost{background:transparent;border-color:var(--line-soft);color:var(--paper-dim);}
+  .nav-btn.ghost:hover{color:var(--paper);border-color:var(--accent);}
+  .nav-btn:disabled{opacity:.35;cursor:not-allowed;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;animation:none !important;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="topbar">
+    <div class="logo">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6" stroke="#071F38" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div>
+      <h1>Drafting Table</h1>
+      <p class="tagline">Property builder</p>
+    </div>
+    <div class="topbar-meta"><span class="topbar-badge">MVP prototype</span></div>
+  </div>
+
+  <nav class="steprail" id="steprail" aria-label="Steps"></nav>
+
+  <div class="workspace">
+    <section class="card panel" id="panel" aria-label="Configuration controls"></section>
+    <section class="card canvas-card">
+      <div class="canvas-scroll"><svg id="canvas" role="img" aria-label="Building drawing"></svg></div>
+      <div class="canvas-tip" id="canvasTip"></div>
+    </section>
+  </div>
+
+  <div class="footer-bar" id="footerBar"></div>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+  const SVGNS = 'http://www.w3.org/2000/svg';
+
+  /* ---------- helpers ---------- */
+  function se(tag, attrs){
+    const e = document.createElementNS(SVGNS, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+  function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
+  function uid(){ return Math.random().toString(36).slice(2,9); }
+  function esc(s){
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+  function truncate(s,n){ s=String(s); return s.length>n ? s.slice(0,n-1)+'\u2026' : s; }
+  function plural(n,w){ return n===1? w : w+'s'; }
+
+  /* ---------- factories ---------- */
+  function roomNumberFor(floorN, roomIdx){ return String(floorN) + String(roomIdx).padStart(2,'0'); }
+  function makeRoom(floorN, roomIdx){ return { id:'r'+uid(), name:roomNumberFor(floorN,roomIdx), occupancy:1 }; }
+  function makeFloor(n){ return { id:'f'+uid(), rooms:[ makeRoom(n,1) ] }; }
+  function makeBuilding(n){
+    return {
+      id:'b'+uid(), name:'Building '+n,
+      floors:[ makeFloor(1) ], activeFloorIndex:0,
+      floorsStage:false, roomsStage:false, detailsStage:false
+    };
+  }
+
+  /* ---------- state ---------- */
+  let state = { step:1, maxStepReached:1, buildings:[ makeBuilding(1) ], activeBuildingIndex:0 };
+  let jsonOpen = false;
+
+  function activeBuilding(){ return state.buildings[state.activeBuildingIndex]; }
+  function activeFloorObj(){ const b=activeBuilding(); return b.floors[clamp(b.activeFloorIndex,0,b.floors.length-1)]; }
+  function buildingMaxRooms(b){ return Math.max(1, ...b.floors.map(f=>f.rooms.length||1)); }
+  function findRoomById(id){
+    for (const b of state.buildings) for (const f of b.floors) for (const r of f.rooms) if (r.id===id) return r;
+    return null;
+  }
+  function computeTotals(scope){
+    const list = scope || state.buildings;
+    let floors=0, rooms=0, occupancy=0;
+    list.forEach(b=>{
+      floors += b.floors.length;
+      b.floors.forEach(f=>{ rooms += f.rooms.length; f.rooms.forEach(r=> occupancy += (Number(r.occupancy)||0)); });
+    });
+    return { buildings:list.length, floors, rooms, occupancy };
+  }
+  function exportData(){
+    return state.buildings.map(b=>({
+      name:b.name,
+      floors:b.floors.map((f,i)=>({ floor:i+1, rooms:f.rooms.map(r=>({ name:r.name, occupancy:r.occupancy })) }))
+    }));
+  }
+
+  /* ---------- mutations ---------- */
+  function setBuildingCount(n){
+    n = clamp(n,1,8);
+    if (n > state.buildings.length){
+      while (state.buildings.length < n) state.buildings.push(makeBuilding(state.buildings.length+1));
+    } else {
+      state.buildings.length = n;
+      if (state.activeBuildingIndex >= n) state.activeBuildingIndex = n-1;
+    }
+    render();
+  }
+  function setFloorCount(n){
+    n = clamp(n,1,15);
+    const b = activeBuilding();
+    if (n > b.floors.length){
+      while (b.floors.length < n) b.floors.push(makeFloor(b.floors.length+1));
+    } else {
+      b.floors.length = n;
+      if (b.activeFloorIndex >= n) b.activeFloorIndex = n-1;
+    }
+    render();
+  }
+  function setRoomCount(n){
+    n = clamp(n,1,12);
+    const b = activeBuilding();
+    const f = b.floors[b.activeFloorIndex];
+    const floorNum = b.activeFloorIndex+1;
+    if (n > f.rooms.length){
+      while (f.rooms.length < n) f.rooms.push(makeRoom(floorNum, f.rooms.length+1));
+    } else {
+      f.rooms.length = n;
+    }
+    render();
+  }
+  function adjustCount(target,delta){
+    if (target==='buildings') setBuildingCount(state.buildings.length+delta);
+    else if (target==='floors') setFloorCount(activeBuilding().floors.length+delta);
+    else if (target==='rooms') setRoomCount(activeFloorObj().rooms.length+delta);
+  }
+  function setCountDirect(target,n){
+    if (!n || n<1) n=1;
+    if (target==='buildings') setBuildingCount(n);
+    else if (target==='floors') setFloorCount(n);
+    else if (target==='rooms') setRoomCount(n);
+  }
+
+  function setActiveBuilding(i){
+    state.activeBuildingIndex = i;
+    const b = state.buildings[i];
+    if (state.step>=2) b.floorsStage = true;
+    if (state.step>=3) b.roomsStage = true;
+    if (state.step>=4) b.detailsStage = true;
+    render();
+  }
+  function selectBuildingAndFloor(bi, fi){
+    state.activeBuildingIndex = bi;
+    const b = state.buildings[bi];
+    if (state.step>=2) b.floorsStage = true;
+    if (state.step>=3) b.roomsStage = true;
+    if (state.step>=4) b.detailsStage = true;
+    b.activeFloorIndex = fi;
+    render();
+  }
+  function setActiveFloor(fi){
+    activeBuilding().activeFloorIndex = fi;
+    render();
+  }
+  function goStep(n){
+    n = clamp(n,1,5);
+    state.step = n;
+    state.maxStepReached = Math.max(state.maxStepReached, n);
+    const b = activeBuilding();
+    if (n>=2) b.floorsStage = true;
+    if (n>=3) b.roomsStage = true;
+    if (n>=4) b.detailsStage = true;
+    if (n===5) state.buildings.forEach(bb=>{ bb.floorsStage=true; bb.roomsStage=true; bb.detailsStage=true; });
+    render();
+  }
+  function startOver(){
+    if (!confirm('Start over? This clears everything you have drafted.')) return;
+    state = { step:1, maxStepReached:1, buildings:[ makeBuilding(1) ], activeBuildingIndex:0 };
+    jsonOpen = false;
+    render();
+  }
+  function onRoomFieldChange(roomId, field, value){
+    const r = findRoomById(roomId);
+    if (!r) return;
+    if (field==='name') r.name = value.slice(0,12);
+    if (field==='occupancy') r.occupancy = clamp(parseInt(value,10)||1, 1, 8);
+    patchRoomVisual(r);
+    updateTotals();
+  }
+  function patchRoomVisual(r){
+    const lbl = document.getElementById('lbl-'+r.id);
+    const badgeText = document.getElementById('badgeText-'+r.id);
+    if (lbl) lbl.textContent = truncate(r.name,6);
+    if (badgeText) badgeText.textContent = r.occupancy;
+  }
+  function focusRoomRow(id){
+    const el = document.querySelector('[data-action="room-name"][data-room-id="'+id+'"]');
+    if (!el) return;
+    el.scrollIntoView({block:'center', behavior:'smooth'});
+    el.focus();
+    el.classList.add('pulse');
+    setTimeout(()=>el.classList.remove('pulse'), 900);
+  }
+
+  /* ---------- panel templates ---------- */
+  function buildingTabsHTML(){
+    if (state.buildings.length<=1) return '';
+    const tabs = state.buildings.map((b,i)=>{
+      const status = !b.floorsStage ? '' : (!b.detailsStage ? 'progress' : 'done');
+      return '<button class="tab '+(i===state.activeBuildingIndex?'active':'')+'" data-action="building-tab" data-bi="'+i+'">'+
+        '<span class="tab-dot '+status+'"></span>'+esc(b.name)+'</button>';
+    }).join('');
+    const add = state.buildings.length<8 ? '<button class="tab tab-add" data-action="add-building">+ Add</button>' : '';
+    return '<div class="tabs" role="tablist" aria-label="Buildings">'+tabs+add+'</div>';
+  }
+  function floorListHTML(){
+    const b = activeBuilding();
+    const rows = b.floors.map((f,i)=>{
+      return '<button class="floor-row '+(i===b.activeFloorIndex?'active':'')+'" data-action="floor-row" data-fi="'+i+'">'+
+        '<span class="floor-row-num">Floor '+(i+1)+'</span>'+
+        '<span class="floor-row-rooms">'+f.rooms.length+' '+plural(f.rooms.length,'room')+'</span></button>';
+    }).join('');
+    return '<div class="floor-list">'+rows+'</div>';
+  }
+
+  function step1Template(){
+    const count = state.buildings.length;
+    return '' +
+      '<div class="panel-head"><span class="sheet-tag">Sheet 01</span><h2>Buildings</h2>'+
+      '<p class="sub">How many buildings are you setting up?</p></div>'+
+      '<div class="stepper-row">'+
+        '<button class="stepper-btn" data-action="count-minus" data-target="buildings" aria-label="Decrease buildings">\u2212</button>'+
+        '<input class="stepper-input" type="number" min="1" max="8" value="'+count+'" data-action="count-input" data-target="buildings">'+
+        '<button class="stepper-btn" data-action="count-plus" data-target="buildings" aria-label="Increase buildings">+</button>'+
+        '<span class="stepper-unit">'+plural(count,'building')+'</span>'+
+      '</div>'+
+      '<p class="hint">Each building appears on the drawing as a simple plot. You\'ll configure floors and rooms for each one over the next steps.</p>';
+  }
+  function step2Template(){
+    const b = activeBuilding();
+    const n = b.floors.length;
+    return '' +
+      buildingTabsHTML() +
+      '<div class="panel-head"><span class="sheet-tag">Sheet 02</span><h2>Floors</h2>'+
+      '<p class="sub">How many floors does <strong>'+esc(b.name)+'</strong> have?</p></div>'+
+      '<div class="stepper-row">'+
+        '<button class="stepper-btn" data-action="count-minus" data-target="floors" aria-label="Decrease floors">\u2212</button>'+
+        '<input class="stepper-input" type="number" min="1" max="15" value="'+n+'" data-action="count-input" data-target="floors">'+
+        '<button class="stepper-btn" data-action="count-plus" data-target="floors" aria-label="Increase floors">+</button>'+
+        '<span class="stepper-unit">'+plural(n,'floor')+'</span>'+
+      '</div>'+
+      '<p class="hint">Floor 1 is the ground floor.'+(state.buildings.length>1?' Switch tabs above to set floors for another building.':'')+'</p>';
+  }
+  function step3Template(){
+    const b = activeBuilding();
+    const fi = b.activeFloorIndex;
+    const f = activeFloorObj();
+    return '' +
+      buildingTabsHTML() +
+      '<div class="panel-head"><span class="sheet-tag">Sheet 03</span><h2>Rooms</h2>'+
+      '<p class="sub">Click a floor on the drawing, or pick one below, then set its room count.</p></div>'+
+      floorListHTML() +
+      '<div class="panel-subhead">Floor '+(fi+1)+' \u2014 Rooms</div>'+
+      '<div class="stepper-row">'+
+        '<button class="stepper-btn" data-action="count-minus" data-target="rooms" aria-label="Decrease rooms">\u2212</button>'+
+        '<input class="stepper-input" type="number" min="1" max="12" value="'+f.rooms.length+'" data-action="count-input" data-target="rooms">'+
+        '<button class="stepper-btn" data-action="count-plus" data-target="rooms" aria-label="Increase rooms">+</button>'+
+        '<span class="stepper-unit">'+plural(f.rooms.length,'room')+'</span>'+
+      '</div>';
+  }
+  function step4Template(){
+    const b = activeBuilding();
+    const fi = b.activeFloorIndex;
+    const f = activeFloorObj();
+    const t = computeTotals([b]);
+    const rows = f.rooms.map(r=>{
+      return '<div class="room-row">'+
+        '<input class="room-name-input" type="text" maxlength="12" value="'+esc(r.name)+'" data-action="room-name" data-room-id="'+r.id+'" aria-label="Room name or number">'+
+        '<div class="occ-field">'+
+          '<input class="occ-input" type="number" min="1" max="8" value="'+r.occupancy+'" data-action="room-occupancy" data-room-id="'+r.id+'" aria-label="Occupancy">'+
+          '<span class="occ-unit">occ.</span>'+
+        '</div></div>';
+    }).join('');
+    return '' +
+      buildingTabsHTML() +
+      '<div class="panel-head"><span class="sheet-tag">Sheet 04</span><h2>Room details</h2>'+
+      '<p class="sub">Name each room and set occupancy \u2014 updates appear on the drawing as you type.</p></div>'+
+      floorListHTML() +
+      '<div class="panel-subhead">Floor '+(fi+1)+' \u2014 '+f.rooms.length+' '+plural(f.rooms.length,'room')+'</div>'+
+      '<div class="room-rows">'+rows+'</div>'+
+      '<div class="totals-footer"><span id="bldTotals">'+b.floors.length+' '+plural(b.floors.length,'floor')+' \u00b7 '+t.rooms+' '+plural(t.rooms,'room')+' \u00b7 '+t.occupancy+' '+plural(t.occupancy,'bed')+'</span></div>';
+  }
+  function step5Template(){
+    const g = computeTotals();
+    return '' +
+      '<div class="panel-head"><span class="sheet-tag">Review</span><h2>Your property</h2>'+
+      '<p class="sub">Everything drafted, in one view. Click anything on the drawing to jump back and edit it.</p></div>'+
+      '<div class="review-stats">'+
+        '<div class="stat-card"><span class="stat-num">'+g.buildings+'</span><span class="stat-label">'+plural(g.buildings,'Building')+'</span></div>'+
+        '<div class="stat-card"><span class="stat-num">'+g.floors+'</span><span class="stat-label">'+plural(g.floors,'Floor')+'</span></div>'+
+        '<div class="stat-card"><span class="stat-num">'+g.rooms+'</span><span class="stat-label">'+plural(g.rooms,'Room')+'</span></div>'+
+        '<div class="stat-card"><span class="stat-num">'+g.occupancy+'</span><span class="stat-label">Bed capacity</span></div>'+
+      '</div>'+
+      '<button class="ghost-btn" data-action="toggle-json">'+(jsonOpen?'Hide':'View')+' structured data</button>'+
+      (jsonOpen ? '<pre class="json-view">'+esc(JSON.stringify(exportData(),null,2))+'</pre>' : '');
+  }
+
+  function wirePanelEvents(){
+    document.querySelectorAll('.tab[data-action="building-tab"]').forEach(el=>{
+      el.onclick = ()=> setActiveBuilding(parseInt(el.dataset.bi,10));
+    });
+    const addBtn = document.querySelector('[data-action="add-building"]');
+    if (addBtn) addBtn.onclick = ()=>{ const ni=state.buildings.length+1; setBuildingCount(ni); setActiveBuilding(ni-1); };
+
+    document.querySelectorAll('.floor-row').forEach(el=>{
+      el.onclick = ()=> setActiveFloor(parseInt(el.dataset.fi,10));
+    });
+    document.querySelectorAll('[data-action="count-minus"]').forEach(el=>{ el.onclick = ()=> adjustCount(el.dataset.target,-1); });
+    document.querySelectorAll('[data-action="count-plus"]').forEach(el=>{ el.onclick = ()=> adjustCount(el.dataset.target,1); });
+    document.querySelectorAll('[data-action="count-input"]').forEach(el=>{
+      el.onchange = ()=> setCountDirect(el.dataset.target, parseInt(el.value,10));
+    });
+    if (state.step===4){
+      document.querySelectorAll('[data-action="room-name"]').forEach(el=>{
+        el.oninput = ()=> onRoomFieldChange(el.dataset.roomId,'name',el.value);
+      });
+      document.querySelectorAll('[data-action="room-occupancy"]').forEach(el=>{
+        el.oninput = ()=> onRoomFieldChange(el.dataset.roomId,'occupancy',el.value);
+      });
+    }
+    if (state.step===5){
+      const t = document.querySelector('[data-action="toggle-json"]');
+      if (t) t.onclick = ()=>{ jsonOpen = !jsonOpen; renderPanel(); };
+    }
+  }
+
+  function renderPanel(){
+    const panel = document.getElementById('panel');
+    if (state.step===1) panel.innerHTML = step1Template();
+    else if (state.step===2) panel.innerHTML = step2Template();
+    else if (state.step===3) panel.innerHTML = step3Template();
+    else if (state.step===4) panel.innerHTML = step4Template();
+    else panel.innerHTML = step5Template();
+    wirePanelEvents();
+  }
+
+  /* ---------- step rail ---------- */
+  function renderSteprail(){
+    const rail = document.getElementById('steprail');
+    const steps = [ {n:1,l:'Buildings'}, {n:2,l:'Floors'}, {n:3,l:'Rooms'}, {n:4,l:'Details'} ];
+    const html = steps.map(s=>{
+      let cls = 'rail-tab';
+      if (state.step===5) cls += ' done';
+      else if (s.n===state.step) cls += ' current';
+      else if (s.n<state.step) cls += ' done';
+      else cls += ' locked';
+      const clickable = s.n<=state.maxStepReached;
+      return '<button class="'+cls+'" '+(clickable?('data-action="goto-step" data-step="'+s.n+'"'):'disabled')+'>'+
+        '<span class="rail-num">0'+s.n+'</span><span class="rail-label">'+s.l+'</span></button>';
+    }).join('');
+    const reviewTab = state.step===5 ? '<button class="rail-tab current" disabled><span class="rail-num">\u2713</span><span class="rail-label">Review</span></button>' : '';
+    rail.innerHTML = html + reviewTab;
+    rail.querySelectorAll('[data-action="goto-step"]').forEach(el=>{
+      el.onclick = ()=> goStep(parseInt(el.dataset.step,10));
+    });
+  }
+
+  /* ---------- canvas / SVG drawing ---------- */
+  function buildSelectionBracket(x,y,w,h){
+    const len = 9;
+    const grp = se('g',{class:'sel-bracket'});
+    const corners = [
+      [x,y,len,0,0,len],
+      [x+w,y,-len,0,0,len],
+      [x,y+h,len,0,0,-len],
+      [x+w,y+h,-len,0,0,-len]
+    ];
+    corners.forEach(c=>{
+      grp.appendChild(se('path',{d:'M '+(c[0]+c[2])+' '+(c[1]+c[3])+' L '+c[0]+' '+c[1]+' L '+(c[0]+c[4])+' '+(c[1]+c[5])}));
+    });
+    return grp;
+  }
+
+  function drawBuilding(svg,b,bi,baseX,groundY,width,floorH,plotH){
+    const g = se('g',{class:'building'});
+
+    const groundLine = se('line',{x1:baseX-16,y1:groundY+4,x2:baseX+width+16,y2:groundY+4,class:'ground-line'});
+    g.appendChild(groundLine);
+    for (let i=0;i<6;i++){
+      const tx = baseX-12 + i*((width+24)/5);
+      g.appendChild(se('line',{x1:tx,y1:groundY+4,x2:tx-6,y2:groundY+12,class:'ground-hatch'}));
+    }
+    const nameLbl = se('text',{x:baseX+width/2,y:groundY+27,class:'building-name','text-anchor':'middle'});
+    nameLbl.textContent = b.name;
+    g.appendChild(nameLbl);
+
+    if (state.step>=2){
+      g.addEventListener('click', ()=>{
+        if (state.step===5){ state.activeBuildingIndex=bi; goStep(2); }
+        else setActiveBuilding(bi);
+      });
+      g.classList.add('building-clickable');
+    }
+
+    if (!b.floorsStage){
+      const top = groundY - plotH;
+      g.appendChild(se('rect',{x:baseX,y:top,width:width,height:plotH,rx:4,class:'plot-rect'}));
+      g.appendChild(se('path',{d:'M '+(baseX-6)+' '+top+' L '+(baseX+width/2)+' '+(top-18)+' L '+(baseX+width+6)+' '+top,class:'plot-roof'}));
+      const q = se('text',{x:baseX+width/2,y:top+plotH/2+6,class:'plot-q','text-anchor':'middle'});
+      q.textContent = '?';
+      g.appendChild(q);
+      svg.appendChild(g);
+      return;
+    }
+
+    const floors = b.floors;
+    const n = floors.length;
+    const topY = groundY - n*floorH;
+    g.appendChild(se('rect',{x:baseX-4,y:topY-7,width:width+8,height:7,class:'roof'}));
+
+    floors.forEach((f,fi)=>{
+      const y = groundY - (fi+1)*floorH;
+      const bandG = se('g',{});
+      const isActiveFloor = (state.step===3||state.step===4) && bi===state.activeBuildingIndex && fi===b.activeFloorIndex;
+      const bandRect = se('rect',{x:baseX,y:y,width:width,height:floorH,class:'floor-band'+(isActiveFloor?' active':'')});
+      bandG.appendChild(bandRect);
+
+      const tag = se('text',{x:baseX-10,y:y+floorH/2+4,class:'floor-tag','text-anchor':'end'});
+      tag.textContent = 'F'+(fi+1);
+      bandG.appendChild(tag);
+
+      if (b.roomsStage){
+        const rooms = f.rooms;
+        const cellW = width/rooms.length;
+        rooms.forEach((r,ri)=>{
+          const rx = baseX+ri*cellW;
+          if (ri>0) bandG.appendChild(se('line',{x1:rx,y1:y,x2:rx,y2:y+floorH,class:'room-divider'}));
+          if (b.detailsStage){
+            const lbl = se('text',{id:'lbl-'+r.id, x:rx+cellW/2, y:y+17, class:'room-label','text-anchor':'middle'});
+            lbl.textContent = truncate(r.name,6);
+            bandG.appendChild(lbl);
+            const bcx = rx+cellW-11, bcy = y+floorH-11;
+            bandG.appendChild(se('circle',{id:'badge-'+r.id, cx:bcx, cy:bcy, r:7.5, class:'occ-badge'}));
+            const bt = se('text',{id:'badgeText-'+r.id, x:bcx, y:bcy+3, class:'occ-badge-text','text-anchor':'middle'});
+            bt.textContent = r.occupancy;
+            bandG.appendChild(bt);
+          }
+          if (state.step===4 || state.step===5){
+            const hit = se('rect',{x:rx,y:y,width:cellW,height:floorH,class:'room-hit',fill:'transparent'});
+            hit.addEventListener('click',(e)=>{
+              e.stopPropagation();
+              if (state.step===5){ state.activeBuildingIndex=bi; const bb=state.buildings[bi]; bb.activeFloorIndex=fi; goStep(4); focusRoomRow(r.id); }
+              else { selectBuildingAndFloor(bi,fi); focusRoomRow(r.id); }
+            });
+            bandG.appendChild(hit);
+          }
+        });
+      }
+
+      if (state.step===3||state.step===4||state.step===5){
+        bandRect.classList.add('selectable');
+        bandG.style.cursor = 'pointer';
+        bandG.addEventListener('click',(e)=>{
+          e.stopPropagation();
+          if (state.step===5){ state.activeBuildingIndex=bi; state.buildings[bi].activeFloorIndex=fi; goStep(3); }
+          else selectBuildingAndFloor(bi,fi);
+        });
+      }
+
+      if (isActiveFloor){
+        bandG.appendChild(buildSelectionBracket(baseX-4,y-4,width+8,floorH+8));
+        const pillText = 'FLOOR '+(fi+1)+' \u00b7 '+f.rooms.length+' '+(f.rooms.length!==1?'ROOMS':'ROOM');
+        const pillW = 18 + pillText.length*5.3;
+        const callout = se('g',{});
+        callout.appendChild(se('rect',{x:baseX,y:y-22,width:pillW,height:16,rx:8,class:'floor-callout-bg'}));
+        const pt = se('text',{x:baseX+pillW/2,y:y-10.5,class:'floor-callout-text','text-anchor':'middle'});
+        pt.textContent = pillText;
+        callout.appendChild(pt);
+        bandG.appendChild(callout);
+      }
+
+      g.appendChild(bandG);
+    });
+
+    if (state.buildings.length>1 && state.step>=2 && state.step<=4 && bi===state.activeBuildingIndex){
+      g.appendChild(se('rect',{x:baseX-10,y:topY-14,width:width+20,height:(groundY-topY)+22,class:'building-bracket',rx:8}));
+    }
+
+    svg.appendChild(g);
+  }
+
+  function renderCanvas(){
+    const svg = document.getElementById('canvas');
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+    const ROOM_W=42, FLOOR_H=48, GAP=70, LEFT_MARGIN=56, TOP_MARGIN=34, PLOT_W=92, PLOT_H=74, BOTTOM_MARGIN=58;
+    const buildings = state.buildings;
+    const stagedCounts = buildings.filter(b=>b.floorsStage).map(b=>b.floors.length);
+    const maxFloors = stagedCounts.length ? Math.max.apply(null, stagedCounts) : 1;
+    const towerH = maxFloors*FLOOR_H;
+    const canvasH = TOP_MARGIN + Math.max(towerH, PLOT_H) + BOTTOM_MARGIN;
+    const groundY = canvasH - BOTTOM_MARGIN;
+
+    const widths = buildings.map(b=> b.floorsStage ? ROOM_W*buildingMaxRooms(b) : PLOT_W);
+    const xs = [];
+    let cursor = LEFT_MARGIN;
+    widths.forEach(w=>{ xs.push(cursor); cursor += w+GAP; });
+    const totalW = cursor - GAP + LEFT_MARGIN*0.6;
+
+    const defs = se('defs',{});
+    const pattern = se('pattern',{id:'gridPattern',width:24,height:24,patternUnits:'userSpaceOnUse'});
+    pattern.appendChild(se('path',{d:'M 24 0 L 0 0 0 24',fill:'none',stroke:'rgba(143,189,227,0.16)','stroke-width':'1'}));
+    defs.appendChild(pattern);
+    svg.appendChild(defs);
+    svg.appendChild(se('rect',{x:0,y:0,width:totalW,height:canvasH,fill:'url(#gridPattern)'}));
+
+    buildings.forEach((b,bi)=> drawBuilding(svg,b,bi,xs[bi],groundY,widths[bi],FLOOR_H,PLOT_H));
+
+    svg.setAttribute('viewBox','0 0 '+totalW+' '+canvasH);
+    svg.setAttribute('width', totalW);
+    svg.setAttribute('height', canvasH);
+
+    const tips = {
+      1: 'Tip: pick a number on the left \u2014 each building appears here as a simple plot.',
+      2: 'Tip: click a building tab on the left to switch which one you\u2019re drafting.',
+      3: 'Tip: click a floor in the drawing to select it, then set its room count.',
+      4: 'Tip: click a room in the drawing to jump to it in the list on the left.',
+      5: 'Tip: click any building, floor, or room in the drawing to jump back and edit it.'
+    };
+    document.getElementById('canvasTip').innerHTML = tips[state.step] || '';
+  }
+
+  /* ---------- footer ---------- */
+  function nextLabel(){
+    if (state.step===1) return 'Next: Floors \u2192';
+    if (state.step===2) return 'Next: Rooms \u2192';
+    if (state.step===3) return 'Next: Details \u2192';
+    return 'Finish \u2192';
+  }
+  function handleNext(){ goStep(Math.min(state.step+1,5)); }
+  function handleBack(){ goStep(Math.max(state.step-1,1)); }
+
+  function renderFooter(){
+    const footer = document.getElementById('footerBar');
+    if (state.step<=4){
+      footer.innerHTML =
+        '<button class="nav-btn ghost" id="backBtn" '+(state.step===1?'disabled':'')+'>\u2190 Back</button>'+
+        '<div class="nav-counts" id="navCounts"></div>'+
+        '<button class="nav-btn primary" id="nextBtn">'+nextLabel()+'</button>';
+      document.getElementById('backBtn').onclick = handleBack;
+      document.getElementById('nextBtn').onclick = handleNext;
+    } else {
+      footer.innerHTML =
+        '<button class="nav-btn ghost" id="backBtn">\u2190 Edit details</button>'+
+        '<div class="nav-counts" id="navCounts"></div>'+
+        '<button class="nav-btn primary" id="startOverBtn">Start over</button>';
+      document.getElementById('backBtn').onclick = ()=> goStep(4);
+      document.getElementById('startOverBtn').onclick = startOver;
+    }
+    updateTotals();
+  }
+  function updateTotals(){
+    const g = computeTotals();
+    const nav = document.getElementById('navCounts');
+    if (nav) nav.textContent = g.buildings+' '+plural(g.buildings,'building')+' \u00b7 '+g.floors+' '+plural(g.floors,'floor')+' \u00b7 '+g.rooms+' '+plural(g.rooms,'room')+' \u00b7 '+g.occupancy+' '+plural(g.occupancy,'bed');
+    if (state.step===4){
+      const b = activeBuilding();
+      const t = computeTotals([b]);
+      const el = document.getElementById('bldTotals');
+      if (el) el.textContent = b.floors.length+' '+plural(b.floors.length,'floor')+' \u00b7 '+t.rooms+' '+plural(t.rooms,'room')+' \u00b7 '+t.occupancy+' '+plural(t.occupancy,'bed');
+    }
+  }
+
+  /* ---------- master render ---------- */
+  function render(){
+    renderSteprail();
+    renderPanel();
+    renderCanvas();
+    renderFooter();
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>New Student — Khaata</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1f6f54; --green-light: #e7f2ed;
+    --parchment: #fbfbf9; --ink: #1c1c1a; --muted: #6b6b64;
+    --border: #e6e4dd; --amber: #b5791f; --amber-light: #fbf1e2;
+    --purple: #6b5b95; --purple-light: #f0eef8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', sans-serif; background: var(--parchment); color: var(--ink);
+    max-width: 480px; margin: 0 auto; min-height: 100vh; padding-bottom: 100px;
+  }
+  header { padding: 20px 20px 4px; }
+  header h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 800; }
+  header p { font-size: 13px; color: var(--muted); margin-top: 3px; }
+
+  .section-label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin: 16px 20px 8px; }
+  .card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin: 0 20px 10px; }
+
+  .field { margin-bottom: 10px; }
+  .field:last-child { margin-bottom: 0; }
+  .field label { font-size: 11px; font-weight: 700; color: var(--muted); display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.02em; }
+  .field label .req { color: var(--amber); }
+  .field input, .field select {
+    width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 9px;
+    font-size: 13.5px; font-family: 'Inter', sans-serif; background: #fff;
+  }
+  .field-row { display: flex; gap: 10px; }
+  .field-row .field { flex: 1; }
+
+  .guardian-note { font-size: 11px; color: var(--amber); background: var(--amber-light); border-radius: 8px; padding: 8px 10px; margin-bottom: 10px; display: none; }
+  .guardian-note.show { display: block; }
+
+  .batch-option { border: 1.5px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 8px; cursor: pointer; }
+  .batch-option.selected { border-color: var(--green); background: var(--green-light); }
+  .batch-top { display: flex; justify-content: space-between; align-items: center; }
+  .batch-name { font-weight: 700; font-size: 13.5px; }
+  .batch-meta { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+  .batch-check { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border); flex-shrink: 0; }
+  .batch-option.selected .batch-check { background: var(--green); border-color: var(--green); position: relative; }
+  .batch-option.selected .batch-check::after { content: '✓'; color: #fff; font-size: 12px; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); }
+
+  .cycle-row { display: none; gap: 6px; flex-wrap: wrap; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+  .cycle-row.show { display: flex; }
+  .cycle-chip { background: #fff; border: 1.5px solid var(--border); border-radius: 10px; padding: 7px 10px; font-size: 11.5px; font-weight: 600; cursor: pointer; display: flex; flex-direction: column; align-items: center; min-width: 64px; }
+  .cycle-chip.selected { border-color: var(--green); background: var(--green-light); color: var(--green); }
+  .cycle-chip .cyc-label { font-size: 9.5px; text-transform: uppercase; opacity: 0.75; }
+  .cycle-chip .cyc-amt { font-size: 12.5px; margin-top: 1px; }
+
+  .add-row-btn { border: 1.5px dashed var(--green); color: var(--green); background: none; border-radius: 10px; padding: 11px; width: 100%; font-weight: 700; font-size: 13px; cursor: pointer; }
+
+  .custom-field-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .custom-field-row .field { flex: 1; margin-bottom: 0; }
+  .custom-field-remove { font-size: 12px; color: var(--muted); cursor: pointer; padding: 4px; }
+
+  .sticky-footer {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px;
+    background: #fff; border-top: 1px solid var(--border); padding: 12px 20px; box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
+  }
+  .save-btn { width: 100%; background: var(--green); color: #fff; border: none; padding: 15px; border-radius: 12px; font-weight: 700; font-size: 14.5px; cursor: pointer; }
+
+  .note { font-size: 11.5px; color: var(--muted); margin-top: 8px; line-height: 1.5; }
+
+  #successScreen { display: none; text-align: center; padding: 60px 30px; }
+  .success-icon { width: 64px; height: 64px; border-radius: 50%; background: var(--green-light); color: var(--green); display: flex; align-items: center; justify-content: center; font-size: 30px; margin: 0 auto 16px; }
+  .success-title { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 18px; }
+  .success-sub { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .success-btn { margin-top: 24px; background: var(--green-light); color: var(--green); border: none; padding: 12px 20px; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<div id="formScreen">
+<header>
+  <h1>New Student</h1>
+  <p>Bright Minds Academy — fields below match your Standard intake preset</p>
+</header>
+
+<div class="section-label">Basic details</div>
+<div class="card">
+  <div class="field"><label>Name <span class="req">*</span></label><input type="text" id="stuName" placeholder="Student's full name"></div>
+  <div class="field"><label>Mobile <span class="req">*</span></label><input type="text" id="stuMobile" placeholder="10-digit number"></div>
+  <div class="field"><label>Date of birth</label><input type="text" id="stuDob" placeholder="DD-MM-YYYY" oninput="checkAge()"></div>
+</div>
+
+<div class="section-label">Academic details</div>
+<div class="card">
+  <div class="field"><label>School / College</label><input type="text" id="stuSchool" placeholder="e.g. DPS Sector 45"></div>
+  <div class="field"><label>Grade / Class</label><input type="text" id="stuGrade" placeholder="e.g. Grade 10"></div>
+  <div class="field"><label>School ID / Roll No.</label><input type="text" id="stuSchoolId" placeholder="Optional"></div>
+</div>
+
+<div class="section-label">Address & ID (optional)</div>
+<div class="card">
+  <div class="field"><label>Address</label><input type="text" id="stuAddress" placeholder="Optional"></div>
+  <div class="field"><label>ID Proof type</label>
+    <select id="idProofType">
+      <option value="">— None —</option>
+      <option value="aadhaar">Aadhaar</option>
+      <option value="pan">PAN</option>
+      <option value="license">Driving License</option>
+      <option value="other">Other</option>
+    </select>
+  </div>
+  <div class="field"><label>ID Proof number</label><input type="text" id="idProofNumber" placeholder="Optional"></div>
+</div>
+
+<div class="section-label">Parent / Guardian</div>
+<div class="card">
+  <p class="guardian-note" id="guardianNote">Required — student appears to be under 18 based on date of birth entered.</p>
+  <div class="field"><label id="guardianNameLabel">Name</label><input type="text" id="guardianName" placeholder="Parent/guardian full name"></div>
+  <div class="field"><label id="guardianContactLabel">Contact</label><input type="text" id="guardianContact" placeholder="10-digit number"></div>
+</div>
+
+<div class="section-label">Enroll in subject(s)</div>
+<div class="card" id="batchCard"></div>
+
+<div class="section-label">Additional fields</div>
+<div class="card">
+  <div id="customFieldsContainer"></div>
+  <button class="add-row-btn" onclick="addCustomField()">+ Add field</button>
+  <p class="note">Still deciding what else this business needs to collect? Add it here for this student — it'll be remembered as an option for next time.</p>
+</div>
+
+<div class="sticky-footer">
+  <button class="save-btn" onclick="saveStudent()">Save Student</button>
+</div>
+</div>
+
+<div id="successScreen">
+  <div class="success-icon">✓</div>
+  <div class="success-title" id="successName">Student added</div>
+  <div class="success-sub" id="successSub">Enrolled and ready to attend class.</div>
+  <button class="success-btn" onclick="addAnother()">+ Add Another Student</button>
+</div>
+
+<script>
+const batches = [
+  { id: 'math-a', subject: 'Math', label: 'Batch A (Grade 10)', time: 'Mon/Wed/Fri · 5–6 PM', plan: 'Math Grade 10', cycles: [{ label: 'Monthly', amt: 1200 }, { label: 'Quarterly', amt: 3200 }] },
+  { id: 'sci-b', subject: 'Science', label: 'Batch B (Grade 9)', time: 'Tue/Thu · 4–5 PM', plan: 'Science Grade 9', cycles: [{ label: 'Monthly', amt: 1000 }] },
+  { id: 'eng-a', subject: 'English', label: 'Batch A (Grade 8)', time: 'Mon/Wed · 5–6 PM', plan: 'English Grade 8', cycles: [{ label: 'Monthly', amt: 900 }, { label: 'Quarterly', amt: 2400 }] }
+];
+
+let selectedBatchId = null;
+let selectedCycleByBatch = {};
+let customFieldCount = 0;
+
+function renderBatches() {
+  const container = document.getElementById('batchCard');
+  container.innerHTML = '';
+  batches.forEach(function(b) {
+    const opt = document.createElement('div');
+    opt.className = 'batch-option';
+    opt.dataset.id = b.id;
+    opt.innerHTML =
+      '<div class="batch-top"><div><div class="batch-name">' + b.subject + ' — ' + b.label + '</div>' +
+      '<div class="batch-meta">' + b.time + '</div></div><div class="batch-check"></div></div>' +
+      '<div class="cycle-row" id="cycles-' + b.id + '">' +
+      b.cycles.map(function(c) {
+        return '<div class="cycle-chip" data-batch="' + b.id + '" data-label="' + c.label + '" data-amt="' + c.amt + '" onclick="selectCycle(event, \'' + b.id + '\', \'' + c.label + '\', ' + c.amt + ')">' +
+          '<span class="cyc-label">' + c.label + '</span><span class="cyc-amt">₹' + c.amt + '</span></div>';
+      }).join('') +
+      '</div>';
+    opt.onclick = function(e) {
+      if (e.target.closest('.cycle-chip')) return;
+      selectBatch(b.id);
+    };
+    container.appendChild(opt);
+  });
+}
+
+function selectBatch(id) {
+  selectedBatchId = id;
+  document.querySelectorAll('.batch-option').forEach(function(o) {
+    const isSelected = o.dataset.id === id;
+    o.classList.toggle('selected', isSelected);
+    document.getElementById('cycles-' + o.dataset.id).classList.toggle('show', isSelected);
+  });
+}
+
+function selectCycle(e, batchId, label, amt) {
+  e.stopPropagation();
+  selectedCycleByBatch[batchId] = { label: label, amt: amt };
+  document.querySelectorAll('#cycles-' + batchId + ' .cycle-chip').forEach(function(c) {
+    c.classList.toggle('selected', c.dataset.label === label);
+  });
+}
+
+function checkAge() {
+  const dob = document.getElementById('stuDob').value;
+  const match = dob.match(/(\d{1,2})-(\d{1,2})-(\d{4})/);
+  const note = document.getElementById('guardianNote');
+  if (!match) { note.classList.remove('show'); return; }
+  const birthYear = parseInt(match[3], 10);
+  const age = 2026 - birthYear;
+  note.classList.toggle('show', age < 18 && age > 0);
+}
+
+function addCustomField() {
+  customFieldCount++;
+  const id = 'custom-' + customFieldCount;
+  const row = document.createElement('div');
+  row.className = 'custom-field-row';
+  row.id = id;
+  row.innerHTML =
+    '<div class="field"><input type="text" class="cf-name" placeholder="Field name (e.g. Previous marks)" style="margin-bottom:4px"><input type="text" class="cf-value" placeholder="Value"></div>' +
+    '<span class="custom-field-remove" onclick="document.getElementById(\'' + id + '\').remove()">✕</span>';
+  document.getElementById('customFieldsContainer').appendChild(row);
+}
+
+function saveStudent() {
+  const name = document.getElementById('stuName').value.trim();
+  const mobile = document.getElementById('stuMobile').value.trim();
+  if (!name || !mobile) {
+    alert('Name and Mobile are required.');
+    return;
+  }
+  const batch = batches.find(function(b) { return b.id === selectedBatchId; });
+  document.getElementById('successName').textContent = name + ' added';
+  document.getElementById('successSub').textContent = batch
+    ? 'Enrolled in ' + batch.subject + ' — ' + batch.label + (selectedCycleByBatch[batch.id] ? ' · ' + selectedCycleByBatch[batch.id].label + ' ₹' + selectedCycleByBatch[batch.id].amt : '')
+    : 'Saved — no batch selected yet.';
+  document.getElementById('formScreen').style.display = 'none';
+  document.getElementById('successScreen').style.display = 'block';
+}
+
+function addAnother() {
+  document.getElementById('stuName').value = '';
+  document.getElementById('stuMobile').value = '';
+  document.getElementById('stuDob').value = '';
+  document.getElementById('stuSchool').value = '';
+  document.getElementById('stuGrade').value = '';
+  document.getElementById('stuSchoolId').value = '';
+  document.getElementById('stuAddress').value = '';
+  document.getElementById('idProofType').value = '';
+  document.getElementById('idProofNumber').value = '';
+  document.getElementById('guardianName').value = '';
+  document.getElementById('guardianContact').value = '';
+  document.getElementById('guardianNote').classList.remove('show');
+  document.getElementById('customFieldsContainer').innerHTML = '';
+  selectedBatchId = null;
+  selectedCycleByBatch = {};
+  renderBatches();
+  document.getElementById('successScreen').style.display = 'none';
+  document.getElementById('formScreen').style.display = 'block';
+  window.scrollTo(0, 0);
+}
+
+renderBatches();
+</script>
+</body>
+</html>

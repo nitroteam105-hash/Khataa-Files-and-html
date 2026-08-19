@@ -1,0 +1,245 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Site Expenses</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#16161a;--mut:#62636a;--ln:#e7e7e2;--ac:#1f6f54;--sf:#e8f3ee;--wm:#f4f2ec;
+--rd:#b3261e;--rs:#fdecea;--am:#b36b00;--as:#fff4e5;--bl:#2a5db0;--bs:#e8eef9;--vi:#6b5bab;--vs:#eeeaf7;
+--d:'Plus Jakarta Sans',system-ui,sans-serif;--b:'Inter',system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fbfbf9;color:var(--ink);font-family:var(--b);padding-bottom:88px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:480px;margin:0 auto;padding:0 16px}
+h1,h2,h3{font-family:var(--d);letter-spacing:-.01em}
+.top{position:sticky;top:0;background:#fbfbf9;z-index:9;padding:13px 0;border-bottom:1px solid var(--ln);display:flex;align-items:center;gap:11px}
+.top .bk{font-size:20px;color:var(--mut);cursor:pointer}
+.top h1{font-size:18px;flex:1}.top .s{font-size:12px;color:var(--mut)}
+/* budget */
+.bud{background:#fff;border:1px solid var(--ln);border-radius:14px;padding:14px;margin:14px 0}
+.bud .r1{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px}
+.bud .spent{font-family:var(--d);font-weight:800;font-size:22px}
+.bud .spent small{font-size:13px;color:var(--mut);font-weight:600}
+.bud .of{font-size:12.5px;color:var(--mut);text-align:right}
+.bud .of b{font-family:var(--d);color:var(--ink)}
+.bar{height:9px;border-radius:6px;background:var(--wm);overflow:hidden;display:flex}
+.bar i{height:100%;display:block}
+.bar .m{background:var(--ac)}.bar .l{background:var(--am)}.bar .c{background:var(--bl)}
+.leg{display:flex;gap:14px;margin-top:10px;flex-wrap:wrap}
+.leg span{font-size:11.5px;color:var(--mut);display:flex;align-items:center;gap:5px}
+.leg i{width:9px;height:9px;border-radius:3px;display:block}
+.leg .m i{background:var(--ac)}.leg .l i{background:var(--am)}.leg .c i{background:var(--bl)}
+.leg b{color:var(--ink);font-family:var(--d);font-weight:700}
+/* filter chips */
+.fchips{display:flex;gap:7px;overflow-x:auto;padding:2px 0 4px;margin-bottom:4px;scrollbar-width:none}
+.fchips::-webkit-scrollbar{display:none}
+.fchip{white-space:nowrap;border:1px solid var(--ln);background:#fff;border-radius:20px;padding:7px 13px;font-family:var(--d);font-weight:700;font-size:12.5px;color:var(--mut);cursor:pointer;flex-shrink:0}
+.fchip.on{border-color:var(--ac);background:var(--sf);color:var(--ac)}
+/* day group */
+.daylbl{font-family:var(--d);font-weight:700;font-size:12px;color:var(--mut);margin:16px 2px 8px;text-transform:uppercase;letter-spacing:.03em;display:flex;justify-content:space-between}
+.daylbl .dt{color:var(--ink)}
+/* expense row */
+.er{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--ln);border-radius:12px;padding:12px 13px;margin-bottom:8px}
+.er .ic{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.ic.mat{background:var(--sf)}.ic.lab{background:var(--as)}.ic.chg{background:var(--bs)}
+.er .mid{flex:1;min-width:0}
+.er .t{font-family:var(--d);font-weight:700;font-size:14px}
+.er .sub{font-size:12px;color:var(--mut);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.er .amt{font-family:var(--d);font-weight:800;font-size:15px;flex-shrink:0}
+.tagpill{font-size:9.5px;font-weight:700;font-family:var(--d);padding:1px 6px;border-radius:5px;margin-left:5px;vertical-align:middle}
+.tp-auto{background:var(--sf);color:var(--ac)}.tp-man{background:var(--vs);color:var(--vi)}.tp-bill{background:var(--wm);color:var(--mut)}
+.fab{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);max-width:480px;width:calc(100% - 32px)}
+.fab button{width:100%;background:var(--ac);color:#fff;border:none;border-radius:13px;padding:15px;font-family:var(--d);font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 4px 16px rgba(31,111,84,.3)}
+/* sheet */
+.mask{position:fixed;inset:0;background:rgba(0,0,0,.42);display:none;align-items:flex-end;justify-content:center;z-index:20}
+.mask.on{display:flex}
+.sheet{background:#fff;border-radius:18px 18px 0 0;width:100%;max-width:480px;max-height:92vh;overflow:auto;padding:20px 18px 22px}
+.sheet h2{font-size:19px;margin-bottom:12px}
+label{display:block;font-size:12px;color:var(--mut);margin:13px 0 5px;font-weight:500}
+input,select{width:100%;padding:11px;border:1px solid var(--ln);border-radius:10px;font-size:15px;font-family:var(--b);background:#fff;color:var(--ink)}
+input:focus,select:focus{outline:none;border-color:var(--ac)}
+.seg{display:flex;gap:6px;background:var(--wm);border-radius:10px;padding:4px}
+.seg button{flex:1;border:none;background:none;padding:11px 4px;border-radius:7px;font-family:var(--d);font-weight:700;font-size:13px;color:var(--mut);cursor:pointer}
+.seg button.on{background:#fff;color:var(--ac);box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.catgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:5px}
+.catgrid button{border:1px solid var(--ln);background:#fbfbf9;border-radius:10px;padding:10px 4px;font-family:var(--d);font-weight:600;font-size:12px;color:var(--ink);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px}
+.catgrid button .e{font-size:17px}
+.catgrid button.on{border-color:var(--ac);background:var(--sf);color:var(--ac)}
+.row{display:flex;gap:10px}.row>*{flex:1}
+.calcline{background:var(--sf);border-radius:9px;padding:9px 12px;font-size:12.5px;color:var(--ac);font-weight:600;margin-top:8px;display:flex;justify-content:space-between}
+.upl{display:flex;align-items:center;gap:11px;background:#fff;border:1px dashed #bbb;border-radius:11px;padding:11px 13px;cursor:pointer;margin-top:6px}
+.upl.done{border-style:solid;border-color:var(--ac);background:var(--sf)}
+.upl .e{font-size:19px}.upl .tx{flex:1;font-size:13px}.upl .tx small{display:block;color:var(--mut);font-size:11.5px}
+.autonote{background:var(--as);border:1px solid #f0d9a8;border-radius:10px;padding:11px 13px;font-size:12.5px;color:var(--am);line-height:1.5;margin-top:6px}
+.btn{width:100%;font-family:var(--d);font-weight:700;font-size:15px;border:none;border-radius:11px;padding:14px;cursor:pointer;margin-top:16px;background:var(--ac);color:#fff}
+.btn:disabled{opacity:.45}
+.btn.s{background:#fff;border:1px solid var(--ln);color:var(--ink);margin-top:8px}
+.detrow{display:flex;justify-content:space-between;padding:9px 0;font-size:13.5px;border-bottom:1px solid var(--ln)}
+.detrow:last-of-type{border:none}.detrow .k{color:var(--mut)}.detrow .v{font-weight:600;font-family:var(--d)}
+</style></head><body>
+<div class="top wrap"><span class="bk">←</span><div style="flex:1"><h1>Site Expenses</h1><div class="s">Reddy Bungalow · Kompally</div></div><span style="font-size:18px;cursor:pointer" title="Export">⤓</span></div>
+
+<div class="wrap">
+  <div class="bud" id="bud"></div>
+  <div class="fchips" id="fchips"></div>
+  <div id="list"></div>
+</div>
+
+<div class="fab"><button onclick="openAdd()">+ Add expense</button></div>
+
+<div class="mask" id="am"><div class="sheet" id="ab"></div></div>
+<div class="mask" id="dm"><div class="sheet" id="db"></div></div>
+
+<script>
+var BUDGET=1500000, BUDGET_ON=true;
+/* categories */
+var CATS={
+ material:{grp:'material',label:'Material',emoji:'📦',ic:'mat'},
+ labour:{grp:'labour',label:'Labour',emoji:'👷',ic:'lab'},
+ charge:{grp:'charge',label:'Charges',emoji:'🧾',ic:'chg'},
+};
+/* material sub-items with default unit */
+var MATERIALS=[
+ {n:'Cement',u:'bag',rate:380},{n:'Sand',u:'brass',rate:4500},{n:'Gravel / Jelly',u:'brass',rate:5200},
+ {n:'Bricks',u:'1000 nos',rate:7000},{n:'Steel / TMT',u:'kg',rate:68},{n:'Tiles',u:'box',rate:850},
+ {n:'RMC concrete',u:'cu.m',rate:5800}
+];
+var CHARGES=['Documentation charges','Water tanker','Electricity bill','Equipment / JCB hire','Transport','Site rent'];
+
+/* expense entries. src: 'manual' | 'auto' (from payout). qty/unit/rate optional. */
+var exp=[
+ {id:1,cat:'material',name:'Cement',qty:100,unit:'bag',rate:380,amount:38000,vendor:'Sri Balaji Traders',mode:'Bank',bill:true,date:'2026-06-24'},
+ {id:2,cat:'material',name:'Sand',qty:2,unit:'brass',rate:4500,amount:9000,vendor:'Local supply',mode:'Cash',bill:false,date:'2026-06-24'},
+ {id:3,cat:'labour',name:'Crew payout (week 22–27 Jun)',amount:24700,src:'auto',mode:'Mixed',bill:false,date:'2026-06-27'},
+ {id:4,cat:'labour',name:'Casual mason (2 days)',amount:1600,src:'manual',mode:'Cash',bill:false,date:'2026-06-25'},
+ {id:5,cat:'charge',name:'Water tanker',amount:1200,mode:'Cash',bill:false,date:'2026-06-23'},
+ {id:6,cat:'material',name:'Steel / TMT',qty:1200,unit:'kg',rate:68,amount:81600,vendor:'MetalMart',mode:'Bank',bill:true,date:'2026-06-20'},
+ {id:7,cat:'charge',name:'Documentation charges',amount:8500,mode:'Bank',bill:true,date:'2026-06-18'},
+ {id:8,cat:'charge',name:'Electricity bill',amount:2400,mode:'UPI',bill:true,date:'2026-06-15'},
+];
+var filter='all';
+var $=function(i){return document.getElementById(i)};
+function money(n){return '\u20b9'+(+n||0).toLocaleString('en-IN')}
+function moneyK(n){n=+n||0;if(n>=100000)return '\u20b9'+(n/100000).toFixed(n%100000?1:0)+'L';if(n>=1000)return '\u20b9'+(n/1000).toFixed(n%1000?1:0)+'k';return '\u20b9'+n}
+function grpTotal(g){return exp.filter(function(e){return e.cat===g}).reduce(function(a,e){return a+e.amount},0)}
+function total(){return exp.reduce(function(a,e){return a+e.amount},0)}
+
+function renderBud(){
+ if(!BUDGET_ON){$('bud').style.display='none';return;}
+ var m=grpTotal('material'),l=grpTotal('labour'),c=grpTotal('charge'),t=m+l+c;
+ var pct=function(x){return (x/BUDGET*100)+'%'};
+ var used=Math.round(t/BUDGET*100);
+ $('bud').innerHTML=
+  '<div class="r1"><div class="spent">'+money(t)+' <small>spent</small></div>'
+  +'<div class="of">of <b>'+money(BUDGET)+'</b> budget<br>'+used+'% used \u00b7 '+money(BUDGET-t)+' left</div></div>'
+  +'<div class="bar"><i class="m" style="width:'+pct(m)+'"></i><i class="l" style="width:'+pct(l)+'"></i><i class="c" style="width:'+pct(c)+'"></i></div>'
+  +'<div class="leg"><span class="m"><i></i>Material <b>'+moneyK(m)+'</b></span><span class="l"><i></i>Labour <b>'+moneyK(l)+'</b></span><span class="c"><i></i>Charges <b>'+moneyK(c)+'</b></span></div>';
+}
+function renderChips(){
+ var defs=[['all','All'],['material','Material'],['labour','Labour'],['charge','Charges']];
+ $('fchips').innerHTML=defs.map(function(d){var g=d[0];var t=g==='all'?total():grpTotal(g);return '<div class="fchip '+(filter===g?'on':'')+'" onclick="setFilter(\''+g+'\')">'+d[1]+' \u00b7 '+moneyK(t)+'</div>'}).join('');
+}
+function setFilter(g){filter=g;renderChips();renderList()}
+function renderList(){
+ var rows=exp.filter(function(e){return filter==='all'||e.cat===filter}).slice().sort(function(a,b){return b.date<a.date?-1:1});
+ if(!rows.length){$('list').innerHTML='<div style="text-align:center;color:var(--mut);padding:36px;font-size:14px">No expenses in this category yet.</div>';return;}
+ var h='',lastDay='';
+ rows.forEach(function(e){
+  if(e.date!==lastDay){lastDay=e.date;var dayTot=rows.filter(function(x){return x.date===e.date}).reduce(function(a,x){return a+x.amount},0);
+   h+='<div class="daylbl"><span class="dt">'+new Date(e.date).toLocaleDateString('en-IN',{weekday:'short',day:'2-digit',month:'short'})+'</span><span>'+money(dayTot)+'</span></div>';}
+  var C=CATS[e.cat];
+  var sub;
+  if(e.cat==='material'&&e.qty)sub=e.qty+' '+e.unit+' \u00d7 '+money(e.rate)+(e.vendor?' \u00b7 '+e.vendor:'');
+  else sub=(e.vendor?e.vendor+' \u00b7 ':'')+(e.mode||'');
+  var tag=e.src==='auto'?'<span class="tagpill tp-auto">from payout</span>':e.src==='manual'?'<span class="tagpill tp-man">manual</span>':'';
+  var billtag=e.bill?'<span class="tagpill tp-bill">📎 bill</span>':'';
+  h+='<div class="er" onclick="openDetail('+e.id+')"><div class="ic '+C.ic+'">'+C.emoji+'</div><div class="mid"><div class="t">'+e.name+tag+billtag+'</div><div class="sub">'+sub+'</div></div><div class="amt">'+money(e.amount)+'</div></div>';
+ });
+ $('list').innerHTML=h;
+}
+
+/* ---------- add ---------- */
+var f={cat:'material',name:'',qty:'',unit:'',rate:'',amount:'',vendor:'',mode:'Cash',bill:false,date:new Date().toISOString().slice(0,10),src:'manual'};
+function openAdd(){f={cat:'material',name:'',qty:'',unit:'',rate:'',amount:'',vendor:'',mode:'Cash',bill:false,date:'2026-06-27',src:'manual',isNew:false};renderAdd();$('am').classList.add('on')}
+function closeAdd(){$('am').classList.remove('on')}
+function setCat(c){f.cat=c;f.name='';f.qty='';f.unit='';f.rate='';f.amount='';f.isNew=false;renderAdd()}
+function pickMat(i){if(i==='new'){f.isNew=true;f.name='';f.unit='';f.rate='';renderAdd();return;}var m=MATERIALS[i];f.isNew=false;f.name=m.n;f.unit=m.u;f.rate=m.rate;renderAdd()}
+function pickChg(v){if(v==='__new__'){f.isNew=true;f.name='';renderAdd();return;}f.isNew=false;f.name=v;renderAdd()}
+function syncSave(){var el=$('saveBtn');if(el)el.disabled=!((+f.amount>0)&&(f.cat==='labour'?f.name.trim():f.name.trim()));}
+function matCalc(){if(f.cat==='material'&&+f.qty>0&&+f.rate>0)f.amount=Math.round(+f.qty*+f.rate);}
+function renderAdd(){
+ var catBtns=Object.keys(CATS).map(function(k){var C=CATS[k];return '<button class="'+(f.cat===k?'on':'')+'" onclick="setCat(\''+k+'\')"><span class="e">'+C.emoji+'</span>'+C.label+'</button>'}).join('');
+ var inner='';
+ if(f.cat==='material'){
+  inner='<label>Material</label><select onchange="pickMat(this.value)"><option value="">Choose…</option>'
+   +MATERIALS.map(function(m,i){return '<option value="'+i+'" '+(f.name===m.n&&!f.isNew?'selected':'')+'>'+m.n+'</option>'}).join('')
+   +'<option value="new" '+(f.isNew?'selected':'')+'>+ Other material…</option></select>'
+   +(f.isNew?'<label>New material name</label><input value="'+f.name+'" oninput="f.name=this.value;syncSave()" placeholder="e.g. Binding wire">':'')
+   +((f.name||f.isNew)?'<div class="row"><div><label>Quantity</label><input type="number" inputmode="decimal" value="'+f.qty+'" oninput="f.qty=this.value;matCalc();syncAmt()" placeholder="0"></div>'
+     +'<div><label>Unit</label><input value="'+f.unit+'" oninput="f.unit=this.value" placeholder="bag/kg…"></div>'
+     +'<div><label>Rate/unit</label><input type="number" inputmode="numeric" value="'+f.rate+'" oninput="f.rate=this.value;matCalc();syncAmt()"></div></div>'
+     +(+f.qty>0&&+f.rate>0?'<div class="calcline"><span>'+f.qty+' '+f.unit+' \u00d7 '+money(f.rate)+'</span><span>'+money(Math.round(+f.qty*+f.rate))+'</span></div>':'')
+     :'');
+ } else if(f.cat==='charge'){
+  inner='<label>Charge type</label><select onchange="pickChg(this.value)"><option value="">Choose…</option>'
+   +CHARGES.map(function(c){return '<option '+(f.name===c&&!f.isNew?'selected':'')+'>'+c+'</option>'}).join('')
+   +'<option value="__new__" '+(f.isNew?'selected':'')+'>+ Other charge…</option></select>'
+   +(f.isNew?'<label>New charge name</label><input value="'+f.name+'" oninput="f.name=this.value;syncSave()" placeholder="e.g. Crane hire">':'');
+ } else { // labour
+  inner='<div class="autonote">Crew wages come in automatically from <b>Attendance → Payout</b> — no need to re-enter them. Add here only <b>casual / one-off</b> labour paid outside the crew.</div>'
+   +'<label>Describe the labour</label><input value="'+f.name+'" oninput="f.name=this.value" placeholder="e.g. Casual mason, 2 days">';
+ }
+ // amount (shown for charge/labour, and material as override)
+ var amtBlock='<label>Amount '+(f.cat==='material'?'<span style="font-weight:400;color:var(--mut)">(auto from qty\u00d7rate, editable)</span>':'')+'</label><input id="amtIn" type="number" inputmode="numeric" value="'+f.amount+'" oninput="f.amount=this.value" placeholder="0">';
+ var common='<label>Paid via</label><div class="seg">'+['Cash','UPI','Bank','Credit'].map(function(m){return '<button class="'+(f.mode===m?'on':'')+'" onclick="f.mode=\''+m+'\';renderAdd()">'+m+'</button>'}).join('')+'</div>'
+   +(f.cat!=='labour'?'<label>Vendor / paid to <span style="font-weight:400;color:var(--mut)">(optional)</span></label><input value="'+f.vendor+'" oninput="f.vendor=this.value" placeholder="Supplier name">':'')
+   +'<label>Date</label><input type="date" value="'+f.date+'" oninput="f.date=this.value">'
+   +'<div class="upl '+(f.bill?'done':'')+'" onclick="f.bill=!f.bill;renderAdd()"><span class="e">'+(f.bill?'✅':'📷')+'</span><div class="tx">'+(f.bill?'Bill attached':'Attach bill photo')+'<small>'+(f.bill?'Saved to Drive':'Optional — for your records')+'</small></div></div>';
+ var canSave=(+f.amount>0)&&(f.cat==='labour'?f.name.trim():f.name);
+ $('ab').innerHTML='<h2>Add expense</h2><label>Category</label><div class="catgrid">'+catBtns+'</div>'
+   +inner+amtBlock+common
+   +'<button class="btn" id="saveBtn" '+(canSave?'':'disabled')+' onclick="saveExp()">Save expense</button><button class="btn s" onclick="closeAdd()">Cancel</button>';
+}
+function syncAmt(){var el=$('amtIn');if(el)el.value=f.amount;}
+function saveExp(){
+ if(!(+f.amount>0))return;
+ var nm=(f.name||'').trim();
+ if(f.isNew&&nm){
+   if(f.cat==='material'){
+     var exists=MATERIALS.some(function(m){return m.n.toLowerCase()===nm.toLowerCase()});
+     if(!exists&&confirm('Save "'+nm+'" to your materials for next time?\n\nUnit and rate will be remembered.')){
+       MATERIALS.push({n:nm,u:f.unit||'unit',rate:+f.rate||0});
+     }
+   } else if(f.cat==='charge'){
+     var ex2=CHARGES.some(function(c){return c.toLowerCase()===nm.toLowerCase()});
+     if(!ex2&&confirm('Save "'+nm+'" to your charge types for next time?')){
+       CHARGES.push(nm);
+     }
+   }
+ }
+ var rec={id:Date.now(),cat:f.cat,name:nm||CATS[f.cat].label,amount:+f.amount,mode:f.mode,vendor:f.vendor,bill:f.bill,date:f.date,src:'manual'};
+ if(f.cat==='material'&&+f.qty>0){rec.qty=+f.qty;rec.unit=f.unit;rec.rate=+f.rate;}
+ exp.push(rec);closeAdd();renderAll();
+}
+
+/* ---------- detail ---------- */
+function openDetail(id){
+ var e=exp.find(function(x){return x.id===id});if(!e)return;
+ var C=CATS[e.cat];
+ var rows='<div class="detrow"><span class="k">Category</span><span class="v">'+C.label+'</span></div>';
+ if(e.qty)rows+='<div class="detrow"><span class="k">Quantity</span><span class="v">'+e.qty+' '+e.unit+' \u00d7 '+money(e.rate)+'</span></div>';
+ rows+='<div class="detrow"><span class="k">Amount</span><span class="v">'+money(e.amount)+'</span></div>';
+ if(e.vendor)rows+='<div class="detrow"><span class="k">Vendor</span><span class="v">'+e.vendor+'</span></div>';
+ rows+='<div class="detrow"><span class="k">Paid via</span><span class="v">'+(e.mode||'—')+'</span></div>';
+ rows+='<div class="detrow"><span class="k">Date</span><span class="v">'+new Date(e.date).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})+'</span></div>';
+ rows+='<div class="detrow"><span class="k">Bill</span><span class="v">'+(e.bill?'📎 Attached':'—')+'</span></div>';
+ var isAuto=e.src==='auto';
+ $('db').innerHTML='<h2>'+e.name+'</h2>'+rows
+   +(isAuto?'<div class="autonote" style="margin-top:14px">This came from a recorded <b>crew payout</b>. Edit it from Attendance → Payout, not here, so wages stay in sync.</div>':'')
+   +(isAuto?'':'<button class="btn s" onclick="delExp('+e.id+')" style="color:var(--rd);border-color:#f0c9c9;margin-top:16px">Delete expense</button>')
+   +'<button class="btn s" onclick="closeDetail()">Close</button>';
+ $('dm').classList.add('on');
+}
+function delExp(id){if(!confirm('Delete this expense?'))return;exp=exp.filter(function(x){return x.id!==id});closeDetail();renderAll();}
+function closeDetail(){$('dm').classList.remove('on')}
+
+function renderAll(){renderBud();renderChips();renderList();}
+renderAll();
+</script></body></html>

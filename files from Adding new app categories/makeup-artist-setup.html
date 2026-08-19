@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Makeup Artist — Setup</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--green:#1f6f54;--green-dark:#175843;--green-soft:#e7f0ec;--green-tint:#f1f7f4;--paper:#fbfbf9;--card:#fff;--ink:#1c2420;--muted:#6b7770;--line:#e4e8e5;--amber:#b9791f;--amber-soft:#f7edda;--danger:#b23b3b;--danger-soft:#f7e6e6;--shadow:0 1px 2px rgba(28,36,32,.04),0 6px 18px rgba(28,36,32,.05)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:'Plus Jakarta Sans',sans-serif}
+.wrap{max-width:620px;margin:0 auto;padding-bottom:120px}
+.top{position:sticky;top:0;z-index:20;background:rgba(251,251,249,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top-in{max-width:620px;margin:0 auto;padding:14px 18px;display:flex;align-items:center;gap:12px}
+.back{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;font-size:18px;cursor:pointer;flex-shrink:0}
+.top-title{font-weight:700;font-size:16px;letter-spacing:-.01em}
+.top-sub{font-size:12px;color:var(--muted);font-weight:500;margin-top:1px}
+.chip{margin-left:auto;font-size:11px;font-weight:700;color:var(--green);background:var(--green-soft);padding:5px 10px;border-radius:20px;flex-shrink:0}
+.tabs{display:flex;gap:4px;padding:10px 18px 0;overflow-x:auto;scrollbar-width:none;position:sticky;top:63px;z-index:19;background:rgba(251,251,249,.92);backdrop-filter:blur(8px)}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:9px 14px;border-radius:10px 10px 0 0;font-size:13.5px;font-weight:600;color:var(--muted);white-space:nowrap;cursor:pointer;border-bottom:2px solid transparent}
+.tab.on{color:var(--green);background:var(--card);border:1px solid var(--line);border-bottom:2px solid var(--green)}
+.pane{display:none;padding:18px}.pane.on{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.intro{font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.55}
+.sect-label{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:22px 2px 10px}
+.sect-label:first-child{margin-top:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);margin-bottom:12px;overflow:hidden}
+.item{padding:14px 16px;display:flex;align-items:flex-start;gap:12px}
+.item+.item{border-top:1px solid var(--line)}
+.item-body{flex:1;min-width:0}
+.item-title{font-family:'Plus Jakarta Sans';font-weight:700;font-size:15px;letter-spacing:-.01em}
+.item-meta{font-size:12.5px;color:var(--muted);margin-top:3px;line-height:1.45}
+.tagrow{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.tag{font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;background:var(--green-tint);color:var(--green-dark)}
+.tag.amber{background:var(--amber-soft);color:var(--amber)}
+.price{font-family:'Plus Jakarta Sans';font-weight:800;font-size:15px;white-space:nowrap}
+.mini-actions{display:flex;gap:4px;margin-top:2px}
+.iconbtn{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;cursor:pointer;font-size:14px;color:var(--muted)}
+.iconbtn:active{background:var(--green-tint)}.iconbtn.del:active{background:var(--danger-soft);color:var(--danger)}
+.add{width:100%;padding:13px;border:1.5px dashed var(--line);border-radius:12px;background:transparent;color:var(--green);font-family:'Plus Jakarta Sans';font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px}
+.add:active{background:var(--green-tint);border-color:var(--green)}
+.trow{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:14px 16px;display:flex;align-items:center;gap:14px;margin-bottom:10px}
+.trow-body{flex:1}.trow-title{font-weight:600;font-size:14.5px}.trow-sub{font-size:12.5px;color:var(--muted);margin-top:2px;line-height:1.45}
+.switch{width:46px;height:28px;border-radius:20px;background:#d5dbd7;position:relative;cursor:pointer;flex-shrink:0;transition:background .2s}
+.switch.on{background:var(--green)}
+.knob{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:left .2s}
+.switch.on .knob{left:21px}
+.sub-panel{margin:-2px 0 12px;padding:0 2px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12.5px;font-weight:600;margin-bottom:6px}
+.field .hint{font-weight:400;color:var(--muted)}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{flex:1;min-width:70px;padding:10px;border:1px solid var(--line);background:var(--card);border-radius:10px;font-family:'Inter';font-size:13px;font-weight:600;color:var(--muted);cursor:pointer}
+.seg button.on{border-color:var(--green);background:var(--green-tint);color:var(--green-dark)}
+input[type=text],input[type=number]{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px;font-family:'Inter';font-size:14px;background:var(--card);color:var(--ink)}
+input:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px var(--green-soft)}
+.inline2{display:flex;gap:10px}.inline2 .field{flex:1}
+.note{background:var(--green-tint);border:1px solid var(--green-soft);border-radius:12px;padding:12px 14px;font-size:12.5px;color:var(--green-dark);line-height:1.5;display:flex;gap:9px}
+.note b{font-weight:700}.note .ic{flex-shrink:0}
+.savebar{position:fixed;bottom:0;left:0;right:0;background:rgba(251,251,249,.94);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:12px 18px;z-index:30}
+.savebar-in{max-width:620px;margin:0 auto;display:flex;gap:10px}
+.btn-ghost{padding:13px 18px;border-radius:12px;border:1px solid var(--line);background:var(--card);font-family:'Plus Jakarta Sans';font-weight:700;font-size:14px;color:var(--muted);cursor:pointer}
+.btn-primary{flex:1;padding:13px;border-radius:12px;border:none;background:var(--green);color:#fff;font-family:'Plus Jakarta Sans';font-weight:700;font-size:14.5px;cursor:pointer;box-shadow:0 4px 12px rgba(31,111,84,.25)}
+.btn-primary:active{background:var(--green-dark)}
+.scrim{position:fixed;inset:0;background:rgba(20,28,24,.4);z-index:40;display:none;align-items:flex-end;justify-content:center}
+.scrim.on{display:flex}
+.sheet{background:var(--paper);width:100%;max-width:620px;border-radius:20px 20px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom));max-height:88vh;overflow-y:auto;animation:up .28s cubic-bezier(.2,.8,.2,1)}
+@keyframes up{from{transform:translateY(100%)}to{transform:none}}
+.sheet-grab{width:40px;height:4px;background:#d5dbd7;border-radius:2px;margin:0 auto 16px}
+.sheet h3{font-size:18px;font-weight:800;letter-spacing:-.02em;margin-bottom:4px}
+.sheet .subt{font-size:13px;color:var(--muted);margin-bottom:18px}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.selchip{padding:8px 13px;border:1px solid var(--line);background:var(--card);border-radius:20px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer}
+.selchip.on{border-color:var(--green);background:var(--green-tint);color:var(--green-dark)}
+.empty{text-align:center;padding:26px 16px;color:var(--muted);font-size:13px}.empty .big{font-size:26px;margin-bottom:8px}
+</style>
+</head>
+<body>
+<div class="top"><div class="top-in">
+  <button class="back">‹</button>
+  <div><div class="top-title">Makeup Studio</div><div class="top-sub">Business setup</div></div>
+  <span class="chip">EVENT</span>
+</div></div>
+
+<div class="tabs" id="tabs">
+  <div class="tab on" data-t="svc">Services</div>
+  <div class="tab" data-t="book">Booking &amp; Advance</div>
+  <div class="tab" data-t="trial">Trial</div>
+  <div class="tab" data-t="intake">Client Intake</div>
+</div>
+
+<div class="wrap">
+
+<!-- SERVICES -->
+<div class="pane on" data-p="svc">
+  <p class="intro">The looks you offer, each with a price. Bridal usually blocks a morning slot; party looks can share a day.</p>
+  <div class="sect-label">Your Services</div>
+  <div class="card" id="svcList"></div>
+  <button class="add" onclick="openSvc()">＋ Add service</button>
+
+  <div class="sect-label">Location</div>
+  <div class="trow">
+    <div class="trow-body">
+      <div class="trow-title">Offer on-location service</div>
+      <div class="trow-sub">You travel to the client (home, venue, hotel). Adds a travel charge you set per booking.</div>
+    </div>
+    <div class="switch on" onclick="tog(this)"><div class="knob"></div></div>
+  </div>
+  <div class="field" style="margin-top:6px">
+    <label>Default travel charge <span class="hint">— editable per booking</span></label>
+    <input type="number" placeholder="e.g. 2000" inputmode="numeric">
+  </div>
+</div>
+
+<!-- BOOKING -->
+<div class="pane" data-p="book">
+  <p class="intro">Makeup is same-day work, so bookings hold a date <b>and</b> a time slot — a bridal morning can't be double-booked.</p>
+
+  <div class="field">
+    <label>Default advance at booking</label>
+    <div class="seg" id="advSeg">
+      <button data-a="25">25%</button><button class="on" data-a="50">50%</button>
+      <button data-a="100">Full</button><button data-a="fixed">Fixed ₹</button>
+    </div>
+  </div>
+  <div class="field" id="advFixedWrap" style="display:none">
+    <label>Fixed advance amount</label><input type="number" placeholder="e.g. 3000" inputmode="numeric">
+  </div>
+
+  <div class="sect-label">Booking Rules</div>
+  <div class="trow">
+    <div class="trow-body"><div class="trow-title">Block by time slot</div>
+      <div class="trow-sub">Hold a specific start time, not just the date — warn me if two bookings clash on timing.</div></div>
+    <div class="switch on" onclick="tog(this)"><div class="knob"></div></div>
+  </div>
+  <div class="trow">
+    <div class="trow-body"><div class="trow-title">Buffer between bookings</div>
+      <div class="trow-sub">Keep travel/setup time between two same-day clients.</div></div>
+    <div class="switch on" onclick="togBuffer(this)"><div class="knob"></div></div>
+  </div>
+  <div class="sub-panel" id="bufferPanel">
+    <div class="field"><label>Buffer duration</label>
+      <div class="seg"><button>30 min</button><button class="on">1 hr</button><button>2 hr</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- TRIAL -->
+<div class="pane" data-p="trial">
+  <p class="intro">Many brides want a trial run before the wedding. Configure it once here.</p>
+  <div class="trow">
+    <div class="trow-body"><div class="trow-title">Offer trial session</div>
+      <div class="trow-sub">A practice look before the event date.</div></div>
+    <div class="switch on" onclick="togTrial(this)"><div class="knob"></div></div>
+  </div>
+  <div id="trialPanel">
+    <div class="field" style="margin-top:6px">
+      <label>Trial pricing</label>
+      <div class="seg" id="trialPrice"><button data-tp="free">Free</button><button class="on" data-tp="paid">Paid</button><button data-tp="adjust">Adjust in final bill</button></div>
+    </div>
+    <div class="field" id="trialAmtWrap">
+      <label>Trial charge (₹)</label><input type="number" placeholder="e.g. 3000" inputmode="numeric">
+    </div>
+    <div class="note"><span class="ic">💡</span><div><b>Adjust in final bill</b> charges the trial now, then deducts it from the event balance if they book — a common way to reward commitment.</div></div>
+  </div>
+</div>
+
+<!-- INTAKE -->
+<div class="pane" data-p="intake">
+  <p class="intro">Details captured when a client books. Name and mobile are always on.</p>
+  <div class="sect-label">Depth</div>
+  <div class="seg" id="depthSeg" style="margin-bottom:18px">
+    <button data-d="s">Simple</button><button class="on" data-d="st">Standard</button><button data-d="d">Detailed</button>
+  </div>
+  <div class="sect-label">Fields captured at booking</div>
+  <div class="card" id="intakeList"></div>
+  <div class="note" style="margin-top:14px"><span class="ic">🔒</span><div><b>Name</b> and <b>Mobile</b> stay required on every depth.</div></div>
+</div>
+
+</div>
+
+<div class="savebar"><div class="savebar-in">
+  <button class="btn-ghost">Save &amp; exit</button>
+  <button class="btn-primary">Save and continue</button>
+</div></div>
+
+<!-- SERVICE SHEET -->
+<div class="scrim" id="svcSheet">
+  <div class="sheet">
+    <div class="sheet-grab"></div>
+    <h3 id="svcHead">Add service</h3>
+    <div class="subt">A named look with a price.</div>
+    <div class="field"><label>Service name</label><input type="text" id="svcName" placeholder="e.g. Bridal HD Makeup"></div>
+    <div class="field"><label>Category</label>
+      <div class="chips" id="svcCat">
+        <div class="selchip on">Bridal</div><div class="selchip">Engagement</div><div class="selchip">Party</div>
+        <div class="selchip">Reception</div><div class="selchip">Guest / family</div><div class="selchip">Other</div>
+      </div>
+    </div>
+    <div class="inline2">
+      <div class="field"><label>Price (₹)</label><input type="number" id="svcPrice" placeholder="15000" inputmode="numeric"></div>
+      <div class="field"><label>Priced</label>
+        <div class="seg" id="svcUnit"><button class="on">Per look</button><button>Per face</button></div>
+      </div>
+    </div>
+    <div class="field"><label>Slot length <span class="hint">— for scheduling</span></label>
+      <div class="seg" id="svcDur"><button>1 hr</button><button class="on">2 hr</button><button>3 hr</button></div>
+    </div>
+    <div class="savebar-in" style="margin-top:6px">
+      <button class="btn-ghost" onclick="closeSheet('svcSheet')">Cancel</button>
+      <button class="btn-primary" onclick="saveSvc()">Save service</button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('tabs').addEventListener('click',e=>{
+  const t=e.target.closest('.tab');if(!t)return;
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.pane').forEach(x=>x.classList.remove('on'));
+  t.classList.add('on');document.querySelector(`.pane[data-p="${t.dataset.t}"]`).classList.add('on');
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+function tog(el){el.classList.toggle('on')}
+function togBuffer(el){el.classList.toggle('on');document.getElementById('bufferPanel').style.display=el.classList.contains('on')?'block':'none';}
+function togTrial(el){el.classList.toggle('on');document.getElementById('trialPanel').style.display=el.classList.contains('on')?'block':'none';}
+document.querySelectorAll('.seg').forEach(seg=>seg.addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;
+  seg.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+  if(seg.id==='advSeg')document.getElementById('advFixedWrap').style.display=b.dataset.a==='fixed'?'block':'none';
+  if(seg.id==='trialPrice')document.getElementById('trialAmtWrap').style.display=b.dataset.tp==='free'?'none':'block';
+  if(seg.id==='depthSeg')applyDepth(b.dataset.d);
+}));
+document.querySelectorAll('.chips').forEach(c=>c.addEventListener('click',e=>{const chip=e.target.closest('.selchip');if(!chip)return;chip.classList.toggle('on');}));
+
+let svcs=[
+  {name:'Bridal HD Makeup',cat:'Bridal',price:18000,unit:'Per look',dur:'2 hr'},
+  {name:'Party Makeup',cat:'Party',price:4000,unit:'Per face',dur:'1 hr'},
+];
+let editSvc=null;
+function renderSvc(){
+  const el=document.getElementById('svcList');
+  if(!svcs.length){el.innerHTML='<div class="empty"><div class="big">💄</div>No services yet.</div>';return;}
+  el.innerHTML=svcs.map((s,i)=>`
+    <div class="item"><div class="item-body">
+      <div class="item-title">${s.name}</div>
+      <div class="tagrow"><span class="tag">${s.cat}</span><span class="tag amber">${s.unit}</span><span class="tag amber">${s.dur} slot</span></div>
+    </div>
+    <div style="text-align:right"><div class="price">₹${(+s.price).toLocaleString('en-IN')}</div>
+    <div class="mini-actions"><button class="iconbtn" onclick="openSvc(${i})">✎</button><button class="iconbtn del" onclick="delSvc(${i})">🗑</button></div></div></div>`).join('');
+}
+function openSvc(i){
+  editSvc=(i===undefined)?null:i;const s=editSvc===null?{}:svcs[i];
+  document.getElementById('svcHead').textContent=editSvc===null?'Add service':'Edit service';
+  svcName.value=s.name||'';svcPrice.value=s.price||'';
+  document.querySelectorAll('#svcCat .selchip').forEach(c=>c.classList.toggle('on',c.textContent===(s.cat||'Bridal')));
+  document.querySelectorAll('#svcUnit button').forEach(b=>b.classList.toggle('on',b.textContent===(s.unit||'Per look')));
+  document.querySelectorAll('#svcDur button').forEach(b=>b.classList.toggle('on',b.textContent===(s.dur||'2 hr')));
+  openSheet('svcSheet');
+}
+function saveSvc(){
+  const c=document.querySelector('#svcCat .selchip.on');
+  const obj={name:svcName.value||'Untitled',cat:c?c.textContent:'Other',price:svcPrice.value||0,
+    unit:document.querySelector('#svcUnit button.on').textContent,dur:document.querySelector('#svcDur button.on').textContent};
+  if(editSvc===null)svcs.push(obj);else svcs[editSvc]=obj;
+  renderSvc();closeSheet('svcSheet');
+}
+function delSvc(i){svcs.splice(i,1);renderSvc();}
+
+const intakeFields=[
+  {f:'Full name',on:true,lock:true},{f:'Mobile number',on:true,lock:true},
+  {f:'Event date',on:true},{f:'Event time',on:true},{f:'Venue / address',on:true},
+  {f:'WhatsApp number',on:true},{f:'Skin type / allergies',on:false},
+  {f:'Reference look',on:false},{f:'Number of people',on:false},
+];
+const depthMap={s:['Event date','Event time'],st:['Event date','Event time','Venue / address','WhatsApp number'],
+  d:['Event date','Event time','Venue / address','WhatsApp number','Skin type / allergies','Reference look','Number of people']};
+function renderIntake(){
+  document.getElementById('intakeList').innerHTML=intakeFields.map((x,i)=>`
+    <div class="item" style="align-items:center"><div class="item-body">
+      <div class="trow-title">${x.f}${x.lock?' <span class="tag" style="margin-left:4px">required</span>':''}</div></div>
+      <div class="switch ${x.on?'on':''}" ${x.lock?'style="opacity:.5;pointer-events:none"':`onclick="togIntake(${i},this)"`}><div class="knob"></div></div></div>`).join('');
+}
+function togIntake(i,el){intakeFields[i].on=!intakeFields[i].on;el.classList.toggle('on');}
+function applyDepth(d){const w=depthMap[d];intakeFields.forEach(x=>{if(!x.lock)x.on=w.includes(x.f);});renderIntake();}
+
+function openSheet(id){document.getElementById(id).classList.add('on');document.body.style.overflow='hidden';}
+function closeSheet(id){document.getElementById(id).classList.remove('on');document.body.style.overflow='';}
+document.querySelectorAll('.scrim').forEach(s=>s.addEventListener('click',e=>{if(e.target===s)closeSheet(s.id);}));
+
+renderSvc();renderIntake();
+</script>
+</body>
+</html>

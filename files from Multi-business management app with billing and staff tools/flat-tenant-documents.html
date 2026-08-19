@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tenant Documents — Khaata</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1f6f54; --green-light: #e7f2ed;
+    --parchment: #fbfbf9; --ink: #1c1c1a; --muted: #6b6b64;
+    --border: #e6e4dd; --amber: #b5791f; --amber-light: #fbf1e2;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', sans-serif; background: var(--parchment); color: var(--ink);
+    max-width: 480px; margin: 0 auto; min-height: 100vh; padding-bottom: 40px;
+  }
+  header { padding: 24px 20px 12px; }
+  header h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 800; }
+  header p { font-size: 13px; color: var(--muted); margin-top: 3px; }
+
+  .tenant-card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin: 0 20px 14px; display: flex; justify-content: space-between; align-items: center; }
+  .tenant-name { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 15px; }
+  .tenant-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .section-label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin: 16px 20px 8px; }
+
+  .doc-row { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; margin: 0 20px 10px; display: flex; align-items: center; gap: 12px; }
+  .doc-icon { font-size: 22px; flex-shrink: 0; }
+  .doc-name { font-weight: 700; font-size: 13.5px; }
+  .doc-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .doc-actions { display: flex; gap: 10px; margin-left: auto; flex-shrink: 0; }
+  .doc-actions span { font-size: 11.5px; font-weight: 700; color: var(--green); cursor: pointer; }
+  .doc-actions .del { color: var(--muted); }
+
+  .add-row-btn { border: 1.5px dashed var(--green); color: var(--green); background: none; border-radius: 10px; padding: 12px; width: calc(100% - 40px); margin: 0 20px; font-weight: 700; font-size: 13px; cursor: pointer; }
+
+  .inline-form { background: var(--green-light); border: 1px solid var(--green); border-radius: 12px; padding: 14px; margin: 10px 20px; }
+  .inline-form label { font-size: 11px; font-weight: 700; color: var(--muted); display: block; margin-bottom: 4px; text-transform: uppercase; }
+  .inline-form input, .inline-form select { width: 100%; padding: 9px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; font-family: 'Inter', sans-serif; margin-bottom: 10px; background: #fff; }
+  .fake-upload { border: 1.5px dashed #bbb; border-radius: 8px; padding: 14px; text-align: center; font-size: 12.5px; color: var(--muted); cursor: pointer; margin-bottom: 10px; }
+  .fake-upload.done { border-style: solid; border-color: var(--green); background: var(--green-light); color: var(--green); font-weight: 700; }
+  .inline-form .form-actions { display: flex; gap: 8px; }
+  .inline-form .form-actions button { flex: 1; padding: 10px; border-radius: 8px; border: none; font-weight: 700; font-size: 13px; cursor: pointer; }
+  .btn-confirm { background: var(--green); color: #fff; }
+  .btn-cancel { background: #fff; color: var(--muted); border: 1px solid var(--border) !important; }
+
+  .priv-note { font-size: 11px; color: var(--muted); margin: 0 20px 14px; line-height: 1.5; background: var(--amber-light); border-radius: 8px; padding: 8px 10px; }
+  .empty-note { text-align: center; padding: 20px; color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Tenant Documents</h1>
+  <p>Documents for this specific tenant, not the whole business</p>
+</header>
+
+<div class="tenant-card">
+  <div><div class="tenant-name">Ravi Kumar</div><div class="tenant-sub">Flat 101 · 9876543210</div></div>
+</div>
+
+<div class="section-label">Documents</div>
+<div id="docsContainer"></div>
+<button class="add-row-btn" onclick="openAddDocForm()">+ Add Document</button>
+<p class="priv-note">Stored in your own Google Drive — same as your business documents, just scoped to this tenant. Aadhaar and other sensitive IDs are never stored in Khaata's own database.</p>
+
+<script>
+const DOC_TYPES = ['Lease Agreement', 'ID Proof (Aadhaar)', 'ID Proof (PAN)', 'ID Proof (Other)', 'Police Verification', 'Other'];
+
+let documents = [
+  { id: 'd1', type: 'Lease Agreement', fileName: 'lease_ravi_2025-26.pdf', uploadedDate: '2025-08-01' },
+  { id: 'd2', type: 'ID Proof (Aadhaar)', fileName: 'aadhaar_ravi.pdf', uploadedDate: '2025-08-01' }
+];
+let docIdCounter = 3;
+
+function fmtDate(d) { return new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }); }
+
+function docIcon(type) {
+  if (type.indexOf('Lease') !== -1) return '📄';
+  if (type.indexOf('ID Proof') !== -1) return '🪪';
+  if (type.indexOf('Police') !== -1) return '🛡️';
+  return '📎';
+}
+
+function renderDocs() {
+  const container = document.getElementById('docsContainer');
+  container.innerHTML = '';
+  if (!documents.length) {
+    container.innerHTML = '<div class="empty-note">No documents added yet.</div>';
+    return;
+  }
+  documents.forEach(function(d) {
+    const row = document.createElement('div');
+    row.className = 'doc-row';
+    row.innerHTML =
+      '<span class="doc-icon"></span><div><div class="doc-name"></div><div class="doc-meta"></div></div>' +
+      '<div class="doc-actions"><span onclick="viewDoc(\'' + d.id + '\')">View</span><span class="del" onclick="deleteDoc(\'' + d.id + '\')">Remove</span></div>';
+    row.querySelector('.doc-icon').textContent = docIcon(d.type);
+    row.querySelector('.doc-name').textContent = d.type;
+    row.querySelector('.doc-meta').textContent = d.fileName + ' · Added ' + fmtDate(d.uploadedDate);
+    container.appendChild(row);
+  });
+}
+
+function viewDoc(id) {
+  const d = documents.find(function(x) { return x.id === id; });
+  alert('Would open "' + d.fileName + '" from Google Drive.');
+}
+
+function deleteDoc(id) {
+  const d = documents.find(function(x) { return x.id === id; });
+  if (confirm('Remove "' + d.type + '" (' + d.fileName + ')?')) {
+    documents = documents.filter(function(x) { return x.id !== id; });
+    renderDocs();
+  }
+}
+
+let uploadDone = false;
+
+function openAddDocForm() {
+  closeAddDocForm();
+  uploadDone = false;
+  const form = document.createElement('div');
+  form.className = 'inline-form';
+  form.id = 'addDocForm';
+  form.innerHTML =
+    '<label>Document type</label><select id="newDocType">' +
+    DOC_TYPES.map(function(t) { return '<option value="' + t + '">' + t + '</option>'; }).join('') +
+    '</select>' +
+    '<div class="fake-upload" id="fakeUploadBox" onclick="simulateUpload()">📤 Tap to upload from device / Drive</div>' +
+    '<div class="form-actions"><button class="btn-confirm" onclick="confirmAddDoc()">+ Add Document</button>' +
+    '<button class="btn-cancel" onclick="closeAddDocForm()">Cancel</button></div>';
+  document.querySelector('.add-row-btn').insertAdjacentElement('afterend', form);
+}
+
+function simulateUpload() {
+  uploadDone = true;
+  const box = document.getElementById('fakeUploadBox');
+  box.className = 'fake-upload done';
+  box.textContent = '✅ File selected — ready to add';
+}
+
+function closeAddDocForm() {
+  const f = document.getElementById('addDocForm');
+  if (f) f.remove();
+}
+
+function confirmAddDoc() {
+  if (!uploadDone) { alert('Please select a file first.'); return; }
+  const type = document.getElementById('newDocType').value;
+  documents.push({ id: 'd' + (docIdCounter++), type: type, fileName: type.toLowerCase().replace(/[^a-z0-9]+/g, '_') + '.pdf', uploadedDate: '2026-07-15' });
+  closeAddDocForm();
+  renderDocs();
+}
+
+renderDocs();
+</script>
+</body>
+</html>

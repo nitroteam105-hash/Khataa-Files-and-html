@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Setup — Khaata</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1f6f54;
+    --green-light: #e7f2ed;
+    --parchment: #fbfbf9;
+    --ink: #1c1c1a;
+    --muted: #6b6b64;
+    --border: #e6e4dd;
+    --amber: #b5791f;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--parchment);
+    color: var(--ink);
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    padding-bottom: 32px;
+  }
+  header {
+    padding: 28px 20px 16px;
+  }
+  header h1 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 4px;
+  }
+  header p {
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .list {
+    padding: 8px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .biz-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+  }
+  .biz-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+  .biz-name {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+  }
+  .biz-type {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .badge {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .badge.done { background: var(--green-light); color: var(--green); }
+  .badge.pending { background: #fbf1e2; color: var(--amber); }
+  .progress-track {
+    height: 6px;
+    background: #eee;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--green);
+    border-radius: 999px;
+  }
+  .biz-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .pct {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .action-btn {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid var(--green);
+    color: var(--green);
+    background: #fff;
+    padding: 6px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .action-btn.done {
+    border-color: var(--border);
+    color: var(--muted);
+  }
+  .cta-wrap {
+    padding: 20px;
+  }
+  .dashboard-btn {
+    width: 100%;
+    background: var(--green);
+    color: #fff;
+    border: none;
+    padding: 16px;
+    border-radius: 14px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+  }
+  .hint {
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 10px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Set up your businesses</h1>
+  <p>2 of 3 ready to use — you can finish the rest anytime</p>
+</header>
+
+<div class="list">
+
+  <div class="biz-card">
+    <div class="biz-top">
+      <div>
+        <div class="biz-name">Sunshine PG</div>
+        <div class="biz-type">PG · Subscription billing</div>
+      </div>
+      <span class="badge done">Done</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" style="width:100%"></div></div>
+    <div class="biz-bottom">
+      <span class="pct">100% complete</span>
+      <button class="action-btn done">Edit</button>
+    </div>
+  </div>
+
+  <div class="biz-card">
+    <div class="biz-top">
+      <div>
+        <div class="biz-name">Amma's Tiffin</div>
+        <div class="biz-type">Tiffin · Subscription billing</div>
+      </div>
+      <span class="badge done">Done</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" style="width:100%"></div></div>
+    <div class="biz-bottom">
+      <span class="pct">100% complete</span>
+      <button class="action-btn done">Edit</button>
+    </div>
+  </div>
+
+  <div class="biz-card">
+    <div class="biz-top">
+      <div>
+        <div class="biz-name">FlexFit Gym</div>
+        <div class="biz-type">Gym · Subscription billing</div>
+      </div>
+      <span class="badge pending">Pending</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" style="width:35%"></div></div>
+    <div class="biz-bottom">
+      <span class="pct">35% complete</span>
+      <button class="action-btn">Continue setup</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="cta-wrap">
+  <button class="dashboard-btn">Go to Dashboard</button>
+  <p class="hint">You can finish pending businesses later from the menu</p>
+</div>
+
+</body>
+</html>

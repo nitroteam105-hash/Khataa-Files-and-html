@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gym / Yoga Setup — Khaata</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1f6f54; --green-light: #e7f2ed;
+    --parchment: #fbfbf9; --ink: #1c1c1a; --muted: #6b6b64;
+    --border: #e6e4dd; --amber: #b5791f; --amber-light: #fbf1e2;
+    --purple: #6b5b95; --purple-light: #f0eef8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', sans-serif; background: var(--parchment); color: var(--ink);
+    max-width: 480px; margin: 0 auto; min-height: 100vh; padding-bottom: 40px;
+  }
+  header { padding: 24px 20px 12px; }
+  header h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 800; }
+  header p { font-size: 13px; color: var(--muted); margin-top: 3px; }
+
+  .step-tabs { display: flex; gap: 6px; padding: 12px 20px; overflow-x: auto; }
+  .step-tab {
+    flex-shrink: 0; padding: 8px 14px; border-radius: 999px; font-size: 12.5px; font-weight: 600;
+    border: 1px solid var(--border); color: var(--muted); background: #fff; cursor: pointer; white-space: nowrap;
+  }
+  .step-tab.active { background: var(--green); color: #fff; border-color: var(--green); }
+
+  .panel { display: none; padding: 4px 20px 20px; }
+  .panel.active { display: block; }
+
+  .section-label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin: 16px 0 8px; }
+  .card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 10px; }
+
+  .access-options { display: flex; gap: 8px; margin-bottom: 4px; }
+  .access-opt {
+    flex: 1; text-align: center; padding: 12px 8px; border-radius: 10px; border: 1.5px solid var(--border);
+    font-size: 12.5px; font-weight: 600; cursor: pointer; background: #fff;
+  }
+  .access-opt.selected { background: var(--green-light); border-color: var(--green); color: var(--green); }
+
+  .batch-row { display: flex; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .batch-row:last-child { border-bottom: none; }
+  .batch-icon { width: 34px; height: 34px; border-radius: 8px; background: var(--green-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .batch-info { flex: 1; }
+  .batch-name { font-weight: 600; font-size: 14px; }
+  .batch-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .add-row-btn { border: 1.5px dashed var(--green); color: var(--green); background: none; border-radius: 10px; padding: 10px; width: 100%; font-weight: 700; font-size: 13px; cursor: pointer; margin-top: 8px; }
+
+  .fee-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .fee-row:last-child { border-bottom: none; }
+  .fee-label { font-size: 14px; font-weight: 500; }
+  .fee-sub { font-size: 11.5px; color: var(--muted); }
+  .switch { width: 40px; height: 24px; background: var(--green); border-radius: 999px; position: relative; flex-shrink: 0; cursor: pointer; }
+  .switch.off { background: #d8d6cd; }
+  .switch::after { content: ''; position: absolute; top: 3px; right: 3px; width: 18px; height: 18px; background: #fff; border-radius: 50%; }
+  .switch.off::after { left: 3px; right: auto; }
+  .fee-controls { display: flex; align-items: center; gap: 10px; }
+  .edit-icon {
+    width: 26px; height: 26px; border-radius: 7px; background: var(--purple-light); color: var(--purple);
+    display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; flex-shrink: 0;
+  }
+
+  .preset-tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+  .preset-tab { flex: 1; text-align: center; padding: 10px; border-radius: 10px; border: 1px solid var(--border); font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; background: #fff; }
+  .preset-tab.active { background: var(--green); color: #fff; border-color: var(--green); }
+
+  .field-chip { display: inline-flex; align-items: center; gap: 6px; background: var(--green-light); color: var(--green); border-radius: 999px; padding: 6px 12px; font-size: 12.5px; font-weight: 600; margin: 4px 4px 0 0; }
+  .field-chip.locked { background: #eee; color: var(--muted); }
+  .field-chip.off { background: #f2f2ee; color: #b3b0a6; text-decoration: line-through; }
+
+  .view-toggle { display: flex; gap: 6px; margin-bottom: 10px; }
+  .view-btn { flex: 1; text-align: center; padding: 8px; border-radius: 8px; border: 1px solid var(--border); font-size: 12.5px; font-weight: 600; color: var(--muted); cursor: pointer; background: #fff; }
+  .view-btn.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .mode-badge { font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 999px; margin-left: 6px; }
+  .mode-badge.online { background: var(--purple-light); color: var(--purple); }
+  .mode-badge.offline { background: var(--green-light); color: var(--green); }
+  .mode-badge.hybrid { background: var(--amber-light); color: var(--amber); }
+  .room-tag { font-size: 11px; color: var(--muted); }
+  .cal-grid { display: flex; gap: 6px; overflow-x: auto; padding: 4px 0; }
+  .cal-room { flex-shrink: 0; width: 130px; }
+  .cal-room-label { font-size: 11px; font-weight: 700; color: var(--muted); text-align: center; margin-bottom: 6px; text-transform: uppercase; }
+  .cal-slot { background: var(--green-light); border-radius: 8px; padding: 8px; margin-bottom: 6px; font-size: 11.5px; }
+  .cal-slot .t { font-weight: 700; color: var(--green); }
+  .cal-slot.online { background: var(--purple-light); }
+  .cal-slot.online .t { color: var(--purple); }
+  .note { font-size: 12px; color: var(--muted); margin-top: 10px; line-height: 1.5; }
+
+  .plan-card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 10px; }
+  .plan-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .plan-name { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 15px; }
+  .plan-batches { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+  .cycle-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .cycle-chip {
+    background: var(--green-light); color: var(--green); border-radius: 10px; padding: 8px 10px;
+    font-size: 12px; font-weight: 600; display: flex; flex-direction: column; align-items: center; min-width: 64px; cursor: pointer;
+  }
+  .cycle-chip .cyc-label { font-size: 10.5px; text-transform: uppercase; opacity: 0.75; }
+  .cycle-chip .cyc-amt { font-size: 13px; margin-top: 2px; }
+  .plan-delete { font-size: 12px; color: var(--muted); cursor: pointer; }
+
+  .toggle-card { display: flex; justify-content: space-between; align-items: center; }
+  .toggle-card .tc-title { font-weight: 600; font-size: 14px; }
+  .toggle-card .tc-sub { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+
+  .addon-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .addon-row:last-child { border-bottom: none; }
+  .addon-name { font-size: 14px; font-weight: 500; }
+  .addon-price { font-size: 13px; color: var(--green); font-weight: 600; }
+
+  .discount-note { background: var(--amber-light); color: var(--amber); border-radius: 10px; padding: 12px 14px; font-size: 12.5px; font-weight: 500; line-height: 1.5; }
+  .coaching-flag { background: var(--amber-light); color: var(--amber); border-radius: 10px; padding: 12px 14px; font-size: 12.5px; margin: 12px 20px 0; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>FlexFit Gym — Setup</h1>
+  <p>Schedule, fees & customer intake for this business</p>
+</header>
+
+<div class="coaching-flag">⚠ Coaching uses a separate setup (student/school details) — not shown here</div>
+
+<div class="step-tabs">
+  <div class="step-tab active" onclick="showPanel('schedule', this)">1. Schedule</div>
+  <div class="step-tab" onclick="showPanel('fees', this)">2. Fees</div>
+  <div class="step-tab" onclick="showPanel('intake', this)">3. Customer Intake</div>
+</div>
+
+<!-- PANEL 1: SCHEDULE -->
+<div class="panel active" id="panel-schedule">
+  <div class="section-label">Access type</div>
+  <div class="access-options">
+    <div class="access-opt" onclick="selectAccess(this)">Open-access</div>
+    <div class="access-opt" onclick="selectAccess(this)">Batch-based</div>
+    <div class="access-opt selected" onclick="selectAccess(this)">Hybrid</div>
+  </div>
+  <div class="note">Hybrid — gym open all day, plus scheduled classes below</div>
+
+  <div class="section-label">Operating hours</div>
+  <div class="card">
+    <div class="batch-row">
+      <div class="batch-icon">🕒</div>
+      <div class="batch-info">
+        <div class="batch-name">Mon–Sat</div>
+        <div class="batch-meta">6:00 AM – 10:00 PM</div>
+      </div>
+    </div>
+    <div class="batch-row">
+      <div class="batch-icon">🕒</div>
+      <div class="batch-info">
+        <div class="batch-name">Sunday</div>
+        <div class="batch-meta">7:00 AM – 1:00 PM</div>
+      </div>
+    </div>
+    <button class="add-row-btn" onclick="alert('Would open Add Hours form — pick day(s) + time range')">+ Add Hours</button>
+  </div>
+
+  <div class="section-label">Scheduled batches</div>
+  <div class="view-toggle">
+    <div class="view-btn active" onclick="showBatchView('list', this)">☰ List</div>
+    <div class="view-btn" onclick="showBatchView('cal', this)">▦ Calendar</div>
+  </div>
+
+  <div class="card" id="batchListView">
+    <div class="batch-row">
+      <div class="batch-icon">🧘</div>
+      <div class="batch-info">
+        <div class="batch-name">Zumba <span class="mode-badge hybrid">Hybrid</span></div>
+        <div class="batch-meta">Mon/Wed/Fri · 6:00–7:00 AM · Capacity 20</div>
+        <div class="room-tag">Hall A · Link: meet.google.com/zumba-flexfit</div>
+      </div>
+    </div>
+    <div class="batch-row">
+      <div class="batch-icon">💪</div>
+      <div class="batch-info">
+        <div class="batch-name">Personal Training <span class="mode-badge offline">Offline</span></div>
+        <div class="batch-meta">Daily · 7:00–8:00 PM · Capacity 4</div>
+        <div class="room-tag">Hall B</div>
+      </div>
+    </div>
+    <div class="batch-row">
+      <div class="batch-icon">🧘‍♀️</div>
+      <div class="batch-info">
+        <div class="batch-name">Prenatal Yoga <span class="mode-badge online">Online</span></div>
+        <div class="batch-meta">Tue/Thu · 6:00–7:00 AM · Capacity 15</div>
+        <div class="room-tag">Link: meet.google.com/prenatal-flexfit</div>
+      </div>
+    </div>
+    <button class="add-row-btn" onclick="alert('Would open Add Batch form — day, time, capacity, mode (Offline/Online/Hybrid), optional link, optional room')">+ Add Batch</button>
+    <p class="note">Instructor/trainer assignment isn't set here — that happens on the separate Timetable page, so scheduling and conflicts are handled in one place.</p>
+  </div>
+
+  <div class="card" id="batchCalView" style="display:none">
+    <p class="note" style="margin-top:0 0 10px">Mon, 6–7 AM — rooms shown side by side when a studio has more than one</p>
+    <div class="cal-grid">
+      <div class="cal-room">
+        <div class="cal-room-label">Hall A</div>
+        <div class="cal-slot"><div class="t">6:00 AM</div>Zumba (Hybrid)</div>
+      </div>
+      <div class="cal-room">
+        <div class="cal-room-label">Hall B</div>
+        <div class="cal-slot online"><div class="t">6:00 AM</div>Prenatal Yoga (Online)</div>
+      </div>
+      <div class="cal-room">
+        <div class="cal-room-label">Hall B</div>
+        <div class="cal-slot"><div class="t">7:00 PM</div>Personal Training (Offline)</div>
+      </div>
+    </div>
+    <p class="note">Single-space studios skip the room lanes — sessions just stack by time in one column.</p>
+  </div>
+</div>
+
+<!-- PANEL 2: FEES -->
+<div class="panel" id="panel-fees">
+  <div class="section-label">Fee plans</div>
+
+  <div class="plan-card">
+    <div class="plan-top">
+      <div class="plan-name">Beginner Yoga</div>
+      <div class="plan-delete" onclick="alert('Would delete this plan')">✕</div>
+    </div>
+    <div class="plan-batches">Linked: Zumba, Prenatal Yoga batches</div>
+    <div class="cycle-row">
+      <div class="cycle-chip" onclick="editCycle(this)"><span class="cyc-label">Monthly</span><span class="cyc-amt">₹1,200</span></div>
+      <div class="cycle-chip" onclick="editCycle(this)"><span class="cyc-label">Quarterly</span><span class="cyc-amt">₹3,200</span></div>
+      <div class="cycle-chip" onclick="editCycle(this)"><span class="cyc-label">Yearly</span><span class="cyc-amt">₹11,500</span></div>
+    </div>
+  </div>
+
+  <div class="plan-card">
+    <div class="plan-top">
+      <div class="plan-name">Advanced Yoga</div>
+      <div class="plan-delete" onclick="alert('Would delete this plan')">✕</div>
+    </div>
+    <div class="plan-batches">Linked: Personal Training batch</div>
+    <div class="cycle-row">
+      <div class="cycle-chip" onclick="editCycle(this)"><span class="cyc-label">Monthly</span><span class="cyc-amt">₹3,000</span></div>
+      <div class="cycle-chip" onclick="editCycle(this)"><span class="cyc-label">3-Month</span><span class="cyc-amt">₹8,000</span></div>
+    </div>
+  </div>
+
+  <div class="plan-card">
+    <div class="plan-top">
+      <div class="plan-name">Kids Yoga</div>
+      <div class="plan-delete" onclick="alert('Would delete this plan')">✕</div>
+    </div>
+    <div class="plan-batches">Linked: no batch yet</div>
+    <div class="cycle-row">
+      <div class="cycle-chip" onclick="editCycle(this)"><span class="cyc-label">Monthly</span><span class="cyc-amt">₹900</span></div>
+    </div>
+  </div>
+
+  <button class="add-row-btn" onclick="alert('Would open Add Plan form — name, linked batches, one or more billing cycles with prices')">+ Add Plan</button>
+
+  <div class="section-label">Trial session</div>
+  <div class="plan-card toggle-card">
+    <div><div class="tc-title">Offer trial session</div><div class="tc-sub">₹200 · single session, before committing to a plan</div></div>
+    <div class="switch" onclick="toggleSwitch(this)"></div>
+  </div>
+
+  <div class="section-label">Membership freeze / pause</div>
+  <div class="plan-card toggle-card">
+    <div><div class="tc-title">Allow freeze</div><div class="tc-sub">Max 15 days per request · billing pauses during freeze</div></div>
+    <div class="switch" onclick="toggleSwitch(this)"></div>
+  </div>
+
+  <div class="section-label">Add-on charges</div>
+  <div class="plan-card">
+    <div class="addon-row"><div class="addon-name">Locker rental</div><div class="addon-price">₹100/mo</div></div>
+    <div class="addon-row"><div class="addon-name">Diet consultation</div><div class="addon-price">₹500 one-time</div></div>
+    <div class="addon-row"><div class="addon-name">Yoga mat (purchase)</div><div class="addon-price">₹450 one-time</div></div>
+    <button class="add-row-btn" onclick="alert('Would open Add Add-on form')">+ Add Add-on</button>
+  </div>
+
+  <div class="section-label">Discounts</div>
+  <div class="discount-note">Discounts aren't fixed here — the owner applies a flat ₹ or % discount per customer during their onboarding, based on judgment (e.g. sibling, referral, early payment).</div>
+</div>
+
+
+<!-- PANEL 3: CUSTOMER INTAKE -->
+<div class="panel" id="panel-intake">
+  <div class="section-label">Intake depth preset</div>
+  <div class="preset-tabs">
+    <div class="preset-tab" onclick="setIntakePreset('simple', this)">Simple</div>
+    <div class="preset-tab active" onclick="setIntakePreset('standard', this)">Standard</div>
+    <div class="preset-tab" onclick="setIntakePreset('detailed', this)">Detailed</div>
+  </div>
+
+  <div class="section-label">Fields collected at member onboarding</div>
+  <div class="card">
+    <span class="field-chip locked">Name ✓ required</span>
+    <span class="field-chip locked">Mobile ✓ required</span>
+    <span class="field-chip" id="chip-age">Age</span>
+    <span class="field-chip" id="chip-id">ID proof</span>
+    <span class="field-chip" id="chip-emergency">Emergency contact</span>
+    <span class="field-chip off" id="chip-medical">Medical note</span>
+    <span class="field-chip off" id="chip-address">Address</span>
+  </div>
+  <p class="note">Tap any chip to toggle it on/off for this business. Name and Mobile are always required — needed for the ledger and WhatsApp reminders.</p>
+</div>
+
+<script>
+function showPanel(id, el) {
+  document.querySelectorAll('.step-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('panel-' + id).classList.add('active');
+}
+function selectAccess(el) {
+  document.querySelectorAll('.access-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function showBatchView(view, el) {
+  document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('batchListView').style.display = view === 'list' ? 'block' : 'none';
+  document.getElementById('batchCalView').style.display = view === 'cal' ? 'block' : 'none';
+}
+function toggleSwitch(el) { el.classList.toggle('off'); }
+function editCycle(el) {
+  const label = el.querySelector('.cyc-label').textContent;
+  const amtEl = el.querySelector('.cyc-amt');
+  const current = amtEl.textContent.replace(/[^0-9]/g, '');
+  const amount = prompt('Set ' + label + ' price (₹):', current || '0');
+  if (amount !== null && amount.trim() !== '') {
+    amtEl.textContent = '₹' + amount.trim();
+  }
+}
+function setIntakePreset(tier, el) {
+  document.querySelectorAll('.preset-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const map = {
+    simple: { age: false, id: false, emergency: false, medical: false, address: false },
+    standard: { age: true, id: true, emergency: true, medical: false, address: false },
+    detailed: { age: true, id: true, emergency: true, medical: true, address: true }
+  };
+  const cfg = map[tier];
+  document.getElementById('chip-age').classList.toggle('off', !cfg.age);
+  document.getElementById('chip-id').classList.toggle('off', !cfg.id);
+  document.getElementById('chip-emergency').classList.toggle('off', !cfg.emergency);
+  document.getElementById('chip-medical').classList.toggle('off', !cfg.medical);
+  document.getElementById('chip-address').classList.toggle('off', !cfg.address);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clinic Setup — Khaata</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1f6f54; --green-light: #e7f2ed;
+    --parchment: #fbfbf9; --ink: #1c1c1a; --muted: #6b6b64;
+    --border: #e6e4dd; --amber: #b5791f; --amber-light: #fbf1e2;
+    --purple: #6b5b95; --purple-light: #f0eef8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', sans-serif; background: var(--parchment); color: var(--ink);
+    max-width: 480px; margin: 0 auto; min-height: 100vh; padding-bottom: 40px;
+  }
+  header { padding: 24px 20px 12px; }
+  header h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 800; }
+  header p { font-size: 13px; color: var(--muted); margin-top: 3px; }
+
+  .step-tabs { display: flex; gap: 6px; padding: 12px 20px; overflow-x: auto; }
+  .step-tab {
+    flex-shrink: 0; padding: 8px 14px; border-radius: 999px; font-size: 12.5px; font-weight: 600;
+    border: 1px solid var(--border); color: var(--muted); background: #fff; cursor: pointer; white-space: nowrap;
+  }
+  .step-tab.active { background: var(--green); color: #fff; border-color: var(--green); }
+
+  .panel { display: none; padding: 4px 20px 20px; }
+  .panel.active { display: block; }
+
+  .section-label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin: 16px 0 8px; }
+  .card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 10px; }
+
+  .add-row-btn { border: 1.5px dashed var(--green); color: var(--green); background: none; border-radius: 10px; padding: 10px; width: 100%; font-weight: 700; font-size: 13px; cursor: pointer; margin-top: 8px; }
+  .mini-add-link { display: inline-block; color: var(--green); font-size: 12px; font-weight: 700; cursor: pointer; margin-top: 8px; }
+
+  .plan-card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 10px; }
+  .plan-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .plan-name { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 15px; }
+  .plan-delete { font-size: 12px; color: var(--muted); cursor: pointer; }
+  .cycle-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .cycle-chip {
+    background: var(--green-light); color: var(--green); border-radius: 10px; padding: 8px 10px;
+    font-size: 12px; font-weight: 600; display: flex; flex-direction: column; align-items: center; min-width: 74px; cursor: pointer;
+  }
+  .cycle-chip .cyc-label { font-size: 10.5px; text-transform: uppercase; opacity: 0.75; }
+  .cycle-chip .cyc-amt { font-size: 13px; margin-top: 2px; }
+
+  .toggle-row { display: flex; justify-content: space-between; align-items: center; }
+  .switch { width: 40px; height: 24px; background: var(--green); border-radius: 999px; position: relative; flex-shrink: 0; cursor: pointer; }
+  .switch.off { background: #d8d6cd; }
+  .switch::after { content: ''; position: absolute; top: 3px; right: 3px; width: 18px; height: 18px; background: #fff; border-radius: 50%; }
+  .switch.off::after { left: 3px; right: auto; }
+
+  .timetable-link-btn {
+    display: block; width: 100%; text-align: center; background: var(--green); color: #fff;
+    padding: 12px; border-radius: 10px; font-weight: 700; font-size: 13px; border: none; cursor: pointer; margin-top: 10px;
+  }
+
+  .visit-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .visit-row:last-child { border-bottom: none; }
+  .visit-name { font-weight: 600; font-size: 14px; }
+  .visit-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .visit-fee { font-weight: 700; color: var(--green); font-size: 14px; }
+
+  .inline-form { background: var(--green-light); border: 1px solid var(--green); border-radius: 12px; padding: 14px; margin: 8px 0; }
+  .inline-form input, .inline-form select {
+    width: 100%; padding: 9px 10px; border: 1px solid var(--border); border-radius: 8px;
+    font-size: 13px; font-family: 'Inter', sans-serif; margin-bottom: 8px; background: #fff;
+  }
+  .inline-form label { font-size: 11px; font-weight: 700; color: var(--muted); display: block; margin-bottom: 3px; text-transform: uppercase; }
+  .form-actions { display: flex; gap: 8px; margin-top: 4px; }
+  .form-actions button { flex: 1; padding: 10px; border-radius: 8px; border: none; font-weight: 700; font-size: 13px; cursor: pointer; }
+  .btn-confirm { background: var(--green); color: #fff; }
+  .btn-cancel { background: #fff; color: var(--muted); border: 1px solid var(--border) !important; }
+
+  .field-chip { display: inline-flex; align-items: center; gap: 6px; background: #eee; color: var(--muted); border-radius: 999px; padding: 6px 12px; font-size: 12.5px; font-weight: 600; margin: 4px 4px 0 0; }
+
+  .note { font-size: 12px; color: var(--muted); margin-top: 10px; line-height: 1.5; }
+  .scope-note { background: var(--amber-light); color: var(--amber); border-radius: 10px; padding: 12px 14px; font-size: 12.5px; font-weight: 500; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>City Dental Clinic — Setup</h1>
+  <p>Fee plans, appointment mode & patient intake</p>
+</header>
+
+<div class="step-tabs">
+  <div class="step-tab active" onclick="showPanel('fees', this)">1. Fee Plans</div>
+  <div class="step-tab" onclick="showPanel('appt', this)">2. Appointments</div>
+  <div class="step-tab" onclick="showPanel('intake', this)">3. Intake</div>
+</div>
+
+<!-- PANEL 1: FEE PLANS -->
+<div class="panel active" id="panel-fees">
+  <div class="section-label">Fee plans</div>
+  <div id="plansContainer"></div>
+  <button class="add-row-btn" onclick="addFeePlan()">+ Add Plan</button>
+  <p class="note">Each plan can have multiple pricing options — a simple visit fee, or a multi-visit package. Tap "+ Add pricing option" inside a plan to add more.</p>
+</div>
+
+<!-- PANEL 2: APPOINTMENTS -->
+<div class="panel" id="panel-appt">
+  <div class="section-label">Appointment booking</div>
+  <div class="card toggle-row">
+    <div><div style="font-weight:700;font-size:14px">Enable appointment booking</div><div class="note" style="margin-top:2px">Off by default — most small clinics just log visits as they happen</div></div>
+    <div class="switch off" id="apptToggleSwitch" onclick="toggleAppointments()"></div>
+  </div>
+
+  <div id="apptOnContent" style="display:none">
+    <div class="card">
+      <p class="note" style="margin-top:0">Appointment booking is on. Doctor slots, patient bookings, and double-booking checks are all managed on the separate <strong>Timetable</strong> page — same one used for Gym and Coaching.</p>
+      <button class="timetable-link-btn" onclick="alert('Would open the Timetable page for this business')">Open Timetable →</button>
+    </div>
+  </div>
+
+  <div id="apptOffContent">
+    <div class="section-label">Today's visits (walk-in log)</div>
+    <div class="card">
+      <div id="visitsContainer"></div>
+      <button class="add-row-btn" onclick="openVisitForm()">+ Log Visit</button>
+    </div>
+  </div>
+</div>
+
+<!-- PANEL 3: CUSTOMER INTAKE -->
+<div class="panel" id="panel-intake">
+  <div class="section-label">Fields collected at patient onboarding</div>
+  <div class="card">
+    <span class="field-chip">Name ✓ required</span>
+    <span class="field-chip">Mobile ✓ required</span>
+  </div>
+  <div class="scope-note">Kept deliberately minimal — no medical history, diagnosis, or prescription fields. Khaata is a record-keeping and money-recovery tool, not a medical-records system, and health data carries its own regulatory sensitivity. Same reasoning as skipping Mark Card generation for Coaching.</div>
+</div>
+
+<script>
+function showPanel(id, el) {
+  document.querySelectorAll('.step-tab').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
+  el.classList.add('active');
+  document.getElementById('panel-' + id).classList.add('active');
+}
+
+// ---- FEE PLANS ----
+function editCycle(el) {
+  const label = el.querySelector('.cyc-label').textContent;
+  const amtEl = el.querySelector('.cyc-amt');
+  const current = amtEl.textContent.replace(/[^0-9]/g, '');
+  const amount = prompt('Set ' + label + ' price (₹):', current || '0');
+  if (amount !== null && amount.trim() !== '') amtEl.textContent = '₹' + amount.trim();
+}
+
+function deletePlan(el) {
+  const card = el.closest('.plan-card');
+  if (confirm('Remove plan "' + card.querySelector('.plan-name').textContent + '"?')) card.remove();
+}
+
+function addCycleToPlan(linkEl) {
+  const label = prompt('Pricing option label (e.g. "Per-visit", "Package (5 visits)"):', 'Per-visit');
+  if (!label || !label.trim()) return;
+  const price = prompt('Price for "' + label.trim() + '" (₹):', '500');
+  if (price === null || price.trim() === '') return;
+  const cycleRow = linkEl.previousElementSibling;
+  const chip = document.createElement('div');
+  chip.className = 'cycle-chip';
+  chip.onclick = function() { editCycle(chip); };
+  chip.innerHTML = '<span class="cyc-label"></span><span class="cyc-amt"></span>';
+  chip.querySelector('.cyc-label').textContent = label.trim();
+  chip.querySelector('.cyc-amt').textContent = '₹' + price.trim();
+  cycleRow.appendChild(chip);
+}
+
+function addFeePlan() {
+  const name = prompt('Plan name (e.g. "Root Canal", "General Consultation"):');
+  if (!name || !name.trim()) return;
+  const price = prompt('Per-visit price for "' + name.trim() + '" (₹):', '500');
+  if (price === null || price.trim() === '') return;
+  const card = document.createElement('div');
+  card.className = 'plan-card';
+  card.innerHTML =
+    '<div class="plan-top"><div class="plan-name"></div><div class="plan-delete" onclick="deletePlan(this)">✕</div></div>' +
+    '<div class="cycle-row"><div class="cycle-chip" onclick="editCycle(this)"><span class="cyc-label">Per-visit</span><span class="cyc-amt"></span></div></div>' +
+    '<div class="mini-add-link" onclick="addCycleToPlan(this)">+ Add pricing option</div>';
+  card.querySelector('.plan-name').textContent = name.trim();
+  card.querySelector('.cyc-amt').textContent = '₹' + price.trim();
+  document.getElementById('plansContainer').appendChild(card);
+}
+
+// ---- APPOINTMENTS ----
+function toggleAppointments() {
+  const sw = document.getElementById('apptToggleSwitch');
+  sw.classList.toggle('off');
+  const isOn = !sw.classList.contains('off');
+  document.getElementById('apptOnContent').style.display = isOn ? 'block' : 'none';
+  document.getElementById('apptOffContent').style.display = isOn ? 'none' : 'block';
+}
+
+function openVisitForm() {
+  document.querySelectorAll('.inline-form').forEach(function(f) { f.remove(); });
+  const planOptions = Array.from(document.querySelectorAll('.plan-name')).map(function(el) { return el.textContent; });
+  const form = document.createElement('div');
+  form.className = 'inline-form';
+  form.innerHTML =
+    '<label>Patient name</label><input type="text" class="v-name" placeholder="e.g. Rahul Sharma">' +
+    '<label>Mobile</label><input type="text" class="v-mobile" placeholder="10-digit number">' +
+    '<label>Service / Plan</label>' +
+    '<select class="v-plan">' + planOptions.map(function(p) { return '<option value="' + p + '">' + p + '</option>'; }).join('') + '</select>' +
+    '<label>Fee (₹)</label><input type="text" class="v-fee" placeholder="e.g. 500">' +
+    '<div class="form-actions"><button class="btn-confirm" onclick="confirmVisit()">+ Log Visit</button><button class="btn-cancel" onclick="this.closest(\'.inline-form\').remove()">Cancel</button></div>';
+  document.getElementById('visitsContainer').parentNode.insertBefore(form, document.getElementById('visitsContainer').nextSibling.nextSibling);
+}
+
+function confirmVisit() {
+  const form = document.querySelector('.inline-form');
+  const name = form.querySelector('.v-name').value.trim();
+  const mobile = form.querySelector('.v-mobile').value.trim();
+  const plan = form.querySelector('.v-plan').value;
+  const fee = form.querySelector('.v-fee').value.trim();
+  if (!name) { form.remove(); return; }
+
+  const row = document.createElement('div');
+  row.className = 'visit-row';
+  row.innerHTML =
+    '<div><div class="visit-name"></div><div class="visit-meta"></div></div>' +
+    '<div class="visit-fee"></div>';
+  row.querySelector('.visit-name').textContent = name;
+  row.querySelector('.visit-meta').textContent = plan + (mobile ? ' · ' + mobile : '') + ' · Just now';
+  row.querySelector('.visit-fee').textContent = fee ? '₹' + fee : '—';
+  document.getElementById('visitsContainer').appendChild(row);
+  form.remove();
+}
+</script>
+</body>
+</html>

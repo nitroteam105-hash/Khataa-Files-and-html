@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ledger MVP</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,sans-serif;}
+  body{background:#f6f6f6;color:#111;display:flex;justify-content:center;padding:14px;}
+  .app{width:100%;max-width:420px;background:#fff;border:1px solid #ddd;border-radius:8px;padding:16px;}
+  h2{font-size:18px;margin-bottom:2px;}
+  .sub{font-size:12px;color:#666;margin-bottom:14px;}
+  .tabs{display:flex;gap:4px;margin-bottom:14px;}
+  .tabs button{flex:1;padding:8px;font-size:12px;border:1px solid #ddd;background:#fff;border-radius:5px;cursor:pointer;color:#666;}
+  .tabs button.on{background:#111;color:#fff;border-color:#111;}
+  .stat{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px;}
+  .stat div{border:1px solid #ddd;border-radius:6px;padding:9px;text-align:center;}
+  .stat b{font-size:16px;display:block;}.stat span{font-size:10px;color:#777;}
+  .item{border:1px solid #ddd;border-radius:6px;padding:10px;margin-bottom:7px;}
+  .item .hd{display:flex;justify-content:space-between;align-items:center;}
+  .item b{font-size:14px;}
+  .meta{font-size:11px;color:#777;margin-top:2px;}
+  .badge{font-size:10px;padding:2px 7px;border-radius:99px;}
+  .paid{background:#e6f4ea;color:#1a7f4b;}.due{background:#fdecea;color:#b3261e;}.part{background:#fff4e5;color:#b36b00;}
+  .act{display:flex;gap:6px;margin-top:8px;}
+  .act button{flex:1;font-size:11px;padding:7px;border-radius:5px;border:1px solid #111;cursor:pointer;background:#fff;}
+  .act button.pri{background:#111;color:#fff;}
+  label{display:block;font-size:11px;color:#555;margin:8px 0 3px;}
+  input,select{width:100%;padding:8px;border:1px solid #ccc;border-radius:5px;font-size:14px;}
+  .row{display:flex;gap:8px;}.row>*{flex:1;}
+  .addbtn{width:100%;border:1px dashed #aaa;background:#fafafa;border-radius:6px;padding:9px;font-size:13px;cursor:pointer;margin-top:6px;}
+  .big{width:100%;background:#111;color:#fff;border:none;border-radius:6px;padding:11px;font-size:14px;cursor:pointer;margin-top:10px;}
+  .hint{font-size:11px;color:#999;margin-top:10px;line-height:1.4;}
+  .receipt{border:1px dashed #aaa;border-radius:6px;padding:14px;text-align:center;margin-top:10px;}
+  .receipt h3{font-size:15px;margin-bottom:6px;}
+  .receipt .amt{font-size:26px;margin:6px 0;}
+  .receipt .ln{font-size:12px;color:#555;margin:2px 0;}
+  .qr{width:90px;height:90px;margin:10px auto;border:1px solid #111;display:flex;align-items:center;justify-content:center;font-size:10px;color:#888;}
+  .x{background:none;border:none;font-size:18px;cursor:pointer;float:right;color:#999;}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+<script>
+const S={tab:'dues',form:null,receipt:null,
+  people:[
+    {n:'Ravi Kumar',u:'101',amt:6000,status:'due',paid:0,date:''},
+    {n:'Priya Shah',u:'102',amt:6000,status:'paid',paid:6000,date:'05 Jun'},
+    {n:'Arjun Nair',u:'201',amt:7000,status:'part',paid:4000,date:'03 Jun'},
+    {n:'Dev Patel',u:'202',amt:6000,status:'due',paid:0,date:''}
+  ]};
+const $=id=>document.getElementById(id);
+const money=n=>'₹'+(+n).toLocaleString();
+
+function totals(){
+  let billed=0,collected=0,pending=0,paidCt=0;
+  S.people.forEach(p=>{billed+=p.amt;collected+=p.paid;pending+=(p.amt-p.paid);if(p.status==='paid')paidCt++;});
+  return{billed,collected,pending,paidCt,total:S.people.length};
+}
+
+function duesView(){
+  const t=totals();
+  const list=S.tab==='dues'?S.people.filter(p=>p.status!=='paid'):S.people;
+  return `<div class="stat">
+    <div><b>${money(t.collected)}</b><span>Collected</span></div>
+    <div><b>${money(t.pending)}</b><span>Pending</span></div>
+    <div><b>${t.paidCt}/${t.total}</b><span>Paid</span></div></div>
+  ${list.map((p,i)=>{const idx=S.people.indexOf(p);const bal=p.amt-p.paid;
+    return `<div class="item"><div class="hd"><div><b>${p.n}</b><div class="meta">Room ${p.u} · ${money(p.amt)}${p.status==='part'?' · paid '+money(p.paid):''}</div></div>
+    <span class="badge ${p.status}">${p.status==='paid'?'PAID':p.status==='part'?'PARTIAL':'DUE'}</span></div>
+    ${p.status!=='paid'?`<div class="act">
+      <button class="pri" onclick="openPay(${idx})">Record ₹${bal} paid</button>
+      <button onclick="remind('${p.n}')">Remind</button></div>`:
+      `<div class="meta">✓ paid ${p.date} · <a href="#" onclick="showReceipt(${idx});return false">receipt</a></div>`}
+    </div>`;}).join('')}
+  <button class="addbtn" onclick="openAdd()">+ Add person / bill</button>
+  <div class="hint">Ledger only — money moves owner↔payer directly (cash/their UPI). App records it, never holds it. Keeps cost & licensing near-zero.</div>`;
+}
+
+function payForm(){
+  const p=S.people[S.form];const bal=p.amt-p.paid;
+  return `<button class="x" onclick="S.form=null;draw()">×</button><h2>Record payment</h2><div class="sub">${p.n} · Room ${p.u}</div>
+  <label>Amount received (₹)</label><input id="pa" type="number" value="${bal}">
+  <label>Mode</label><select id="pm"><option>Cash</option><option>UPI</option><option>Bank transfer</option></select>
+  <label>Date</label><input id="pd" type="date" value="2026-06-21">
+  <button class="big" onclick="savePay()">Save & generate receipt</button>
+  <div class="hint">For UPI you can show the owner's own QR — payer pays owner directly, you just log it here.</div>`;
+}
+
+function addForm(){
+  return `<button class="x" onclick="S.form=null;draw()">×</button><h2>Add person / bill</h2><div class="sub">Who owes, how much.</div>
+  <label>Name</label><input id="an">
+  <div class="row"><div><label>Unit/ref</label><input id="au"></div><div><label>Amount (₹)</label><input id="aa" type="number"></div></div>
+  <button class="big" onclick="saveAdd()">Add</button>`;
+}
+
+function receiptView(){
+  const p=S.people[S.receipt];
+  return `<button class="x" onclick="S.receipt=null;draw()">×</button><h2>Receipt</h2>
+  <div class="receipt"><h3>Payment Receipt</h3>
+  <div class="ln">${p.n} · Room ${p.u}</div>
+  <div class="amt">${money(p.paid)}</div>
+  <div class="ln">Status: ${p.status==='paid'?'Paid in full':'Partial ('+money(p.amt-p.paid)+' due)'}</div>
+  <div class="ln">Date: ${p.date||'today'}</div>
+  <div class="qr">QR / verify</div>
+  <div class="ln" style="font-size:10px">Auto-generated · shareable on WhatsApp</div></div>
+  <button class="big" onclick="alert('In real app: sends PDF/WhatsApp receipt')">Share receipt</button>`;
+}
+
+function openPay(i){S.form='pay';S.payIdx=i;S.form=i;draw();}
+function savePay(){const p=S.people[S.form];const a=+$('pa').value||0;const d=$('pd').value;
+  p.paid=Math.min(p.amt,p.paid+a);p.status=p.paid>=p.amt?'paid':'part';
+  p.date=new Date(d).toLocaleDateString('en-IN',{day:'2-digit',month:'short'});
+  const idx=S.form;S.form=null;S.receipt=idx;draw();}
+function openAdd(){S.form='add';draw();}
+function saveAdd(){const n=$('an').value;if(!n)return;
+  S.people.push({n,u:$('au').value,amt:+$('aa').value||0,status:'due',paid:0,date:''});S.form=null;draw();}
+function showReceipt(i){S.receipt=i;draw();}
+function remind(n){alert('Reminder queued for '+n+'.\n(Free tier: in-app/push. Paid tier: WhatsApp/SMS — the only real running cost.)');}
+
+function draw(){
+  if(S.receipt!==null){$('app').innerHTML=receiptView();return;}
+  if(S.form==='add'){$('app').innerHTML=addForm();return;}
+  if(typeof S.form==='number'){$('app').innerHTML=payForm();return;}
+  $('app').innerHTML=`<h2>Payments</h2><div class="sub">Who paid, who's pending — that's it.</div>
+  <div class="tabs"><button class="${S.tab==='dues'?'on':''}" onclick="S.tab='dues';draw()">Pending</button>
+  <button class="${S.tab==='all'?'on':''}" onclick="S.tab='all';draw()">All</button></div>${duesView()}`;
+}
+draw();
+</script>
+</body>
+</html>

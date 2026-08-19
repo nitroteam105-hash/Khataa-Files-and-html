@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shared Expense Groups — Khaata</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1f6f54; --green-light: #e7f2ed;
+    --parchment: #fbfbf9; --ink: #1c1c1a; --muted: #6b6b64;
+    --border: #e6e4dd; --amber: #b5791f; --amber-light: #fbf1e2;
+    --purple: #6b5b95; --purple-light: #f0eef8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', sans-serif; background: var(--parchment); color: var(--ink);
+    max-width: 480px; margin: 0 auto; min-height: 100vh; padding-bottom: 40px;
+  }
+  header { padding: 24px 20px 12px; }
+  header h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 800; }
+  header p { font-size: 13px; color: var(--muted); margin-top: 3px; }
+
+  .section-label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin: 16px 20px 8px; }
+  .card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin: 0 20px 10px; }
+
+  .flat-chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .flat-ref-chip { font-size: 11.5px; font-weight: 600; padding: 5px 10px; border-radius: 999px; background: var(--green-light); color: var(--green); }
+  .flat-ref-chip.vacant { background: var(--amber-light); color: var(--amber); }
+
+  .opt-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .opt-btn { flex: 1 1 auto; min-width: 100px; text-align: center; padding: 10px 8px; border-radius: 10px; border: 1.5px solid var(--border); font-size: 12.5px; font-weight: 700; cursor: pointer; background: #fff; color: var(--muted); }
+  .opt-btn.selected { border-color: var(--green); background: var(--green-light); color: var(--green); }
+
+  .suggest-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .suggest-chip { padding: 8px 12px; border-radius: 999px; border: 1.5px dashed var(--purple); color: var(--purple); background: var(--purple-light); font-size: 12px; font-weight: 700; cursor: pointer; }
+
+  .group-card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin: 0 20px 10px; }
+  .group-top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .group-name { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 15px; }
+  .group-type { font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--purple-light); color: var(--purple); margin-left: 6px; vertical-align: middle; }
+  .group-actions { display: flex; gap: 12px; flex-shrink: 0; }
+  .group-edit { font-size: 12px; color: var(--green); cursor: pointer; }
+  .group-delete { font-size: 12px; color: var(--muted); cursor: pointer; }
+  .group-flats { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .group-flat-chip { font-size: 11px; font-weight: 600; padding: 4px 9px; border-radius: 999px; background: var(--green-light); color: var(--green); }
+
+  .add-row-btn { border: 1.5px dashed var(--green); color: var(--green); background: none; border-radius: 10px; padding: 11px; width: 100%; font-weight: 700; font-size: 13px; cursor: pointer; margin-top: 4px; }
+
+  .inline-form { background: var(--green-light); border: 1px solid var(--green); border-radius: 12px; padding: 14px; margin: 0 20px 10px; }
+  .inline-form label { font-size: 11px; font-weight: 700; color: var(--muted); display: block; margin-bottom: 4px; text-transform: uppercase; }
+  .inline-form input, .inline-form select { width: 100%; padding: 9px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; font-family: 'Inter', sans-serif; margin-bottom: 10px; background: #fff; }
+
+  .cat-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: -4px 0 10px; }
+  .cat-chip-opt { padding: 6px 11px; border-radius: 999px; border: 1px solid var(--border); font-size: 11.5px; font-weight: 600; color: var(--muted); background: #fff; cursor: pointer; }
+  .cat-chip-opt.selected { border-color: var(--purple); background: var(--purple-light); color: var(--purple); }
+
+  .flat-select-row { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--border); }
+  .flat-select-row:last-child { border-bottom: none; }
+  .flat-select-row input[type="checkbox"] { flex-shrink: 0; width: 18px; height: 18px; }
+  .flat-select-row label { text-transform: none; font-weight: 600; font-size: 13px; color: var(--ink); margin: 0; flex: 1; min-width: 0; overflow-wrap: break-word; }
+  .flat-select-row .occ-note { font-size: 11px; color: var(--muted); flex-shrink: 0; white-space: nowrap; }
+  .inline-form .form-actions { display: flex; gap: 8px; margin-top: 6px; }
+  .inline-form .form-actions button { flex: 1; padding: 10px; border-radius: 8px; border: none; font-weight: 700; font-size: 13px; cursor: pointer; }
+  .inline-form .btn-confirm { background: var(--green); color: #fff; }
+  .inline-form .btn-cancel { background: #fff; color: var(--muted); border: 1px solid var(--border) !important; }
+
+  .note { font-size: 12px; color: var(--muted); margin: 8px 20px 0; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Shared Expense Groups</h1>
+  <p>Green Residency — which flats share which cost</p>
+</header>
+
+<div class="section-label">Flats in this building</div>
+<div class="card">
+  <div class="flat-chip-row" id="flatOverview"></div>
+</div>
+<p class="note">Vacant flats are shown but simply won't be pre-selected when you split a bill later — you can always adjust which flats are included at split time.</p>
+
+<div class="section-label">Scale</div>
+<div class="card">
+  <div class="opt-grid" id="scaleGrid"></div>
+</div>
+<p class="note">Just shapes which expense groups we suggest below — nothing is restricted, and you can always add anything manually regardless of scale.</p>
+
+<div class="section-label">Suggested for this scale</div>
+<div class="card">
+  <div class="suggest-row" id="suggestRow"></div>
+</div>
+
+<div class="section-label">Expense groups</div>
+<div id="groupsContainer"></div>
+<div style="padding:0 20px">
+  <button class="add-row-btn" onclick="openAddGroupForm()">+ Add Expense Group</button>
+</div>
+<p class="note">Not just utility meters — any shared cost works here: a repair job, a renovation, a shared security guard's salary, pest control, a lift AMC. A group is just "which flats split this particular cost."</p>
+
+<script>
+const flats = [
+  { id: 'f101', name: 'Flat 101', occupants: 3 },
+  { id: 'f102', name: 'Flat 102', occupants: 2 },
+  { id: 'f103', name: 'Flat 103', occupants: 0 },
+  { id: 'f104', name: 'Flat 104', occupants: 4 },
+  { id: 'f105', name: 'Flat 105', occupants: 1 },
+  { id: 'f106', name: 'Flat 106', occupants: 0 },
+  { id: 'f107', name: 'Flat 107', occupants: 2 }
+];
+
+const SCALES = [
+  { key: 'standalone', label: 'Standalone House' },
+  { key: 'small', label: 'Small Building' },
+  { key: 'mid', label: 'Mid-size Society' },
+  { key: 'large', label: 'Large Complex' }
+];
+
+const SCALE_SUGGESTIONS = {
+  standalone: [
+    { name: 'Electricity', category: 'Utility' }
+  ],
+  small: [
+    { name: 'Electricity Meter', category: 'Utility' },
+    { name: 'Water Meter', category: 'Utility' },
+    { name: 'Lift Maintenance', category: 'Repair / Maintenance' }
+  ],
+  mid: [
+    { name: 'Electricity Meter', category: 'Utility' },
+    { name: 'Water Meter', category: 'Utility' },
+    { name: 'Lift AMC', category: 'Repair / Maintenance' },
+    { name: 'Security Guard Salary', category: 'Staff / Security' },
+    { name: 'Housekeeping Staff', category: 'Staff / Security' },
+    { name: 'Common Area Electricity', category: 'Common Area' }
+  ],
+  large: [
+    { name: 'Electricity Meter', category: 'Utility' },
+    { name: 'Water Meter', category: 'Utility' },
+    { name: 'Lift AMC', category: 'Repair / Maintenance' },
+    { name: 'Security Guard Salary', category: 'Staff / Security' },
+    { name: 'Housekeeping Staff', category: 'Staff / Security' },
+    { name: 'Swimming Pool Maintenance', category: 'Common Area' },
+    { name: 'Gym Equipment', category: 'Common Area' },
+    { name: 'Clubhouse Maintenance', category: 'Common Area' },
+    { name: 'Garden / Landscaping', category: 'Common Area' },
+    { name: 'Generator Diesel', category: 'Utility' },
+    { name: 'Pest Control', category: 'Other' },
+    { name: 'Fire Safety Inspection', category: 'Repair / Maintenance' }
+  ]
+};
+
+let selectedScale = 'small';
+
+function renderScaleGrid() {
+  const grid = document.getElementById('scaleGrid');
+  grid.innerHTML = '';
+  SCALES.forEach(function(s) {
+    const btn = document.createElement('div');
+    btn.className = 'opt-btn' + (selectedScale === s.key ? ' selected' : '');
+    btn.textContent = s.label;
+    btn.onclick = function() { selectedScale = s.key; renderScaleGrid(); renderSuggestions(); };
+    grid.appendChild(btn);
+  });
+}
+
+function renderSuggestions() {
+  const container = document.getElementById('suggestRow');
+  container.innerHTML = '';
+  const suggestions = SCALE_SUGGESTIONS[selectedScale];
+  suggestions.forEach(function(s) {
+    const chip = document.createElement('div');
+    chip.className = 'suggest-chip';
+    chip.textContent = '+ ' + s.name;
+    chip.onclick = function() { quickAddFromSuggestion(s.name, s.category); };
+    container.appendChild(chip);
+  });
+}
+
+function quickAddFromSuggestion(name, category) {
+  openAddGroupForm();
+  document.getElementById('groupName').value = name;
+  document.getElementById('groupCategory').value = category;
+  syncCategoryFromInput();
+}
+
+let categories = ['Utility', 'Repair / Maintenance', 'Staff / Security', 'Common Area', 'Other'];
+
+let expenseGroups = [
+  { id: 'eg1', name: 'Electricity Meter A', category: 'Utility', flatIds: ['f101', 'f102', 'f103'] },
+  { id: 'eg2', name: 'Electricity Meter B', category: 'Utility', flatIds: ['f104', 'f105', 'f106', 'f107'] },
+  { id: 'eg3', name: 'Water Meter (Whole Building)', category: 'Utility', flatIds: ['f101', 'f102', 'f103', 'f104', 'f105', 'f106', 'f107'] },
+  { id: 'eg4', name: 'Lift Repair Fund', category: 'Repair / Maintenance', flatIds: ['f101', 'f102', 'f103', 'f104', 'f105', 'f106', 'f107'] }
+];
+let groupIdCounter = 5;
+let editingGroupId = null;
+let selectedCategory = categories[0];
+
+function isVacant(flatId) {
+  const f = flats.find(function(x) { return x.id === flatId; });
+  return f.occupants === 0;
+}
+
+function flatName(flatId) {
+  const f = flats.find(function(x) { return x.id === flatId; });
+  return f ? f.name : flatId;
+}
+
+function renderFlatOverview() {
+  const container = document.getElementById('flatOverview');
+  container.innerHTML = '';
+  flats.forEach(function(f) {
+    const chip = document.createElement('span');
+    chip.className = 'flat-ref-chip' + (f.occupants === 0 ? ' vacant' : '');
+    chip.textContent = f.name + (f.occupants === 0 ? ' (Vacant)' : ' (' + f.occupants + ' occ.)');
+    container.appendChild(chip);
+  });
+}
+
+function closeAllForms() {
+  document.querySelectorAll('.inline-form').forEach(function(f) { f.remove(); });
+  editingGroupId = null;
+}
+
+function renderGroups() {
+  const container = document.getElementById('groupsContainer');
+  container.innerHTML = '';
+  expenseGroups.forEach(function(g) {
+    const card = document.createElement('div');
+    card.className = 'group-card';
+    card.innerHTML =
+      '<div class="group-top"><div><span class="group-name"></span><span class="group-type"></span></div>' +
+      '<div class="group-actions"><span class="group-edit" onclick="openEditGroupForm(\'' + g.id + '\')">Edit</span>' +
+      '<span class="group-delete" onclick="deleteGroup(\'' + g.id + '\')">Delete</span></div></div>' +
+      '<div class="group-flats"></div>';
+    card.querySelector('.group-name').textContent = g.name;
+    card.querySelector('.group-type').textContent = g.category;
+    const flatsEl = card.querySelector('.group-flats');
+    g.flatIds.forEach(function(fid) {
+      const chip = document.createElement('span');
+      chip.className = 'group-flat-chip';
+      chip.textContent = flatName(fid);
+      flatsEl.appendChild(chip);
+    });
+    container.appendChild(card);
+  });
+}
+
+function renderCategoryChips(current) {
+  const container = document.getElementById('catChips');
+  container.innerHTML = '';
+  categories.forEach(function(c) {
+    const chip = document.createElement('div');
+    chip.className = 'cat-chip-opt' + (current === c ? ' selected' : '');
+    chip.textContent = c;
+    chip.onclick = function() {
+      selectedCategory = c;
+      document.getElementById('groupCategory').value = c;
+      renderCategoryChips(c);
+    };
+    container.appendChild(chip);
+  });
+}
+
+function syncCategoryFromInput() {
+  selectedCategory = document.getElementById('groupCategory').value;
+  renderCategoryChips(selectedCategory);
+}
+
+function openAddGroupForm() { openGroupForm(null); }
+function openEditGroupForm(id) { openGroupForm(id); }
+
+function openGroupForm(id) {
+  closeAllForms();
+  editingGroupId = id;
+  const editing = id !== null;
+  const g = editing ? expenseGroups.find(function(x) { return x.id === id; }) : { name: '', category: categories[0], flatIds: [] };
+  selectedCategory = g.category;
+
+  const form = document.createElement('div');
+  form.className = 'inline-form';
+  form.id = 'groupForm';
+  form.innerHTML =
+    '<label>Group name</label><input type="text" id="groupName" placeholder="e.g. Roof Waterproofing 2026" value="' + g.name + '">' +
+    '<label>Category</label><input type="text" id="groupCategory" placeholder="e.g. Repair / Maintenance" value="' + g.category + '" oninput="syncCategoryFromInput()">' +
+    '<div class="cat-chips" id="catChips"></div>' +
+    '<label>Which flats share this cost?</label>' +
+    flats.map(function(f) {
+      return '<div class="flat-select-row"><input type="checkbox" id="fchk-' + f.id + '"' + (g.flatIds.indexOf(f.id) !== -1 ? ' checked' : '') + '>' +
+        '<label for="fchk-' + f.id + '">' + f.name + '</label>' +
+        '<span class="occ-note">' + (f.occupants === 0 ? 'Vacant' : f.occupants + ' occ.') + '</span></div>';
+    }).join('') +
+    '<div class="form-actions"><button class="btn-confirm" onclick="confirmGroup()">' + (editing ? '✓ Save Changes' : '+ Add Group') + '</button>' +
+    '<button class="btn-cancel" onclick="closeAllForms()">Cancel</button></div>';
+  document.getElementById('groupsContainer').parentNode.insertBefore(form, document.getElementById('groupsContainer').nextSibling.nextSibling);
+  renderCategoryChips(g.category);
+}
+
+function confirmGroup() {
+  const name = document.getElementById('groupName').value.trim();
+  const category = document.getElementById('groupCategory').value.trim() || 'Other';
+  if (!name) { alert('Enter a group name.'); return; }
+  const flatIds = flats.filter(function(f) { return document.getElementById('fchk-' + f.id).checked; }).map(function(f) { return f.id; });
+  if (!flatIds.length) { alert('Select at least one flat for this expense group.'); return; }
+
+  if (categories.indexOf(category) === -1) { categories.push(category); }
+
+  if (editingGroupId !== null) {
+    const g = expenseGroups.find(function(x) { return x.id === editingGroupId; });
+    g.name = name; g.category = category; g.flatIds = flatIds;
+  } else {
+    expenseGroups.push({ id: 'eg' + (groupIdCounter++), name: name, category: category, flatIds: flatIds });
+  }
+  closeAllForms();
+  renderGroups();
+}
+
+function deleteGroup(id) {
+  const g = expenseGroups.find(function(x) { return x.id === id; });
+  if (confirm('Remove "' + g.name + '"?')) {
+    expenseGroups = expenseGroups.filter(function(x) { return x.id !== id; });
+    renderGroups();
+  }
+}
+
+renderFlatOverview();
+renderGroups();
+renderScaleGrid();
+renderSuggestions();
+</script>
+</body>
+</html>

@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Khaata — Add Tenant</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fbfbf9;--ink:#16161a;--muted:#62636a;--line:#e7e7e2;--card:#fff;
+    --accent:#1f6f54;--soft:#e8f3ee;--warm:#f4f2ec;--red:#b3261e;--amber:#b36b00;--ambersoft:#fff4e5;
+    --d:'Plus Jakarta Sans',sans-serif;--b:'Inter',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:var(--b);-webkit-font-smoothing:antialiased;padding-bottom:88px;}
+  .wrap{max-width:480px;margin:0 auto;padding:0 16px;}
+  h1,h2,h3{font-family:var(--d);letter-spacing:-.01em;}
+
+  .top{position:sticky;top:0;background:var(--bg);z-index:9;padding:14px 0 12px;border-bottom:1px solid var(--line);}
+  .top-in{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+  .back{font-size:20px;color:var(--muted);cursor:pointer;}
+  .top h1{font-size:18px;}
+  .top .sub{font-size:12px;color:var(--muted);}
+  /* step dots */
+  .dots{display:flex;gap:6px;}
+  .dots .d{flex:1;height:5px;border-radius:99px;background:var(--line);}
+  .dots .d.on{background:var(--accent);}
+  .dots .d.done{background:var(--accent);opacity:.5;}
+
+  .step-h{margin:18px 0 4px;}
+  .step-h .n{font-family:var(--d);font-weight:700;font-size:12px;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;}
+  .step-h h2{font-size:22px;margin-top:5px;}
+  .step-h p{font-size:13.5px;color:var(--muted);margin-top:3px;}
+
+  label{display:block;font-size:12.5px;color:var(--muted);margin:14px 0 5px;font-weight:500;}
+  input,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;font-size:15px;font-family:var(--b);background:var(--card);color:var(--ink);}
+  input:focus,select:focus{outline:none;border-color:var(--accent);}
+  .row{display:flex;gap:10px;}.row>*{flex:1;}
+  .opt-note{font-size:11.5px;color:var(--muted);margin-top:5px;}
+
+  /* chips for services */
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;}
+  .chip{border:1px solid var(--line);background:var(--card);border-radius:99px;padding:9px 15px;font-size:13.5px;font-family:var(--d);font-weight:600;cursor:pointer;color:var(--muted);}
+  .chip.sel{background:var(--soft);border-color:var(--accent);color:var(--accent);}
+  /* charges */
+  .charges-wrap{margin-top:8px;}
+  .charge-row{display:flex;gap:8px;align-items:center;margin-bottom:8px;}
+  .charge-row select{flex:1.4;}
+  .charge-row input{flex:1;}
+  .charge-row .rm{width:38px;height:44px;border:1px solid var(--line);background:var(--card);border-radius:9px;color:var(--red);font-size:14px;cursor:pointer;flex-shrink:0;}
+  .add-charge{width:100%;border:1px dashed #bbb;background:var(--bg);border-radius:10px;padding:11px;font-size:13.5px;cursor:pointer;color:var(--accent);font-family:var(--d);font-weight:600;margin-top:2px;}
+  .mtotal{display:flex;justify-content:space-between;align-items:center;background:var(--ink);color:#fff;border-radius:12px;padding:14px 16px;margin-top:12px;font-family:var(--d);font-weight:700;}
+  .mtotal span:last-child{font-size:20px;font-weight:800;}
+  .onetime-h{font-family:var(--d);font-weight:700;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:20px 0 4px;padding-top:14px;border-top:1px dashed var(--line);}
+
+  /* upload */
+  .upload{display:flex;align-items:center;gap:12px;background:var(--card);border:1px dashed #bbb;border-radius:12px;padding:14px;cursor:pointer;}
+  .upload .ic{font-size:22px;}
+  .upload .tx{flex:1;}
+  .upload .tx h3{font-size:14px;}
+  .upload .tx small{color:var(--muted);font-size:12px;}
+  .upload.done{border-style:solid;border-color:var(--accent);background:var(--soft);}
+  .priv{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.5;background:var(--warm);padding:10px 12px;border-radius:10px;}
+
+  .toggle{display:flex;align-items:center;justify-content:space-between;padding:12px 0;}
+  .toggle .lbl{font-size:14.5px;font-weight:600;font-family:var(--d);}
+  .toggle .lbl small{display:block;font-size:12px;color:var(--muted);font-weight:400;font-family:var(--b);}
+  .sw{width:46px;height:26px;border-radius:99px;background:var(--line);position:relative;cursor:pointer;transition:.15s;flex-shrink:0;}
+  .sw.on{background:var(--accent);}
+  .sw::after{content:'';position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.15s;}
+  .sw.on::after{left:23px;}
+
+  /* review */
+  .rev{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:10px;}
+  .rev .rr{display:flex;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--line);font-size:14px;}
+  .rev .rr:last-child{border:none;}
+  .rev .rr .k{color:var(--muted);}.rev .rr .v{font-weight:500;text-align:right;}
+  .rev-h{font-family:var(--d);font-weight:700;font-size:12px;color:var(--muted);text-transform:uppercase;margin:16px 0 7px;letter-spacing:.04em;}
+
+  /* footer */
+  .bar{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);padding:12px 16px;z-index:9;}
+  .bar-in{max-width:480px;margin:0 auto;display:flex;gap:10px;align-items:center;}
+  .btn{font-family:var(--d);font-weight:700;font-size:15px;border:none;border-radius:11px;padding:14px;cursor:pointer;}
+  .btn.next{background:var(--accent);color:#fff;flex:1;}
+  .btn.back{background:var(--card);border:1px solid var(--line);color:var(--ink);flex:0 0 26%;}
+  .btn.skip{background:none;color:var(--muted);font-weight:600;font-size:13px;border:none;}
+  .savebar{text-align:center;margin-top:8px;}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+const STEPS=['Basics','Money','Documents','Safety','Review'];
+let step=0;
+const d={
+  name:'',phone:'',room:'101',bed:'2',rent:6000,movein:'2026-06-23',
+  charges:[],
+  deposit:12000,cycle:'Monthly',
+  idtype:'Aadhaar',idno:'',idUploaded:false,photoUploaded:false,moveinPhotos:false,verified:false,police:false,
+  emg:'',emgph:'',guar:''
+};
+const CHARGE_TYPES=['Mess / Food','Parking','Laundry','AC','Locker','WiFi','Housekeeping','Other'];
+const ROOMS={'101':['1','2','3'],'102':['1','2'],'201':['1','2','3'],'205':['1','2']};
+const $=id=>document.getElementById(id);
+const money=n=>'₹'+(+n||0).toLocaleString('en-IN');
+
+function set(f,v){d[f]=v;}
+function toggleSw(f){d[f]=!d[f];render();}
+function fakeUpload(f){d[f]=true;render();}
+
+function basics(){
+  const beds=ROOMS[d.room]||['1'];
+  return `<div class="step-h"><span class="n">Step 1 of 5</span><h2>Tenant basics</h2><p>The essentials to create the record.</p></div>
+  <label>Full name</label><input value="${d.name}" oninput="set('name',this.value);refreshNext()" placeholder="e.g. Ravi Kumar">
+  <label>Phone number</label><input value="${d.phone}" oninput="set('phone',this.value);refreshNext()" placeholder="10-digit mobile" inputmode="numeric">
+  <div class="row">
+    <div><label>Room</label><select onchange="set('room',this.value);render()">${Object.keys(ROOMS).map(r=>`<option ${d.room===r?'selected':''}>${r}</option>`).join('')}</select></div>
+    <div><label>Bed</label><select onchange="set('bed',this.value)">${beds.map(b=>`<option ${d.bed===b?'selected':''}>Bed ${b}</option>`).join('')}</select></div>
+  </div>
+  <div class="row">
+    <div><label>Monthly rent</label><input type="number" value="${d.rent}" oninput="set('rent',+this.value)"></div>
+    <div><label>Move-in date</label><input type="date" value="${d.movein}" oninput="set('movein',this.value)"></div>
+  </div>`;
+}
+function monthlyTotal(){return (+d.rent||0)+d.charges.reduce((a,c)=>a+(+c.amt||0),0);}
+function moneyStep(){
+  const chargeRows=d.charges.map((c,i)=>`
+    <div class="charge-row">
+      <select onchange="setCharge(${i},'name',this.value)">${CHARGE_TYPES.map(t=>`<option ${c.name===t?'selected':''}>${t}</option>`).join('')}</select>
+      <input type="number" value="${c.amt}" placeholder="0" oninput="setCharge(${i},'amt',this.value)">
+      <button class="rm" onclick="rmCharge(${i})">✕</button>
+    </div>`).join('');
+  return `<div class="step-h"><span class="n">Step 2 of 5</span><h2>Monthly charges</h2><p>Rent plus any recurring add-ons.</p></div>
+  <label>Base rent (monthly)</label>
+  <input type="number" value="${d.rent}" oninput="set('rent',+this.value);updTotal()">
+  <div class="charges-wrap">${chargeRows}</div>
+  <button class="add-charge" onclick="addCharge()">+ Add charge (parking, food, etc.)</button>
+  <div class="mtotal"><span>Monthly total</span><span id="mtot">${money(monthlyTotal())}</span></div>
+
+  <div class="onetime-h">One-time (at move-in)</div>
+  <div class="row">
+    <div><label>Security deposit</label><input type="number" value="${d.deposit}" oninput="set('deposit',+this.value)"></div>
+    <div><label>Billing cycle</label><select onchange="set('cycle',this.value)">${['Monthly','Quarterly','Yearly'].map(c=>`<option ${d.cycle===c?'selected':''}>${c}</option>`).join('')}</select></div>
+  </div>
+  <div class="opt-note">Deposit is kept separate — not part of the monthly total.</div>`;
+}
+function addCharge(){
+  const used=d.charges.map(c=>c.name);
+  const next=CHARGE_TYPES.find(t=>!used.includes(t))||'Other';
+  d.charges.push({name:next,amt:0});render();
+}
+function setCharge(i,f,v){d.charges[i][f]=f==='amt'?(+v||0):v;if(f==='amt')updTotal();}
+function rmCharge(i){d.charges.splice(i,1);render();}
+function updTotal(){const e=$('mtot');if(e)e.textContent=money(monthlyTotal());}
+function refreshNext(){
+  const btn=document.querySelector('.btn.next');
+  if(!btn)return;
+  const ok = step!==0 || (d.name.trim() && d.phone.trim());
+  btn.disabled=!ok;
+  btn.style.opacity=ok?'1':'.4';
+}
+function documents(){
+  return `<div class="step-h"><span class="n">Step 3 of 5</span><h2>Documents & ID</h2><p>Verify identity and record the room condition.</p></div>
+  <div class="row">
+    <div><label>ID type</label><select onchange="set('idtype',this.value)">${['Aadhaar','PAN','Passport','Driving licence'].map(t=>`<option ${d.idtype===t?'selected':''}>${t}</option>`).join('')}</select></div>
+    <div><label>ID number</label><input value="${d.idno}" oninput="set('idno',this.value)" placeholder="Optional"></div>
+  </div>
+  <label>Upload ID document</label>
+  <div class="upload ${d.idUploaded?'done':''}" onclick="fakeUpload('idUploaded')">
+    <span class="ic">${d.idUploaded?'✅':'🪪'}</span><div class="tx"><h3>${d.idUploaded?'ID uploaded':'Tap to upload ID'}</h3><small>${d.idUploaded?'Saved to your Drive':'Photo or scan'}</small></div>
+  </div>
+  ${d.idtype==='Aadhaar'?`<div class="priv">🔒 Aadhaar is <b>not stored in our database</b> — it\u2019s kept only in your own Google Drive. We verify and keep just a ✓ flag.</div>`:''}
+  <label>Tenant photo</label>
+  <div class="upload ${d.photoUploaded?'done':''}" onclick="fakeUpload('photoUploaded')">
+    <span class="ic">${d.photoUploaded?'✅':'📷'}</span><div class="tx"><h3>${d.photoUploaded?'Photo added':'Tap to take photo'}</h3><small>For your records</small></div>
+  </div>
+  <label>Move-in room photos <span class="opt-note">(prevents deposit disputes later)</span></label>
+  <div class="upload ${d.moveinPhotos?'done':''}" onclick="fakeUpload('moveinPhotos')">
+    <span class="ic">${d.moveinPhotos?'✅':'🛏️'}</span><div class="tx"><h3>${d.moveinPhotos?'Condition photos saved':'Tap to capture room condition'}</h3><small>Timestamped proof of room state</small></div>
+  </div>
+  <div class="toggle"><div class="lbl">Mark ID as verified<small>You\u2019ve checked the original</small></div><div class="sw ${d.verified?'on':''}" onclick="toggleSw('verified')"></div></div>
+  <div class="toggle"><div class="lbl">Police verification done<small>Legally required</small></div><div class="sw ${d.police?'on':''}" onclick="toggleSw('police')"></div></div>`;
+}
+function safety(){
+  return `<div class="step-h"><span class="n">Step 4 of 5</span><h2>Safety contacts</h2><p>Who to reach in an emergency.</p></div>
+  <div class="row">
+    <div><label>Emergency contact name</label><input value="${d.emg}" oninput="set('emg',this.value)" placeholder="e.g. Father"></div>
+    <div><label>Their phone</label><input value="${d.emgph}" oninput="set('emgph',this.value)" inputmode="numeric"></div>
+  </div>
+  <label>Guarantor <span class="opt-note">(optional)</span></label>
+  <input value="${d.guar}" oninput="set('guar',this.value)" placeholder="Name & phone (optional)">`;
+}
+function review(){
+  const chk=b=>b?'<span style="color:var(--accent)">✓</span>':'<span style="color:var(--muted)">—</span>';
+  return `<div class="step-h"><span class="n">Step 5 of 5</span><h2>Review & add</h2><p>Quick check before you save.</p></div>
+  <div class="rev-h">Basics</div>
+  <div class="rev">
+    <div class="rr"><span class="k">Name</span><span class="v">${d.name||'—'}</span></div>
+    <div class="rr"><span class="k">Phone</span><span class="v">${d.phone||'—'}</span></div>
+    <div class="rr"><span class="k">Bed</span><span class="v">Room ${d.room} · Bed ${d.bed}</span></div>
+    <div class="rr"><span class="k">Rent</span><span class="v">${money(d.rent)} / ${d.cycle.toLowerCase()}</span></div>
+    <div class="rr"><span class="k">Move-in</span><span class="v">${new Date(d.movein).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}</span></div>
+  </div>
+  <div class="rev-h">Monthly charges</div>
+  <div class="rev">
+    <div class="rr"><span class="k">Base rent</span><span class="v">${money(d.rent)}</span></div>
+    ${d.charges.map(c=>`<div class="rr"><span class="k">${c.name}</span><span class="v">${money(c.amt)}</span></div>`).join('')}
+    <div class="rr"><span class="k" style="font-weight:700;color:var(--ink)">Monthly total</span><span class="v" style="font-weight:800;color:var(--accent)">${money(monthlyTotal())}</span></div>
+  </div>
+  <div class="rev-h">One-time</div>
+  <div class="rev">
+    <div class="rr"><span class="k">Deposit</span><span class="v">${money(d.deposit)}</span></div>
+    <div class="rr"><span class="k">Billing cycle</span><span class="v">${d.cycle}</span></div>
+  </div>
+  <div class="rev-h">Documents</div>
+  <div class="rev">
+    <div class="rr"><span class="k">ID (${d.idtype})</span><span class="v">${chk(d.idUploaded)}</span></div>
+    <div class="rr"><span class="k">Photo</span><span class="v">${chk(d.photoUploaded)}</span></div>
+    <div class="rr"><span class="k">Move-in photos</span><span class="v">${chk(d.moveinPhotos)}</span></div>
+    <div class="rr"><span class="k">ID verified</span><span class="v">${chk(d.verified)}</span></div>
+    <div class="rr"><span class="k">Police verification</span><span class="v">${chk(d.police)}</span></div>
+  </div>
+  <div class="rev-h">Safety</div>
+  <div class="rev">
+    <div class="rr"><span class="k">Emergency</span><span class="v">${d.emg?d.emg+' · '+d.emgph:'—'}</span></div>
+    <div class="rr"><span class="k">Guarantor</span><span class="v">${d.guar||'—'}</span></div>
+  </div>`;
+}
+
+function render(){
+  const body=[basics,moneyStep,documents,safety,review][step]();
+  const dots=STEPS.map((s,i)=>`<div class="d ${i===step?'on':i<step?'done':''}"></div>`).join('');
+  const isLast=step===STEPS.length-1;
+  const canNext=step!==0||(d.name.trim()&&d.phone.trim());
+  $('app').innerHTML=`
+  <div class="top"><div class="wrap">
+    <div class="top-in"><span class="back" onclick="goBack()">←</span>
+    <div><h1>Add tenant</h1><div class="sub">Sunrise PG · ${STEPS[step]}</div></div></div>
+    <div class="dots">${dots}</div>
+  </div></div>
+  <div class="wrap">${body}</div>
+  <div class="bar"><div class="bar-in">
+    ${step>0?'<button class="btn back" onclick="prev()">←</button>':''}
+    <button class="btn next" onclick="next()" ${canNext?'':'disabled style="opacity:.4"'}>${isLast?'✓ Add tenant':'Continue →'}</button>
+  </div>
+  ${!isLast&&step>0?'<div class="savebar"><button class="btn skip" onclick="finish(true)">Save now, add rest later</button></div>':''}
+  </div>`;
+}
+function next(){
+  if(step===0 && !(d.name.trim() && d.phone.trim())){alert('Please enter name and phone to continue.');return;}
+  if(step<STEPS.length-1){step++;render();window.scrollTo(0,0);}else finish(false);
+}
+function prev(){if(step>0){step--;render();window.scrollTo(0,0);}}
+function goBack(){if(step===0){alert('Back to People list');}else{prev();}}
+function finish(early){
+  const msg=early?'Tenant saved with basic info. You can add documents & details anytime from their profile.':'Tenant added! '+d.name+' is now in Room '+d.room+', Bed '+d.bed+'.';
+  alert(msg);
+}
+render();
+</script>
+</body>
+</html>

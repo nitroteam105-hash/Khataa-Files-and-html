@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Khaata — one app for all your businesses</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fbfbf9;--ink:#16161a;--muted:#62636a;--line:#e7e7e2;
+    --card:#ffffff;--accent:#1f6f54;--accent-soft:#e8f3ee;--warm:#f4f2ec;
+    --d:'Plus Jakarta Sans',sans-serif;--b:'Inter',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--bg);color:var(--ink);font-family:var(--b);line-height:1.6;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px;}
+  h1,h2,h3{font-family:var(--d);line-height:1.15;letter-spacing:-.02em;}
+  a{color:inherit;text-decoration:none;}
+  .accent{color:var(--accent);}
+
+  /* NAV */
+  nav{position:sticky;top:0;background:rgba(251,251,249,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);z-index:10;}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;height:62px;}
+  .logo{font-family:var(--d);font-weight:800;font-size:20px;display:flex;align-items:center;gap:8px;}
+  .logo .dot{width:10px;height:10px;background:var(--accent);border-radius:3px;}
+  .nav-links{display:flex;gap:26px;font-size:14.5px;color:var(--muted);}
+  .nav-links a:hover{color:var(--ink);}
+  .nav-cta{background:var(--ink);color:#fff;padding:9px 16px;border-radius:8px;font-size:14px;font-weight:500;font-family:var(--d);}
+  @media(max-width:720px){.nav-links{display:none;}}
+
+  /* HERO */
+  .hero{padding:74px 0 56px;text-align:center;}
+  .eyebrow{display:inline-block;background:var(--accent-soft);color:var(--accent);font-family:var(--d);font-weight:600;font-size:13px;padding:6px 14px;border-radius:99px;margin-bottom:22px;}
+  .hero h1{font-size:54px;font-weight:800;max-width:760px;margin:0 auto 20px;}
+  .hero p{font-size:19px;color:var(--muted);max-width:580px;margin:0 auto 30px;}
+  .hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+  .btn-main{background:var(--accent);color:#fff;font-family:var(--d);font-weight:600;font-size:16px;padding:14px 26px;border-radius:10px;}
+  .btn-ghost{background:transparent;border:1px solid var(--line);color:var(--ink);font-family:var(--d);font-weight:600;font-size:16px;padding:14px 26px;border-radius:10px;}
+  @media(max-width:600px){.hero h1{font-size:38px;}.hero{padding:50px 0 40px;}}
+
+  /* PROBLEM STRIP */
+  .strip{background:var(--warm);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:30px 0;}
+  .strip-in{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;font-size:15px;color:var(--muted);text-align:center;}
+  .strip b{color:var(--ink);font-family:var(--d);}
+
+  /* SECTION */
+  section{padding:64px 0;}
+  .sec-head{text-align:center;max-width:620px;margin:0 auto 44px;}
+  .sec-head .tag{font-family:var(--d);font-weight:600;font-size:13px;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;display:block;}
+  .sec-head h2{font-size:34px;font-weight:700;margin-bottom:12px;}
+  .sec-head p{font-size:17px;color:var(--muted);}
+
+  /* THE INSIGHT — one app vs many */
+  .vs{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:820px;margin:0 auto;}
+  .vs-col{border:1px solid var(--line);border-radius:14px;padding:24px;background:var(--card);}
+  .vs-col.bad{background:var(--warm);}
+  .vs-col h3{font-size:16px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  .vs-list{list-style:none;font-size:14.5px;color:var(--muted);}
+  .vs-list li{padding:7px 0;border-bottom:1px dashed var(--line);}
+  .vs-list li:last-child{border:none;}
+  .vs-col.good{border-color:var(--accent);box-shadow:0 4px 20px rgba(31,111,84,.08);}
+  .vs-col.good .vs-list li{color:var(--ink);}
+  @media(max-width:620px){.vs{grid-template-columns:1fr;}}
+
+  /* FEATURES */
+  .feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .feat{border:1px solid var(--line);border-radius:14px;padding:24px;background:var(--card);}
+  .feat .ic{width:42px;height:42px;border-radius:10px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:14px;}
+  .feat h3{font-size:17px;margin-bottom:7px;}
+  .feat p{font-size:14px;color:var(--muted);}
+  @media(max-width:820px){.feat-grid{grid-template-columns:1fr 1fr;}}
+  @media(max-width:560px){.feat-grid{grid-template-columns:1fr;}}
+
+  /* WHO IT'S FOR */
+  .who{background:var(--warm);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+  .chips{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;max-width:760px;margin:0 auto;}
+  .chip{background:var(--card);border:1px solid var(--line);border-radius:99px;padding:9px 16px;font-size:14px;font-family:var(--d);font-weight:500;}
+  .who-note{text-align:center;color:var(--muted);font-size:14px;margin-top:22px;}
+
+  /* HOW */
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+  .stp{text-align:center;}
+  .stp .n{width:40px;height:40px;border-radius:50%;background:var(--ink);color:#fff;font-family:var(--d);font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;}
+  .stp h3{font-size:16px;margin-bottom:5px;}
+  .stp p{font-size:13.5px;color:var(--muted);}
+  @media(max-width:720px){.steps{grid-template-columns:1fr 1fr;}}
+
+  /* TRUST */
+  .trust{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:880px;margin:0 auto;}
+  .trust div{text-align:center;padding:20px;}
+  .trust .ic{font-size:26px;margin-bottom:10px;}
+  .trust h3{font-size:16px;margin-bottom:6px;}
+  .trust p{font-size:13.5px;color:var(--muted);}
+  @media(max-width:680px){.trust{grid-template-columns:1fr;}}
+
+  /* CTA */
+  .cta{text-align:center;background:var(--ink);color:#fff;border-radius:20px;padding:54px 24px;margin:30px 0;}
+  .cta h2{font-size:32px;color:#fff;margin-bottom:12px;}
+  .cta p{color:#b8b9bd;font-size:17px;max-width:480px;margin:0 auto 26px;}
+  .cta .btn-main{background:#fff;color:var(--ink);}
+
+  /* FOOTER */
+  footer{border-top:1px solid var(--line);padding:30px 0;font-size:13.5px;color:var(--muted);}
+  .foot-in{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto;}}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap nav-in">
+  <div class="logo"><span class="dot"></span>Khaata</div>
+  <div class="nav-links">
+    <a href="#why">Why one app</a>
+    <a href="#features">Features</a>
+    <a href="#who">Who it's for</a>
+    <a href="#how">How it works</a>
+  </div>
+  <a href="#cta" class="nav-cta">Get early access</a>
+</div></nav>
+
+<header class="hero"><div class="wrap">
+  <span class="eyebrow">One app for all your businesses</span>
+  <h1>Run every business from <span class="accent">one simple diary</span>.</h1>
+  <p>PG, rentals, gym, classes, tiffin, or a delivery route — track who paid, who didn't, generate bills, and keep your records safe. All in one place.</p>
+  <div class="hero-btns">
+    <a href="#cta" class="btn-main">Get early access</a>
+    <a href="#why" class="btn-ghost">See how it works</a>
+  </div>
+</div></header>
+
+<div class="strip"><div class="wrap strip-in">
+  <span>Most owners juggle a <b>notebook</b>, a pile of <b>WhatsApp chats</b>, and a fading <b>memory</b> — across every business they run.</span>
+</div></div>
+
+<section id="why"><div class="wrap">
+  <div class="sec-head">
+    <span class="tag">The difference</span>
+    <h2>Other apps make you pick one business. We don't.</h2>
+    <p>Every other tool is built for just gyms, or just PGs, or just tiffin. If you run more than one, you're stuck juggling separate apps.</p>
+  </div>
+  <div class="vs">
+    <div class="vs-col bad">
+      <h3>😵 The usual way</h3>
+      <ul class="vs-list">
+        <li>One app for your PG</li>
+        <li>Another for your gym</li>
+        <li>A third for your tiffin service</li>
+        <li>Separate logins, separate bills</li>
+        <li>Nothing talks to each other</li>
+      </ul>
+    </div>
+    <div class="vs-col good">
+      <h3>✅ With Khaata</h3>
+      <ul class="vs-list">
+        <li>All your businesses in one app</li>
+        <li>One dashboard, one login</li>
+        <li>Switch between them in a tap</li>
+        <li>Same simple flow for each</li>
+        <li>Your whole income in one view</li>
+      </ul>
+    </div>
+  </div>
+</div></section>
+
+<section id="features" style="padding-top:24px"><div class="wrap">
+  <div class="sec-head">
+    <span class="tag">What it does</span>
+    <h2>Everything a small business needs. Nothing it doesn't.</h2>
+  </div>
+  <div class="feat-grid">
+    <div class="feat"><div class="ic">📒</div><h3>Payment ledger</h3><p>See who paid and who's pending across every business, in one clear list.</p></div>
+    <div class="feat"><div class="ic">💸</div><h3>Cash + UPI records</h3><p>Log every payment — cash or UPI. Money goes owner-to-customer directly; the app just keeps the record.</p></div>
+    <div class="feat"><div class="ic">🧾</div><h3>Instant bills & receipts</h3><p>Generate a clean bill or receipt and share it on WhatsApp in seconds.</p></div>
+    <div class="feat"><div class="ic">🔔</div><h3>Payment reminders</h3><p>Nudge pending customers from your own WhatsApp — free — or fully automate it.</p></div>
+    <div class="feat"><div class="ic">📷</div><h3>Scan attendance</h3><p>Staff and members scan a QR — meals, sessions, and work-days tracked automatically.</p></div>
+    <div class="feat"><div class="ic">🔒</div><h3>Safe documents</h3><p>IDs and agreements stay backed up in your own Google Drive — like WhatsApp. We never hold your Aadhaar.</p></div>
+  </div>
+</div></section>
+
+<section id="who" class="who"><div class="wrap">
+  <div class="sec-head">
+    <span class="tag">Built for</span>
+    <h2>Whatever you run, it fits.</h2>
+    <p>One engine, relabeled for your business. Pick yours and the app speaks your language.</p>
+  </div>
+  <div class="chips">
+    <span class="chip">🛏️ PG & Hostel</span><span class="chip">🏢 Rentals</span><span class="chip">🏋️ Gym</span>
+    <span class="chip">🧘 Yoga & Classes</span><span class="chip">📚 Tuition</span><span class="chip">🍱 Tiffin & Mess</span>
+    <span class="chip">📰 Newspaper & Milk</span><span class="chip">🅿️ Parking</span><span class="chip">💼 Co-working</span>
+    <span class="chip">🏪 Shops</span><span class="chip">👕 Laundry</span><span class="chip">+ 50 more</span>
+  </div>
+  <p class="who-note">Run two or three at once? That's exactly who this is for.</p>
+</div></section>
+
+<section id="how"><div class="wrap">
+  <div class="sec-head">
+    <span class="tag">How it works</span>
+    <h2>Set up in minutes.</h2>
+  </div>
+  <div class="steps">
+    <div class="stp"><div class="n">1</div><h3>Pick your business</h3><p>Choose your type — the app relabels itself to match.</p></div>
+    <div class="stp"><div class="n">2</div><h3>Add your space & people</h3><p>Rooms, members, students — whatever you have.</p></div>
+    <div class="stp"><div class="n">3</div><h3>Set fees</h3><p>Rent, fees, plans — and what's due when.</p></div>
+    <div class="stp"><div class="n">4</div><h3>Track & relax</h3><p>Record payments, send reminders, done.</p></div>
+  </div>
+</div></section>
+
+<section class="who" style="border-bottom:none"><div class="wrap">
+  <div class="sec-head">
+    <span class="tag">Why you can trust it</span>
+    <h2>Your money, your data — always yours.</h2>
+  </div>
+  <div class="trust">
+    <div><div class="ic">🏦</div><h3>We never hold your money</h3><p>Payments go directly between you and your customer. The app only keeps the record.</p></div>
+    <div><div class="ic">☁️</div><h3>Your data, your Drive</h3><p>Sensitive documents back up to your own Google Drive — the same way WhatsApp does.</p></div>
+    <div><div class="ic">💚</div><h3>Free to start</h3><p>Use it free with your own WhatsApp. Pay only when you want full automation.</p></div>
+  </div>
+</div></section>
+
+<section id="cta"><div class="wrap">
+  <div class="cta">
+    <h2>One app. Every business. Less chaos.</h2>
+    <p>Be among the first to run all your businesses from a single, simple diary.</p>
+    <a href="#" class="btn-main" onclick="alert('Early-access signup goes here');return false;">Get early access</a>
+  </div>
+</div></section>
+
+<footer><div class="wrap foot-in">
+  <div><span class="logo" style="font-size:16px"><span class="dot"></span>Khaata</span></div>
+  <div>One app for all your businesses · Made in India</div>
+</div></footer>
+
+</body>
+</html>

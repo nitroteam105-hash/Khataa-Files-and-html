@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PG / Hostel Setup — Khaata</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1f6f54; --green-light: #e7f2ed;
+    --parchment: #fbfbf9; --ink: #1c1c1a; --muted: #6b6b64;
+    --border: #e6e4dd; --amber: #b5791f; --amber-light: #fbf1e2;
+    --purple: #6b5b95; --purple-light: #f0eef8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', sans-serif; background: var(--parchment); color: var(--ink);
+    max-width: 480px; margin: 0 auto; min-height: 100vh; padding-bottom: 40px;
+  }
+  header { padding: 24px 20px 12px; }
+  header h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 800; }
+  header p { font-size: 13px; color: var(--muted); margin-top: 3px; }
+
+  .step-tabs { display: flex; gap: 6px; padding: 12px 20px; overflow-x: auto; }
+  .step-tab {
+    flex-shrink: 0; padding: 8px 14px; border-radius: 999px; font-size: 12.5px; font-weight: 600;
+    border: 1px solid var(--border); color: var(--muted); background: #fff; cursor: pointer; white-space: nowrap;
+  }
+  .step-tab.active { background: var(--green); color: #fff; border-color: var(--green); }
+
+  .panel { display: none; padding: 4px 20px 20px; }
+  .panel.active { display: block; }
+
+  .section-label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin: 16px 0 8px; }
+  .card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 10px; }
+
+  .preset-tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+  .preset-tab { flex: 1; text-align: center; padding: 10px; border-radius: 10px; border: 1px solid var(--border); font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; background: #fff; }
+  .preset-tab.active { background: var(--green); color: #fff; border-color: var(--green); }
+
+  .layout-tree { font-size: 13.5px; }
+  .tree-block { margin-bottom: 12px; }
+  .tree-block-name { font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif; margin-bottom: 6px; }
+  .tree-floor { margin-left: 14px; margin-bottom: 8px; }
+  .tree-floor-name { font-weight: 600; color: var(--green); margin-bottom: 4px; font-size: 13px; }
+  .tree-rooms { margin-left: 14px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .room-chip { background: var(--green-light); color: var(--green); border-radius: 8px; padding: 5px 6px 5px 10px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+  .room-chip .chip-beds { opacity: 0.85; cursor: pointer; border-bottom: 1px dotted var(--green); }
+  .room-chip .chip-x { cursor: pointer; opacity: 0.6; font-weight: 700; padding: 0 2px; }
+  .room-chip .chip-x:hover { opacity: 1; }
+
+  .tree-floor-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+  .tree-block-head { display: flex; align-items: center; justify-content: space-between; }
+  .tree-delete { font-size: 12px; color: var(--muted); cursor: pointer; padding: 2px 6px; }
+  .tree-delete:hover { color: var(--amber); }
+  .add-row-btn { border: 1.5px dashed var(--green); color: var(--green); background: none; border-radius: 10px; padding: 10px; width: 100%; font-weight: 700; font-size: 13px; cursor: pointer; margin-top: 8px; }
+
+  .mini-add-link {
+    display: inline-block; color: var(--green); font-size: 12px; font-weight: 700;
+    cursor: pointer; margin-top: 4px; padding: 4px 0;
+  }
+
+  .inline-add-form {
+    background: var(--green-light); border: 1px solid var(--green); border-radius: 12px;
+    padding: 12px; margin: 8px 0; font-size: 13px;
+  }
+  .iaf-modes { display: flex; gap: 6px; margin-bottom: 10px; }
+  .iaf-mode {
+    flex: 1; padding: 7px; border-radius: 8px; border: 1px solid var(--border);
+    background: #fff; color: var(--muted); font-size: 12px; font-weight: 700; cursor: pointer;
+  }
+  .iaf-mode.active { background: var(--green); color: #fff; border-color: var(--green); }
+  .iaf-range input, .iaf-single input {
+    width: 100%; padding: 9px 10px; border: 1px solid var(--border); border-radius: 8px;
+    font-size: 13px; font-family: 'Inter', sans-serif; margin-bottom: 6px; background: #fff;
+  }
+  .iaf-row2 { display: flex; gap: 6px; }
+  .iaf-row2 input { margin-bottom: 0; }
+  .iaf-preview { font-size: 11.5px; color: var(--green); font-weight: 600; margin: 4px 0 8px; line-height: 1.4; }
+  .iaf-actions { display: flex; gap: 8px; margin-top: 4px; }
+  .iaf-actions button {
+    flex: 1; padding: 9px; border-radius: 8px; border: none; font-weight: 700; font-size: 12.5px; cursor: pointer;
+  }
+  .iaf-confirm { background: var(--green); color: #fff; }
+  .iaf-cancel { background: #fff; color: var(--muted); border: 1px solid var(--border) !important; }
+
+  .plan-card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 10px; }
+  .plan-top { display: flex; justify-content: space-between; align-items: center; }
+  .plan-name { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 15px; }
+  .plan-rent { font-size: 15px; font-weight: 700; color: var(--green); cursor: pointer; }
+  .plan-delete { font-size: 12px; color: var(--muted); cursor: pointer; }
+
+  .addon-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .addon-row:last-child { border-bottom: none; }
+  .addon-left { flex: 1; }
+  .addon-name { font-size: 14px; font-weight: 500; }
+  .addon-sub { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+  .addon-controls { display: flex; align-items: center; gap: 10px; }
+  .addon-price { font-size: 12.5px; color: var(--green); font-weight: 600; cursor: pointer; }
+  .switch { width: 40px; height: 24px; background: var(--green); border-radius: 999px; position: relative; flex-shrink: 0; cursor: pointer; }
+  .switch.off { background: #d8d6cd; }
+  .switch::after { content: ''; position: absolute; top: 3px; right: 3px; width: 18px; height: 18px; background: #fff; border-radius: 50%; }
+  .switch.off::after { left: 3px; right: auto; }
+
+  .note { font-size: 12px; color: var(--muted); margin-top: 10px; line-height: 1.5; }
+  .info-note { background: var(--amber-light); color: var(--amber); border-radius: 10px; padding: 12px 14px; font-size: 12.5px; font-weight: 500; line-height: 1.5; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Sunshine PG — Setup</h1>
+  <p>Building layout, room rates & amenities for this business</p>
+</header>
+
+<div class="step-tabs">
+  <div class="step-tab active" onclick="showPanel('layout', this)">1. Building Layout</div>
+  <div class="step-tab" onclick="showPanel('sharing', this)">2. Room Sharing & Rent</div>
+  <div class="step-tab" onclick="showPanel('amenities', this)">3. Amenities</div>
+</div>
+
+<!-- PANEL 1: BUILDING LAYOUT -->
+<div class="panel active" id="panel-layout">
+  <div class="section-label">Layout depth</div>
+  <div class="preset-tabs">
+    <div class="preset-tab" onclick="setLayoutPreset('simple', this)">Simple</div>
+    <div class="preset-tab active" onclick="setLayoutPreset('standard', this)">Standard</div>
+    <div class="preset-tab" onclick="setLayoutPreset('detailed', this)">Detailed</div>
+  </div>
+
+  <div class="card">
+    <div class="layout-tree" id="layoutTree" data-tier="standard"></div>
+    <button class="add-row-btn" id="mainAddBtn" onclick="handleMainAdd()">+ Add Floor(s)</button>
+  </div>
+  <p class="note" id="layoutNote">Standard — rooms are grouped by floor. Switch to Detailed for multi-block properties, or Simple for a flat room list.</p>
+</div>
+
+<!-- PANEL 2: ROOM SHARING & RENT -->
+<div class="panel" id="panel-sharing">
+  <div class="section-label">Room sharing types (monthly rent)</div>
+
+  <div class="card" id="sharingCard">
+  <div class="plan-card">
+    <div class="plan-top">
+      <div class="plan-name">Single AC</div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <div class="plan-rent" onclick="editRent(this)">₹9,000</div>
+        <div class="plan-delete" onclick="deletePlan(this)">✕</div>
+      </div>
+    </div>
+  </div>
+  <div class="plan-card">
+    <div class="plan-top">
+      <div class="plan-name">Double Non-AC</div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <div class="plan-rent" onclick="editRent(this)">₹6,500</div>
+        <div class="plan-delete" onclick="deletePlan(this)">✕</div>
+      </div>
+    </div>
+  </div>
+  <div class="plan-card">
+    <div class="plan-top">
+      <div class="plan-name">Triple Sharing</div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <div class="plan-rent" onclick="editRent(this)">₹5,000</div>
+        <div class="plan-delete" onclick="deletePlan(this)">✕</div>
+      </div>
+    </div>
+  </div>
+  </div>
+  <button class="add-row-btn" onclick="addSharingType()">+ Add Sharing Type</button>
+
+  <div class="info-note">Sharing type is picked per tenant at onboarding — it's independent of which physical room they're in. Security deposit is also set per tenant at that time, not fixed here.</div>
+</div>
+
+<!-- PANEL 3: AMENITIES -->
+<div class="panel" id="panel-amenities">
+  <div class="section-label">Amenities & add-ons</div>
+  <div class="card" id="amenitiesCard">
+    <div class="addon-row">
+      <div class="addon-left"><div class="addon-name">Food</div><div class="addon-sub">Veg · Included in rent</div></div>
+      <div class="addon-controls">
+        <div class="switch" onclick="toggleSwitch(this)"></div>
+      </div>
+    </div>
+    <div class="addon-row">
+      <div class="addon-left"><div class="addon-name">WiFi</div><div class="addon-sub">Included in rent</div></div>
+      <div class="addon-controls">
+        <div class="switch" onclick="toggleSwitch(this)"></div>
+      </div>
+    </div>
+    <div class="addon-row">
+      <div class="addon-left"><div class="addon-name">Study Room</div><div class="addon-sub">Included in rent</div></div>
+      <div class="addon-controls">
+        <div class="switch" onclick="toggleSwitch(this)"></div>
+      </div>
+    </div>
+    <div class="addon-row">
+      <div class="addon-left"><div class="addon-name">Housekeeping</div><div class="addon-sub">Separate charge</div></div>
+      <div class="addon-controls">
+        <div class="addon-price" onclick="editAddonPrice(this)">₹300/mo</div>
+        <div class="switch" onclick="toggleSwitch(this)"></div>
+      </div>
+    </div>
+    <div class="addon-row">
+      <div class="addon-left"><div class="addon-name">Laundry</div><div class="addon-sub">Separate charge</div></div>
+      <div class="addon-controls">
+        <div class="addon-price" onclick="editAddonPrice(this)">₹250/mo</div>
+        <div class="switch off" onclick="toggleSwitch(this)"></div>
+      </div>
+    </div>
+    <div class="addon-row">
+      <div class="addon-left"><div class="addon-name">Parking — 2-Wheeler</div><div class="addon-sub">Separate charge</div></div>
+      <div class="addon-controls">
+        <div class="addon-price" onclick="editAddonPrice(this)">₹200/mo</div>
+        <div class="switch" onclick="toggleSwitch(this)"></div>
+      </div>
+    </div>
+    <div class="addon-row">
+      <div class="addon-left"><div class="addon-name">Parking — 4-Wheeler</div><div class="addon-sub">Separate charge</div></div>
+      <div class="addon-controls">
+        <div class="addon-price" onclick="editAddonPrice(this)">₹500/mo</div>
+        <div class="switch off" onclick="toggleSwitch(this)"></div>
+      </div>
+    </div>
+  </div>
+  <button class="add-row-btn" onclick="addAmenity()">+ Add Amenity</button>
+</div>
+
+<script>
+function showPanel(id, el) {
+  document.querySelectorAll('.step-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('panel-' + id).classList.add('active');
+}
+
+function setLayoutPreset(tier, el) {
+  document.querySelectorAll('.preset-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const note = document.getElementById('layoutNote');
+  if (tier === 'simple') {
+    renderSimple();
+    note.textContent = 'Simple — a flat list of rooms, no floors or blocks.';
+  } else if (tier === 'standard') {
+    renderStandard();
+    note.textContent = 'Standard — rooms are grouped by floor. Switch to Detailed for multi-block properties.';
+  } else {
+    renderDetailed();
+    note.textContent = 'Detailed — full Block → Floor → Room hierarchy, for properties with multiple buildings/wings.';
+  }
+}
+
+function appendRoomChip(container, name, beds) {
+  beds = beds || 1;
+  const chip = document.createElement('span');
+  chip.className = 'room-chip';
+  chip.innerHTML = '<span class="chip-label"></span><span class="chip-beds"></span><span class="chip-x">✕</span>';
+  chip.querySelector('.chip-label').textContent = name;
+  chip.querySelector('.chip-beds').textContent = '· ' + beds + (beds == 1 ? ' bed' : ' beds');
+  chip.querySelector('.chip-beds').onclick = () => editBeds(chip);
+  chip.querySelector('.chip-x').onclick = () => chip.remove();
+  container.appendChild(chip);
+}
+
+function editBeds(chip) {
+  const bedsEl = chip.querySelector('.chip-beds');
+  const current = bedsEl.textContent.replace(/[^0-9]/g, '') || '1';
+  const val = prompt('Number of beds in "' + chip.querySelector('.chip-label').textContent + '":', current);
+  if (val === null || val.trim() === '' || isNaN(parseInt(val, 10))) return;
+  const n = parseInt(val, 10);
+  bedsEl.textContent = '· ' + n + (n === 1 ? ' bed' : ' beds');
+}
+
+function createFloorSection(parent, name, insertBeforeNode) {
+  const floorDiv = document.createElement('div');
+  floorDiv.className = 'tree-floor';
+  floorDiv.innerHTML =
+    '<div class="tree-floor-head"><div class="tree-floor-name"></div><span class="tree-delete">✕ Remove floor</span></div>' +
+    '<div class="tree-rooms"></div><div class="mini-add-link">+ Add Rooms</div>';
+  floorDiv.querySelector('.tree-floor-name').textContent = name;
+  const roomsDiv = floorDiv.querySelector('.tree-rooms');
+  const link = floorDiv.querySelector('.mini-add-link');
+  link.onclick = () => openAddForm('Room', (name2, beds2) => appendRoomChip(roomsDiv, name2, beds2), link);
+  floorDiv.querySelector('.tree-delete').onclick = () => {
+    if (confirm('Remove "' + name + '" and all its rooms?')) floorDiv.remove();
+  };
+  if (insertBeforeNode) parent.insertBefore(floorDiv, insertBeforeNode);
+  else parent.appendChild(floorDiv);
+  return floorDiv;
+}
+
+function createBlockSection(parent, name, insertBeforeNode) {
+  const blockDiv = document.createElement('div');
+  blockDiv.className = 'tree-block';
+  blockDiv.innerHTML =
+    '<div class="tree-block-head"><div class="tree-block-name"></div><span class="tree-delete">✕ Remove block</span></div>' +
+    '<div class="mini-add-link">+ Add Floor(s)</div>';
+  blockDiv.querySelector('.tree-block-name').textContent = name;
+  const link = blockDiv.querySelector('.mini-add-link');
+  link.onclick = () => openAddForm('Floor', name2 => createFloorSection(blockDiv, name2, link), link);
+  blockDiv.querySelector('.tree-delete').onclick = () => {
+    if (confirm('Remove "' + name + '" and everything in it (floors and rooms)?')) blockDiv.remove();
+  };
+  if (insertBeforeNode) parent.insertBefore(blockDiv, insertBeforeNode);
+  else parent.appendChild(blockDiv);
+  return blockDiv;
+}
+
+function renderSimple() {
+  const tree = document.getElementById('layoutTree');
+  tree.dataset.tier = 'simple';
+  tree.innerHTML = '<div class="tree-rooms" id="simpleRooms"></div>';
+  const roomsDiv = document.getElementById('simpleRooms');
+  [['Room 1',2],['Room 2',2],['Room 3',3],['Room 4',1],['Room 5',3],['Room 6',2],['Room 7',1]].forEach(r => appendRoomChip(roomsDiv, r[0], r[1]));
+  document.getElementById('mainAddBtn').textContent = '+ Add Rooms';
+}
+
+function renderStandard() {
+  const tree = document.getElementById('layoutTree');
+  tree.dataset.tier = 'standard';
+  tree.innerHTML = '';
+  const f1 = createFloorSection(tree, 'Ground Floor');
+  [['G01',2],['G02',2],['G03',3]].forEach(r => appendRoomChip(f1.querySelector('.tree-rooms'), r[0], r[1]));
+  const f2 = createFloorSection(tree, '1st Floor');
+  [['101',1],['102',2],['103',2],['104',3]].forEach(r => appendRoomChip(f2.querySelector('.tree-rooms'), r[0], r[1]));
+  document.getElementById('mainAddBtn').textContent = '+ Add Floor(s)';
+}
+
+function renderDetailed() {
+  const tree = document.getElementById('layoutTree');
+  tree.dataset.tier = 'detailed';
+  tree.innerHTML = '';
+  const bA = createBlockSection(tree, 'Block A');
+  const linkA = bA.querySelector('.mini-add-link');
+  const fA1 = createFloorSection(bA, 'Ground Floor', linkA);
+  [['A-G01',2],['A-G02',3]].forEach(r => appendRoomChip(fA1.querySelector('.tree-rooms'), r[0], r[1]));
+  const fA2 = createFloorSection(bA, '1st Floor', linkA);
+  [['A-101',1],['A-102',2]].forEach(r => appendRoomChip(fA2.querySelector('.tree-rooms'), r[0], r[1]));
+  const bB = createBlockSection(tree, 'Block B');
+  const linkB = bB.querySelector('.mini-add-link');
+  const fB1 = createFloorSection(bB, 'Ground Floor', linkB);
+  [['B-G01',2],['B-G02',2]].forEach(r => appendRoomChip(fB1.querySelector('.tree-rooms'), r[0], r[1]));
+  document.getElementById('mainAddBtn').textContent = '+ Add Block(s)';
+}
+
+function handleMainAdd() {
+  const tree = document.getElementById('layoutTree');
+  const tier = tree.dataset.tier;
+  const btn = document.getElementById('mainAddBtn');
+  if (tier === 'simple') {
+    const roomsDiv = document.getElementById('simpleRooms');
+    openAddForm('Room', (name, beds) => appendRoomChip(roomsDiv, name, beds), btn);
+  } else if (tier === 'standard') {
+    openAddForm('Floor', name => createFloorSection(tree, name), btn);
+  } else {
+    openAddForm('Block', name => createBlockSection(tree, name), btn);
+  }
+}
+
+function generateRange(prefix, start, end) {
+  const items = [];
+  prefix = prefix || '';
+  if (!start) return items;
+  if (!end) end = start;
+  const isNumeric = /^\d+$/.test(start) && /^\d+$/.test(end);
+  const isAlpha = /^[A-Za-z]$/.test(start) && /^[A-Za-z]$/.test(end);
+  if (isNumeric) {
+    const padLen = start.length;
+    const s = parseInt(start, 10), e = parseInt(end, 10);
+    const step = s <= e ? 1 : -1;
+    for (let i = s; step > 0 ? i <= e : i >= e; i += step) {
+      items.push(prefix + String(i).padStart(padLen, '0'));
+    }
+  } else if (isAlpha) {
+    const s = start.toUpperCase().charCodeAt(0), e = end.toUpperCase().charCodeAt(0);
+    const step = s <= e ? 1 : -1;
+    for (let i = s; step > 0 ? i <= e : i >= e; i += step) {
+      items.push(prefix + String.fromCharCode(i));
+    }
+  } else {
+    items.push(prefix + start);
+  }
+  return items;
+}
+
+function openAddForm(itemType, onAddCallback, triggerEl) {
+  document.querySelectorAll('.inline-add-form').forEach(f => f.remove());
+
+  const defaults = {
+    Room:  { prefix: '',       start: '101', end: '105', ph: '101' },
+    Floor: { prefix: 'Floor ', start: '1',   end: '3',   ph: '1' },
+    Block: { prefix: 'Block ', start: 'A',   end: 'B',   ph: 'A' }
+  }[itemType];
+
+  const form = document.createElement('div');
+  form.className = 'inline-add-form';
+  const bedsFieldHTML = itemType === 'Room'
+    ? '<input type="text" class="iaf-beds" placeholder="Beds per room (default 1)" value="1">'
+    : '';
+  form.innerHTML =
+    '<div class="iaf-modes">' +
+      '<button type="button" class="iaf-mode active" data-mode="range">Range (bulk)</button>' +
+      '<button type="button" class="iaf-mode" data-mode="single">Single</button>' +
+    '</div>' +
+    '<div class="iaf-range">' +
+      '<input type="text" class="iaf-prefix" placeholder="Prefix (optional)" value="' + defaults.prefix + '">' +
+      '<div class="iaf-row2">' +
+        '<input type="text" class="iaf-start" placeholder="From (e.g. ' + defaults.ph + ')" value="' + defaults.start + '">' +
+        '<input type="text" class="iaf-end" placeholder="To" value="' + defaults.end + '">' +
+      '</div>' +
+      bedsFieldHTML +
+      '<div class="iaf-preview"></div>' +
+    '</div>' +
+    '<div class="iaf-single" style="display:none">' +
+      '<input type="text" class="iaf-name" placeholder="' + itemType + ' name">' +
+      (itemType === 'Room' ? '<input type="text" class="iaf-beds-single" placeholder="Beds in this room (default 1)" value="1">' : '') +
+    '</div>' +
+    '<div class="iaf-actions">' +
+      '<button type="button" class="iaf-confirm">+ Add</button>' +
+      '<button type="button" class="iaf-cancel">Cancel</button>' +
+    '</div>';
+
+  if (triggerEl && triggerEl.parentNode) {
+    triggerEl.parentNode.insertBefore(form, triggerEl.nextSibling);
+  }
+
+  const modeBtns = form.querySelectorAll('.iaf-mode');
+  const rangeDiv = form.querySelector('.iaf-range');
+  const singleDiv = form.querySelector('.iaf-single');
+  const preview = form.querySelector('.iaf-preview');
+  const prefixInput = form.querySelector('.iaf-prefix');
+  const startInput = form.querySelector('.iaf-start');
+  const endInput = form.querySelector('.iaf-end');
+
+  function updatePreview() {
+    const items = generateRange(prefixInput.value, startInput.value.trim(), endInput.value.trim());
+    preview.textContent = items.length ? ('Will add ' + items.length + ': ' + items.join(', ')) : '';
+  }
+  [prefixInput, startInput, endInput].forEach(inp => inp.addEventListener('input', updatePreview));
+  updatePreview();
+
+  modeBtns.forEach(btn => btn.onclick = () => {
+    modeBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const mode = btn.dataset.mode;
+    rangeDiv.style.display = mode === 'range' ? 'block' : 'none';
+    singleDiv.style.display = mode === 'single' ? 'block' : 'none';
+  });
+
+  form.querySelector('.iaf-cancel').onclick = () => form.remove();
+  form.querySelector('.iaf-confirm').onclick = () => {
+    const activeMode = form.querySelector('.iaf-mode.active').dataset.mode;
+    if (activeMode === 'range') {
+      const items = generateRange(prefixInput.value, startInput.value.trim(), endInput.value.trim());
+      const bedsInput = form.querySelector('.iaf-beds');
+      const beds = bedsInput ? (parseInt(bedsInput.value, 10) || 1) : undefined;
+      items.forEach(name => onAddCallback(name, beds));
+    } else {
+      const name = form.querySelector('.iaf-name').value.trim();
+      const bedsSingleInput = form.querySelector('.iaf-beds-single');
+      const beds = bedsSingleInput ? (parseInt(bedsSingleInput.value, 10) || 1) : undefined;
+      if (name) onAddCallback(name, beds);
+    }
+    form.remove();
+  };
+}
+
+function addSharingType() {
+  const name = prompt('Sharing type name (e.g. "Quad Sharing"):');
+  if (!name || !name.trim()) return;
+  const rent = prompt('Monthly rent for "' + name.trim() + '" (₹):', '5000');
+  if (rent === null || rent.trim() === '') return;
+  const card = document.createElement('div');
+  card.className = 'plan-card';
+  card.innerHTML = `
+    <div class="plan-top">
+      <div class="plan-name"></div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <div class="plan-rent" onclick="editRent(this)"></div>
+        <div class="plan-delete" onclick="deletePlan(this)">✕</div>
+      </div>
+    </div>`;
+  card.querySelector('.plan-name').textContent = name.trim();
+  card.querySelector('.plan-rent').textContent = '₹' + rent.trim();
+  document.getElementById('sharingCard').appendChild(card);
+}
+
+function deletePlan(el) {
+  const card = el.closest('.plan-card');
+  const name = card.querySelector('.plan-name').textContent;
+  if (confirm('Remove sharing type "' + name + '"?')) card.remove();
+}
+
+function addAmenity() {
+  const name = prompt('Amenity name (e.g. "Gym Access"):');
+  if (!name || !name.trim()) return;
+  const isSeparate = confirm('Is this a separate charge? OK = Separate charge, Cancel = Included in rent');
+  let priceHTML = '';
+  let subText = 'Included in rent';
+  if (isSeparate) {
+    const price = prompt('Price (₹/month):', '100');
+    subText = 'Separate charge';
+    priceHTML = `<div class="addon-price" onclick="editAddonPrice(this)">₹${(price || '0').trim()}/mo</div>`;
+  }
+  const row = document.createElement('div');
+  row.className = 'addon-row';
+  row.innerHTML = `
+    <div class="addon-left"><div class="addon-name"></div><div class="addon-sub">${subText}</div></div>
+    <div class="addon-controls">${priceHTML}<div class="switch" onclick="toggleSwitch(this)"></div></div>`;
+  row.querySelector('.addon-name').textContent = name.trim();
+  document.getElementById('amenitiesCard').appendChild(row);
+}
+
+function editRent(el) {
+  const current = el.textContent.replace(/[^0-9]/g, '');
+  const amount = prompt('Set monthly rent (₹):', current || '0');
+  if (amount !== null && amount.trim() !== '') el.textContent = '₹' + amount.trim();
+}
+
+function toggleSwitch(el) { el.classList.toggle('off'); }
+
+function editAddonPrice(el) {
+  const current = el.textContent.replace(/[^0-9]/g, '');
+  const amount = prompt('Set price (₹):', current || '0');
+  if (amount !== null && amount.trim() !== '') {
+    const suffix = el.textContent.includes('/mo') ? '/mo' : '';
+    el.textContent = '₹' + amount.trim() + suffix;
+  }
+}
+
+renderStandard();
+</script>
+</body>
+</html>

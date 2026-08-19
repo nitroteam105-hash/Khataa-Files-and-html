@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project — Khaata (dense)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f4f3ee; --sheet:#fdfcf9; --ink:#2a2721; --muted:#8a857a; --faint:#b4afa4;
+    --line:#e7e3d6; --line-soft:#efece3;
+    --green:#1f6f54; --green-tint:#e9f2ed;
+    --ochre:#a9711f; --ochre-tint:#f6ecd9;
+    --terra:#a8503a; --terra-tint:#f4e4de;
+    --margin:#cf8b76;
+    --shadow-sheet:0 1px 2px rgba(45,42,34,0.05), 0 20px 44px -18px rgba(45,42,34,0.22);
+  }
+  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; animation:none !important; } }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; }
+  body{ background:#e4e1d6; font-family:'Inter',sans-serif; color:var(--ink); display:flex; justify-content:center; min-height:100vh; -webkit-font-smoothing:antialiased; }
+  .app{ width:100%; max-width:480px; min-height:100vh; position:relative; background:var(--paper); display:flex; flex-direction:column; }
+  button{ font-family:inherit; }
+  button:focus-visible{ outline:2px solid var(--green); outline-offset:2px; border-radius:6px; }
+  .tnum{ font-variant-numeric:tabular-nums; }
+  .deva{ font-family:'Noto Sans Devanagari',sans-serif; font-weight:600; }
+  .over{ font-size:10px; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); font-weight:600; }
+
+  /* Top strip */
+  .topbar{ display:flex; align-items:center; gap:10px; padding:16px 16px 12px; position:sticky; top:0; z-index:6; background:var(--paper); }
+  .icon-btn{ background:none; border:none; cursor:pointer; color:var(--ink); padding:2px; font-size:19px; line-height:1; }
+  .tt{ flex:1; min-width:0; }
+  .tt h1{ font-family:'Plus Jakarta Sans',sans-serif; font-size:16px; font-weight:800; margin:0; letter-spacing:-0.01em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .tt p{ margin:1px 0 0; font-size:11.5px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+  /* The sheet */
+  .sheet{ margin:0 12px 100px; background:var(--sheet);
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    border:1px solid var(--line); border-radius:12px; box-shadow:var(--shadow-sheet); overflow:hidden; position:relative; }
+  .sheet::before{ content:''; position:absolute; top:0; bottom:0; left:34px; width:1px; background:var(--margin); opacity:.5; }
+  .block{ padding:12px 16px 12px 46px; border-bottom:1px solid var(--line); position:relative; }
+  .block:last-child{ border-bottom:none; }
+  .block-h{ display:flex; align-items:baseline; gap:7px; margin:0 0 9px -30px; }
+  .block-h .no{ width:23px; text-align:center; font-size:10px; color:var(--faint); font-weight:700; }
+  .block-h h2{ font-family:'Plus Jakarta Sans',sans-serif; font-size:12px; font-weight:800; margin:0; text-transform:uppercase; letter-spacing:0.05em; }
+  .block-h .deva{ font-size:12px; color:var(--muted); }
+  .block-h .aside{ margin-left:auto; font-size:11px; color:var(--muted); font-weight:600; }
+
+  /* Health summary */
+  .summary{ display:flex; align-items:center; gap:9px; }
+  .summary .dot{ width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+  .summary.ok .dot{ background:var(--green);} .summary.warn .dot{ background:var(--ochre);} .summary.bad .dot{ background:var(--terra);}
+  .summary p{ margin:0; font-size:13px; line-height:1.35; font-weight:500; }
+  .summary .em{ font-weight:800; } .summary.ok .em{ color:var(--green);} .summary.warn .em{ color:var(--ochre);} .summary.bad .em{ color:var(--terra);}
+
+  /* T-ledger */
+  .led-line{ display:flex; justify-content:space-between; align-items:baseline; padding:5px 0; }
+  .led-line .lab{ font-size:13px; } .led-line .lab .deva{ margin-right:6px; }
+  .led-line .lab .en{ color:var(--muted); font-size:11px; }
+  .led-line .amt{ font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:14px; }
+  .led-line .amt.out{ color:var(--ochre); }
+  .led-rule{ border-top:1px solid var(--ink); margin:5px 0 0; opacity:.25; }
+  .led-baaki{ display:flex; justify-content:space-between; align-items:baseline; padding:7px 0 5px; }
+  .led-baaki .lab .deva{ font-size:14px; } .led-baaki .lab .en{ font-size:11px; color:var(--muted); margin-left:6px; }
+  .led-baaki .amt{ font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:22px; letter-spacing:-0.01em; border-bottom:3px double currentColor; padding-bottom:2px; }
+  .led-baaki .amt.pos{ color:var(--green);} .led-baaki .amt.neg{ color:var(--terra);}
+  .budget-mini{ margin-top:11px; }
+  .budget-mini .bl{ display:flex; justify-content:space-between; font-size:11px; color:var(--muted); font-weight:600; margin-bottom:5px; }
+  .budget-track{ height:6px; background:#efece4; border-radius:99px; overflow:hidden; }
+  .budget-fill{ height:100%; width:0; background:var(--green); border-radius:99px; transition:width .9s cubic-bezier(.22,.7,.24,1) .2s; }
+  .budget-fill.warn{ background:var(--ochre);} .budget-fill.bad{ background:var(--terra);}
+
+  /* Aaj rows */
+  .arow{ display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px dotted var(--line-soft); }
+  .arow:last-child{ border-bottom:none; }
+  .arow .adot{ width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .arow.collect .adot{ background:var(--green);} .arow.pay .adot{ background:var(--ochre);} .arow.renew .adot{ background:var(--terra);}
+  .arow .atext{ flex:1; min-width:0; font-size:12.5px; line-height:1.3; }
+  .arow .atext b{ font-weight:800; } .arow.collect .atext b{ color:var(--green);} .arow.pay .atext b{ color:var(--ochre);}
+  .arow .atext .sub{ color:var(--muted); }
+  .arow .acts{ display:flex; gap:5px; flex-shrink:0; }
+  .mini-btn{ width:30px; height:30px; border-radius:8px; border:1px solid var(--line); background:var(--sheet); cursor:pointer; font-size:13px; display:flex; align-items:center; justify-content:center; transition:transform .08s ease; }
+  .mini-btn:active{ transform:scale(0.9); }
+  .mini-btn.go{ width:auto; padding:0 10px; font-size:15px; color:var(--faint); }
+
+  /* Ribbon */
+  .ribbon-top{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px; }
+  .ribbon-now{ font-size:12.5px; font-weight:700; } .ribbon-now .st{ color:var(--ochre); }
+  .ribbon-count{ font-size:11px; color:var(--muted); font-weight:600; }
+  .ribbon{ display:flex; gap:4px; cursor:pointer; }
+  .seg{ flex:1; height:8px; border-radius:99px; background:#e9e6dd; position:relative; overflow:hidden; }
+  .seg.done{ background:var(--green);} .seg.now{ background:var(--ochre-tint);}
+  .seg.now::after{ content:''; position:absolute; left:0; top:0; bottom:0; width:55%; background:var(--ochre); border-radius:99px; }
+
+  /* Pulse inline */
+  .pulse{ display:flex; align-items:center; flex-wrap:wrap; gap:4px 0; }
+  .pulse button{ background:none; border:none; cursor:pointer; font-size:12.5px; color:var(--ink); padding:2px 0; font-family:inherit; }
+  .pulse .pv{ font-weight:800; font-family:'Plus Jakarta Sans',sans-serif; }
+  .pulse .pl{ color:var(--muted); }
+  .pulse .exp{ color:var(--ochre); font-weight:700; }
+  .pulse .sep{ color:var(--faint); margin:0 9px; }
+
+  /* Entries dense table */
+  .ent{ display:flex; align-items:baseline; gap:10px; padding:7px 0; border-bottom:1px solid var(--line-soft); }
+  .ent:last-of-type{ border-bottom:none; }
+  .ent .ed{ font-size:11px; color:var(--faint); width:42px; flex-shrink:0; }
+  .ent .et{ flex:1; min-width:0; font-size:12.5px; line-height:1.3; }
+  .ent .et .tg{ color:var(--muted); font-size:10.5px; }
+  .ent .ea{ font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:12.5px; white-space:nowrap; }
+  .ent .ea.in{ color:var(--green);} .ent .ea.out{ color:var(--ochre);} .ent .ea.none{ color:var(--faint);}
+  .view-all{ display:inline-block; margin-top:9px; background:none; border:none; color:var(--green); font-size:12px; font-weight:700; cursor:pointer; padding:0; }
+
+  /* FAB + sheet */
+  .fab-wrap{ position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:480px; padding:14px 16px 22px; background:linear-gradient(to top, var(--paper) 62%, transparent); pointer-events:none; z-index:8; }
+  .fab{ pointer-events:auto; width:100%; padding:14px; background:var(--green); color:#fff; border:none; border-radius:13px; font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:15px; cursor:pointer; box-shadow:0 6px 18px rgba(31,111,84,0.32); transition:transform .08s ease; }
+  .fab:active{ transform:scale(0.98); }
+  .sheet-overlay{ position:fixed; inset:0; background:rgba(24,22,16,0.42); display:none; align-items:flex-end; justify-content:center; z-index:20; }
+  .sheet-overlay.show{ display:flex; animation:fade .18s ease; }
+  @keyframes fade{ from{opacity:0;} to{opacity:1;} }
+  .rsheet{ width:100%; max-width:480px; background:var(--sheet); border-radius:24px 24px 0 0; padding:20px 20px 26px; animation:up .26s cubic-bezier(.22,.7,.24,1); }
+  @keyframes up{ from{transform:translateY(30px);} to{transform:translateY(0);} }
+  .rsheet h2{ font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:18px; margin:0 0 16px; }
+  .record-grid{ display:grid; grid-template-columns:1fr 1fr; gap:11px; }
+  .record-btn{ display:flex; flex-direction:column; align-items:center; gap:9px; padding:20px 12px; border-radius:16px; border:1px solid var(--line); background:var(--sheet); cursor:pointer; transition:transform .08s ease; }
+  .record-btn:active{ transform:scale(0.97); }
+  .record-btn .r-emo{ width:46px; height:46px; border-radius:13px; display:flex; align-items:center; justify-content:center; font-size:21px; }
+  .record-btn .r-lab{ font-size:13.5px; font-weight:700; }
+  .r-money{ background:var(--green-tint);} .r-expense{ background:var(--ochre-tint);} .r-attendance{ background:#e9edea;} .r-note{ background:var(--line-soft);}
+  .sheet-cancel{ width:100%; margin-top:14px; padding:13px; border-radius:13px; border:1px solid var(--line); background:var(--sheet); color:var(--ink); font-weight:700; font-size:14.5px; cursor:pointer; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <button class="icon-btn" aria-label="Go back">←</button>
+    <div class="tt"><h1>Sharma Residence — G+2</h1><p id="subLine">—</p></div>
+    <button class="icon-btn" aria-label="More options">⋮</button>
+  </header>
+
+  <div class="sheet">
+    <!-- Health -->
+    <div class="block">
+      <div class="summary" id="summary"><span class="dot"></span><p id="summaryText"></p></div>
+    </div>
+
+    <!-- Khaata T-ledger -->
+    <div class="block">
+      <div class="block-h"><span class="no">1</span><h2>Khaata</h2><span class="aside" id="ledgerDate"></span></div>
+      <div class="led-line"><span class="lab"><span class="deva">जमा</span><span class="en">Received</span></span><span class="amt tnum" id="jamaVal">₹0</span></div>
+      <div class="led-line"><span class="lab"><span class="deva">खर्च</span><span class="en">Spent</span></span><span class="amt out tnum" id="kharchVal">−₹0</span></div>
+      <div class="led-rule"></div>
+      <div class="led-baaki"><span class="lab"><span class="deva">बाकी</span><span class="en">In hand</span></span><span class="amt tnum" id="baakiVal">₹0</span></div>
+      <div class="budget-mini">
+        <div class="bl"><span>Budget used</span><span class="tnum" id="budgetText">—</span></div>
+        <div class="budget-track"><div class="budget-fill" id="budgetFill"></div></div>
+      </div>
+    </div>
+
+    <!-- Aaj -->
+    <div class="block">
+      <div class="block-h"><span class="no">2</span><h2>Aaj</h2><span class="deva">आज</span><span class="aside" id="aajCount"></span></div>
+      <div id="aajList"></div>
+    </div>
+
+    <!-- Build -->
+    <div class="block">
+      <div class="block-h"><span class="no">3</span><h2>Build</h2></div>
+      <div class="ribbon-top"><span class="ribbon-now" id="ribbonNow"></span><span class="ribbon-count" id="ribbonCount"></span></div>
+      <div class="ribbon" id="ribbon" role="button" aria-label="Open stages"></div>
+    </div>
+
+    <!-- This week -->
+    <div class="block">
+      <div class="block-h"><span class="no">4</span><h2>This week</h2></div>
+      <div class="pulse" id="pulse"></div>
+    </div>
+
+    <!-- Recent entries -->
+    <div class="block">
+      <div class="block-h"><span class="no">5</span><h2>Recent</h2></div>
+      <div id="entriesList"></div>
+      <button class="view-all" onclick="console.log('nav: activity/all')">View full ledger →</button>
+    </div>
+  </div>
+
+  <div class="fab-wrap"><button class="fab" id="recordBtn">+ Record</button></div>
+</div>
+
+<div class="sheet-overlay" id="recordOverlay">
+  <div class="rsheet">
+    <h2>Record something</h2>
+    <div class="record-grid">
+      <button class="record-btn" data-target="money-in"><span class="r-emo r-money">💰</span><span class="r-lab">Money in</span></button>
+      <button class="record-btn" data-target="expense"><span class="r-emo r-expense">🧾</span><span class="r-lab">Expense</span></button>
+      <button class="record-btn" data-target="attendance"><span class="r-emo r-attendance">👷</span><span class="r-lab">Attendance</span></button>
+      <button class="record-btn" data-target="site-note"><span class="r-emo r-note">📝</span><span class="r-lab">Site note</span></button>
+    </div>
+    <button class="sheet-cancel" id="cancelRecord">Cancel</button>
+  </div>
+</div>
+
+<script>
+  const fmt = n => '₹' + Number(n).toLocaleString('en-IN');
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const relDay = d => d===0 ? 'Today' : d===1 ? '1d' : d+'d';
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const state = {
+    project:{ name:'Sharma Residence — G+2', client:'Rakesh Sharma', budget:1040000 },
+    stages:[
+      {name:'Foundation',status:'complete'},{name:'Plinth',status:'in_progress'},{name:'Structure',status:'not_started'},
+      {name:'Brickwork',status:'not_started'},{name:'Plaster',status:'not_started'},{name:'Flooring',status:'not_started'},{name:'Finishing',status:'not_started'}
+    ],
+    payments:[{amount:200000,daysAgo:34},{amount:100000,daysAgo:18},{amount:70000,daysAgo:9},{amount:50000,daysAgo:0}],
+    expenses:[{amount:1300,daysAgo:1},{amount:16800,daysAgo:2},{amount:24200,daysAgo:5},{amount:85000,daysAgo:9},{amount:48000,daysAgo:15},{amount:120000,daysAgo:20},{amount:41500,daysAgo:25},{amount:28200,daysAgo:30}],
+    attendanceToday:9, documents:{total:8,expiring:1},
+    dues:{amount:100000,from:'Rakesh Sharma',unpaidDays:18},
+    payout:{amount:18500,pendingDays:3},
+    approval:{name:'Sanction plan',expiresInDays:12},
+    entries:[
+      {kind:'in',text:'Received · Rakesh Sharma',tag:'Money-in',amount:50000,daysAgo:0},
+      {kind:'none',text:'Plinth beam reinforcement done',tag:'Stage',daysAgo:1},
+      {kind:'out',text:'Cement 40 bags',tag:'Expense',amount:16800,daysAgo:2},
+      {kind:'none',text:'9 workers marked present',tag:'Attendance',daysAgo:2},
+      {kind:'none',text:'Sanction plan uploaded',tag:'Document',daysAgo:4}
+    ]
+  };
+
+  const received=()=>state.payments.reduce((a,p)=>a+p.amount,0);
+  const spent=()=>state.expenses.reduce((a,e)=>a+e.amount,0);
+  const net=()=>received()-spent();
+  const budgetPct=()=>Math.round((spent()/state.project.budget)*100);
+  const stagesDone=()=>state.stages.filter(s=>s.status==='complete').length;
+  const currentStage=()=>state.stages.find(s=>s.status==='in_progress')||state.stages.find(s=>s.status!=='complete');
+  const weekSpent=()=>state.expenses.filter(e=>e.daysAgo<=7).reduce((a,e)=>a+e.amount,0);
+
+  function countUp(el,target){
+    if(reduceMotion){ el.textContent=fmt(target); return; }
+    const start=performance.now(),dur=900;
+    (function tick(now){ const t=Math.min(1,(now-start)/dur),e=1-Math.pow(1-t,3); el.textContent=fmt(Math.round(target*e)); if(t<1) requestAnimationFrame(tick); })(start);
+  }
+
+  function renderHero(){
+    document.getElementById('subLine').textContent = state.project.client + ' · ' + new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short'});
+    document.getElementById('ledgerDate').textContent = new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+    const r=received(),s=spent(),n=net(),pct=budgetPct();
+    document.getElementById('jamaVal').textContent=fmt(r);
+    document.getElementById('kharchVal').textContent='−'+fmt(s);
+    const baaki=document.getElementById('baakiVal'); baaki.classList.toggle('pos',n>=0); baaki.classList.toggle('neg',n<0);
+    document.getElementById('budgetText').textContent=`${fmt(s)} / ${fmt(state.project.budget)} · ${pct}%`;
+    const fill=document.getElementById('budgetFill');
+    fill.classList.toggle('warn',pct>=80&&pct<100); fill.classList.toggle('bad',pct>=100);
+    const setW=()=>fill.style.width=Math.min(100,pct)+'%';
+    reduceMotion?setW():requestAnimationFrame(()=>requestAnimationFrame(setW));
+    countUp(baaki,n);
+    const sum=document.getElementById('summary'),st=document.getElementById('summaryText');
+    let tone,msg;
+    if(n<0){tone='bad';msg=`Cash tight — <span class="em">${fmt(Math.abs(n))}</span> more spent than collected.`;}
+    else if(pct>=100){tone='bad';msg=`Over budget — <span class="em">${pct}% used</span>.`;}
+    else if(pct>=80){tone='warn';msg=`Watch budget — <span class="em">${pct}% used</span>, ${fmt(n)} in hand.`;}
+    else{tone='ok';msg=`Healthy — <span class="em">${fmt(n)} in hand</span>, ${pct}% into budget.`;}
+    sum.className='summary '+tone; st.innerHTML=msg;
+  }
+
+  function renderAaj(){
+    const items=[];
+    if(state.dues&&state.dues.amount>0) items.push({cls:'collect',text:`Collect <b>${fmt(state.dues.amount)}</b> from ${esc(state.dues.from)}<br><span class="sub">Foundation billed · unpaid ${state.dues.unpaidDays}d</span>`,acts:[{i:'📞',a:'call'},{i:'🔔',a:'remind'}]});
+    if(state.payout&&state.payout.amount>0) items.push({cls:'pay',text:`Pay <b>${fmt(state.payout.amount)}</b> labour<br><span class="sub">Pending ${state.payout.pendingDays}d</span>`,acts:[{i:'›',a:'payout',go:true}]});
+    if(state.approval&&state.approval.expiresInDays<=30) items.push({cls:'renew',text:`Renew ${esc(state.approval.name)}<br><span class="sub">Expires in ${state.approval.expiresInDays}d</span>`,acts:[{i:'›',a:'document',go:true}]});
+    document.getElementById('aajCount').textContent = items.length?`${items.length} to do`:'';
+    const list=document.getElementById('aajList');
+    if(!items.length){ list.innerHTML=`<p style="font-size:12.5px;color:var(--muted);margin:2px 0">🌿 Nothing pending today.</p>`; return; }
+    list.innerHTML=items.map(it=>`<div class="arow ${it.cls}"><span class="adot"></span><span class="atext">${it.text}</span><span class="acts">${it.acts.map(a=>`<button class="mini-btn ${a.go?'go':''}" data-do="${a.a}" aria-label="${a.a}">${a.i}</button>`).join('')}</span></div>`).join('');
+  }
+
+  function renderRibbon(){
+    const cs=currentStage(),done=stagesDone(),total=state.stages.length;
+    document.getElementById('ribbonNow').innerHTML=`Now: <span class="st">${esc(cs.name)}</span>`;
+    document.getElementById('ribbonCount').textContent=`${done} of ${total} done`;
+    document.getElementById('ribbon').innerHTML=state.stages.map(s=>{const c=s.status==='complete'?'done':(s===cs?'now':'');return `<span class="seg ${c}" title="${esc(s.name)}"></span>`;}).join('');
+  }
+
+  function renderPulse(){
+    document.getElementById('pulse').innerHTML=`
+      <button data-target="attendance"><span class="pv tnum">${state.attendanceToday}</span> <span class="pl">on site</span></button><span class="sep">·</span>
+      <button data-target="expenses"><span class="pv tnum">${fmt(weekSpent())}</span> <span class="pl">this week</span></button><span class="sep">·</span>
+      <button data-target="documents"><span class="pv tnum">${state.documents.total}</span> <span class="pl">files,</span> <span class="exp">${state.documents.expiring} expiring</span></button>`;
+  }
+
+  function renderEntries(){
+    document.getElementById('entriesList').innerHTML=state.entries.map(e=>{
+      let a; if(e.kind==='in') a=`<span class="ea in">+${fmt(e.amount)}</span>`; else if(e.kind==='out') a=`<span class="ea out">−${fmt(e.amount)}</span>`; else a=`<span class="ea none">·</span>`;
+      return `<div class="ent"><span class="ed">${relDay(e.daysAgo)}</span><span class="et">${esc(e.text)} <span class="tg">· ${esc(e.tag)}</span></span>${a}</div>`;
+    }).join('');
+  }
+
+  function render(){ renderHero(); renderAaj(); renderRibbon(); renderPulse(); renderEntries(); }
+
+  document.getElementById('aajList').addEventListener('click',e=>{
+    const b=e.target.closest('[data-do]'); if(!b) return;
+    const a=b.dataset.do;
+    if(a==='call') alert('Calling '+state.dues.from+' (mock)');
+    else if(a==='remind') alert('WhatsApp reminder sent to '+state.dues.from+' (mock)');
+    else console.log('nav:',a);
+  });
+  document.getElementById('ribbon').addEventListener('click',()=>console.log('nav: stages'));
+  document.getElementById('pulse').addEventListener('click',e=>{const t=e.target.closest('[data-target]'); if(t) console.log('nav:',t.dataset.target);});
+
+  const overlay=document.getElementById('recordOverlay');
+  document.getElementById('recordBtn').addEventListener('click',()=>overlay.classList.add('show'));
+  document.getElementById('cancelRecord').addEventListener('click',()=>overlay.classList.remove('show'));
+  overlay.addEventListener('click',e=>{ if(e.target===overlay) overlay.classList.remove('show'); });
+  document.querySelectorAll('.record-btn').forEach(b=>b.addEventListener('click',()=>{ console.log('nav: record/',b.dataset.target); overlay.classList.remove('show'); }));
+
+  render();
+</script>
+</body>
+</html>

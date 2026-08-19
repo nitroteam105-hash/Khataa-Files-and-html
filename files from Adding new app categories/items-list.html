@@ -1,0 +1,171 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Items</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#16161a;--mut:#62636a;--ln:#e7e7e2;--ac:#1f6f54;--sf:#e8f3ee;--wm:#f4f2ec;
+--rd:#b3261e;--rs:#fdecea;--am:#b36b00;--as:#fff4e5;--bl:#2a5db0;--bs:#e8eef9;
+--d:'Plus Jakarta Sans',system-ui,sans-serif;--b:'Inter',system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fbfbf9;color:var(--ink);font-family:var(--b);padding-bottom:88px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:480px;margin:0 auto;padding:0 16px}
+h1,h2,h3{font-family:var(--d);letter-spacing:-.01em}
+.top{position:sticky;top:0;background:#fbfbf9;z-index:9;padding:13px 0 0;border-bottom:1px solid var(--ln)}
+.toprow{display:flex;align-items:center;gap:11px;padding-bottom:11px}
+.top .bk{font-size:20px;color:var(--mut);cursor:pointer}
+.top h1{font-size:18px;flex:1}.top .s{font-size:12px;color:var(--mut)}
+.top .count{font-size:12px;color:var(--mut);font-weight:600}
+/* demo */
+.demo{background:#fff;border:1px dashed #cdd3ce;border-radius:12px;padding:10px 12px;margin:12px 0}
+.demo .dh{font-size:11px;color:var(--mut);margin-bottom:8px;font-weight:600}
+.demo .drow{display:flex;gap:8px}
+.demo .drow button{flex:1;border:1px solid var(--ln);background:#fbfbf9;border-radius:9px;padding:8px;font-family:var(--d);font-weight:700;font-size:12px;color:var(--mut);cursor:pointer}
+.demo .drow button.on{background:var(--sf);border-color:var(--ac);color:var(--ac)}
+/* search */
+.searchwrap{position:relative;margin:12px 0 4px}
+.searchwrap input{width:100%;padding:12px 12px 12px 40px;border:1px solid var(--ln);border-radius:11px;font-size:15px;font-family:var(--b);background:#fff}
+.searchwrap input:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px var(--sf)}
+.searchwrap .si{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--mut);font-size:15px}
+.searchwrap .sc{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:34px;height:34px;border:none;background:var(--sf);color:var(--ac);border-radius:8px;font-size:17px;cursor:pointer;letter-spacing:-2px}
+/* filter chips */
+.chips{display:flex;gap:7px;overflow-x:auto;padding:8px 0 6px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{white-space:nowrap;border:1px solid var(--ln);background:#fff;border-radius:20px;padding:7px 13px;font-family:var(--d);font-weight:700;font-size:12.5px;color:var(--mut);cursor:pointer;flex-shrink:0}
+.chip.on{border-color:var(--ac);background:var(--sf);color:var(--ac)}
+.chip.low{border-color:#f0d9a8}.chip.low.on{background:var(--as);border-color:var(--am);color:var(--am)}
+/* item row */
+.grp{font-family:var(--d);font-weight:700;font-size:11.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.04em;margin:16px 2px 8px}
+.it{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--ln);border-radius:12px;padding:11px 13px;margin-bottom:8px;cursor:pointer}
+.it .ph{width:44px;height:44px;border-radius:10px;background:var(--wm);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.it .mid{flex:1;min-width:0}
+.it .nm{font-family:var(--d);font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.it .sub{font-size:11.5px;color:var(--mut);margin-top:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.it .tag{font-size:9.5px;font-weight:700;background:var(--sf);color:var(--ac);padding:1px 6px;border-radius:5px}
+.it .tag.mu{background:var(--bs);color:var(--bl)}
+.it .right{text-align:right;flex-shrink:0}
+.it .price{font-family:var(--d);font-weight:800;font-size:15px}
+.it .stock{font-size:11px;margin-top:2px;font-weight:600}
+.stock.ok{color:var(--mut)}.stock.low{color:var(--am)}.stock.out{color:var(--rd)}
+.it .adj{width:30px;height:30px;border:1px solid var(--ln);background:#fbfbf9;border-radius:8px;font-size:15px;color:var(--ac);cursor:pointer;flex-shrink:0}
+.empty{text-align:center;color:var(--mut);padding:40px 20px;font-size:14px}
+.fab{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);max-width:480px;width:calc(100% - 32px)}
+.fab button{width:100%;background:var(--ac);color:#fff;border:none;border-radius:13px;padding:15px;font-family:var(--d);font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 4px 16px rgba(31,111,84,.3)}
+/* stock adjust sheet */
+.mask{position:fixed;inset:0;background:rgba(0,0,0,.42);display:none;align-items:flex-end;justify-content:center;z-index:20}
+.mask.on{display:flex}
+.sheet{background:#fff;border-radius:18px 18px 0 0;width:100%;max-width:480px;padding:20px 18px 24px}
+.sheet h2{font-size:18px;margin-bottom:3px}.sheet .subt{font-size:12.5px;color:var(--mut);margin-bottom:14px}
+.adjrow{display:flex;align-items:center;gap:12px;margin:16px 0}
+.adjrow button{width:52px;height:52px;border:1px solid var(--ln);background:#fbfbf9;border-radius:12px;font-size:24px;color:var(--ac);cursor:pointer}
+.adjrow .val{flex:1;text-align:center}
+.adjrow .val .n{font-family:var(--d);font-weight:800;font-size:30px}
+.adjrow .val .u{font-size:11.5px;color:var(--mut)}
+.seg{display:flex;gap:6px;background:var(--wm);border-radius:10px;padding:4px;margin-bottom:6px}
+.seg button{flex:1;border:none;background:none;padding:10px;border-radius:7px;font-family:var(--d);font-weight:700;font-size:12.5px;color:var(--mut);cursor:pointer}
+.seg button.on{background:#fff;color:var(--ac)}
+.btn{width:100%;font-family:var(--d);font-weight:700;font-size:15px;border:none;border-radius:12px;padding:14px;cursor:pointer;background:var(--ac);color:#fff;margin-top:8px}
+.btn.s{background:#fff;border:1px solid var(--ln);color:var(--ink);margin-top:8px}
+.toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:11px 18px;border-radius:22px;font-size:13px;font-weight:600;opacity:0;transition:all .3s;z-index:40;pointer-events:none}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+</style></head><body>
+<div class="top"><div class="wrap">
+  <div class="toprow"><span class="bk">←</span><div style="flex:1"><h1>Items</h1><div class="s">Sharma Hardware</div></div><span class="count" id="count"></span></div>
+</div></div>
+<div class="wrap">
+  <div class="demo"><div class="dh">Demo — capabilities from setup. Toggle to see the list adapt:</div>
+    <div class="drow"><button id="capStock" class="on" onclick="toggleCap('stock')">Stock tracking</button><button id="capCat" class="on" onclick="toggleCap('cat')">Categories</button></div>
+  </div>
+  <div class="searchwrap"><span class="si">🔍</span><input id="search" placeholder="Search name or scan barcode…" oninput="render()"><button class="sc" onclick="scanSearch()" title="Scan">▚</button></div>
+  <div class="chips" id="chips"></div>
+  <div id="list"></div>
+</div>
+<div class="fab"><button onclick="toast('Opens Add Item page (add mode)')">＋ Add item</button></div>
+
+<div class="mask" id="adjm"><div class="sheet" id="adjb"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+var cap={stock:true,cat:true};
+/* item: name, sku, cat, price(base sell price), unit, stock(base units), low, multi, baseUnit, boxFactor(if multi) */
+var items=[
+ {name:'UltraTech Cement 50kg',sku:'8901',cat:'Cement',price:410,unit:'bag',stock:120,low:30,multi:false},
+ {name:'Ceramic Wall Tile 2x2',sku:'8902',cat:'Tiles',price:26,unit:'piece',stock:480,low:40,multi:true,baseUnit:'piece',boxFactor:20,boxPrice:520},
+ {name:'TMT Steel Rod 12mm',sku:'8903',cat:'Steel',price:68,unit:'kg',stock:22,low:100,multi:false},
+ {name:'Asian Paints Apcolite 1L',sku:'8904',cat:'Paint',price:340,unit:'litre',stock:8,low:10,multi:false},
+ {name:'PVC Pipe 1inch',sku:'8905',cat:'Plumbing',price:145,unit:'piece',stock:0,low:15,multi:false},
+ {name:'Binding Wire 1kg',sku:'8906',cat:'Steel',price:75,unit:'kg',stock:60,low:20,multi:false},
+ {name:'Wall Putty 40kg',sku:'8907',cat:'Paint',price:1050,unit:'bag',stock:18,low:10,multi:false},
+ {name:'CPVC Elbow 3/4',sku:'8908',cat:'Plumbing',price:22,unit:'piece',stock:340,low:50,multi:false},
+];
+var filterCat='all',lowOnly=false,adjIdx=null,adjMode='in',adjQty=0;
+var $=function(i){return document.getElementById(i)};
+function money(n){return '\u20b9'+(+n||0).toLocaleString('en-IN')}
+function cats(){var s=[];items.forEach(function(i){if(i.cat&&s.indexOf(i.cat)<0)s.push(i.cat)});return s.sort();}
+function stockState(i){if(i.stock<=0)return'out';if(i.stock<=i.low)return'low';return'ok';}
+function boxesLoose(i){if(!i.multi)return'';var b=Math.floor(i.stock/i.boxFactor),l=i.stock%i.boxFactor;return b+' box'+(l?' + '+l+' loose':'');}
+
+function toggleCap(k){cap[k]=!cap[k];$('cap'+(k==='stock'?'Stock':'Cat')).classList.toggle('on',cap[k]);if(k==='cat'&&!cap.cat)filterCat='all';if(k==='stock'&&!cap.stock)lowOnly=false;render();}
+function scanSearch(){var i=items[Math.floor(Math.random()*items.length)];$('search').value=i.sku;toast('Scanned '+i.sku+' \u2192 '+i.name);render();}
+
+function renderChips(){
+ var h='';
+ if(cap.cat){h+='<div class="chip '+(filterCat==='all'&&!lowOnly?'on':'')+'" onclick="setCat(\'all\')">All</div>';
+  cats().forEach(function(c){h+='<div class="chip '+(filterCat===c?'on':'')+'" onclick="setCat(\''+c+'\')">'+c+'</div>';});}
+ if(cap.stock){var lc=items.filter(function(i){return stockState(i)!=='ok'}).length;h+='<div class="chip low '+(lowOnly?'on':'')+'" onclick="toggleLow()">\u26a0 Low / out'+(lc?' \u00b7 '+lc:'')+'</div>';}
+ $('chips').innerHTML=h;
+ $('chips').style.display=(cap.cat||cap.stock)?'flex':'none';
+}
+function setCat(c){filterCat=c;lowOnly=false;render();}
+function toggleLow(){lowOnly=!lowOnly;if(lowOnly)filterCat='all';render();}
+
+function render(){
+ renderChips();
+ var q=$('search').value.trim().toLowerCase();
+ var rows=items.filter(function(i){
+  if(q&&i.name.toLowerCase().indexOf(q)<0&&(i.sku||'').indexOf(q)<0)return false;
+  if(cap.cat&&filterCat!=='all'&&i.cat!==filterCat)return false;
+  if(cap.stock&&lowOnly&&stockState(i)==='ok')return false;
+  return true;
+ });
+ $('count').textContent=items.length+' items';
+ if(!rows.length){$('list').innerHTML='<div class="empty">No items match.</div>';return;}
+ // group by category if on and not filtered
+ var h='';
+ if(cap.cat&&filterCat==='all'&&!lowOnly&&!q){
+  var groups={};rows.forEach(function(i){var c=i.cat||'Uncategorised';(groups[c]=groups[c]||[]).push(i)});
+  Object.keys(groups).sort().forEach(function(c){h+='<div class="grp">'+c+'</div>'+groups[c].map(itemRow).join('')});
+ } else h=rows.map(itemRow).join('');
+ $('list').innerHTML=h;
+}
+function itemRow(i){
+ var idx=items.indexOf(i);
+ var sub=[];
+ if(cap.cat&&i.cat)sub.push(i.cat);
+ sub.push('per '+i.unit);
+ if(i.multi)sub.push('<span class="tag mu">multi-unit</span>');
+ var subHtml='<div class="sub">'+sub.join(' \u00b7 ').replace('\u00b7 <span','<span')+'</div>';
+ var stockHtml='';
+ if(cap.stock){var st=stockState(i);
+  stockHtml='<div class="stock '+st+'">'+(st==='out'?'Out of stock':i.stock+' '+i.unit+(i.multi?' \u00b7 '+boxesLoose(i):''))+'</div>';}
+ var adjBtn=cap.stock?'<button class="adj" onclick="event.stopPropagation();openAdj('+idx+')" title="Adjust stock">\u00b1</button>':'';
+ return '<div class="it" onclick="editItem('+idx+')"><div class="ph">\ud83d\udce6</div><div class="mid"><div class="nm">'+i.name+'</div>'+subHtml+'</div><div class="right"><div class="price">'+money(i.price)+'</div>'+stockHtml+'</div>'+adjBtn+'</div>';
+}
+function editItem(idx){toast('Opens Edit Item \u2014 '+items[idx].name);}
+
+/* stock adjust */
+function openAdj(idx){adjIdx=idx;adjMode='in';adjQty=0;renderAdj();$('adjm').classList.add('on');}
+function renderAdj(){
+ var i=items[adjIdx];
+ $('adjb').innerHTML='<h2>Adjust stock</h2><div class="subt">'+i.name+' \u2014 now '+i.stock+' '+i.unit+'</div>'
+  +'<div class="seg"><button class="'+(adjMode==='in'?'on':'')+'" onclick="adjMode=\'in\';renderAdj()">Stock in (+)</button><button class="'+(adjMode==='out'?'on':'')+'" onclick="adjMode=\'out\';renderAdj()">Stock out (\u2212)</button></div>'
+  +'<div class="adjrow"><button onclick="bump(-1)">\u2212</button><div class="val"><div class="n">'+adjQty+'</div><div class="u">'+i.unit+' to '+(adjMode==='in'?'add':'remove')+'</div></div><button onclick="bump(1)">+</button></div>'
+  +'<div class="subt" style="text-align:center">New stock will be <b>'+(adjMode==='in'?i.stock+adjQty:Math.max(0,i.stock-adjQty))+' '+i.unit+'</b></div>'
+  +'<button class="btn" onclick="saveAdj()">Save adjustment</button><button class="btn s" onclick="closeAdj()">Cancel</button>';
+}
+function bump(n){adjQty=Math.max(0,adjQty+n);renderAdj();}
+function saveAdj(){var i=items[adjIdx];i.stock=adjMode==='in'?i.stock+adjQty:Math.max(0,i.stock-adjQty);closeAdj();render();toast('Stock updated');}
+function closeAdj(){$('adjm').classList.remove('on');}
+$('adjm').addEventListener('click',function(e){if(e.target.id==='adjm')closeAdj()});
+
+var tT;function toast(m){var t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(tT);tT=setTimeout(function(){t.classList.remove('on')},1700);}
+render();
+</script></body></html>

@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Khaata — Create Bill</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fbfbf9;--ink:#16161a;--muted:#62636a;--line:#e7e7e2;--card:#fff;
+    --accent:#1f6f54;--soft:#e8f3ee;--warm:#f4f2ec;--red:#b3261e;--amber:#b36b00;
+    --d:'Plus Jakarta Sans',sans-serif;--b:'Inter',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:var(--b);-webkit-font-smoothing:antialiased;padding-bottom:90px;}
+  .wrap{max-width:480px;margin:0 auto;padding:0 16px;}
+  h1,h2,h3{font-family:var(--d);letter-spacing:-.01em;}
+
+  .top{position:sticky;top:0;background:var(--bg);z-index:9;padding:14px 0;border-bottom:1px solid var(--line);margin-bottom:16px;}
+  .top-in{display:flex;align-items:center;gap:12px;}
+  .back{font-size:20px;color:var(--muted);cursor:pointer;}
+  .top h1{font-size:19px;}
+
+  label{display:block;font-size:12px;color:var(--muted);margin:12px 0 5px;font-weight:500;}
+  input,select{width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;font-size:15px;font-family:var(--b);background:var(--card);color:var(--ink);}
+  input:focus,select:focus{outline:none;border-color:var(--accent);}
+  .row{display:flex;gap:10px;}.row>*{flex:1;}
+  .billno-grp{display:flex;gap:6px;align-items:center;}
+  .billno-grp input{padding:11px 9px;}
+  .billno-grp .bp{flex:0 0 38%;text-align:center;}
+  .billno-grp .bs{flex:1;text-align:center;font-family:var(--d);font-weight:700;}
+  .billno-grp input:disabled{background:var(--warm);color:var(--ink);cursor:default;}
+  .billno-grp input:not(:disabled){border-color:var(--accent);background:var(--card);}
+  .lockbtn{width:40px;height:42px;border:1px solid var(--line);background:var(--card);border-radius:10px;font-size:15px;cursor:pointer;flex-shrink:0;}
+  .lockbtn.open{border-color:var(--accent);background:var(--soft);}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px;}
+  .card-h{font-family:var(--d);font-weight:700;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;}
+  .biz-fields{display:none;margin-top:8px;}
+  .biz-fields.show{display:block;}
+  .logo-row{display:flex;align-items:center;gap:10px;}
+  .logo-prev{width:54px;height:54px;border:1px dashed #bbb;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--muted);text-align:center;overflow:hidden;flex-shrink:0;}
+  .logo-prev img{width:100%;height:100%;object-fit:contain;}
+
+  /* line items */
+  .item{display:flex;gap:8px;align-items:center;margin-bottom:8px;}
+  .item input.desc{flex:2;}.item input.amt{flex:1;}
+  .item .del{color:var(--red);font-size:18px;cursor:pointer;padding:0 4px;background:none;border:none;}
+  .item-block{border-bottom:1px solid #f0f0ec;padding-bottom:10px;margin-bottom:10px;}
+  .item-block:last-of-type{border-bottom:none;}
+  .disc-row{display:flex;align-items:center;gap:6px;padding-left:2px;}
+  .disc-lbl{font-size:12px;color:var(--muted);}
+  .disc-row input.disc{width:70px;padding:7px 9px;font-size:13px;border-radius:8px;}
+  .dtype{width:30px;height:30px;border:1px solid var(--line);background:var(--card);border-radius:7px;font-size:13px;cursor:pointer;color:var(--muted);font-family:var(--d);font-weight:700;}
+  .dtype.sel{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .disc-row .net{font-size:12.5px;color:var(--accent);font-family:var(--d);font-weight:700;margin-left:auto;}
+  .additem{width:100%;border:1px dashed #bbb;background:var(--bg);border-radius:9px;padding:9px;font-size:13.5px;cursor:pointer;color:var(--muted);font-family:var(--d);font-weight:600;}
+
+  /* tax toggle */
+  .toggle{display:flex;align-items:center;justify-content:space-between;padding:13px 0;}
+  .toggle .lbl{font-size:15px;font-weight:600;font-family:var(--d);}
+  .toggle .lbl small{display:block;font-size:12px;color:var(--muted);font-weight:400;font-family:var(--b);}
+  .sw{width:46px;height:26px;border-radius:99px;background:var(--line);position:relative;cursor:pointer;transition:.15s;flex-shrink:0;}
+  .sw.on{background:var(--accent);}
+  .sw::after{content:'';position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.15s;}
+  .sw.on::after{left:23px;}
+  .tax-fields{display:none;}
+  .tax-fields.show{display:block;}
+
+  /* live totals */
+  .totals{background:var(--ink);color:#fff;border-radius:14px;padding:16px;margin-bottom:12px;}
+  .totals .tr{display:flex;justify-content:space-between;font-size:14px;padding:4px 0;color:#cfd0d4;}
+  .totals .tr.grand{border-top:1px solid rgba(255,255,255,.15);margin-top:6px;padding-top:10px;color:#fff;}
+  .totals .tr.grand .v{font-family:var(--d);font-weight:800;font-size:24px;}
+  .totals .tr.grand .k{font-family:var(--d);font-weight:700;font-size:16px;align-self:flex-end;}
+
+  /* status pick */
+  .pills{display:flex;gap:8px;}
+  .pills button{flex:1;border:1px solid var(--line);background:var(--card);border-radius:9px;padding:10px;font-family:var(--d);font-weight:600;font-size:13.5px;cursor:pointer;color:var(--muted);}
+  .pills button.sel{border-color:var(--accent);background:var(--soft);color:var(--accent);}
+
+  .bar{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);padding:12px 16px;z-index:9;}
+  .bar-in{max-width:480px;margin:0 auto;display:flex;gap:10px;}
+  .btn{flex:1;font-family:var(--d);font-weight:700;font-size:15px;border:none;border-radius:11px;padding:14px;cursor:pointer;}
+  .btn.dark{background:var(--ink);color:#fff;}
+  .btn.ghost{background:var(--card);border:1px solid var(--line);color:var(--ink);flex:0 0 38%;}
+
+  /* PREVIEW */
+  .pv-mask{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:flex-end;justify-content:center;z-index:20;}
+  .pv-mask.show{display:flex;}
+  .pv{background:#fff;border-radius:18px 18px 0 0;width:100%;max-width:480px;max-height:90vh;overflow:auto;padding:22px;}
+  .bill{border:1px solid var(--line);border-radius:12px;padding:20px;}
+  .bill-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;}
+  .bill-biz{flex:1;min-width:0;}
+  .bill .biz{font-family:var(--d);font-weight:800;font-size:19px;}
+  .bill .bizline{font-size:12px;color:var(--muted);line-height:1.5;}
+  .bill-logo{width:64px;height:64px;flex-shrink:0;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+  .bill-logo img{width:100%;height:100%;object-fit:contain;}
+  .bill .ttl{text-align:center;font-family:var(--d);font-weight:700;font-size:13px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin:14px 0;border-top:1px dashed var(--line);border-bottom:1px dashed var(--line);padding:8px 0;}
+  .bill .meta{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);margin-bottom:4px;}
+  .bill .to{font-size:14px;margin:10px 0;}
+  .bill .to b{font-family:var(--d);}
+  .bill table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13.5px;}
+  .bill th{text-align:left;font-family:var(--d);font-size:11px;color:var(--muted);text-transform:uppercase;border-bottom:1px solid var(--line);padding:6px 0;}
+  .bill td{padding:7px 0;border-bottom:1px solid #f0f0ec;}
+  .bill td.r,.bill th.r{text-align:right;}
+  .bill .sumrow{display:flex;justify-content:space-between;font-size:13.5px;padding:3px 0;color:var(--muted);}
+  .bill .sumrow.g{font-family:var(--d);font-weight:800;font-size:18px;color:var(--ink);border-top:1px solid var(--line);margin-top:6px;padding-top:8px;}
+  .bill .paid{display:inline-block;margin-top:10px;font-family:var(--d);font-weight:700;font-size:12px;padding:4px 12px;border-radius:99px;}
+  .paid.y{background:var(--soft);color:var(--accent);}.paid.n{background:#fdecea;color:var(--red);}
+  .bill .ft{text-align:center;font-size:11px;color:var(--muted);margin-top:14px;}
+  .pv-actions{display:flex;gap:10px;margin-top:16px;}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+
+<div class="top"><div class="wrap"><div class="top-in">
+  <span class="back">←</span><h1>Create bill</h1>
+</div></div></div>
+
+<div class="wrap">
+
+  <div class="card">
+    <div class="card-h" style="display:flex;justify-content:space-between;align-items:center">
+      <span>Your business</span>
+      <span style="font-size:11px;color:var(--accent);cursor:pointer" onclick="document.getElementById('bizfields').classList.toggle('show')">Edit ▾</span>
+    </div>
+    <div style="font-size:13px;color:var(--muted)">Set once — auto-fills every bill.</div>
+    <div class="biz-fields" id="bizfields">
+      <label>Business name</label>
+      <input id="bizname" value="Sunrise PG" oninput="biz.name=this.value">
+      <label>Address</label>
+      <input id="bizaddr" value="12, MG Road, Bengaluru 560001" oninput="biz.addr=this.value">
+      <div class="row">
+        <div><label>Phone</label><input id="bizphone" value="+91 98765 43210" oninput="biz.phone=this.value"></div>
+        <div><label>GSTIN (optional)</label><input id="bizgstin" placeholder="e.g. 29ABC..." oninput="biz.gstin=this.value"></div>
+      </div>
+      <label>Logo (shown top-right of bill)</label>
+      <div class="logo-row">
+        <div class="logo-prev" id="logoprev">No logo</div>
+        <input type="file" accept="image/*" id="logofile" onchange="loadLogo(this)" style="flex:1">
+      </div>
+      <div class="hint" style="font-size:11px;color:var(--muted);margin-top:6px">Stored on your device; optionally backed up to your Google Drive.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-h">Bill to</div>
+    <label>Customer name</label>
+    <input id="cust" value="Ravi Kumar" oninput="calc()">
+    <div class="row">
+      <div>
+        <label>Bill no.</label>
+        <div class="billno-grp">
+          <input id="billprefix" class="bp" value="INV-" disabled>
+          <input id="billseq" class="bs" value="024" disabled>
+          <button class="lockbtn" id="lockbtn" onclick="toggleLock()" title="Edit bill number">🔒</button>
+        </div>
+      </div>
+      <div><label>Date</label><input id="date" type="date" value="2026-06-23"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-h">Items</div>
+    <div id="items"></div>
+    <button class="additem" onclick="addItem()">+ Add item</button>
+  </div>
+
+  <div class="card">
+    <div class="toggle">
+      <div class="lbl">Add discount<small>Give money off this bill</small></div>
+      <div class="sw" id="discsw" onclick="toggleDisc()"></div>
+    </div>
+    <div class="disc-mode" id="discmode" style="display:none">
+      <div class="pills" style="margin-top:4px">
+        <button class="sel" id="dm-item" onclick="setDiscMode('item')">Item-wise</button>
+        <button id="dm-bill" onclick="setDiscMode('bill')">Whole bill</button>
+      </div>
+      <div id="billdisc-wrap" style="display:none">
+        <div class="disc-row" style="margin-top:12px">
+          <span class="disc-lbl">Discount on total</span>
+          <input class="disc" type="number" value="" placeholder="0" id="billdisc" oninput="billDisc=+this.value||0;calc()">
+          <button class="dtype sel" id="bd-flat" onclick="setBillDtype('flat')">₹</button>
+          <button class="dtype" id="bd-pct" onclick="setBillDtype('pct')">%</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="toggle">
+      <div class="lbl">Add tax / GST<small>Turn on if you charge tax</small></div>
+      <div class="sw" id="taxsw" onclick="toggleTax()"></div>
+    </div>
+    <div class="tax-fields" id="taxfields">
+      <div class="row">
+        <div><label>Tax rate (%)</label><input id="taxrate" type="number" value="18" oninput="calc()"></div>
+        <div><label>Show as</label><select id="taxlabel" onchange="calc()">
+          <option value="gst">GST (single)</option>
+          <option value="split">CGST + SGST (split)</option>
+          <option value="vat">VAT</option>
+          <option value="tax">Tax</option>
+        </select></div>
+      </div>
+      <label>Your GSTIN (set in business profile above)</label>
+      <input id="gstin" value="" disabled placeholder="Pulled from business profile" style="opacity:.6">
+      <div class="toggle">
+        <div class="lbl" style="font-size:13.5px">Amounts include tax<small>Tax is inside the price, not added on top</small></div>
+        <div class="sw" id="incsw" onclick="toggleInc()"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="totals" id="totals"></div>
+
+  <div class="card">
+    <div class="card-h">Payment status</div>
+    <div class="pills">
+      <button class="sel" id="ps-paid" onclick="setStatus('paid')">Paid</button>
+      <button id="ps-due" onclick="setStatus('due')">Pending</button>
+    </div>
+    <label>Payment mode</label>
+    <select id="mode"><option>Cash</option><option>UPI</option><option>Bank transfer</option><option>—</option></select>
+  </div>
+
+</div>
+
+<div class="bar"><div class="bar-in">
+  <button class="btn ghost" onclick="preview()">Preview</button>
+  <button class="btn dark" onclick="preview()">Create & share</button>
+</div></div>
+
+<div class="pv-mask" id="pvmask"><div class="pv">
+  <div id="billout"></div>
+  <div class="pv-actions">
+    <button class="btn ghost" onclick="closePv()">Edit</button>
+    <button class="btn dark" onclick="finalizeBill()">Share on WhatsApp</button>
+  </div>
+</div></div>
+
+<script>
+let items=[{d:'Rent — June 2026',a:6000,disc:0,dtype:'flat'}];
+let taxOn=false, incTax=false, status='paid';
+let discOn=false, discMode='item', billDisc=0, billDtype='flat';
+let biz={name:'Sunrise PG',addr:'12, MG Road, Bengaluru 560001',phone:'+91 98765 43210',gstin:'',logo:null};
+let billPrefix='INV-', billSeq=24;
+const money=n=>'₹'+(+n||0).toLocaleString('en-IN',{maximumFractionDigits:2});
+
+function renderItems(){
+  const showItemDisc = discOn && discMode==='item';
+  document.getElementById('items').innerHTML=items.map((it,i)=>{
+    const net=lineNet(it);
+    const discRow = showItemDisc ? `
+      <div class="disc-row">
+        <span class="disc-lbl">Discount</span>
+        <input class="disc" type="number" value="${it.disc||''}" placeholder="0" oninput="upd(${i},'disc',this.value)">
+        <button class="dtype ${it.dtype==='flat'?'sel':''}" onclick="setDtype(${i},'flat')">₹</button>
+        <button class="dtype ${it.dtype==='pct'?'sel':''}" onclick="setDtype(${i},'pct')">%</button>
+        ${it.disc>0?`<span class="net">= ${money(net)}</span>`:''}
+      </div>` : '';
+    return `
+    <div class="item-block">
+      <div class="item">
+        <input class="desc" value="${(it.d||'').replace(/"/g,'&quot;')}" placeholder="Description" oninput="upd(${i},'d',this.value)">
+        <input class="amt" type="number" value="${it.a}" placeholder="0" oninput="upd(${i},'a',this.value)">
+        ${items.length>1?`<button class="del" onclick="delItem(${i})">×</button>`:''}
+      </div>
+      ${discRow}
+    </div>`;
+  }).join('');
+}
+function lineNet(it){
+  if(!(discOn&&discMode==='item'))return +it.a||0;
+  const a=+it.a||0; const d=+it.disc||0;
+  const off = it.dtype==='pct' ? a*Math.min(d,100)/100 : Math.min(d,a);
+  return Math.max(0, a-off);
+}
+function lineDiscAmt(it){ return (+it.a||0) - lineNet(it); }
+function upd(i,f,v){items[i][f]=(f==='a'||f==='disc')?(+v||0):v;
+  if(f==='disc'||f==='a')renderItems();calc();}
+function setDtype(i,t){items[i].dtype=t;renderItems();calc();}
+function toggleDisc(){discOn=!discOn;document.getElementById('discsw').classList.toggle('on',discOn);
+  document.getElementById('discmode').style.display=discOn?'block':'none';renderItems();calc();}
+function setDiscMode(m){discMode=m;
+  document.getElementById('dm-item').classList.toggle('sel',m==='item');
+  document.getElementById('dm-bill').classList.toggle('sel',m==='bill');
+  document.getElementById('billdisc-wrap').style.display=m==='bill'?'block':'none';
+  renderItems();calc();}
+function setBillDtype(t){billDtype=t;
+  document.getElementById('bd-flat').classList.toggle('sel',t==='flat');
+  document.getElementById('bd-pct').classList.toggle('sel',t==='pct');calc();}
+
+function loadLogo(input){
+  const f=input.files[0]; if(!f)return;
+  const r=new FileReader();
+  r.onload=e=>{biz.logo=e.target.result;
+    document.getElementById('logoprev').innerHTML='<img src="'+biz.logo+'">';};
+  r.readAsDataURL(f);
+}
+let billNoUnlocked=false;
+function toggleLock(){
+  billNoUnlocked=!billNoUnlocked;
+  document.getElementById('billprefix').disabled=!billNoUnlocked;
+  document.getElementById('billseq').disabled=!billNoUnlocked;
+  const b=document.getElementById('lockbtn');
+  b.textContent=billNoUnlocked?'🔓':'🔒';
+  b.classList.toggle('open',billNoUnlocked);
+  if(billNoUnlocked)document.getElementById('billseq').focus();
+}
+function fullBillNo(){
+  return document.getElementById('billprefix').value+document.getElementById('billseq').value;
+}
+function addItem(){items.push({d:'',a:0,disc:0,dtype:'flat'});renderItems();calc();}
+function delItem(i){items.splice(i,1);renderItems();calc();}
+
+function toggleTax(){taxOn=!taxOn;document.getElementById('taxsw').classList.toggle('on',taxOn);document.getElementById('taxfields').classList.toggle('show',taxOn);calc();}
+function toggleInc(){incTax=!incTax;document.getElementById('incsw').classList.toggle('on',incTax);calc();}
+function setStatus(s){status=s;document.getElementById('ps-paid').classList.toggle('sel',s==='paid');document.getElementById('ps-due').classList.toggle('sel',s==='due');}
+
+function compute(){
+  const gross=items.reduce((a,it)=>a+(+it.a||0),0);
+  let sub, disc;
+  if(discOn && discMode==='item'){
+    sub=items.reduce((a,it)=>a+lineNet(it),0);
+    disc=gross-sub;
+  } else if(discOn && discMode==='bill'){
+    const off = billDtype==='pct' ? gross*Math.min(billDisc,100)/100 : Math.min(billDisc,gross);
+    disc=Math.max(0,off); sub=gross-disc;
+  } else {
+    sub=gross; disc=0;
+  }
+  const rate=taxOn?(+document.getElementById('taxrate').value||0):0;
+  let taxable,tax,total;
+  if(!taxOn){taxable=sub;tax=0;total=sub;}
+  else if(incTax){ total=sub; taxable=sub/(1+rate/100); tax=total-taxable; }
+  else { taxable=sub; tax=sub*rate/100; total=sub+tax; }
+  return {gross,sub,disc,rate,taxable,tax,total};
+}
+function calc(){
+  const c=compute();
+  let html='';
+  if(c.disc>0){
+    html+=`<div class="tr"><span>Subtotal</span><span>${money(c.gross)}</span></div>`;
+    html+=`<div class="tr"><span>Discount</span><span>− ${money(c.disc)}</span></div>`;
+  }
+  if(taxOn){
+    html+=`<div class="tr"><span>Taxable amount</span><span>${money(c.taxable)}</span></div>`;
+    const lab=document.getElementById('taxlabel').value;
+    if(lab==='split'){
+      html+=`<div class="tr"><span>CGST (${(c.rate/2)}%)</span><span>${money(c.tax/2)}</span></div>`;
+      html+=`<div class="tr"><span>SGST (${(c.rate/2)}%)</span><span>${money(c.tax/2)}</span></div>`;
+    } else {
+      const name=lab==='vat'?'VAT':lab==='tax'?'Tax':'GST';
+      html+=`<div class="tr"><span>${name} (${c.rate}%)</span><span>${money(c.tax)}</span></div>`;
+    }
+  }
+  html+=`<div class="tr grand"><span class="k">Total</span><span class="v">${money(c.total)}</span></div>`;
+  document.getElementById('totals').innerHTML=html;
+}
+
+function preview(){
+  const c=compute();
+  const cust=document.getElementById('cust').value||'Customer';
+  const billno=fullBillNo();
+  const date=new Date(document.getElementById('date').value).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+  const mode=document.getElementById('mode').value;
+  const lab=document.getElementById('taxlabel')?document.getElementById('taxlabel').value:'gst';
+
+  let rows=items.map(it=>{
+    const d=lineDiscAmt(it);
+    const showItemDisc = discOn && discMode==='item' && d>0;
+    const dlbl = showItemDisc ? `<div style="font-size:11px;color:var(--accent)">less discount ${it.dtype==='pct'?(it.disc+'%'):money(it.disc)} − ${money(d)}</div>` : '';
+    return `<tr><td>${(it.d||'—')}${dlbl}</td><td class="r">${money(showItemDisc?lineNet(it):(+it.a||0))}</td></tr>`;
+  }).join('');
+  let taxRows='';
+  if(c.disc>0){
+    taxRows+=`<div class="sumrow"><span>Subtotal</span><span>${money(c.gross)}</span></div>`;
+    taxRows+=`<div class="sumrow"><span>Total discount</span><span>− ${money(c.disc)}</span></div>`;
+  }
+  if(taxOn){
+    taxRows+=`<div class="sumrow"><span>Taxable</span><span>${money(c.taxable)}</span></div>`;
+    if(lab==='split'){
+      taxRows+=`<div class="sumrow"><span>CGST ${c.rate/2}%</span><span>${money(c.tax/2)}</span></div>`;
+      taxRows+=`<div class="sumrow"><span>SGST ${c.rate/2}%</span><span>${money(c.tax/2)}</span></div>`;
+    }else{
+      const name=lab==='vat'?'VAT':lab==='tax'?'Tax':'GST';
+      taxRows+=`<div class="sumrow"><span>${name} ${c.rate}%</span><span>${money(c.tax)}</span></div>`;
+    }
+  }
+  const bill=`<div class="bill">
+    <div class="bill-head">
+      <div class="bill-biz">
+        <div class="biz">${biz.name||'Your Business'}</div>
+        ${biz.addr?`<div class="bizline">${biz.addr}</div>`:''}
+        ${biz.phone?`<div class="bizline">${biz.phone}</div>`:''}
+        ${taxOn&&biz.gstin?`<div class="bizline">GSTIN: ${biz.gstin}</div>`:''}
+      </div>
+      ${biz.logo?`<div class="bill-logo"><img src="${biz.logo}"></div>`:''}
+    </div>
+    <div class="ttl">${taxOn?'Tax Invoice':'Bill / Receipt'}</div>
+    <div class="meta"><span>Bill no: ${billno}</span><span>${date}</span></div>
+    <div class="to">Billed to: <b>${cust}</b></div>
+    <table><thead><tr><th>Item</th><th class="r">Amount</th></tr></thead><tbody>${rows}</tbody></table>
+    ${taxRows}
+    <div class="sumrow g"><span>Total</span><span>${money(c.total)}</span></div>
+    <span class="paid ${status==='paid'?'y':'n'}">${status==='paid'?'PAID · '+mode:'PAYMENT PENDING'}</span>
+    <div class="ft">Generated with Khaata</div>
+  </div>`;
+  document.getElementById('billout').innerHTML=bill;
+  document.getElementById('pvmask').classList.add('show');
+}
+function closePv(){document.getElementById('pvmask').classList.remove('show');}
+function finalizeBill(){
+  alert('In real app: saves + shares as PDF/WhatsApp.\n\nBill number now auto-advances to the next one.');
+  // auto-increment the numeric box, preserving padding width
+  const seqEl=document.getElementById('billseq');
+  const cur=seqEl.value.trim();
+  const width=cur.length;
+  const next=String((parseInt(cur,10)||0)+1).padStart(width,'0');
+  seqEl.value=next;
+  // ensure locked after finalizing
+  if(billNoUnlocked)toggleLock();
+  closePv();
+}
+
+renderItems();calc();
+</script>
+</body>
+</html>

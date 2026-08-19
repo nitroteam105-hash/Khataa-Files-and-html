@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vasooli — Khaata</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1f6f54; --green-light: #e7f2ed;
+    --parchment: #fbfbf9; --ink: #1c1c1a; --muted: #6b6b64;
+    --border: #e6e4dd; --amber: #b5791f; --amber-light: #fbf1e2;
+    --purple: #6b5b95; --purple-light: #f0eef8;
+    --red: #c0392b; --red-light: #fbeae7;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', sans-serif; background: var(--parchment); color: var(--ink);
+    max-width: 480px; margin: 0 auto; min-height: 100vh; padding-bottom: 40px;
+  }
+  header { padding: 24px 20px 4px; }
+  header h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 800; }
+  header p { font-size: 13px; color: var(--muted); margin-top: 3px; }
+
+  .biz-select { display: flex; gap: 6px; padding: 14px 20px 4px; overflow-x: auto; }
+  .biz-opt { flex-shrink: 0; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--border); font-size: 12.5px; font-weight: 600; color: var(--muted); background: #fff; cursor: pointer; white-space: nowrap; }
+  .biz-opt.active { background: var(--green); color: #fff; border-color: var(--green); }
+
+  .summary-bar { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px 6px; }
+  .summary-count { font-size: 13px; color: var(--muted); }
+  .summary-count b { color: var(--ink); }
+  .sort-select { font-size: 12.5px; font-weight: 600; color: var(--green); background: var(--green-light); border: none; border-radius: 8px; padding: 7px 10px; }
+
+  .content { padding: 4px 20px; }
+
+  .item-card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 10px; }
+  .item-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+  .item-name { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 15px; }
+  .item-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .item-amount { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 16px; }
+  .item-amount.due { color: var(--red); }
+  .item-amount.quote { color: var(--amber); }
+  .item-amount.advance { color: var(--purple); }
+
+  .type-badge { font-size: 10.5px; font-weight: 700; padding: 3px 8px; border-radius: 999px; display: inline-block; margin-bottom: 6px; }
+  .type-badge.due { background: var(--red-light); color: var(--red); }
+  .type-badge.quote { background: var(--amber-light); color: var(--amber); }
+  .type-badge.advance { background: var(--purple-light); color: var(--purple); }
+
+  .item-actions { display: flex; gap: 8px; margin-top: 10px; }
+  .item-actions button {
+    flex: 1; padding: 10px; border-radius: 9px; border: none; font-weight: 700; font-size: 12.5px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 5px;
+  }
+  .btn-whatsapp { background: var(--green-light); color: var(--green); }
+  .btn-resolve { background: #f2f2ee; color: var(--muted); }
+
+  .msg-preview { background: var(--green-light); border-radius: 10px; padding: 12px; margin-top: 10px; font-size: 12.5px; color: var(--ink); line-height: 1.5; }
+  .msg-preview-actions { display: flex; gap: 8px; margin-top: 8px; }
+  .msg-preview-actions button { flex: 1; padding: 8px; border-radius: 8px; border: none; font-weight: 700; font-size: 12px; cursor: pointer; }
+  .btn-send { background: var(--green); color: #fff; }
+  .btn-close { background: #fff; color: var(--muted); border: 1px solid var(--border) !important; }
+
+  .empty-state { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 13px; }
+
+  .note { font-size: 12px; color: var(--muted); margin-top: 10px; line-height: 1.5; padding: 0 20px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Vasooli</h1>
+  <p>Today's follow-ups for this business</p>
+</header>
+
+<div class="biz-select" id="bizSelect">
+  <div class="biz-opt active" onclick="selectBusiness('Sunshine PG', this)">Sunshine PG</div>
+  <div class="biz-opt" onclick="selectBusiness('FlexFit Gym', this)">FlexFit Gym</div>
+</div>
+
+<div class="summary-bar">
+  <div class="summary-count" id="summaryCount"></div>
+  <select class="sort-select" id="sortSelect" onchange="renderList()">
+    <option value="days">Oldest first</option>
+    <option value="amount">Highest amount first</option>
+    <option value="combined">Urgency (days × amount)</option>
+  </select>
+</div>
+
+<div class="content" id="listContainer"></div>
+<p class="note" id="emptyNote" style="display:none">Nothing pending for this business right now — nice work.</p>
+
+<script>
+const dataByBusiness = {
+  'Sunshine PG': [
+    { id: 1, type: 'due', name: 'Amit Singh', sub: 'Rent — October', amount: 8000, days: 5, phone: '9876500001' },
+    { id: 2, type: 'due', name: 'Rahul Sharma', sub: 'Rent — October', amount: 6500, days: 12, phone: '9876500002' },
+    { id: 3, type: 'advance', name: 'Ramesh (Owner)', sub: 'Advance given to electrician', amount: 2000, days: 8, phone: '9876500003' },
+    { id: 4, type: 'due', name: 'Neha Gupta', sub: 'Security deposit balance', amount: 3000, days: 2, phone: '9876500004' }
+  ],
+  'FlexFit Gym': [
+    { id: 5, type: 'due', name: 'Karan Verma', sub: 'Monthly membership', amount: 1200, days: 3, phone: '9876500005' },
+    { id: 6, type: 'quote', name: 'Priya Nair', sub: 'PT package quote sent', amount: 15000, days: 4, phone: '9876500006' },
+    { id: 7, type: 'due', name: 'Sneha Reddy', sub: 'Monthly membership', amount: 1200, days: 9, phone: '9876500007' }
+  ]
+};
+
+let currentBusiness = 'Sunshine PG';
+let items = JSON.parse(JSON.stringify(dataByBusiness[currentBusiness]));
+
+const typeLabels = { due: 'Unpaid Due', quote: 'Unanswered Quote', advance: 'Unrecovered Advance' };
+const resolveLabels = { due: '✓ Mark Paid', quote: '✓ Mark Converted', advance: '✓ Mark Recovered' };
+
+function selectBusiness(name, el) {
+  document.querySelectorAll('.biz-opt').forEach(function(b) { b.classList.remove('active'); });
+  el.classList.add('active');
+  currentBusiness = name;
+  items = JSON.parse(JSON.stringify(dataByBusiness[name] || []));
+  renderList();
+}
+
+function sortItems(list, mode) {
+  const sorted = list.slice();
+  if (mode === 'amount') sorted.sort(function(a, b) { return b.amount - a.amount; });
+  else if (mode === 'combined') sorted.sort(function(a, b) { return (b.days * b.amount) - (a.days * a.amount); });
+  else sorted.sort(function(a, b) { return b.days - a.days; });
+  return sorted;
+}
+
+function renderList() {
+  const sortMode = document.getElementById('sortSelect').value;
+  const sorted = sortItems(items, sortMode);
+  const container = document.getElementById('listContainer');
+  container.innerHTML = '';
+
+  document.getElementById('summaryCount').innerHTML = '<b>' + items.length + '</b> item' + (items.length === 1 ? '' : 's') + ' need' + (items.length === 1 ? 's' : '') + ' attention';
+
+  if (!sorted.length) {
+    document.getElementById('emptyNote').style.display = 'block';
+    return;
+  }
+  document.getElementById('emptyNote').style.display = 'none';
+
+  sorted.forEach(function(it) {
+    const card = document.createElement('div');
+    card.className = 'item-card';
+    card.dataset.id = it.id;
+    card.innerHTML =
+      '<span class="type-badge ' + it.type + '"></span>' +
+      '<div class="item-top">' +
+        '<div><div class="item-name"></div><div class="item-sub"></div></div>' +
+        '<div class="item-amount ' + it.type + '"></div>' +
+      '</div>' +
+      '<div class="item-sub" style="margin-bottom:0"></div>' +
+      '<div class="item-actions">' +
+        '<button class="btn-whatsapp" onclick="previewMessage(' + it.id + ')">💬 WhatsApp Reminder</button>' +
+        '<button class="btn-resolve" onclick="resolveItem(' + it.id + ')"></button>' +
+      '</div>' +
+      '<div class="msg-preview-slot"></div>';
+    card.querySelector('.type-badge').textContent = typeLabels[it.type];
+    card.querySelector('.item-name').textContent = it.name;
+    card.querySelectorAll('.item-sub')[0].textContent = it.sub;
+    card.querySelectorAll('.item-sub')[1].textContent = it.days + ' day' + (it.days === 1 ? '' : 's') + (it.type === 'quote' ? ' since sent' : ' overdue');
+    card.querySelector('.item-amount').textContent = '₹' + it.amount.toLocaleString('en-IN');
+    card.querySelector('.btn-resolve').textContent = resolveLabels[it.type];
+    container.appendChild(card);
+  });
+}
+
+function previewMessage(id) {
+  const card = document.querySelector('.item-card[data-id="' + id + '"]');
+  const existing = card.querySelector('.msg-preview');
+  if (existing) { existing.remove(); return; }
+  const it = items.find(function(x) { return x.id === id; });
+  let msg;
+  if (it.type === 'due') {
+    msg = 'Hi ' + it.name + ', your payment of ₹' + it.amount.toLocaleString('en-IN') + ' for "' + it.sub + '" has been pending for ' + it.days + ' days. Pay easily here: upi://pay?pa=merchant@upi&am=' + it.amount + '&tn=' + encodeURIComponent(it.sub) + '. Thank you!';
+  } else if (it.type === 'quote') {
+    msg = 'Hi ' + it.name + ', just following up on the quote (₹' + it.amount.toLocaleString('en-IN') + ') we sent ' + it.days + ' days ago for "' + it.sub + '". Let us know if you have any questions!';
+  } else {
+    msg = 'Reminder: ₹' + it.amount.toLocaleString('en-IN') + ' advance for "' + it.sub + '" given ' + it.days + ' days ago is still to be recovered.';
+  }
+
+  const preview = document.createElement('div');
+  preview.className = 'msg-preview';
+
+  const msgText = document.createElement('div');
+  msgText.textContent = msg;
+  preview.appendChild(msgText);
+
+  const actions = document.createElement('div');
+  actions.className = 'msg-preview-actions';
+
+  const sendBtn = document.createElement('button');
+  sendBtn.className = 'btn-send';
+  sendBtn.textContent = 'Send via WhatsApp';
+  sendBtn.onclick = function() { alert('Would open WhatsApp with this message pre-filled'); };
+
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'btn-close';
+  closeBtn.textContent = 'Close';
+  closeBtn.onclick = function() { preview.remove(); };
+
+  actions.appendChild(sendBtn);
+  actions.appendChild(closeBtn);
+  preview.appendChild(actions);
+
+  card.querySelector('.msg-preview-slot').appendChild(preview);
+}
+
+function resolveItem(id) {
+  const it = items.find(function(x) { return x.id === id; });
+  if (!confirm(resolveLabels[it.type] + ' for ' + it.name + '?')) return;
+  items = items.filter(function(x) { return x.id !== id; });
+  renderList();
+}
+
+renderList();
+</script>
+</body>
+</html>

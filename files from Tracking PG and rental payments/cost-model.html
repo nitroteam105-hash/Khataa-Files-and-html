@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Khaata — Cost Model</title>
+<style>
+body{font-family:system-ui,sans-serif;max-width:600px;margin:20px auto;padding:0 16px;color:#1a1a1a;font-size:14px;line-height:1.6;}
+h1{font-size:20px;border-bottom:2px solid #1f6f54;padding-bottom:6px;}
+h2{font-size:16px;margin-top:24px;color:#1f6f54;}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13px;}
+th,td{border:1px solid #ddd;padding:8px;text-align:left;}
+th{background:#f5f5f0;font-weight:600;}
+td.n{text-align:right;font-weight:600;}
+.g{color:#1f6f54;font-weight:700;}
+.r{color:#b3261e;}
+.m{color:#62636a;font-size:12px;}
+.box{background:#f5f5f0;border-radius:8px;padding:12px;margin:12px 0;}
+.box b{color:#1f6f54;}
+</style>
+</head>
+<body>
+
+<h1>Khaata — Cost & Revenue Model</h1>
+<p class="m">Architecture: Local-first (SQLite) + Supabase (paid sync) + Google Drive (BYOS files)<br>Free users = ₹0 infra cost. Revenue from paid cloud-sync tiers only.</p>
+
+<h2>Launch Cost (one-time)</h2>
+<table>
+<tr><th>Item</th><th>Cost</th></tr>
+<tr><td>Google Play developer account</td><td class="n">₹2,100</td></tr>
+<tr><td>Domain name (yearly)</td><td class="n">₹800</td></tr>
+<tr><td>AI subs during build (~3 months)</td><td class="n">₹9,000</td></tr>
+<tr><td><b>Total to launch</b></td><td class="n g"><b>~₹12,000</b></td></tr>
+</table>
+
+<h2>Monthly Running Cost (by scale)</h2>
+<table>
+<tr><th>Cost item</th><th>100 users</th><th>500 users</th><th>2K users</th><th>10K users</th></tr>
+<tr><td>Free users infra</td><td class="n">₹0</td><td class="n">₹0</td><td class="n">₹0</td><td class="n">₹0</td></tr>
+<tr><td>Supabase (paid sync)</td><td class="n">₹0</td><td class="n">₹2,000</td><td class="n">₹3,000</td><td class="n">₹6,000</td></tr>
+<tr><td>WhatsApp API (premium)</td><td class="n">₹0</td><td class="n">₹1,500</td><td class="n">₹5,000</td><td class="n">₹22,000</td></tr>
+<tr><td>AI subs + domain</td><td class="n">₹3,200</td><td class="n">₹3,200</td><td class="n">₹3,200</td><td class="n">₹3,200</td></tr>
+<tr><td><b>Total / month</b></td><td class="n"><b>₹3,200</b></td><td class="n"><b>₹6,700</b></td><td class="n"><b>₹11,200</b></td><td class="n"><b>₹31,200</b></td></tr>
+</table>
+
+<h2>Revenue vs Cost (paid users only)</h2>
+<table>
+<tr><th></th><th>20 paid</th><th>50 paid</th><th>200 paid</th><th>1,000 paid</th></tr>
+<tr><td>Revenue (@₹299 avg)</td><td class="n">₹5,980</td><td class="n">₹14,950</td><td class="n">₹59,800</td><td class="n">₹2,99,000</td></tr>
+<tr><td>Infra cost</td><td class="n">₹3,200</td><td class="n">₹6,200</td><td class="n">₹12,000</td><td class="n">₹35,000</td></tr>
+<tr><td><b>Profit</b></td><td class="n g">₹2,780</td><td class="n g">₹8,750</td><td class="n g">₹47,800</td><td class="n g">₹2,64,000</td></tr>
+<tr><td>Margin</td><td class="n">46%</td><td class="n">58%</td><td class="n">80%</td><td class="n">88%</td></tr>
+</table>
+
+<div class="box">
+<b>Break-even: ~20 paid users.</b> After that, every new paid user is almost pure margin. 1,000 free users cost ₹0.
+</div>
+
+<h2>vs CoFee (competitor)</h2>
+<table>
+<tr><th></th><th>CoFee</th><th>Khaata</th></tr>
+<tr><td>Entry price</td><td class="n">₹1,199/mo</td><td class="n g">₹199/mo</td></tr>
+<tr><td>Transaction fees</td><td class="n r">Yes (~2%)</td><td class="n g">₹0</td></tr>
+<tr><td>Free users infra cost</td><td class="n r">Yes (cloud)</td><td class="n g">₹0 (local)</td></tr>
+<tr><td>Annual cost (small PG)</td><td class="n">₹14,400+</td><td class="n g">₹2,388</td></tr>
+<tr><td>Price advantage</td><td colspan="2" class="g" style="text-align:center"><b>6× cheaper, zero transaction fees</b></td></tr>
+</table>
+
+<h2>Key Numbers</h2>
+<div class="box">
+Launch: <b>~₹12K</b> · Break-even: <b>~20 paid users</b> · Margin at scale: <b>~88%</b><br>
+Free users: <b>₹0 cost</b> · Biggest cost: <b>WhatsApp API</b> (tier-gate to premium)<br>
+Biggest real cost: <b>Your time</b> (unpaid until profitable)
+</div>
+
+<p class="m">Generated for planning · Khaata project · June 2026</p>
+</body>
+</html>

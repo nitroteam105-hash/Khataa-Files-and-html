@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Property Setup — Khaata</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1f6f54; --green-light: #e7f2ed;
+    --parchment: #fbfbf9; --ink: #1c1c1a; --muted: #6b6b64;
+    --border: #e6e4dd; --amber: #b5791f; --amber-light: #fbf1e2;
+    --purple: #6b5b95; --purple-light: #f0eef8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', sans-serif; background: var(--parchment); color: var(--ink);
+    max-width: 480px; margin: 0 auto; min-height: 100vh; padding-bottom: 40px;
+  }
+  header { padding: 24px 20px 12px; }
+  header h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 800; }
+  header p { font-size: 13px; color: var(--muted); margin-top: 3px; }
+
+  .section-label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin: 16px 20px 8px; }
+  .card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin: 0 20px 10px; }
+
+  .opt-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .opt-btn { flex: 1 1 auto; min-width: 100px; text-align: center; padding: 11px 8px; border-radius: 10px; border: 1.5px solid var(--border); font-size: 12.5px; font-weight: 700; cursor: pointer; background: #fff; color: var(--muted); }
+  .opt-btn.selected { border-color: var(--green); background: var(--green-light); color: var(--green); }
+  .opt-btn .opt-sub { display: block; font-size: 10px; font-weight: 500; opacity: 0.75; margin-top: 2px; text-transform: none; }
+
+  .note { font-size: 12px; color: var(--muted); margin: 8px 20px 0; line-height: 1.5; }
+  .auto-note { font-size: 11.5px; color: var(--purple); background: var(--purple-light); border-radius: 8px; padding: 8px 10px; margin-top: 10px; }
+
+  .block-card { background: #fff; border: 1px solid var(--border); border-radius: 14px; margin: 0 20px 10px; overflow: hidden; }
+  .block-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: var(--purple-light); cursor: pointer; }
+  .block-title { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 14px; color: var(--purple); }
+  .block-count { font-size: 11px; color: var(--purple); opacity: 0.8; }
+  .block-remove { font-size: 11px; color: #b3261e; cursor: pointer; margin-left: 10px; }
+  .block-body { padding: 10px 16px 14px; display: none; }
+  .block-body.open { display: block; }
+
+  .floor-card { border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px; overflow: hidden; }
+  .floor-header { display: flex; justify-content: space-between; align-items: center; padding: 9px 12px; background: var(--green-light); cursor: pointer; }
+  .floor-title { font-weight: 700; font-size: 12.5px; color: var(--green); }
+  .floor-count { font-size: 10.5px; color: var(--green); opacity: 0.8; }
+  .floor-remove { font-size: 10.5px; color: #b3261e; cursor: pointer; margin-left: 8px; }
+  .floor-body { padding: 8px 12px 12px; display: none; }
+  .floor-body.open { display: block; }
+
+  .unit-chip { display: inline-flex; align-items: center; gap: 6px; background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; margin: 0 6px 6px 0; font-size: 11.5px; cursor: pointer; }
+  .unit-chip .unit-type-tag { font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 999px; background: var(--amber-light); color: var(--amber); }
+  .unit-chip .unit-remove { color: var(--muted); font-weight: 700; cursor: pointer; }
+
+  .add-row-btn { border: 1.5px dashed var(--green); color: var(--green); background: none; border-radius: 10px; padding: 10px; width: 100%; font-weight: 700; font-size: 12.5px; cursor: pointer; margin-top: 4px; }
+  .add-row-btn.small { padding: 7px; font-size: 11.5px; }
+
+  .inline-form { background: var(--green-light); border: 1px solid var(--green); border-radius: 10px; padding: 12px; margin-top: 8px; }
+  .inline-form label { font-size: 10.5px; font-weight: 700; color: var(--muted); display: block; margin-bottom: 3px; text-transform: uppercase; }
+  .inline-form input, .inline-form select { width: 100%; padding: 8px 9px; border: 1px solid var(--border); border-radius: 7px; font-size: 12.5px; font-family: 'Inter', sans-serif; margin-bottom: 8px; background: #fff; }
+  .inline-form .form-row { display: flex; gap: 8px; }
+  .inline-form .form-row > div { flex: 1; }
+  .inline-form .form-actions { display: flex; gap: 8px; margin-top: 4px; }
+  .inline-form .form-actions button { flex: 1; padding: 9px; border-radius: 7px; border: none; font-weight: 700; font-size: 12px; cursor: pointer; }
+  .inline-form .btn-confirm { background: var(--green); color: #fff; }
+  .inline-form .btn-cancel { background: #fff; color: var(--muted); border: 1px solid var(--border) !important; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Property Setup</h1>
+  <p>Property type, scale, and building layout</p>
+</header>
+
+<div class="section-label">Property type</div>
+<div class="card">
+  <div class="opt-grid" id="propTypeGrid"></div>
+</div>
+<p class="note">This doesn't restrict anything — a Residential property can still have a shop added, and vice versa. It just shapes what we suggest by default.</p>
+
+<div class="section-label">Scale</div>
+<div class="card">
+  <div class="opt-grid" id="scaleGrid"></div>
+  <div class="auto-note" id="scaleAutoNote"></div>
+</div>
+
+<div class="section-label">Building layout depth</div>
+<div class="card">
+  <div class="opt-grid" id="depthGrid"></div>
+</div>
+<p class="note" id="depthDescNote"></p>
+
+<div class="section-label">Layout</div>
+<div id="layoutContainer"></div>
+
+<script>
+const PROPERTY_TYPES = ['Residential', 'Commercial', 'Both'];
+const SCALES = [
+  { key: 'standalone', label: 'Standalone House', sub: '1 unit or a few floors', depth: 'simple' },
+  { key: 'small', label: 'Small Building', sub: 'A handful of flats', depth: 'simple' },
+  { key: 'mid', label: 'Mid-size Society', sub: 'Lift, security, no luxury amenities', depth: 'standard' },
+  { key: 'large', label: 'Large Complex', sub: 'Pool, gym, clubhouse, etc.', depth: 'detailed' }
+];
+const DEPTHS = [
+  { key: 'simple', label: 'Simple', desc: 'A flat list of units — no floors or blocks.' },
+  { key: 'standard', label: 'Standard', desc: 'Floors, each containing units.' },
+  { key: 'detailed', label: 'Detailed', desc: 'Blocks/Towers, each with floors, each with units.' }
+];
+const UNIT_TYPES = ['Flat', 'Shop', 'Office', 'Warehouse', 'Showroom'];
+
+let selectedPropType = 'Residential';
+let selectedScale = 'small';
+let selectedDepth = 'simple';
+
+let simpleUnits = [];
+let floors = [];
+let blocks = [];
+let idCounter = 1;
+
+function renderPropTypeGrid() {
+  const grid = document.getElementById('propTypeGrid');
+  grid.innerHTML = '';
+  PROPERTY_TYPES.forEach(function(t) {
+    const btn = document.createElement('div');
+    btn.className = 'opt-btn' + (selectedPropType === t ? ' selected' : '');
+    btn.textContent = t;
+    btn.onclick = function() { selectedPropType = t; renderPropTypeGrid(); };
+    grid.appendChild(btn);
+  });
+}
+
+function renderScaleGrid() {
+  const grid = document.getElementById('scaleGrid');
+  grid.innerHTML = '';
+  SCALES.forEach(function(s) {
+    const btn = document.createElement('div');
+    btn.className = 'opt-btn' + (selectedScale === s.key ? ' selected' : '');
+    btn.innerHTML = s.label + '<span class="opt-sub">' + s.sub + '</span>';
+    btn.onclick = function() {
+      selectedScale = s.key;
+      selectedDepth = s.depth;
+      renderScaleGrid();
+      renderDepthGrid();
+      renderLayout();
+    };
+    grid.appendChild(btn);
+  });
+  const s = SCALES.find(function(x) { return x.key === selectedScale; });
+  document.getElementById('scaleAutoNote').textContent = 'Suggests "' + DEPTHS.find(function(d){return d.key===s.depth;}).label + '" layout depth by default — change it below anytime.';
+}
+
+function renderDepthGrid() {
+  const grid = document.getElementById('depthGrid');
+  grid.innerHTML = '';
+  DEPTHS.forEach(function(d) {
+    const btn = document.createElement('div');
+    btn.className = 'opt-btn' + (selectedDepth === d.key ? ' selected' : '');
+    btn.textContent = d.label;
+    btn.onclick = function() { selectedDepth = d.key; renderDepthGrid(); renderLayout(); };
+    grid.appendChild(btn);
+  });
+  document.getElementById('depthDescNote').textContent = DEPTHS.find(function(d) { return d.key === selectedDepth; }).desc;
+}
+
+function unitTypeOptions(selected) {
+  return UNIT_TYPES.map(function(t) { return '<option value="' + t + '"' + (selected === t ? ' selected' : '') + '>' + t + '</option>'; }).join('');
+}
+
+function makeUnit(name, type, occupants, area, rent, gstOn, gstRate) {
+  return { id: 'u' + (idCounter++), name: name, type: type, occupants: occupants, area: area, rent: rent, gstOn: gstOn, gstRate: gstRate };
+}
+
+function defaultGstForType(type) { return type !== 'Flat'; }
+
+function renderSimpleLayout() {
+  const container = document.getElementById('layoutContainer');
+  container.innerHTML = '<div class="card" id="simpleUnitsCard"></div><div style="padding:0 20px"><button class="add-row-btn" onclick="openAddUnitForm(null, null)">+ Add Unit</button> <button class="add-row-btn" onclick="openAddRangeForm(null, null)">+ Add Range (e.g. 101 to 110)</button></div>';
+  renderSimpleUnitsCard();
+}
+
+function renderSimpleUnitsCard() {
+  const card = document.getElementById('simpleUnitsCard');
+  if (!card) return;
+  card.innerHTML = '';
+  if (!simpleUnits.length) { card.innerHTML = '<span style="font-size:12.5px;color:var(--muted)">No units yet — add one below.</span>'; return; }
+  simpleUnits.forEach(function(u) {
+    card.appendChild(unitChipEl(u, function() { deleteUnit(null, null, u.id); }));
+  });
+}
+
+function unitChipEl(u, onRemove) {
+  const chip = document.createElement('span');
+  chip.className = 'unit-chip';
+  chip.innerHTML = '<span></span><span class="unit-type-tag"></span><span class="unit-remove">✕</span>';
+  const gstText = u.gstOn ? ' · GST ' + u.gstRate + '%' : '';
+  chip.children[0].textContent = u.name + ' · ₹' + u.rent + '/mo · ' + u.occupants + ' occ · ' + u.area + ' sqft' + gstText;
+  chip.children[1].textContent = u.type;
+  chip.children[2].onclick = function(e) { e.stopPropagation(); onRemove(); };
+  return chip;
+}
+
+function renderStandardLayout() {
+  const container = document.getElementById('layoutContainer');
+  container.innerHTML = '';
+  floors.forEach(function(f) {
+    container.appendChild(floorCardEl(f, null));
+  });
+  const addBtn = document.createElement('div');
+  addBtn.style.padding = '0 20px';
+  addBtn.innerHTML = '<button class="add-row-btn" onclick="openAddFloorForm()">+ Add Floor</button>';
+  container.appendChild(addBtn);
+}
+
+function floorCardEl(f, blockId) {
+  const wrap = document.createElement('div');
+  wrap.className = blockId ? 'floor-card' : 'block-card';
+  const isOpen = f._open !== false;
+  wrap.innerHTML =
+    '<div class="' + (blockId ? 'floor-header' : 'block-header') + '"><div><span class="' + (blockId ? 'floor-title' : 'block-title') + '"></span> ' +
+    '<span class="' + (blockId ? 'floor-count' : 'block-count') + '"></span></div>' +
+    '<span class="' + (blockId ? 'floor-remove' : 'block-remove') + '">Remove</span></div>' +
+    '<div class="' + (blockId ? 'floor-body' : 'block-body') + (isOpen ? ' open' : '') + '"></div>';
+  wrap.querySelector('.' + (blockId ? 'floor-title' : 'block-title')).textContent = f.name;
+  wrap.querySelector('.' + (blockId ? 'floor-count' : 'block-count')).textContent = f.units.length + ' unit' + (f.units.length === 1 ? '' : 's');
+  const header = wrap.querySelector('.' + (blockId ? 'floor-header' : 'block-header'));
+  const body = wrap.querySelector('.' + (blockId ? 'floor-body' : 'block-body'));
+  header.onclick = function(e) {
+    if (e.target.classList.contains('floor-remove') || e.target.classList.contains('block-remove')) return;
+    f._open = !isOpen;
+    renderLayout();
+  };
+  wrap.querySelector('.' + (blockId ? 'floor-remove' : 'block-remove')).onclick = function() {
+    if (confirm('Remove "' + f.name + '" and all its units?')) {
+      if (blockId) {
+        const block = blocks.find(function(b) { return b.id === blockId; });
+        block.floors = block.floors.filter(function(x) { return x.id !== f.id; });
+      } else {
+        floors = floors.filter(function(x) { return x.id !== f.id; });
+      }
+      renderLayout();
+    }
+  };
+  f.units.forEach(function(u) {
+    body.appendChild(unitChipEl(u, function() { deleteUnit(blockId, f.id, u.id); }));
+  });
+  const addUnitBtn = document.createElement('button');
+  addUnitBtn.className = 'add-row-btn small';
+  addUnitBtn.textContent = '+ Add Unit';
+  addUnitBtn.onclick = function() { openAddUnitForm(blockId, f.id); };
+  const addRangeBtn = document.createElement('button');
+  addRangeBtn.className = 'add-row-btn small';
+  addRangeBtn.style.marginTop = '6px';
+  addRangeBtn.textContent = '+ Add Range';
+  addRangeBtn.onclick = function() { openAddRangeForm(blockId, f.id); };
+  body.appendChild(addUnitBtn);
+  body.appendChild(addRangeBtn);
+  return wrap;
+}
+
+function renderDetailedLayout() {
+  const container = document.getElementById('layoutContainer');
+  container.innerHTML = '';
+  blocks.forEach(function(b) {
+    container.appendChild(blockCardEl(b));
+  });
+  const addBtn = document.createElement('div');
+  addBtn.style.padding = '0 20px';
+  addBtn.innerHTML = '<button class="add-row-btn" onclick="openAddBlockForm()">+ Add Block / Tower</button>';
+  container.appendChild(addBtn);
+}
+
+function blockCardEl(b) {
+  const wrap = document.createElement('div');
+  wrap.className = 'block-card';
+  const isOpen = b._open !== false;
+  const totalUnits = b.floors.reduce(function(s, f) { return s + f.units.length; }, 0);
+  wrap.innerHTML =
+    '<div class="block-header"><div><span class="block-title"></span> <span class="block-count"></span></div>' +
+    '<span class="block-remove">Remove</span></div>' +
+    '<div class="block-body' + (isOpen ? ' open' : '') + '"></div>';
+  wrap.querySelector('.block-title').textContent = b.name;
+  wrap.querySelector('.block-count').textContent = b.floors.length + ' floor' + (b.floors.length === 1 ? '' : 's') + ', ' + totalUnits + ' units';
+  const header = wrap.querySelector('.block-header');
+  const body = wrap.querySelector('.block-body');
+  header.onclick = function(e) {
+    if (e.target.classList.contains('block-remove')) return;
+    b._open = !isOpen;
+    renderLayout();
+  };
+  wrap.querySelector('.block-remove').onclick = function() {
+    if (confirm('Remove "' + b.name + '" and everything in it?')) {
+      blocks = blocks.filter(function(x) { return x.id !== b.id; });
+      renderLayout();
+    }
+  };
+  b.floors.forEach(function(f) {
+    body.appendChild(floorCardEl(f, b.id));
+  });
+  const addFloorBtn = document.createElement('button');
+  addFloorBtn.className = 'add-row-btn small';
+  addFloorBtn.textContent = '+ Add Floor to ' + b.name;
+  addFloorBtn.onclick = function() { openAddFloorForm(b.id); };
+  body.appendChild(addFloorBtn);
+  return wrap;
+}
+
+function renderLayout() {
+  if (selectedDepth === 'simple') renderSimpleLayout();
+  else if (selectedDepth === 'standard') renderStandardLayout();
+  else renderDetailedLayout();
+}
+
+function closeAllInlineForms() {
+  document.querySelectorAll('.inline-form').forEach(function(f) { f.remove(); });
+}
+
+function openAddBlockForm() {
+  closeAllInlineForms();
+  const container = document.getElementById('layoutContainer');
+  const form = document.createElement('div');
+  form.className = 'inline-form';
+  form.style.margin = '0 20px 10px';
+  form.innerHTML =
+    '<label>Block / Tower name</label><input type="text" id="newBlockName" placeholder="e.g. Tower B">' +
+    '<div class="form-actions"><button class="btn-confirm" onclick="confirmAddBlock()">+ Add Block</button>' +
+    '<button class="btn-cancel" onclick="closeAllInlineForms()">Cancel</button></div>';
+  container.insertBefore(form, container.lastChild);
+}
+
+function confirmAddBlock() {
+  const name = document.getElementById('newBlockName').value.trim();
+  if (!name) { alert('Enter a block/tower name.'); return; }
+  blocks.push({ id: 'b' + (idCounter++), name: name, floors: [], _open: true });
+  closeAllInlineForms();
+  renderLayout();
+}
+
+function openAddFloorForm(blockId) {
+  closeAllInlineForms();
+  const form = document.createElement('div');
+  form.className = 'inline-form';
+  form.innerHTML =
+    '<label>Floor name</label><input type="text" id="newFloorName" placeholder="e.g. Ground Floor, Floor 3">' +
+    '<div class="form-actions"><button class="btn-confirm" onclick="confirmAddFloor(' + (blockId ? '\'' + blockId + '\'' : 'null') + ')">+ Add Floor</button>' +
+    '<button class="btn-cancel" onclick="closeAllInlineForms()">Cancel</button></div>';
+  if (blockId) {
+    const bName = blocks.find(function(b){return b.id===blockId;}).name;
+    const blockCard = Array.from(document.querySelectorAll('.block-card')).find(function(el) { const t = el.querySelector('.block-title'); return t && t.textContent === bName; });
+    blockCard.querySelector('.block-body').appendChild(form);
+  } else {
+    const container = document.getElementById('layoutContainer');
+    container.insertBefore(form, container.lastChild);
+  }
+}
+
+function confirmAddFloor(blockId) {
+  const name = document.getElementById('newFloorName').value.trim();
+  if (!name) { alert('Enter a floor name.'); return; }
+  const newFloor = { id: 'f' + (idCounter++), name: name, units: [], _open: true };
+  if (blockId) {
+    blocks.find(function(b) { return b.id === blockId; }).floors.push(newFloor);
+  } else {
+    floors.push(newFloor);
+  }
+  closeAllInlineForms();
+  renderLayout();
+}
+
+function findFloor(blockId, floorId) {
+  if (blockId) return blocks.find(function(b) { return b.id === blockId; }).floors.find(function(f) { return f.id === floorId; });
+  return floors.find(function(f) { return f.id === floorId; });
+}
+
+function getUnitsArrayRef(blockId, floorId) {
+  if (floorId) return findFloor(blockId, floorId).units;
+  return simpleUnits;
+}
+
+function openAddUnitForm(blockId, floorId) {
+  closeAllInlineForms();
+  const form = document.createElement('div');
+  form.className = 'inline-form';
+  form.innerHTML =
+    '<label>Unit name/number</label><input type="text" id="newUnitName" placeholder="e.g. 101">' +
+    '<label>Type</label><select id="newUnitType" onchange="onUnitTypeChange(\'newUnit\')">' + unitTypeOptions('Flat') + '</select>' +
+    '<div class="form-row"><div><label>Occupants</label><input type="text" id="newUnitOcc" placeholder="e.g. 3"></div>' +
+    '<div><label>Area (sqft)</label><input type="text" id="newUnitArea" placeholder="e.g. 850"></div></div>' +
+    '<label>Monthly rent (₹)</label><input type="text" id="newUnitRent" placeholder="e.g. 15000">' +
+    '<label style="display:flex;align-items:center;gap:8px;text-transform:none;font-size:12px;cursor:pointer" onclick="onGstToggle(\'newUnit\')"><input type="checkbox" id="newUnitGstOn" style="width:auto;margin:0"> GST applicable</label>' +
+    '<div id="newUnitGstRateField" style="display:none;margin-top:6px"><input type="text" id="newUnitGstRate" placeholder="GST % e.g. 18" value="18"></div>' +
+    '<div class="form-actions"><button class="btn-confirm" onclick="confirmAddUnit(' + (blockId ? '\'' + blockId + '\'' : 'null') + ',' + (floorId ? '\'' + floorId + '\'' : 'null') + ')">+ Add Unit</button>' +
+    '<button class="btn-cancel" onclick="closeAllInlineForms()">Cancel</button></div>';
+  attachFormToLocation(form, blockId, floorId);
+  applyGstDefault('newUnit', 'Flat');
+}
+
+function onUnitTypeChange(prefix) {
+  const type = document.getElementById(prefix + 'Type').value;
+  applyGstDefault(prefix, type);
+}
+
+function applyGstDefault(prefix, type) {
+  const on = defaultGstForType(type);
+  document.getElementById(prefix + 'GstOn').checked = on;
+  document.getElementById(prefix + 'GstRateField').style.display = on ? 'block' : 'none';
+}
+
+function onGstToggle(prefix) {
+  const on = document.getElementById(prefix + 'GstOn').checked;
+  document.getElementById(prefix + 'GstRateField').style.display = on ? 'block' : 'none';
+}
+
+function attachFormToLocation(form, blockId, floorId) {
+  if (!floorId && !blockId) {
+    document.getElementById('simpleUnitsCard').parentNode.insertBefore(form, document.getElementById('simpleUnitsCard').nextSibling);
+    return;
+  }
+  const floorName = findFloor(blockId, floorId).name;
+  let searchRoot = document;
+  if (blockId) {
+    const blockName = blocks.find(function(b) { return b.id === blockId; }).name;
+    const blockEl = Array.from(document.querySelectorAll('.block-card')).find(function(el) {
+      const t = el.querySelector('.block-title');
+      return t && t.textContent === blockName;
+    });
+    if (blockEl) searchRoot = blockEl;
+  }
+  const candidates = Array.from(searchRoot.querySelectorAll('.floor-card, .block-card'));
+  const target = candidates.find(function(el) {
+    const titleEl = el.querySelector('.floor-title, .block-title');
+    return titleEl && titleEl.textContent === floorName;
+  });
+  if (target) target.querySelector('.floor-body, .block-body').appendChild(form);
+}
+
+function confirmAddUnit(blockId, floorId) {
+  const name = document.getElementById('newUnitName').value.trim();
+  const type = document.getElementById('newUnitType').value;
+  const occ = parseInt(document.getElementById('newUnitOcc').value, 10) || 0;
+  const area = parseInt(document.getElementById('newUnitArea').value, 10) || 0;
+  const rent = parseInt(document.getElementById('newUnitRent').value, 10) || 0;
+  const gstOn = document.getElementById('newUnitGstOn').checked;
+  const gstRate = gstOn ? (parseFloat(document.getElementById('newUnitGstRate').value) || 0) : 0;
+  if (!name) { alert('Enter a unit name/number.'); return; }
+  getUnitsArrayRef(blockId, floorId).push(makeUnit(name, type, occ, area, rent, gstOn, gstRate));
+  closeAllInlineForms();
+  renderLayout();
+}
+
+function openAddRangeForm(blockId, floorId) {
+  closeAllInlineForms();
+  const form = document.createElement('div');
+  form.className = 'inline-form';
+  form.innerHTML =
+    '<label>Range (e.g. "101 to 110")</label><input type="text" id="newRangeText" placeholder="e.g. 101 to 110">' +
+    '<label>Type</label><select id="newRangeType" onchange="onUnitTypeChange(\'newRange\')">' + unitTypeOptions('Flat') + '</select>' +
+    '<div class="form-row"><div><label>Occupants (each)</label><input type="text" id="newRangeOcc" placeholder="e.g. 2"></div>' +
+    '<div><label>Area sqft (each)</label><input type="text" id="newRangeArea" placeholder="e.g. 800"></div></div>' +
+    '<label>Monthly rent, each (₹)</label><input type="text" id="newRangeRent" placeholder="e.g. 12000">' +
+    '<label style="display:flex;align-items:center;gap:8px;text-transform:none;font-size:12px;cursor:pointer" onclick="onGstToggle(\'newRange\')"><input type="checkbox" id="newRangeGstOn" style="width:auto;margin:0"> GST applicable</label>' +
+    '<div id="newRangeGstRateField" style="display:none;margin-top:6px"><input type="text" id="newRangeGstRate" placeholder="GST % e.g. 18" value="18"></div>' +
+    '<div class="form-actions"><button class="btn-confirm" onclick="confirmAddRange(' + (blockId ? '\'' + blockId + '\'' : 'null') + ',' + (floorId ? '\'' + floorId + '\'' : 'null') + ')">+ Add Range</button>' +
+    '<button class="btn-cancel" onclick="closeAllInlineForms()">Cancel</button></div>';
+  attachFormToLocation(form, blockId, floorId);
+  applyGstDefault('newRange', 'Flat');
+}
+
+function confirmAddRange(blockId, floorId) {
+  const text = document.getElementById('newRangeText').value.trim();
+  const type = document.getElementById('newRangeType').value;
+  const occ = parseInt(document.getElementById('newRangeOcc').value, 10) || 0;
+  const area = parseInt(document.getElementById('newRangeArea').value, 10) || 0;
+  const rent = parseInt(document.getElementById('newRangeRent').value, 10) || 0;
+  const gstOn = document.getElementById('newRangeGstOn').checked;
+  const gstRate = gstOn ? (parseFloat(document.getElementById('newRangeGstRate').value) || 0) : 0;
+  const match = text.match(/^(\d+)\s*(?:to|-)\s*(\d+)$/i);
+  if (!match) { alert('Enter a range like "101 to 110".'); return; }
+  const start = parseInt(match[1], 10), end = parseInt(match[2], 10);
+  if (end < start) { alert('End must be greater than or equal to start.'); return; }
+  const arr = getUnitsArrayRef(blockId, floorId);
+  for (let n = start; n <= end; n++) {
+    arr.push(makeUnit(String(n), type, occ, area, rent, gstOn, gstRate));
+  }
+  closeAllInlineForms();
+  renderLayout();
+}
+
+function deleteUnit(blockId, floorId, unitId) {
+  const arr = getUnitsArrayRef(blockId, floorId);
+  const u = arr.find(function(x) { return x.id === unitId; });
+  if (confirm('Remove unit "' + u.name + '"?')) {
+    const idx = arr.indexOf(u);
+    arr.splice(idx, 1);
+    renderLayout();
+  }
+}
+
+renderPropTypeGrid();
+renderScaleGrid();
+renderDepthGrid();
+renderLayout();
+</script>
+</body>
+</html>

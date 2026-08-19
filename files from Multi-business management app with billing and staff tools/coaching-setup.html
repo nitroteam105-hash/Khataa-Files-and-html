@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coaching Setup — Khaata</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1f6f54; --green-light: #e7f2ed;
+    --parchment: #fbfbf9; --ink: #1c1c1a; --muted: #6b6b64;
+    --border: #e6e4dd; --amber: #b5791f; --amber-light: #fbf1e2;
+    --purple: #6b5b95; --purple-light: #f0eef8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', sans-serif; background: var(--parchment); color: var(--ink);
+    max-width: 480px; margin: 0 auto; min-height: 100vh; padding-bottom: 40px;
+  }
+  header { padding: 24px 20px 12px; }
+  header h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 800; }
+  header p { font-size: 13px; color: var(--muted); margin-top: 3px; }
+
+  .step-tabs { display: flex; gap: 6px; padding: 12px 20px; overflow-x: auto; }
+  .step-tab {
+    flex-shrink: 0; padding: 8px 14px; border-radius: 999px; font-size: 12.5px; font-weight: 600;
+    border: 1px solid var(--border); color: var(--muted); background: #fff; cursor: pointer; white-space: nowrap;
+  }
+  .step-tab.active { background: var(--green); color: #fff; border-color: var(--green); }
+
+  .panel { display: none; padding: 4px 20px 20px; }
+  .panel.active { display: block; }
+
+  .section-label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin: 16px 0 8px; }
+  .card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 10px; }
+
+  .access-options { display: flex; gap: 8px; margin-bottom: 4px; }
+  .access-opt {
+    flex: 1; text-align: center; padding: 12px 8px; border-radius: 10px; border: 1.5px solid var(--border);
+    font-size: 12.5px; font-weight: 600; cursor: pointer; background: #fff;
+  }
+  .access-opt.selected { background: var(--green-light); border-color: var(--green); color: var(--green); }
+
+  .add-row-btn { border: 1.5px dashed var(--green); color: var(--green); background: none; border-radius: 10px; padding: 10px; width: 100%; font-weight: 700; font-size: 13px; cursor: pointer; margin-top: 8px; }
+  .mini-add-link { display: inline-block; color: var(--green); font-size: 12px; font-weight: 700; cursor: pointer; margin-top: 6px; }
+
+  .subject-group { margin-bottom: 12px; }
+  .subject-header { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 14px; color: var(--green); margin-bottom: 6px; padding-left: 2px; }
+
+  .batch-row { display: flex; gap: 10px; padding: 12px; border: 1px solid var(--border); border-radius: 12px; margin-bottom: 8px; background: #fff; }
+  .batch-icon { width: 34px; height: 34px; border-radius: 8px; background: var(--green-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 15px; }
+  .batch-info { flex: 1; min-width: 0; }
+  .batch-name { font-weight: 600; font-size: 14px; }
+  .batch-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .batch-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .mode-badge { font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 999px; margin-left: 6px; }
+  .mode-badge.online { background: var(--purple-light); color: var(--purple); }
+  .mode-badge.offline { background: var(--green-light); color: var(--green); }
+  .mode-badge.hybrid { background: var(--amber-light); color: var(--amber); }
+  .batch-delete { font-size: 12px; color: var(--muted); cursor: pointer; align-self: flex-start; padding: 2px 4px; }
+  .batch-delete:hover { color: var(--amber); }
+
+  .inline-form { background: var(--green-light); border: 1px solid var(--green); border-radius: 12px; padding: 14px; margin: 8px 0; }
+  .inline-form input, .inline-form select {
+    width: 100%; padding: 9px 10px; border: 1px solid var(--border); border-radius: 8px;
+    font-size: 13px; font-family: 'Inter', sans-serif; margin-bottom: 8px; background: #fff;
+  }
+  .inline-form label { font-size: 11px; font-weight: 700; color: var(--muted); display: block; margin-bottom: 3px; text-transform: uppercase; }
+  .form-row2 { display: flex; gap: 8px; }
+  .form-row2 > div { flex: 1; }
+  .form-actions { display: flex; gap: 8px; margin-top: 4px; }
+  .form-actions button { flex: 1; padding: 10px; border-radius: 8px; border: none; font-weight: 700; font-size: 13px; cursor: pointer; }
+  .btn-confirm { background: var(--green); color: #fff; }
+  .btn-cancel { background: #fff; color: var(--muted); border: 1px solid var(--border) !important; }
+
+  .plan-card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 10px; }
+  .plan-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .plan-name { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 15px; }
+  .plan-batches { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+  .cycle-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .cycle-chip {
+    background: var(--green-light); color: var(--green); border-radius: 10px; padding: 8px 10px;
+    font-size: 12px; font-weight: 600; display: flex; flex-direction: column; align-items: center; min-width: 64px; cursor: pointer;
+  }
+  .cycle-chip .cyc-label { font-size: 10.5px; text-transform: uppercase; opacity: 0.75; }
+  .cycle-chip .cyc-amt { font-size: 13px; margin-top: 2px; }
+  .plan-delete { font-size: 12px; color: var(--muted); cursor: pointer; }
+
+  .preset-tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+  .preset-tab { flex: 1; text-align: center; padding: 10px; border-radius: 10px; border: 1px solid var(--border); font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; background: #fff; }
+  .preset-tab.active { background: var(--green); color: #fff; border-color: var(--green); }
+
+  .field-chip { display: inline-flex; align-items: center; gap: 6px; background: var(--green-light); color: var(--green); border-radius: 999px; padding: 6px 12px; font-size: 12.5px; font-weight: 600; margin: 4px 4px 0 0; cursor: pointer; }
+  .field-chip.locked { background: #eee; color: var(--muted); cursor: default; }
+  .field-chip.off { background: #f2f2ee; color: #b3b0a6; text-decoration: line-through; }
+  .field-chip.add-new { background: none; border: 1.5px dashed var(--green); color: var(--green); }
+
+  .note { font-size: 12px; color: var(--muted); margin-top: 10px; line-height: 1.5; }
+  .discount-note { background: var(--amber-light); color: var(--amber); border-radius: 10px; padding: 12px 14px; font-size: 12.5px; font-weight: 500; line-height: 1.5; }
+
+  .toggle-row { display: flex; justify-content: space-between; align-items: center; }
+  .switch { width: 40px; height: 24px; background: var(--green); border-radius: 999px; position: relative; flex-shrink: 0; cursor: pointer; }
+  .switch.off { background: #d8d6cd; }
+  .switch::after { content: ''; position: absolute; top: 3px; right: 3px; width: 18px; height: 18px; background: #fff; border-radius: 50%; }
+  .switch.off::after { left: 3px; right: auto; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Bright Minds Academy — Setup</h1>
+  <p>Schedule, fees, student intake & attendance</p>
+</header>
+
+<div class="step-tabs">
+  <div class="step-tab active" onclick="showPanel('schedule', this)">1. Schedule</div>
+  <div class="step-tab" onclick="showPanel('fees', this)">2. Fees</div>
+  <div class="step-tab" onclick="showPanel('intake', this)">3. Intake</div>
+  <div class="step-tab" onclick="showPanel('attendance', this)">4. Attendance</div>
+</div>
+
+<!-- PANEL 1: SCHEDULE -->
+<div class="panel active" id="panel-schedule">
+  <div class="section-label">Access type</div>
+  <div class="access-options">
+    <div class="access-opt" onclick="selectAccess(this)">Open-access</div>
+    <div class="access-opt selected" onclick="selectAccess(this)">Batch-based</div>
+    <div class="access-opt" onclick="selectAccess(this)">Hybrid</div>
+  </div>
+
+  <div class="section-label">Batches</div>
+  <div id="batchesContainer"></div>
+  <button class="add-row-btn" onclick="openBatchForm()">+ Add Batch</button>
+  <p class="note">Batches auto-group by Subject once more than one subject exists — single-subject academies just see a plain list. Instructor assignment isn't set here — that happens on the separate Timetable page, so teacher scheduling and conflicts are handled in one place.</p>
+</div>
+
+<!-- PANEL 2: FEES -->
+<div class="panel" id="panel-fees">
+  <div class="section-label">Fee plans</div>
+  <div id="plansContainer"></div>
+  <button class="add-row-btn" onclick="addFeePlan()">+ Add Plan</button>
+
+  <div class="section-label">Discounts</div>
+  <div class="discount-note">Discounts aren't fixed here — the owner applies a flat ₹ or % discount per student during their onboarding, based on judgment (e.g. sibling, referral, early payment).</div>
+</div>
+
+<!-- PANEL 3: CUSTOMER INTAKE -->
+<div class="panel" id="panel-intake">
+  <div class="section-label">Intake depth preset</div>
+  <div class="preset-tabs">
+    <div class="preset-tab" onclick="setIntakePreset('simple', this)">Simple</div>
+    <div class="preset-tab active" onclick="setIntakePreset('standard', this)">Standard</div>
+    <div class="preset-tab" onclick="setIntakePreset('detailed', this)">Detailed</div>
+  </div>
+
+  <div class="section-label">Fields collected at student onboarding</div>
+  <div class="card" id="intakeFieldsCard">
+    <span class="field-chip locked">Name ✓ required</span>
+    <span class="field-chip locked">Mobile ✓ required</span>
+    <span class="field-chip" id="chip-school">School/College</span>
+    <span class="field-chip" id="chip-grade">Grade/Class</span>
+    <span class="field-chip" id="chip-dob">Date of birth</span>
+    <span class="field-chip" id="chip-parent">Parent/Guardian contact</span>
+    <span class="field-chip" id="chip-subjects">Subject(s) enrolled</span>
+    <span class="field-chip off" id="chip-schoolid">School ID / Roll No.</span>
+    <span class="field-chip off" id="chip-address">Address</span>
+    <span class="field-chip off" id="chip-idproof">ID Proof</span>
+    <span class="field-chip add-new" onclick="addCustomField()">+ Add field</span>
+  </div>
+  <p class="note">Tap any chip to toggle it on/off. Name and Mobile are always required — needed for the ledger and WhatsApp reminders. School ID, Address, and ID Proof are off by default — turn on only if this business needs them. ID Proof supports multiple types (Aadhaar, PAN, etc.), same as Staff.</p>
+</div>
+
+<!-- PANEL 4: ATTENDANCE -->
+<div class="panel" id="panel-attendance">
+  <div class="section-label">Attendance tracking</div>
+  <div class="card toggle-row">
+    <div><div style="font-weight:700;font-size:14px">Track student attendance</div><div class="note" style="margin-top:2px">Applies to this business's batches</div></div>
+    <div class="switch" id="attToggleSwitch" onclick="toggleAttendanceTracking()"></div>
+  </div>
+  <div class="card toggle-row">
+    <div><div style="font-weight:700;font-size:14px">Track staff attendance</div><div class="note" style="margin-top:2px">Independent of student attendance — applies to any staff at this business</div></div>
+    <div class="switch" id="staffAttToggleSwitch" onclick="toggleStaffAttendanceTracking()"></div>
+  </div>
+  <p class="note" id="attStatusNote">These just turn each feature on or off during setup. Once staff/students actually exist, marking day-to-day attendance happens on separate operational screens — not here, since there's nothing to mark yet during onboarding.</p>
+</div>
+
+<script>
+let subjectCounter = 0;
+const batchData = {}; // subjectKey -> { headerEl, listEl }
+
+function showPanel(id, el) {
+  document.querySelectorAll('.step-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('panel-' + id).classList.add('active');
+}
+
+function selectAccess(el) {
+  document.querySelectorAll('.access-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function getOrCreateSubjectGroup(subjectName) {
+  const key = (subjectName || 'General').trim().toLowerCase();
+  if (batchData[key]) return batchData[key];
+
+  const container = document.getElementById('batchesContainer');
+  const group = document.createElement('div');
+  group.className = 'subject-group';
+  group.innerHTML = '<div class="subject-header"></div><div class="batch-list"></div>';
+  group.querySelector('.subject-header').textContent = subjectName || 'General';
+  container.appendChild(group);
+
+  const entry = { headerEl: group.querySelector('.subject-header'), listEl: group.querySelector('.batch-list'), groupEl: group };
+  batchData[key] = entry;
+  updateSubjectHeaderVisibility();
+  return entry;
+}
+
+function updateSubjectHeaderVisibility() {
+  const keys = Object.keys(batchData);
+  const showHeaders = keys.length > 1;
+  keys.forEach(k => {
+    batchData[k].headerEl.style.display = showHeaders ? 'block' : 'none';
+  });
+}
+
+function removeSubjectGroupIfEmpty(key) {
+  const entry = batchData[key];
+  if (entry && entry.listEl.children.length === 0) {
+    entry.groupEl.remove();
+    delete batchData[key];
+    updateSubjectHeaderVisibility();
+  }
+}
+
+function openBatchForm() {
+  document.querySelectorAll('.inline-form').forEach(f => f.remove());
+  const form = document.createElement('div');
+  form.className = 'inline-form';
+  form.innerHTML =
+    '<label>Subject</label><input type="text" class="f-subject" placeholder="e.g. Math">' +
+    '<div class="form-row2"><div><label>Grade/Class (optional)</label><input type="text" class="f-grade" placeholder="e.g. Grade 10"></div>' +
+    '<div><label>Batch label</label><input type="text" class="f-label" placeholder="e.g. Batch A"></div></div>' +
+    '<div class="form-row2"><div><label>Day(s)</label><input type="text" class="f-days" placeholder="e.g. Mon/Wed/Fri"></div>' +
+    '<div><label>Time</label><input type="text" class="f-time" placeholder="e.g. 5–6 PM"></div></div>' +
+    '<label>Capacity (optional — leave blank for 1:1)</label><input type="text" class="f-capacity" placeholder="e.g. 20, or blank for individual">' +
+    '<label>Mode</label>' +
+    '<select class="f-mode" onchange="toggleLinkField(this)"><option value="Offline">Offline</option><option value="Online">Online</option><option value="Hybrid">Hybrid</option></select>' +
+    '<div class="f-link-wrap" style="display:none"><label>Meeting link (optional)</label><input type="text" class="f-link" placeholder="e.g. meet.google.com/..."></div>' +
+    '<label>Room (optional)</label><input type="text" class="f-room" placeholder="e.g. Room 2">' +
+    '<div class="form-actions"><button class="btn-confirm" onclick="confirmAddBatch()">+ Add Batch</button><button class="btn-cancel" onclick="this.closest(\'.inline-form\').remove()">Cancel</button></div>';
+  document.getElementById('batchesContainer').parentNode.insertBefore(form, document.getElementById('batchesContainer').nextSibling.nextSibling);
+}
+
+function toggleLinkField(sel) {
+  const wrap = sel.parentNode.querySelector('.f-link-wrap');
+  wrap.style.display = sel.value === 'Offline' ? 'none' : 'block';
+}
+
+function confirmAddBatch() {
+  const form = document.querySelector('.inline-form');
+  const subject = form.querySelector('.f-subject').value.trim();
+  const grade = form.querySelector('.f-grade').value.trim();
+  const label = form.querySelector('.f-label').value.trim() || 'Batch';
+  const days = form.querySelector('.f-days').value.trim();
+  const time = form.querySelector('.f-time').value.trim();
+  const capacity = form.querySelector('.f-capacity').value.trim();
+  const mode = form.querySelector('.f-mode').value;
+  const link = form.querySelector('.f-link') ? form.querySelector('.f-link').value.trim() : '';
+  const room = form.querySelector('.f-room').value.trim();
+
+  const group = getOrCreateSubjectGroup(subject);
+  const row = document.createElement('div');
+  row.className = 'batch-row';
+  const modeClass = mode.toLowerCase();
+  row.innerHTML =
+    '<div class="batch-icon">📘</div>' +
+    '<div class="batch-info">' +
+      '<div class="batch-name"></div>' +
+      '<div class="batch-meta"></div>' +
+      '<div class="batch-sub"></div>' +
+    '</div>' +
+    '<div class="batch-delete" onclick="removeBatch(this)">✕</div>';
+  row.querySelector('.batch-name').innerHTML = label + (grade ? ' <span style="font-weight:400;color:var(--muted);font-size:12px">(' + grade + ')</span>' : '') + ' <span class="mode-badge ' + modeClass + '">' + mode + '</span>';
+  row.querySelector('.batch-meta').textContent = [days, time].filter(Boolean).join(' · ') + (capacity ? ' · Capacity ' + capacity : ' · Individual (1:1)');
+  const subLine = [room, link].filter(Boolean).join(' · ');
+  row.querySelector('.batch-sub').textContent = subLine;
+  row.dataset.subjectKey = (subject || 'General').trim().toLowerCase();
+
+  group.listEl.appendChild(row);
+  form.remove();
+}
+
+function removeBatch(el) {
+  const row = el.closest('.batch-row');
+  const key = row.dataset.subjectKey;
+  if (confirm('Remove this batch?')) {
+    row.remove();
+    removeSubjectGroupIfEmpty(key);
+  }
+}
+
+// ---- FEE PLANS ----
+function editCycle(el) {
+  const label = el.querySelector('.cyc-label').textContent;
+  const amtEl = el.querySelector('.cyc-amt');
+  const current = amtEl.textContent.replace(/[^0-9]/g, '');
+  const amount = prompt('Set ' + label + ' price (₹):', current || '0');
+  if (amount !== null && amount.trim() !== '') amtEl.textContent = '₹' + amount.trim();
+}
+
+function deletePlan(el) {
+  const card = el.closest('.plan-card');
+  if (confirm('Remove plan "' + card.querySelector('.plan-name').textContent + '"?')) card.remove();
+}
+
+function addFeePlan() {
+  const name = prompt('Plan name (e.g. "English Grade 8"):');
+  if (!name || !name.trim()) return;
+  const price = prompt('Monthly price for "' + name.trim() + '" (₹):', '1500');
+  if (price === null || price.trim() === '') return;
+  const card = document.createElement('div');
+  card.className = 'plan-card';
+  card.innerHTML =
+    '<div class="plan-top"><div class="plan-name"></div><div class="plan-delete" onclick="deletePlan(this)">✕</div></div>' +
+    '<div class="plan-batches">Not linked to a batch yet</div>' +
+    '<div class="cycle-row"><div class="cycle-chip" onclick="editCycle(this)"><span class="cyc-label">Monthly</span><span class="cyc-amt"></span></div></div>';
+  card.querySelector('.plan-name').textContent = name.trim();
+  card.querySelector('.cyc-amt').textContent = '₹' + price.trim();
+  document.getElementById('plansContainer').appendChild(card);
+}
+
+// ---- CUSTOMER INTAKE ----
+function setIntakePreset(tier, el) {
+  document.querySelectorAll('#panel-intake .preset-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const map = {
+    simple:   { school: false, grade: false, dob: false, parent: false, subjects: false },
+    standard: { school: true,  grade: true,  dob: false, parent: true,  subjects: true },
+    detailed: { school: true,  grade: true,  dob: true,  parent: true,  subjects: true }
+  };
+  const cfg = map[tier];
+  document.getElementById('chip-school').classList.toggle('off', !cfg.school);
+  document.getElementById('chip-grade').classList.toggle('off', !cfg.grade);
+  document.getElementById('chip-dob').classList.toggle('off', !cfg.dob);
+  document.getElementById('chip-parent').classList.toggle('off', !cfg.parent);
+  document.getElementById('chip-subjects').classList.toggle('off', !cfg.subjects);
+}
+
+document.querySelectorAll('#intakeFieldsCard .field-chip:not(.locked):not(.add-new)').forEach(chip => {
+  chip.addEventListener('click', () => chip.classList.toggle('off'));
+});
+
+function addCustomField() {
+  const name = prompt('New field name (e.g. "Previous marks"):');
+  if (!name || !name.trim()) return;
+  const chip = document.createElement('span');
+  chip.className = 'field-chip';
+  chip.textContent = name.trim();
+  chip.onclick = () => chip.classList.toggle('off');
+  document.getElementById('intakeFieldsCard').insertBefore(chip, document.querySelector('.field-chip.add-new'));
+}
+
+function toggleAttendanceTracking() {
+  const sw = document.getElementById('attToggleSwitch');
+  sw.classList.toggle('off');
+  updateAttStatusNote();
+}
+
+function toggleStaffAttendanceTracking() {
+  const sw = document.getElementById('staffAttToggleSwitch');
+  sw.classList.toggle('off');
+  updateAttStatusNote();
+}
+
+function updateAttStatusNote() {
+  const studentOn = !document.getElementById('attToggleSwitch').classList.contains('off');
+  const staffOn = !document.getElementById('staffAttToggleSwitch').classList.contains('off');
+  const note = document.getElementById('attStatusNote');
+  if (studentOn && staffOn) {
+    note.textContent = "These just turn each feature on or off during setup. Once staff/students actually exist, marking day-to-day attendance happens on separate operational screens — not here, since there's nothing to mark yet during onboarding.";
+  } else if (!studentOn && !staffOn) {
+    note.textContent = "Both student and staff attendance tracking are off for this business.";
+  } else if (!studentOn) {
+    note.textContent = "Student attendance tracking is off. Staff attendance tracking is still on.";
+  } else {
+    note.textContent = "Staff attendance tracking is off. Student attendance tracking is still on.";
+  }
+}
+
+// ---- INIT ----
+function initBatches() {
+  getOrCreateSubjectGroup('Math');
+  const mathRow = document.createElement('div');
+  mathRow.className = 'batch-row';
+  mathRow.innerHTML =
+    '<div class="batch-icon">📘</div><div class="batch-info"><div class="batch-name">Batch A <span style="font-weight:400;color:var(--muted);font-size:12px">(Grade 10)</span> <span class="mode-badge offline">Offline</span></div>' +
+    '<div class="batch-meta">Mon/Wed/Fri · 5–6 PM · Capacity 20</div><div class="batch-sub">Room 2</div></div>' +
+    '<div class="batch-delete" onclick="removeBatch(this)">✕</div>';
+  mathRow.dataset.subjectKey = 'math';
+  batchData['math'].listEl.appendChild(mathRow);
+
+  getOrCreateSubjectGroup('Science');
+  const sciRow = document.createElement('div');
+  sciRow.className = 'batch-row';
+  sciRow.innerHTML =
+    '<div class="batch-icon">🔬</div><div class="batch-info"><div class="batch-name">Batch B <span style="font-weight:400;color:var(--muted);font-size:12px">(Grade 9)</span> <span class="mode-badge hybrid">Hybrid</span></div>' +
+    '<div class="batch-meta">Tue/Thu · 4–5 PM · Capacity 15</div><div class="batch-sub">Room 1 · meet.google.com/science-bma</div></div>' +
+    '<div class="batch-delete" onclick="removeBatch(this)">✕</div>';
+  sciRow.dataset.subjectKey = 'science';
+  batchData['science'].listEl.appendChild(sciRow);
+}
+
+initBatches();
+setIntakePreset('standard', document.querySelector('#panel-intake .preset-tab.active'));
+</script>
+</body>
+</html>

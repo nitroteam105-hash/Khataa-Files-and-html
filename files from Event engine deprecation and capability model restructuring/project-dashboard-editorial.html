@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Dashboard — Khaata</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f4f3ee; --ink:#252118; --muted:#8a857a; --faint:#b4afa4;
+    --line:#e4e1d6; --line-soft:#edeae1;
+    --green:#1f6f54; --green-tint:#e9f2ed;
+    --ochre:#a9711f; --ochre-tint:#f6ecd9;
+    --terra:#a8503a; --terra-tint:#f4e4de;
+  }
+  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; animation:none !important; } }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; }
+  body{ background:#e4e1d6; font-family:'Inter',sans-serif; color:var(--ink); display:flex; justify-content:center; min-height:100vh; -webkit-font-smoothing:antialiased; }
+  .app{ width:100%; max-width:480px; min-height:100vh; position:relative; background:var(--paper);
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+    display:flex; flex-direction:column; }
+  button{ font-family:inherit; }
+  button:focus-visible{ outline:2px solid var(--green); outline-offset:2px; border-radius:8px; }
+  .tnum{ font-variant-numeric:tabular-nums; }
+  .over{ font-size:11px; text-transform:uppercase; letter-spacing:0.11em; color:var(--muted); font-weight:700; }
+  .disp{ font-family:'Plus Jakarta Sans',sans-serif; letter-spacing:-0.02em; }
+
+  /* Top bar */
+  .topbar{ display:flex; align-items:center; gap:12px; padding:20px 22px 14px; position:sticky; top:0; z-index:6; background:linear-gradient(to bottom, var(--paper) 82%, transparent); }
+  .icon-btn{ background:none; border:none; cursor:pointer; color:var(--ink); padding:2px; font-size:20px; line-height:1; }
+  .tt{ flex:1; min-width:0; }
+  .tt h1{ font-family:'Plus Jakarta Sans',sans-serif; font-size:17px; font-weight:800; margin:0; letter-spacing:-0.01em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .tt p{ margin:2px 0 0; font-size:12.5px; color:var(--muted); }
+
+  .scroll{ flex:1; padding:0 22px 120px; }
+
+  /* Hero — editorial */
+  .hero{ padding:18px 0 26px; }
+  .hero .over{ margin-bottom:10px; }
+  .hero .net{ font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:52px; line-height:0.95; letter-spacing:-0.03em; }
+  .hero .net.pos{ color:var(--green); } .hero .net.neg{ color:var(--terra); }
+  .status{ display:inline-flex; align-items:center; gap:8px; margin-top:16px; font-size:14px; font-weight:600; }
+  .status .dot{ width:9px; height:9px; border-radius:50%; }
+  .status.ok{ color:var(--green); } .status.ok .dot{ background:var(--green); }
+  .status.warn{ color:var(--ochre); } .status.warn .dot{ background:var(--ochre); }
+  .status.bad{ color:var(--terra); } .status.bad .dot{ background:var(--terra); }
+  .status .thin{ color:var(--muted); font-weight:500; }
+
+  .split{ display:flex; gap:0; margin-top:24px; }
+  .split .cell{ flex:1; }
+  .split .cell + .cell{ padding-left:22px; border-left:1px solid var(--line); margin-left:22px; }
+  .split .cl{ display:flex; align-items:center; gap:7px; }
+  .split .cd{ width:7px; height:7px; border-radius:50%; }
+  .split .cd.in{ background:var(--green); } .split .cd.out{ background:var(--ochre); }
+  .split .clab{ font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); font-weight:600; }
+  .split .cval{ font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:19px; margin-top:6px; letter-spacing:-0.01em; }
+
+  .budget{ margin-top:24px; }
+  .budget .brow{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:9px; }
+  .budget .bk{ font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); font-weight:600; }
+  .budget .bv{ font-size:13px; font-weight:600; }
+  .budget-track{ height:7px; background:#e7e4da; border-radius:99px; overflow:hidden; }
+  .budget-fill{ height:100%; width:0; background:var(--green); border-radius:99px; transition:width 1.05s cubic-bezier(.22,.7,.24,1) .25s; }
+  .budget-fill.warn{ background:var(--ochre); } .budget-fill.bad{ background:var(--terra); }
+
+  /* Section */
+  .rule{ height:1px; background:var(--line); margin:8px 0; }
+  .sec{ padding:22px 0; }
+  .sec-h{ display:flex; align-items:baseline; margin-bottom:16px; }
+  .sec-h .over{ }
+  .sec-h .aside{ margin-left:auto; font-size:12px; color:var(--muted); font-weight:600; }
+
+  /* Today (action-first) */
+  .act{ display:flex; gap:14px; padding:2px 0 18px; }
+  .act:last-child{ padding-bottom:0; }
+  .act .num{ font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:13px; color:var(--faint); width:16px; flex-shrink:0; padding-top:2px; }
+  .act .body{ flex:1; min-width:0; }
+  .act .title{ font-family:'Plus Jakarta Sans',sans-serif; font-size:16px; font-weight:700; letter-spacing:-0.01em; line-height:1.25; }
+  .act .title .amt.in{ color:var(--green); } .act .title .amt.out{ color:var(--ochre); }
+  .act .desc{ font-size:12.5px; color:var(--muted); margin-top:3px; }
+  .act .btns{ display:flex; gap:9px; margin-top:12px; }
+  .abtn{ display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border-radius:99px; font-size:12.5px; font-weight:700; cursor:pointer; border:1px solid transparent; transition:transform .08s ease; }
+  .abtn:active{ transform:scale(0.96); }
+  .abtn.primary{ background:var(--green); color:#fff; }
+  .abtn.ghost{ background:transparent; border-color:var(--line); color:var(--ink); }
+
+  /* Progress */
+  .prog-now{ font-family:'Plus Jakarta Sans',sans-serif; font-size:20px; font-weight:800; letter-spacing:-0.01em; margin-bottom:14px; cursor:pointer; }
+  .prog-now .st{ color:var(--ochre); }
+  .ribbon{ display:flex; gap:5px; cursor:pointer; }
+  .seg{ flex:1; height:9px; border-radius:99px; background:#e7e4da; position:relative; overflow:hidden; }
+  .seg.done{ background:var(--green); }
+  .seg.now{ background:var(--ochre-tint); }
+  .seg.now::after{ content:''; position:absolute; left:0; top:0; bottom:0; width:55%; background:var(--ochre); border-radius:99px; }
+
+  /* Pulse */
+  .pulse{ display:flex; }
+  .pulse button{ flex:1; background:none; border:none; cursor:pointer; text-align:left; padding:0; transition:transform .08s ease; }
+  .pulse button:active{ transform:scale(0.97); }
+  .pulse button + button{ padding-left:18px; border-left:1px solid var(--line); margin-left:18px; }
+  .pulse .pv{ font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:22px; letter-spacing:-0.01em; }
+  .pulse .pl{ display:block; font-size:11.5px; color:var(--muted); margin-top:4px; }
+  .pulse .pl b{ color:var(--ochre); font-weight:700; }
+
+  /* Recent */
+  .ent{ display:flex; align-items:baseline; gap:14px; padding:11px 0; border-bottom:1px solid var(--line-soft); }
+  .ent:last-of-type{ border-bottom:none; }
+  .ent .ed{ font-size:11px; color:var(--faint); width:46px; flex-shrink:0; }
+  .ent .et{ flex:1; min-width:0; font-size:13.5px; line-height:1.3; }
+  .ent .et .tg{ color:var(--muted); font-size:11px; }
+  .ent .ea{ font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:13.5px; white-space:nowrap; }
+  .ent .ea.in{ color:var(--green); } .ent .ea.out{ color:var(--ochre); } .ent .ea.none{ color:var(--faint); }
+  .view-all{ margin-top:14px; background:none; border:none; color:var(--green); font-size:13px; font-weight:700; cursor:pointer; padding:0; }
+
+  /* FAB + sheet */
+  .fab-wrap{ position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:480px; padding:16px 22px 24px; background:linear-gradient(to top, var(--paper) 60%, transparent); pointer-events:none; z-index:8; }
+  .fab{ pointer-events:auto; width:100%; padding:15px; background:var(--green); color:#fff; border:none; border-radius:15px; font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:15.5px; cursor:pointer; box-shadow:0 6px 18px rgba(31,111,84,0.32); transition:transform .08s ease; }
+  .fab:active{ transform:scale(0.98); }
+  .sheet-overlay{ position:fixed; inset:0; background:rgba(24,22,16,0.42); display:none; align-items:flex-end; justify-content:center; z-index:20; }
+  .sheet-overlay.show{ display:flex; animation:fade .18s ease; }
+  @keyframes fade{ from{opacity:0;} to{opacity:1;} }
+  .rsheet{ width:100%; max-width:480px; background:#fdfcf9; border-radius:24px 24px 0 0; padding:20px 20px 26px; animation:up .26s cubic-bezier(.22,.7,.24,1); }
+  @keyframes up{ from{transform:translateY(30px);} to{transform:translateY(0);} }
+  .rsheet h2{ font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:18px; margin:0 0 16px; }
+  .record-grid{ display:grid; grid-template-columns:1fr 1fr; gap:11px; }
+  .record-btn{ display:flex; flex-direction:column; align-items:center; gap:9px; padding:20px 12px; border-radius:16px; border:1px solid var(--line); background:#fdfcf9; cursor:pointer; transition:transform .08s ease; }
+  .record-btn:active{ transform:scale(0.97); }
+  .record-btn .r-emo{ width:46px; height:46px; border-radius:13px; display:flex; align-items:center; justify-content:center; font-size:21px; }
+  .record-btn .r-lab{ font-size:13.5px; font-weight:700; }
+  .r-money{ background:var(--green-tint);} .r-expense{ background:var(--ochre-tint);} .r-attendance{ background:#e9edea;} .r-note{ background:var(--line-soft);}
+  .sheet-cancel{ width:100%; margin-top:14px; padding:13px; border-radius:13px; border:1px solid var(--line); background:#fdfcf9; color:var(--ink); font-weight:700; font-size:14.5px; cursor:pointer; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <button class="icon-btn" aria-label="Go back">←</button>
+    <div class="tt"><h1>Sharma Residence — G+2</h1><p id="subLine">—</p></div>
+    <button class="icon-btn" aria-label="More options">⋮</button>
+  </header>
+
+  <div class="scroll">
+    <!-- Hero -->
+    <section class="hero" aria-label="Project health">
+      <div class="over">Net in hand</div>
+      <div class="net disp tnum" id="netVal">₹0</div>
+      <div class="status" id="status"><span class="dot"></span><span id="statusText"></span></div>
+
+      <div class="split">
+        <div class="cell">
+          <div class="cl"><span class="cd in"></span><span class="clab">Received</span></div>
+          <div class="cval tnum" id="receivedVal">₹0</div>
+        </div>
+        <div class="cell">
+          <div class="cl"><span class="cd out"></span><span class="clab">Spent</span></div>
+          <div class="cval tnum" id="spentVal">₹0</div>
+        </div>
+      </div>
+
+      <div class="budget">
+        <div class="brow"><span class="bk">Budget used</span><span class="bv tnum" id="budgetText">—</span></div>
+        <div class="budget-track"><div class="budget-fill" id="budgetFill"></div></div>
+      </div>
+    </section>
+
+    <div class="rule"></div>
+
+    <!-- Today -->
+    <section class="sec">
+      <div class="sec-h"><span class="over">Today</span><span class="aside" id="todayCount"></span></div>
+      <div id="todayList"></div>
+    </section>
+
+    <div class="rule"></div>
+
+    <!-- Progress -->
+    <section class="sec">
+      <div class="sec-h"><span class="over">Progress</span><span class="aside" id="progCount"></span></div>
+      <div class="prog-now" id="progNow" role="button" aria-label="Open stages"></div>
+      <div class="ribbon" id="ribbon" role="button" aria-label="Open stages"></div>
+    </section>
+
+    <div class="rule"></div>
+
+    <!-- This week -->
+    <section class="sec">
+      <div class="sec-h"><span class="over">This week</span></div>
+      <div class="pulse" id="pulse"></div>
+    </section>
+
+    <div class="rule"></div>
+
+    <!-- Recent -->
+    <section class="sec">
+      <div class="sec-h"><span class="over">Recent</span></div>
+      <div id="entriesList"></div>
+      <button class="view-all" onclick="console.log('nav: activity/all')">View all activity →</button>
+    </section>
+  </div>
+
+  <div class="fab-wrap"><button class="fab" id="recordBtn">+ Record</button></div>
+</div>
+
+<div class="sheet-overlay" id="recordOverlay">
+  <div class="rsheet">
+    <h2>Record something</h2>
+    <div class="record-grid">
+      <button class="record-btn" data-target="money-in"><span class="r-emo r-money">💰</span><span class="r-lab">Money in</span></button>
+      <button class="record-btn" data-target="expense"><span class="r-emo r-expense">🧾</span><span class="r-lab">Expense</span></button>
+      <button class="record-btn" data-target="attendance"><span class="r-emo r-attendance">👷</span><span class="r-lab">Attendance</span></button>
+      <button class="record-btn" data-target="site-note"><span class="r-emo r-note">📝</span><span class="r-lab">Site note</span></button>
+    </div>
+    <button class="sheet-cancel" id="cancelRecord">Cancel</button>
+  </div>
+</div>
+
+<script>
+  const fmt = n => '₹' + Number(n).toLocaleString('en-IN');
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const relDay = d => d===0 ? 'Today' : d===1 ? '1 day' : d+' days';
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const state = {
+    project:{ name:'Sharma Residence — G+2', client:'Rakesh Sharma', budget:1040000 },
+    stages:[
+      {name:'Foundation',status:'complete'},{name:'Plinth',status:'in_progress'},{name:'Structure',status:'not_started'},
+      {name:'Brickwork',status:'not_started'},{name:'Plaster',status:'not_started'},{name:'Flooring',status:'not_started'},{name:'Finishing',status:'not_started'}
+    ],
+    payments:[{amount:200000,daysAgo:34},{amount:100000,daysAgo:18},{amount:70000,daysAgo:9},{amount:50000,daysAgo:0}],
+    expenses:[{amount:1300,daysAgo:1},{amount:16800,daysAgo:2},{amount:24200,daysAgo:5},{amount:85000,daysAgo:9},{amount:48000,daysAgo:15},{amount:120000,daysAgo:20},{amount:41500,daysAgo:25},{amount:28200,daysAgo:30}],
+    attendanceToday:9, documents:{total:8,expiring:1},
+    dues:{amount:100000,from:'Rakesh Sharma',unpaidDays:18},
+    payout:{amount:18500,pendingDays:3},
+    approval:{name:'Sanction plan',expiresInDays:12},
+    entries:[
+      {kind:'in',text:'Received from Rakesh Sharma',tag:'Money-in',amount:50000,daysAgo:0},
+      {kind:'none',text:'Plinth beam reinforcement done',tag:'Stage',daysAgo:1},
+      {kind:'out',text:'Cement 40 bags',tag:'Expense',amount:16800,daysAgo:2},
+      {kind:'none',text:'9 workers marked present',tag:'Attendance',daysAgo:2},
+      {kind:'none',text:'Sanction plan uploaded',tag:'Document',daysAgo:4}
+    ]
+  };
+
+  const received=()=>state.payments.reduce((a,p)=>a+p.amount,0);
+  const spent=()=>state.expenses.reduce((a,e)=>a+e.amount,0);
+  const net=()=>received()-spent();
+  const budgetPct=()=>Math.round((spent()/state.project.budget)*100);
+  const stagesDone=()=>state.stages.filter(s=>s.status==='complete').length;
+  const currentStage=()=>state.stages.find(s=>s.status==='in_progress')||state.stages.find(s=>s.status!=='complete');
+  const weekSpent=()=>state.expenses.filter(e=>e.daysAgo<=7).reduce((a,e)=>a+e.amount,0);
+
+  function countUp(el,target){
+    if(reduceMotion){ el.textContent=fmt(target); return; }
+    const start=performance.now(),dur=1000;
+    (function tick(now){ const t=Math.min(1,(now-start)/dur),e=1-Math.pow(1-t,3); el.textContent=fmt(Math.round(target*e)); if(t<1) requestAnimationFrame(tick); })(start);
+  }
+
+  function renderHero(){
+    document.getElementById('subLine').textContent = 'Client · ' + esc(state.project.client);
+    const r=received(),s=spent(),n=net(),pct=budgetPct();
+    const netEl=document.getElementById('netVal');
+    netEl.classList.toggle('pos',n>=0); netEl.classList.toggle('neg',n<0);
+    document.getElementById('receivedVal').textContent=fmt(r);
+    document.getElementById('spentVal').textContent=fmt(s);
+    document.getElementById('budgetText').textContent=`${fmt(s)} of ${fmt(state.project.budget)} · ${pct}%`;
+    const fill=document.getElementById('budgetFill');
+    fill.classList.toggle('warn',pct>=80&&pct<100); fill.classList.toggle('bad',pct>=100);
+    const setW=()=>fill.style.width=Math.min(100,pct)+'%';
+    reduceMotion?setW():requestAnimationFrame(()=>requestAnimationFrame(setW));
+    countUp(netEl,n);
+
+    const st=document.getElementById('status'), stt=document.getElementById('statusText');
+    let tone,msg;
+    if(n<0){tone='bad';msg=`Cash is tight — ${fmt(Math.abs(n))} more spent than collected`;}
+    else if(pct>=100){tone='bad';msg=`Over budget — ${pct}% used`;}
+    else if(pct>=80){tone='warn';msg=`Watch the budget — ${pct}% used`;}
+    else{tone='ok';msg=`Healthy <span class="thin">— ${pct}% into budget</span>`;}
+    st.className='status '+tone; stt.innerHTML=msg;
+  }
+
+  function renderToday(){
+    const items=[];
+    if(state.dues&&state.dues.amount>0) items.push({title:`Collect <span class="amt in">${fmt(state.dues.amount)}</span> from ${esc(state.dues.from)}`,desc:`Foundation billed · unpaid ${state.dues.unpaidDays} days`,btns:[{c:'primary',t:'📞 Call',a:'call'},{c:'ghost',t:'🔔 Remind',a:'remind'}]});
+    if(state.payout&&state.payout.amount>0) items.push({title:`Pay <span class="amt out">${fmt(state.payout.amount)}</span> labour payout`,desc:`Pending ${state.payout.pendingDays} days`,btns:[{c:'ghost',t:'Go to payout',a:'payout'}]});
+    if(state.approval&&state.approval.expiresInDays<=30) items.push({title:`Renew ${esc(state.approval.name)}`,desc:`Expires in ${state.approval.expiresInDays} days`,btns:[{c:'ghost',t:'Open document',a:'document'}]});
+    document.getElementById('todayCount').textContent = items.length?`${items.length} to do`:'';
+    const list=document.getElementById('todayList');
+    if(!items.length){ list.innerHTML=`<p style="font-size:14px;color:var(--muted);margin:0">🌿 Nothing needs you today.</p>`; return; }
+    list.innerHTML=items.map((it,i)=>`
+      <div class="act">
+        <span class="num">${String(i+1).padStart(2,'0')}</span>
+        <div class="body">
+          <div class="title">${it.title}</div>
+          <div class="desc">${esc(it.desc)}</div>
+          <div class="btns">${it.btns.map(b=>`<button class="abtn ${b.c}" data-do="${b.a}">${b.t}</button>`).join('')}</div>
+        </div>
+      </div>`).join('');
+  }
+
+  function renderProgress(){
+    const cs=currentStage(),done=stagesDone(),total=state.stages.length;
+    document.getElementById('progCount').textContent=`${done} of ${total} stages`;
+    const label={in_progress:'In progress',not_started:'Not started',complete:'Complete'}[cs.status];
+    document.getElementById('progNow').innerHTML=`${esc(cs.name)} <span class="st">— ${label}</span>`;
+    document.getElementById('ribbon').innerHTML=state.stages.map(s=>{const c=s.status==='complete'?'done':(s===cs?'now':'');return `<span class="seg ${c}" title="${esc(s.name)}"></span>`;}).join('');
+  }
+
+  function renderPulse(){
+    document.getElementById('pulse').innerHTML=`
+      <button data-target="attendance"><span class="pv tnum">${state.attendanceToday}</span><span class="pl">on site today</span></button>
+      <button data-target="expenses"><span class="pv tnum">${fmt(weekSpent())}</span><span class="pl">spent this week</span></button>
+      <button data-target="documents"><span class="pv tnum">${state.documents.total}</span><span class="pl">files · <b>${state.documents.expiring} expiring</b></span></button>`;
+  }
+
+  function renderEntries(){
+    document.getElementById('entriesList').innerHTML=state.entries.map(e=>{
+      let a; if(e.kind==='in') a=`<span class="ea in">+${fmt(e.amount)}</span>`; else if(e.kind==='out') a=`<span class="ea out">−${fmt(e.amount)}</span>`; else a=`<span class="ea none">·</span>`;
+      return `<div class="ent"><span class="ed">${relDay(e.daysAgo)}</span><span class="et">${esc(e.text)} <span class="tg">· ${esc(e.tag)}</span></span>${a}</div>`;
+    }).join('');
+  }
+
+  function render(){ renderHero(); renderToday(); renderProgress(); renderPulse(); renderEntries(); }
+
+  document.getElementById('todayList').addEventListener('click',e=>{
+    const b=e.target.closest('[data-do]'); if(!b) return;
+    const a=b.dataset.do;
+    if(a==='call') alert('Calling '+state.dues.from+' (mock)');
+    else if(a==='remind') alert('WhatsApp reminder sent to '+state.dues.from+' (mock)');
+    else console.log('nav:',a);
+  });
+  document.getElementById('progNow').addEventListener('click',()=>console.log('nav: stages'));
+  document.getElementById('ribbon').addEventListener('click',()=>console.log('nav: stages'));
+  document.getElementById('pulse').addEventListener('click',e=>{const t=e.target.closest('[data-target]'); if(t) console.log('nav:',t.dataset.target);});
+
+  const overlay=document.getElementById('recordOverlay');
+  document.getElementById('recordBtn').addEventListener('click',()=>overlay.classList.add('show'));
+  document.getElementById('cancelRecord').addEventListener('click',()=>overlay.classList.remove('show'));
+  overlay.addEventListener('click',e=>{ if(e.target===overlay) overlay.classList.remove('show'); });
+  document.querySelectorAll('.record-btn').forEach(b=>b.addEventListener('click',()=>{ console.log('nav: record/',b.dataset.target); overlay.classList.remove('show'); }));
+
+  render();
+</script>
+</body>
+</html>

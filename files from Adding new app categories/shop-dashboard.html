@@ -1,0 +1,175 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#16161a;--mut:#62636a;--ln:#e7e7e2;--ac:#1f6f54;--sf:#e8f3ee;--wm:#f4f2ec;
+--rd:#b3261e;--rs:#fdecea;--am:#b36b00;--as:#fff4e5;--bl:#2a5db0;--bs:#e8eef9;
+--d:'Plus Jakarta Sans',system-ui,sans-serif;--b:'Inter',system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fbfbf9;color:var(--ink);font-family:var(--b);padding-bottom:30px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:480px;margin:0 auto;padding:0 16px}
+h1,h2,h3{font-family:var(--d);letter-spacing:-.01em}
+.top{padding:16px 0 6px;display:flex;align-items:center;gap:11px}
+.top .greet{flex:1}.top .greet .h{font-size:19px;font-weight:800}.top .greet .s{font-size:12.5px;color:var(--mut);margin-top:1px}
+.top .av{width:40px;height:40px;border-radius:50%;background:var(--sf);color:var(--ac);display:flex;align-items:center;justify-content:center;font-family:var(--d);font-weight:800;font-size:15px}
+.demo{background:#fff;border:1px dashed #cdd3ce;border-radius:12px;padding:10px 12px;margin:10px 0}
+.demo .dh{font-size:11px;color:var(--mut);margin-bottom:8px;font-weight:600}
+.demo .drow{display:flex;gap:8px}
+.demo .drow button{flex:1;border:1px solid var(--ln);background:#fbfbf9;border-radius:9px;padding:8px;font-family:var(--d);font-weight:700;font-size:12px;color:var(--mut);cursor:pointer}
+.demo .drow button.on{background:var(--sf);border-color:var(--ac);color:var(--ac)}
+/* today hero */
+.today{background:linear-gradient(150deg,#1f6f54,#175843);color:#fff;border-radius:17px;padding:17px;margin:10px 0 12px;box-shadow:0 8px 24px rgba(31,111,84,.22)}
+.today .lbl{font-size:12px;opacity:.85;font-weight:600}
+.today .big{font-family:var(--d);font-weight:800;font-size:33px;letter-spacing:-.02em;margin:2px 0 1px}
+.today .meta{font-size:12.5px;opacity:.9}
+.today .split{display:flex;gap:8px;margin-top:14px}
+.today .split .x{flex:1;background:rgba(255,255,255,.13);border-radius:11px;padding:9px 10px}
+.today .split .v{font-family:var(--d);font-weight:800;font-size:15px}
+.today .split .l{font-size:10.5px;opacity:.85;margin-top:1px}
+/* primary action */
+.newbill{width:100%;background:var(--ac);color:#fff;border:none;border-radius:14px;padding:17px;font-family:var(--d);font-weight:800;font-size:16px;cursor:pointer;box-shadow:0 5px 16px rgba(31,111,84,.28);display:flex;align-items:center;justify-content:center;gap:9px;margin-bottom:14px}
+.newbill .plus{font-size:20px}
+/* attention */
+.att{background:#fff;border:1px solid var(--ln);border-radius:13px;overflow:hidden;margin-bottom:14px}
+.att .arow{display:flex;align-items:center;gap:12px;padding:13px 14px;border-bottom:1px solid var(--ln);cursor:pointer}
+.att .arow:last-child{border:none}
+.att .ai{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.ai.warn{background:var(--as)}.ai.due{background:var(--bs)}
+.att .am{flex:1}.att .at{font-family:var(--d);font-weight:700;font-size:13.5px}.att .as{font-size:11.5px;color:var(--mut);margin-top:1px}
+.att .av{font-family:var(--d);font-weight:800;font-size:14px}.att .chev{color:#c4c7c2;font-size:17px}
+.att .av.warn{color:var(--am)}.att .av.due{color:var(--bl)}
+/* tiles */
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:16px}
+.tile{background:#fff;border:1px solid var(--ln);border-radius:13px;padding:14px 8px;text-align:center;cursor:pointer}
+.tile .e{font-size:22px}.tile .tl{font-family:var(--d);font-weight:700;font-size:12px;margin-top:6px}
+/* section */
+.sh{font-family:var(--d);font-weight:700;font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.04em;margin:6px 2px 9px;display:flex;justify-content:space-between}
+.sh .lnk{color:var(--ac);cursor:pointer;text-transform:none;letter-spacing:0;font-size:12px}
+/* week trend */
+.trend{background:#fff;border:1px solid var(--ln);border-radius:13px;padding:15px;margin-bottom:16px}
+.trend .bars{display:flex;align-items:flex-end;gap:8px;height:90px;margin-bottom:8px}
+.trend .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;justify-content:flex-end}
+.trend .bar{width:100%;background:var(--sf);border-radius:5px 5px 3px 3px;position:relative}
+.trend .bar.today{background:var(--ac)}
+.trend .dl{font-size:10px;color:var(--mut)}
+.trend .foot{display:flex;justify-content:space-between;font-size:11.5px;color:var(--mut);border-top:1px solid var(--ln);padding-top:10px}
+.trend .foot b{font-family:var(--d);color:var(--ink)}
+/* recent bills */
+.bill{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--ln);border-radius:12px;padding:11px 13px;margin-bottom:8px}
+.bill .bn{font-family:var(--d);font-weight:700;font-size:13px;flex:1}
+.bill .bn small{display:block;font-size:11px;color:var(--mut);font-weight:400;margin-top:1px}
+.bill .ba{font-family:var(--d);font-weight:800;font-size:14px;text-align:right}
+.bill .ba small{display:block;font-size:10px;font-weight:600;margin-top:1px}
+.ba small.cash{color:var(--ac)}.ba small.credit{color:var(--am)}
+.bill .pr{width:34px;height:34px;border:1px solid var(--ln);background:#fbfbf9;border-radius:9px;font-size:15px;cursor:pointer;flex-shrink:0}
+/* print sheet */
+.mask{position:fixed;inset:0;background:rgba(0,0,0,.42);display:none;align-items:flex-end;justify-content:center;z-index:20}
+.mask.on{display:flex}
+.sheet{background:#fff;border-radius:18px 18px 0 0;width:100%;max-width:480px;padding:20px 18px 24px}
+.sheet h2{font-size:18px;margin-bottom:3px}.sheet .subt{font-size:12.5px;color:var(--mut);margin-bottom:14px}
+.pmrow{display:flex;align-items:center;gap:12px;background:#fbfbf9;border:1px solid var(--ln);border-radius:12px;padding:13px 14px;margin-bottom:9px;cursor:pointer}
+.pmrow .pi{width:38px;height:38px;border-radius:10px;background:var(--sf);display:flex;align-items:center;justify-content:center;font-size:18px}
+.pmrow .pt{font-family:var(--d);font-weight:700;font-size:14px}.pmrow .ps{font-size:11.5px;color:var(--mut);margin-top:1px}
+.pmrow .badge{margin-left:auto;font-size:9.5px;font-weight:700;background:var(--as);color:var(--am);padding:2px 7px;border-radius:5px}
+.btn.s{width:100%;background:#fff;border:1px solid var(--ln);color:var(--ink);border-radius:12px;padding:13px;font-family:var(--d);font-weight:700;font-size:14px;cursor:pointer;margin-top:6px}
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:11px 18px;border-radius:22px;font-size:13px;font-weight:600;opacity:0;transition:all .3s;z-index:40;pointer-events:none}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.hidden{display:none}
+</style></head><body>
+<div class="wrap">
+  <div class="top"><div class="greet"><div class="h">Namaste, Sharma ji 🙏</div><div class="s" id="dateline"></div></div><div class="av">SS</div></div>
+
+  <div class="demo"><div class="dh">Demo — capabilities from setup. Toggle to see the dashboard adapt:</div>
+    <div class="drow"><button id="capStock" class="on" onclick="toggleCap('stock')">Stock</button><button id="capUdhaar" class="on" onclick="toggleCap('udhaar')">Udhaar</button></div>
+  </div>
+
+  <!-- today -->
+  <div class="today">
+    <div class="lbl">Today's sales</div>
+    <div class="big">₹18,450</div>
+    <div class="meta">32 bills · avg ₹576</div>
+    <div class="split">
+      <div class="x"><div class="v">₹11,200</div><div class="l">Cash</div></div>
+      <div class="x"><div class="v">₹5,050</div><div class="l">UPI</div></div>
+      <div class="x" id="creditTile"><div class="v">₹2,200</div><div class="l">Udhaar</div></div>
+    </div>
+  </div>
+
+  <button class="newbill" onclick="toast('Opens Bill Generator')"><span class="plus">＋</span> New Bill</button>
+
+  <!-- attention -->
+  <div class="att" id="attStrip"></div>
+
+  <!-- tiles -->
+  <div class="tiles">
+    <div class="tile" onclick="toast('Opens Items')"><div class="e">📦</div><div class="tl">Items</div></div>
+    <div class="tile" onclick="toast('Opens Add Item')"><div class="e">➕</div><div class="tl">Add Item</div></div>
+    <div class="tile" onclick="toast('Opens Bills history')"><div class="e">🧾</div><div class="tl">Bills</div></div>
+  </div>
+
+  <!-- week trend -->
+  <div class="sh">This week</div>
+  <div class="trend" id="trend"></div>
+
+  <!-- recent bills -->
+  <div class="sh">Recent bills <span class="lnk" onclick="toast('Opens Bills history')">See all</span></div>
+  <div id="recent"></div>
+
+</div>
+
+<div class="mask" id="pm"><div class="sheet" id="pb"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+var cap={stock:true,udhaar:true};
+var week=[8200,12400,9600,15100,11800,18450,0]; // Mon..Sun, today=Sat idx5
+var days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+var recent=[
+ {no:'INV-1032',time:'2:14 PM',items:6,amt:1240,mode:'cash'},
+ {no:'INV-1031',time:'1:58 PM',items:2,amt:380,mode:'cash'},
+ {no:'INV-1030',time:'1:40 PM',items:11,amt:2200,mode:'credit'},
+ {no:'INV-1029',time:'1:12 PM',items:3,amt:640,mode:'upi'},
+];
+var $=function(i){return document.getElementById(i)};
+function money(n){return '\u20b9'+(+n||0).toLocaleString('en-IN')}
+function toggleCap(k){cap[k]=!cap[k];$('cap'+(k==='stock'?'Stock':'Udhaar')).classList.toggle('on',cap[k]);render();}
+
+function renderDate(){$('dateline').textContent=new Date('2026-06-27').toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long'});}
+function renderAtt(){
+ var rows='';
+ if(cap.stock)rows+='<div class="arow" onclick="toast(\'Opens low-stock list\')"><div class="ai warn">\u26a0\ufe0f</div><div class="am"><div class="at">3 items low or out</div><div class="as">PVC Pipe out \u00b7 Paint & 1 more running low</div></div><div class="av warn">Reorder</div><span class="chev">\u203a</span></div>';
+ if(cap.udhaar)rows+='<div class="arow" onclick="toast(\'Opens udhaar / dues\')"><div class="ai due">\ud83d\udcd2</div><div class="am"><div class="at">Udhaar to collect</div><div class="as">7 customers owe you</div></div><div class="av due">\u20b912,400</div><span class="chev">\u203a</span></div>';
+ $('attStrip').innerHTML=rows;
+ $('attStrip').classList.toggle('hidden',!rows);
+ $('creditTile').classList.toggle('hidden',!cap.udhaar);
+}
+function renderTrend(){
+ var max=Math.max.apply(null,week);
+ var total=week.reduce(function(a,b){return a+b},0);
+ var done=week.filter(function(v){return v>0}).length;
+ var bars=week.map(function(v,i){var h=max?Math.max(6,v/max*100):6;return '<div class="col"><div class="bar '+(i===5?'today':'')+'" style="height:'+h+'%"></div><div class="dl">'+days[i]+'</div></div>'}).join('');
+ $('trend').innerHTML='<div class="bars">'+bars+'</div><div class="foot"><span>Week so far <b>'+money(total)+'</b></span><span>Daily avg <b>'+money(Math.round(total/done))+'</b></span></div>';
+}
+function renderRecent(){
+ $('recent').innerHTML=recent.map(function(b){
+  var ml={cash:'Cash',upi:'UPI',credit:'Udhaar'}[b.mode];
+  var mc=b.mode==='credit'?'credit':'cash';
+  return '<div class="bill"><div class="bn">'+b.no+'<small>'+b.time+' \u00b7 '+b.items+' items</small></div><div class="ba">'+money(b.amt)+'<small class="'+mc+'">'+ml+'</small></div><button class="pr" onclick="openPrint(\''+b.no+'\')" title="Print / share">\ud83d\udda8\ufe0f</button></div>';
+ }).join('');
+}
+function openPrint(no){
+ $('pb').innerHTML='<h2>Print / share '+no+'</h2><div class="subt">Send this bill to the customer or your printer.</div>'
+  +'<div class="pmrow" onclick="pAct(\'Thermal printer\')"><div class="pi">\ud83d\udda8\ufe0f</div><div><div class="pt">Thermal printer</div><div class="ps">58/80mm Bluetooth receipt</div></div><span class="badge">Phase 2</span></div>'
+  +'<div class="pmrow" onclick="pAct(\'WhatsApp\')"><div class="pi">\ud83d\udcac</div><div><div class="pt">WhatsApp</div><div class="ps">Send PDF to customer</div></div></div>'
+  +'<div class="pmrow" onclick="pAct(\'A4 print\')"><div class="pi">\ud83d\udcc4</div><div><div class="pt">A4 / system print</div><div class="ps">Full tax invoice</div></div></div>'
+  +'<button class="btn s" onclick="closePrint()">Cancel</button>';
+ $('pm').classList.add('on');
+}
+function pAct(w){closePrint();toast(w+' (mock)');}
+function closePrint(){$('pm').classList.remove('on');}
+$('pm').addEventListener('click',function(e){if(e.target.id==='pm')closePrint()});
+
+function render(){renderAtt();renderTrend();renderRecent();}
+var tT;function toast(m){var t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(tT);tT=setTimeout(function(){t.classList.remove('on')},1600);}
+renderDate();render();
+</script></body></html>

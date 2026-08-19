@@ -1,0 +1,69 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>App Roadmap</title>
+<style>
+:root{--ink:#16161a;--mut:#62636a;--ln:#e7e7e2;--ac:#1f6f54;--sf:#e8f3ee;--wm:#f4f2ec;--am:#b36b00;--as:#fff4e5;--d:'Plus Jakarta Sans',system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fbfbf9;color:var(--ink);font-family:system-ui,sans-serif;padding:0 0 40px}
+.wrap{max-width:560px;margin:0 auto;padding:0 16px}
+h1{font-family:var(--d);font-size:20px;padding:18px 0 4px}
+.sub{color:var(--mut);font-size:13px;padding-bottom:14px;border-bottom:1px solid var(--ln)}
+.ph{margin-top:20px;border:1px solid var(--ln);border-radius:13px;overflow:hidden;background:#fff}
+.ph .h{background:var(--wm);padding:11px 14px;display:flex;gap:8px;align-items:center}
+.ph .h .n{width:24px;height:24px;border-radius:7px;background:var(--ac);color:#fff;font-family:var(--d);font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ph .h b{font-family:var(--d);font-size:14.5px;flex:1}
+.ph .h .w{font-size:11px;color:var(--mut);font-family:var(--d);font-weight:700}
+.ph ul{list-style:none;padding:10px 14px}
+.ph li{font-size:13px;padding:5px 0;line-height:1.4}
+.ph li b{font-weight:600}
+.note{background:var(--as);color:var(--am);font-size:11.5px;padding:8px 12px;margin:6px 14px 12px;border-radius:8px}
+</style></head><body><div class="wrap">
+<h1>Ledgr — Build Roadmap</h1>
+<div class="sub">From here → real MVP in an owner's hands</div>
+
+<div class="ph"><div class="h"><div class="n">1</div><b>Validate</b><span class="w">now · ~2-3 wks</span></div>
+<ul>
+<li>• Get <b>10-15 owner reviews</b> (survey + warm leads: sign-board, welder)</li>
+<li>• Send the <b>Replit web demo</b> link — watch them click through, note reactions</li>
+<li>• Confirm: would they pay ₹199/mo? What's missing?</li>
+</ul></div>
+
+<div class="ph"><div class="h"><div class="n">2</div><b>Setup</b><span class="w">few days</span></div>
+<ul>
+<li>• Install Node, VS Code, Expo Go on phone</li>
+<li>• Create GitHub, Supabase, Codex/Claude Code access</li>
+<li>• Lock final app name (checked for availability)</li>
+</ul></div>
+
+<div class="ph"><div class="h"><div class="n">3</div><b>Learn basics</b><span class="w">2-3 wks</span></div>
+<ul>
+<li>• JS fundamentals + React basics (Coursera Meta path)</li>
+<li>• Supabase: lighter — you know SQL already</li>
+<li>• Goal: understand enough to review Codex's code, not master it</li>
+</ul></div>
+
+<div class="ph"><div class="h"><div class="n">4</div><b>Build the wedge (M1-M6)</b><span class="w">5-9 wks</span></div>
+<ul>
+<li>• <b>M1</b> Expo app running on your phone</li>
+<li>• <b>M2</b> Customers (add/list, SQLite persisted)</li>
+<li>• <b>M3</b> New Bill (quote/invoice, items, GST toggle)</li>
+<li>• <b>M4</b> Bills list (convert, record payment, partial)</li>
+<li>• <b>M5</b> Bill preview + WhatsApp share + footer</li>
+<li>• <b>M6</b> Summary (totals, who-owes-me)</li>
+</ul>
+<div class="note">Workflow: Codex writes code → Claude Code wires/runs/commits → you test on phone each step.</div></div>
+
+<div class="ph"><div class="h"><div class="n">5</div><b>Real user test</b><span class="w">ongoing</span></div>
+<ul>
+<li>• Put it in one real owner's hands (sign-board/welder)</li>
+<li>• Fix what's broken, note what's missing</li>
+<li>• Don't add new business types yet — one wedge, proven</li>
+</ul></div>
+
+<div class="ph"><div class="h"><div class="n">6</div><b>Expand</b><span class="w">post-MVP</span></div>
+<ul>
+<li>• Supabase auth (OTP) + cloud sync as paid tier</li>
+<li>• Business Settings, GST detail, Mode 1 (PG/gym/etc.)</li>
+<li>• Approach CoFee's price-sensitive users</li>
+</ul></div>
+
+</div></body></html>

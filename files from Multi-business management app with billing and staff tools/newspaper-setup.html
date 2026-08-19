@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Newspaper Setup — Khaata</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1f6f54; --green-light: #e7f2ed;
+    --parchment: #fbfbf9; --ink: #1c1c1a; --muted: #6b6b64;
+    --border: #e6e4dd; --amber: #b5791f; --amber-light: #fbf1e2;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', sans-serif; background: var(--parchment); color: var(--ink);
+    max-width: 480px; margin: 0 auto; min-height: 100vh; padding-bottom: 40px;
+  }
+  header { padding: 24px 20px 12px; }
+  header h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 800; }
+  header p { font-size: 13px; color: var(--muted); margin-top: 3px; }
+
+  .section-label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin: 16px 20px 8px; }
+  .card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin: 0 20px 10px; }
+
+  .toggle-row { display: flex; justify-content: space-between; align-items: center; }
+  .toggle-row + .toggle-row { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+  .toggle-row .tr-title { font-weight: 700; font-size: 14px; }
+  .toggle-row .tr-sub { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+  .switch { width: 40px; height: 24px; background: var(--green); border-radius: 999px; position: relative; flex-shrink: 0; cursor: pointer; }
+  .switch.off { background: #d8d6cd; }
+  .switch::after { content: ''; position: absolute; top: 3px; right: 3px; width: 18px; height: 18px; background: #fff; border-radius: 50%; }
+  .switch.off::after { left: 3px; right: auto; }
+
+  .conditional-section { display: block; }
+  .conditional-section.hidden { display: none; }
+
+  .plan-card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin: 0 20px 10px; }
+  .plan-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .plan-name { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 15px; }
+  .plan-freq-badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--amber-light); color: var(--amber); margin-left: 6px; vertical-align: middle; }
+  .plan-freq-badge.daily { background: var(--green-light); color: var(--green); }
+  .plan-actions { display: flex; align-items: center; gap: 12px; }
+  .plan-edit { font-size: 13px; color: var(--green); cursor: pointer; }
+  .plan-delete { font-size: 12px; color: var(--muted); cursor: pointer; }
+  .cycle-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .cycle-chip { background: var(--green-light); color: var(--green); border-radius: 10px; padding: 8px 10px; font-size: 12px; font-weight: 600; display: flex; flex-direction: column; align-items: center; min-width: 90px; cursor: pointer; }
+  .cycle-chip .cyc-label { font-size: 10.5px; text-transform: uppercase; opacity: 0.75; }
+  .cycle-chip .cyc-amt { font-size: 13px; margin-top: 2px; }
+  .cycle-chip .cyc-perday { font-size: 9px; opacity: 0.6; margin-top: 1px; }
+  .addon-note { font-size: 11px; color: var(--amber); font-weight: 600; margin-top: 8px; }
+
+  .retail-item-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .retail-item-row:last-child { border-bottom: none; }
+  .ri-name { font-size: 14px; font-weight: 600; }
+  .ri-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .ri-price { font-weight: 700; color: var(--amber); font-size: 13.5px; cursor: pointer; }
+  .ri-delete { font-size: 12px; color: var(--muted); cursor: pointer; margin-left: 10px; }
+
+  .add-row-btn { border: 1.5px dashed var(--green); color: var(--green); background: none; border-radius: 10px; padding: 11px; width: 100%; font-weight: 700; font-size: 13px; cursor: pointer; margin-top: 4px; }
+
+  .inline-form { background: var(--green-light); border: 1px solid var(--green); border-radius: 12px; padding: 14px; margin: 0 20px 10px; }
+  .inline-form label { font-size: 11px; font-weight: 700; color: var(--muted); display: block; margin-bottom: 4px; text-transform: uppercase; }
+  .inline-form input, .inline-form select { width: 100%; padding: 9px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; font-family: 'Inter', sans-serif; margin-bottom: 8px; background: #fff; }
+  .inline-form .form-actions { display: flex; gap: 8px; }
+  .inline-form .form-actions button { flex: 1; padding: 10px; border-radius: 8px; border: none; font-weight: 700; font-size: 13px; cursor: pointer; }
+  .inline-form .btn-confirm { background: var(--green); color: #fff; }
+  .inline-form .btn-cancel { background: #fff; color: var(--muted); border: 1px solid var(--border) !important; }
+
+  .qty-unit-row { display: flex; gap: 8px; }
+  .qty-unit-row .field-half { flex: 1; }
+
+  .note { font-size: 12px; color: var(--muted); margin: 8px 20px 0; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Sharma News Agency — Setup</h1>
+  <p>Business modes & delivery products</p>
+</header>
+
+<div class="section-label">Business modes</div>
+<div class="card">
+  <div class="toggle-row">
+    <div><div class="tr-title">Home delivery</div><div class="tr-sub">Daily or specific-day delivery, billed monthly</div></div>
+    <div class="switch" id="deliveryToggle" onclick="toggleMode('delivery')"></div>
+  </div>
+  <div class="toggle-row">
+    <div><div class="tr-title">Walk-in retail</div><div class="tr-sub">Stall/counter sales, billed per visit</div></div>
+    <div class="switch" id="retailToggle" onclick="toggleMode('retail')"></div>
+  </div>
+  <div class="toggle-row">
+    <div><div class="tr-title">Ad leaflet insertion</div><div class="tr-sub">Local businesses pay to insert flyers into deliveries — B2B income</div></div>
+    <div class="switch off" id="adsToggle" onclick="toggleMode('ads')"></div>
+  </div>
+</div>
+<p class="note">At least one mode should be on. Many newspaper vendors run all three — a delivery round, a stall, and ad insertions as a side income.</p>
+
+<div class="conditional-section" id="deliverySection">
+  <div class="section-label">Delivery products</div>
+  <div id="deliveryPlansContainer"></div>
+  <div style="padding:0 20px">
+    <button class="add-row-btn" onclick="openAddDeliveryForm()">+ Add Product</button>
+  </div>
+  <p class="note">Set quantity, unit, frequency, and price per occurrence — the monthly estimate is calculated for you. Daily items use the actual days in the month; weekly items (e.g. "Every Sunday") use the actual count of that weekday in the month, since some months have 4 and some have 5.</p>
+</div>
+
+<div class="conditional-section" id="retailSection">
+  <div class="section-label">Retail items (rate list)</div>
+  <div class="plan-card" id="retailItemsCard"></div>
+  <div style="padding:0 20px">
+    <button class="add-row-btn" onclick="openAddRetailForm()">+ Add Retail Item</button>
+  </div>
+  <p class="note">Simple one-off pricing — no subscription, billed via the Retail bill layout per transaction.</p>
+</div>
+
+<div class="conditional-section hidden" id="adsSection">
+  <div class="section-label">Ad insertion rate card</div>
+  <div class="plan-card" id="adRatesCard"></div>
+  <div style="padding:0 20px">
+    <button class="add-row-btn" onclick="openAddAdRateForm()">+ Add Insertion Type</button>
+  </div>
+  <p class="note">Set a price per copy for each leaflet size — the total for any booking scales naturally with how many copies the advertiser wants (e.g. 1,000 copies vs 2,000 copies), rather than one flat fee regardless of quantity.</p>
+</div>
+
+<script>
+const WEEKDAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const REFERENCE_TODAY = new Date('2026-07-15');
+
+let deliveryPlans = [
+  { name: 'Indus News', qty: 1, unit: 'Copy', freq: 'daily', price: 5, addon: { day: 0, amount: 3 } },
+  { name: 'Economic Times', qty: 1, unit: 'Copy', freq: 'daily', price: 10, addon: null }
+];
+let retailItems = [
+  { name: 'Single Copy (walk-in)', price: 10 },
+  { name: 'Old Newspaper Bundle (1kg)', price: 15 }
+];
+let adRates = [
+  { name: 'Full-page insert', pricePerCopy: 0.80 },
+  { name: 'Half-page insert', pricePerCopy: 0.50 },
+  { name: 'Business-card size insert', pricePerCopy: 0.20 }
+];
+
+function daysInMonth(year, monthIndex) { return new Date(year, monthIndex + 1, 0).getDate(); }
+
+function countWeekdayInMonth(year, monthIndex, weekday) {
+  const dim = daysInMonth(year, monthIndex);
+  let count = 0;
+  for (let d = 1; d <= dim; d++) {
+    if (new Date(year, monthIndex, d).getDay() === weekday) count++;
+  }
+  return count;
+}
+
+function currentMonthLabel() { return REFERENCE_TODAY.toLocaleDateString('en-IN', { month: 'short' }); }
+
+function occurrencesThisMonth(freq) {
+  const y = REFERENCE_TODAY.getFullYear(), m = REFERENCE_TODAY.getMonth();
+  if (freq === 'daily') return daysInMonth(y, m);
+  const weekday = parseInt(freq.split('-')[1], 10);
+  return countWeekdayInMonth(y, m, weekday);
+}
+
+function monthlyEstimate(p) {
+  const occ = occurrencesThisMonth(p.freq);
+  let total = p.price * occ;
+  if (p.addon && p.freq === 'daily') {
+    const y = REFERENCE_TODAY.getFullYear(), m = REFERENCE_TODAY.getMonth();
+    total += p.addon.amount * countWeekdayInMonth(y, m, p.addon.day);
+  }
+  return Math.round(total);
+}
+
+function freqLabel(freq) {
+  if (freq === 'daily') return 'Daily';
+  const weekday = parseInt(freq.split('-')[1], 10);
+  return 'Every ' + WEEKDAYS[weekday];
+}
+
+function toggleMode(mode) {
+  const sw = document.getElementById(mode + 'Toggle');
+  sw.classList.toggle('off');
+  const isOn = !sw.classList.contains('off');
+  document.getElementById(mode + 'Section').classList.toggle('hidden', !isOn);
+}
+
+function closeAllForms() {
+  document.querySelectorAll('.inline-form').forEach(function(f) { f.remove(); });
+  editingIdx = null;
+}
+
+function renderDeliveryPlans() {
+  const container = document.getElementById('deliveryPlansContainer');
+  container.innerHTML = '';
+  deliveryPlans.forEach(function(p, idx) {
+    const card = document.createElement('div');
+    card.className = 'plan-card';
+    const isDaily = p.freq === 'daily';
+    card.innerHTML =
+      '<div class="plan-top"><div class="plan-name"></div><div class="plan-actions"><span class="plan-edit" onclick="openEditDeliveryForm(' + idx + ')">✎</span><span class="plan-delete" onclick="deleteDeliveryPlan(' + idx + ')">✕</span></div></div>' +
+      '<div class="cycle-row"><div class="cycle-chip">' +
+      '<span class="cyc-label">Per copy</span><span class="cyc-amt"></span><span class="cyc-perday"></span></div></div>' +
+      (p.addon ? '<div class="addon-note"></div>' : '');
+    const nameEl = card.querySelector('.plan-name');
+    nameEl.textContent = p.name + ' — ' + p.qty + ' ' + p.unit;
+    const badge = document.createElement('span');
+    badge.className = 'plan-freq-badge' + (isDaily ? ' daily' : '');
+    badge.textContent = freqLabel(p.freq);
+    nameEl.appendChild(badge);
+    card.querySelector('.cyc-amt').textContent = '₹' + p.price;
+    const occ = occurrencesThisMonth(p.freq);
+    card.querySelector('.cyc-perday').textContent = '≈ ₹' + monthlyEstimate(p) + '/mo (' + occ + '× in ' + currentMonthLabel() + ')';
+    if (p.addon) {
+      card.querySelector('.addon-note').textContent = '+ ₹' + p.addon.amount + ' extra on ' + WEEKDAYS[p.addon.day] + 's';
+    }
+    container.appendChild(card);
+  });
+}
+
+let editingIdx = null;
+
+function openAddDeliveryForm() { openDeliveryForm(null); }
+function openEditDeliveryForm(idx) { openDeliveryForm(idx); }
+
+function openDeliveryForm(idx) {
+  closeAllForms();
+  editingIdx = idx;
+  const editing = idx !== null;
+  const p = editing ? deliveryPlans[idx] : { name: '', qty: '', unit: 'Copy', freq: 'daily', price: '', addon: null };
+
+  const form = document.createElement('div');
+  form.className = 'inline-form';
+  form.id = 'addDeliveryForm';
+  form.innerHTML =
+    '<label>Product name</label><input type="text" id="newItemName" placeholder="e.g. Hindustan Times" value="' + p.name + '">' +
+    '<div class="qty-unit-row">' +
+    '<div class="field-half"><label>Quantity</label><input type="text" id="newItemQty" placeholder="e.g. 1" value="' + p.qty + '"></div>' +
+    '<div class="field-half"><label>Unit</label><select id="newItemUnit">' +
+    ['Copy', 'L', 'kg', 'g'].map(function(u) { return '<option value="' + u + '"' + (p.unit === u ? ' selected' : '') + '>' + (u === 'Copy' ? 'Copy' : (u === 'L' ? 'Litre (L)' : u)) + '</option>'; }).join('') +
+    '</select></div></div>' +
+    '<label>Frequency</label><select id="newItemFreq">' +
+    '<option value="daily"' + (p.freq === 'daily' ? ' selected' : '') + '>Daily</option>' +
+    WEEKDAYS.map(function(w, i) { return '<option value="weekly-' + i + '"' + (p.freq === 'weekly-' + i ? ' selected' : '') + '>Every ' + w + '</option>'; }).join('') +
+    '</select>' +
+    '<label>Price per occurrence (₹)</label><input type="text" id="newItemPrice" placeholder="e.g. 5" value="' + p.price + '">' +
+    '<label style="display:flex;align-items:center;gap:8px;text-transform:none;font-size:12.5px;cursor:pointer" onclick="toggleAddonFields()"><input type="checkbox" id="addonEnabled" style="width:auto;margin:0"' + (p.addon ? ' checked' : '') + '> Extra charge on a specific day (e.g. Sunday supplement)</label>' +
+    '<div id="addonFields" style="display:' + (p.addon ? 'block' : 'none') + '">' +
+    '<div class="qty-unit-row">' +
+    '<div class="field-half"><label>Day</label><select id="addonDay">' +
+    WEEKDAYS.map(function(w, i) { return '<option value="' + i + '"' + ((p.addon ? p.addon.day : 0) === i ? ' selected' : '') + '>' + w + '</option>'; }).join('') +
+    '</select></div>' +
+    '<div class="field-half"><label>Add-on (₹)</label><input type="text" id="addonAmount" placeholder="e.g. 3" value="' + (p.addon ? p.addon.amount : '') + '"></div>' +
+    '</div></div>' +
+    '<div class="form-actions"><button class="btn-confirm" onclick="confirmAddDelivery()">' + (editing ? '✓ Save Changes' : '+ Add Product') + '</button>' +
+    '<button class="btn-cancel" onclick="closeAllForms()">Cancel</button></div>';
+  document.getElementById('deliveryPlansContainer').parentNode.insertBefore(form, document.getElementById('deliveryPlansContainer').nextSibling.nextSibling);
+}
+
+function toggleAddonFields() {
+  const checked = document.getElementById('addonEnabled').checked;
+  document.getElementById('addonFields').style.display = checked ? 'block' : 'none';
+}
+
+function confirmAddDelivery() {
+  const name = document.getElementById('newItemName').value.trim();
+  const qty = parseFloat(document.getElementById('newItemQty').value) || 0;
+  const unit = document.getElementById('newItemUnit').value;
+  const freq = document.getElementById('newItemFreq').value;
+  const price = parseFloat(document.getElementById('newItemPrice').value) || 0;
+  if (!name) { alert('Enter a product name.'); return; }
+  if (!qty) { alert('Enter a quantity.'); return; }
+  let addon = null;
+  if (document.getElementById('addonEnabled').checked) {
+    const addonAmt = parseFloat(document.getElementById('addonAmount').value) || 0;
+    addon = { day: parseInt(document.getElementById('addonDay').value, 10), amount: addonAmt };
+  }
+  const updated = { name: name, qty: qty, unit: unit, freq: freq, price: price, addon: addon };
+  if (editingIdx !== null) {
+    deliveryPlans[editingIdx] = updated;
+  } else {
+    deliveryPlans.push(updated);
+  }
+  editingIdx = null;
+  closeAllForms();
+  renderDeliveryPlans();
+}
+
+function deleteDeliveryPlan(idx) {
+  const p = deliveryPlans[idx];
+  if (confirm('Remove "' + p.name + '"?')) {
+    deliveryPlans.splice(idx, 1);
+    renderDeliveryPlans();
+  }
+}
+
+function renderRetailItems() {
+  const container = document.getElementById('retailItemsCard');
+  container.innerHTML = '';
+  retailItems.forEach(function(it, idx) {
+    const row = document.createElement('div');
+    row.className = 'retail-item-row';
+    row.innerHTML =
+      '<div class="ri-name"></div>' +
+      '<div style="display:flex;align-items:center"><div class="ri-price" onclick="editRetailPrice(' + idx + ')"></div>' +
+      '<span class="ri-delete" onclick="deleteRetailItem(' + idx + ')">✕</span></div>';
+    row.querySelector('.ri-name').textContent = it.name;
+    row.querySelector('.ri-price').textContent = '₹' + it.price;
+    container.appendChild(row);
+  });
+}
+
+function openAddRetailForm() {
+  closeAllForms();
+  const form = document.createElement('div');
+  form.className = 'inline-form';
+  form.id = 'addRetailForm';
+  form.innerHTML =
+    '<label>Item name</label><input type="text" id="newRetailName" placeholder="e.g. Extra copy">' +
+    '<label>Price (₹)</label><input type="text" id="newRetailPrice" placeholder="e.g. 5">' +
+    '<div class="form-actions"><button class="btn-confirm" onclick="confirmAddRetail()">+ Add Item</button>' +
+    '<button class="btn-cancel" onclick="closeAllForms()">Cancel</button></div>';
+  document.getElementById('retailItemsCard').parentNode.insertBefore(form, document.getElementById('retailItemsCard').nextSibling.nextSibling);
+}
+
+function confirmAddRetail() {
+  const name = document.getElementById('newRetailName').value.trim();
+  const price = document.getElementById('newRetailPrice').value.trim();
+  if (!name) { alert('Enter an item name.'); return; }
+  retailItems.push({ name: name, price: parseFloat(price) || 0 });
+  closeAllForms();
+  renderRetailItems();
+}
+
+function editRetailPrice(idx) {
+  const it = retailItems[idx];
+  const price = prompt('Set price for "' + it.name + '" (₹):', it.price);
+  if (price === null || price.trim() === '') return;
+  it.price = parseFloat(price) || 0;
+  renderRetailItems();
+}
+
+function deleteRetailItem(idx) {
+  if (confirm('Remove "' + retailItems[idx].name + '"?')) {
+    retailItems.splice(idx, 1);
+    renderRetailItems();
+  }
+}
+
+function renderAdRates() {
+  const container = document.getElementById('adRatesCard');
+  container.innerHTML = '';
+  adRates.forEach(function(it, idx) {
+    const row = document.createElement('div');
+    row.className = 'retail-item-row';
+    row.innerHTML =
+      '<div><div class="ri-name"></div><div class="ri-sub"></div></div>' +
+      '<div style="display:flex;align-items:center"><div class="ri-price" onclick="editAdRatePrice(' + idx + ')"></div>' +
+      '<span class="ri-delete" onclick="deleteAdRate(' + idx + ')">✕</span></div>';
+    row.querySelector('.ri-name').textContent = it.name;
+    row.querySelector('.ri-sub').textContent = '≈ ₹' + Math.round(it.pricePerCopy * 1000) + ' per 1,000 copies';
+    row.querySelector('.ri-price').textContent = '₹' + it.pricePerCopy + '/copy';
+    container.appendChild(row);
+  });
+}
+
+function openAddAdRateForm() {
+  closeAllForms();
+  const form = document.createElement('div');
+  form.className = 'inline-form';
+  form.id = 'addAdRateForm';
+  form.innerHTML =
+    '<label>Insertion type</label><input type="text" id="newAdRateName" placeholder="e.g. Quarter-page insert">' +
+    '<label>Price per copy (₹)</label><input type="text" id="newAdRatePrice" placeholder="e.g. 0.35" oninput="updateAdRatePreview()">' +
+    '<div class="ri-sub" id="adRatePreview" style="margin-bottom:8px"></div>' +
+    '<div class="form-actions"><button class="btn-confirm" onclick="confirmAddAdRate()">+ Add Type</button>' +
+    '<button class="btn-cancel" onclick="closeAllForms()">Cancel</button></div>';
+  document.getElementById('adRatesCard').parentNode.insertBefore(form, document.getElementById('adRatesCard').nextSibling.nextSibling);
+}
+
+function updateAdRatePreview() {
+  const val = parseFloat(document.getElementById('newAdRatePrice').value) || 0;
+  document.getElementById('adRatePreview').textContent = val ? '≈ ₹' + Math.round(val * 1000) + ' per 1,000 copies' : '';
+}
+
+function confirmAddAdRate() {
+  const name = document.getElementById('newAdRateName').value.trim();
+  const price = document.getElementById('newAdRatePrice').value.trim();
+  if (!name) { alert('Enter an insertion type.'); return; }
+  adRates.push({ name: name, pricePerCopy: parseFloat(price) || 0 });
+  closeAllForms();
+  renderAdRates();
+}
+
+function editAdRatePrice(idx) {
+  const it = adRates[idx];
+  const price = prompt('Set price per copy for "' + it.name + '" (₹):', it.pricePerCopy);
+  if (price === null || price.trim() === '') return;
+  it.pricePerCopy = parseFloat(price) || 0;
+  renderAdRates();
+}
+
+function deleteAdRate(idx) {
+  if (confirm('Remove "' + adRates[idx].name + '"?')) {
+    adRates.splice(idx, 1);
+    renderAdRates();
+  }
+}
+
+renderDeliveryPlans();
+renderRetailItems();
+renderAdRates();
+</script>
+</body>
+</html>

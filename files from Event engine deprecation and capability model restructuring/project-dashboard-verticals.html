@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Dashboard — Khaata</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f4f3ee; --ink:#252118; --muted:#8a857a; --faint:#b4afa4;
+    --line:#e4e1d6; --line-soft:#edeae1;
+    --green:#1f6f54; --green-tint:#e9f2ed;
+    --ochre:#a9711f; --ochre-tint:#f6ecd9;
+    --terra:#a8503a; --terra-tint:#f4e4de;
+    --gray:#c8c4b9;
+  }
+  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; animation:none !important; } }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; }
+  body{ background:#e4e1d6; font-family:'Inter',sans-serif; color:var(--ink); display:flex; justify-content:center; min-height:100vh; -webkit-font-smoothing:antialiased; }
+  .app{ width:100%; max-width:480px; min-height:100vh; position:relative; background:var(--paper);
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+    display:flex; flex-direction:column; }
+  button{ font-family:inherit; }
+  button:focus-visible{ outline:2px solid var(--green); outline-offset:2px; border-radius:8px; }
+  .tnum{ font-variant-numeric:tabular-nums; }
+  .over{ font-size:11px; text-transform:uppercase; letter-spacing:0.11em; color:var(--muted); font-weight:700; }
+
+  .topbar{ display:flex; align-items:center; gap:12px; padding:18px 22px 10px; }
+  .icon-btn{ background:none; border:none; cursor:pointer; color:var(--ink); padding:2px; font-size:20px; line-height:1; }
+  .tt{ flex:1; min-width:0; }
+  .tt h1{ font-family:'Plus Jakarta Sans',sans-serif; font-size:17px; font-weight:800; margin:0; letter-spacing:-0.01em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .tt p{ margin:2px 0 0; font-size:12.5px; color:var(--muted); }
+
+  /* business switcher */
+  .switcher{ display:flex; gap:5px; margin:2px 22px 6px; background:#eae7dd; padding:4px; border-radius:12px; position:sticky; top:0; z-index:6; }
+  .sw-btn{ flex:1; padding:9px 6px; font-size:12.5px; font-weight:700; border:none; background:transparent; border-radius:9px; cursor:pointer; color:var(--muted); transition:transform .08s ease; }
+  .sw-btn:active{ transform:scale(0.97); }
+  .sw-btn.active{ background:var(--paper); color:var(--green); box-shadow:0 1px 2px rgba(45,42,34,0.12); }
+
+  .scroll{ flex:1; padding:0 22px 120px; }
+
+  /* Hero */
+  .hero{ padding:14px 0 24px; }
+  .hero .over{ margin-bottom:10px; }
+  .hero .big{ font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:48px; line-height:0.95; letter-spacing:-0.03em; }
+  .status{ display:inline-flex; align-items:center; gap:8px; margin-top:15px; font-size:14px; font-weight:600; }
+  .status .dot{ width:9px; height:9px; border-radius:50%; }
+  .status.ok{ color:var(--green);} .status.ok .dot{ background:var(--green);}
+  .status.warn{ color:var(--ochre);} .status.warn .dot{ background:var(--ochre);}
+  .status.bad{ color:var(--terra);} .status.bad .dot{ background:var(--terra);}
+
+  .split{ display:flex; margin-top:22px; }
+  .split .cell{ flex:1; } .split .cell + .cell{ padding-left:22px; border-left:1px solid var(--line); margin-left:22px; }
+  .split .clab{ font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); font-weight:600; }
+  .split .cval{ font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:19px; margin-top:6px; letter-spacing:-0.01em; }
+  .split .cval.ochre{ color:var(--ochre); }
+
+  .meter{ margin-top:22px; }
+  .meter .mrow{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:9px; }
+  .meter .mk{ font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); font-weight:600; }
+  .meter .mv{ font-size:13px; font-weight:600; }
+  .meter-track{ height:7px; background:#e7e4da; border-radius:99px; overflow:hidden; }
+  .meter-fill{ height:100%; width:0; border-radius:99px; transition:width 1.05s cubic-bezier(.22,.7,.24,1) .25s; }
+  .meter-fill.ok{ background:var(--green);} .meter-fill.warn{ background:var(--ochre);} .meter-fill.bad{ background:var(--terra);}
+
+  .rule{ height:1px; background:var(--line); margin:8px 0; }
+  .sec{ padding:22px 0; }
+  .sec-h{ display:flex; align-items:baseline; margin-bottom:16px; }
+  .sec-h .aside{ margin-left:auto; font-size:12px; color:var(--muted); font-weight:600; }
+
+  /* Today */
+  .act{ display:flex; gap:14px; padding:2px 0 18px; } .act:last-child{ padding-bottom:0; }
+  .act .num{ font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:13px; color:var(--faint); width:16px; flex-shrink:0; padding-top:2px; }
+  .act .body{ flex:1; min-width:0; }
+  .act .title{ font-family:'Plus Jakarta Sans',sans-serif; font-size:16px; font-weight:700; letter-spacing:-0.01em; line-height:1.25; }
+  .act .title b.in{ color:var(--green);} .act .title b.out{ color:var(--ochre);}
+  .act .desc{ font-size:12.5px; color:var(--muted); margin-top:3px; }
+  .act .btns{ display:flex; gap:9px; margin-top:12px; }
+  .abtn{ display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border-radius:99px; font-size:12.5px; font-weight:700; cursor:pointer; border:1px solid transparent; transition:transform .08s ease; }
+  .abtn:active{ transform:scale(0.96); }
+  .abtn.primary{ background:var(--green); color:#fff; }
+  .abtn.ghost{ background:transparent; border-color:var(--line); color:var(--ink); }
+
+  /* Status band */
+  .band-bar{ display:flex; height:14px; border-radius:99px; overflow:hidden; gap:2px; }
+  .band-bar .sb{ height:100%; transition:flex-grow .5s ease; }
+  .sb.g{ background:var(--green);} .sb.o{ background:var(--ochre);} .sb.t{ background:var(--terra);} .sb.x{ background:var(--gray);}
+  .legend{ display:flex; gap:18px; margin-top:14px; flex-wrap:wrap; }
+  .legend .lg{ display:flex; align-items:center; gap:7px; }
+  .legend .ld{ width:9px; height:9px; border-radius:50%; }
+  .ld.g{ background:var(--green);} .ld.o{ background:var(--ochre);} .ld.t{ background:var(--terra);} .ld.x{ background:var(--gray);}
+  .legend .ln{ font-size:13px; } .legend .ln b{ font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; }
+  .legend .lc{ color:var(--muted); }
+
+  /* Pulse */
+  .pulse{ display:flex; }
+  .pulse button{ flex:1; background:none; border:none; cursor:pointer; text-align:left; padding:0; transition:transform .08s ease; }
+  .pulse button:active{ transform:scale(0.97); }
+  .pulse button + button{ padding-left:16px; border-left:1px solid var(--line); margin-left:16px; }
+  .pulse .pv{ font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:20px; letter-spacing:-0.01em; }
+  .pulse .pl{ display:block; font-size:11px; color:var(--muted); margin-top:4px; line-height:1.3; }
+
+  /* Recent */
+  .ent{ display:flex; align-items:baseline; gap:14px; padding:11px 0; border-bottom:1px solid var(--line-soft); } .ent:last-of-type{ border-bottom:none; }
+  .ent .ed{ font-size:11px; color:var(--faint); width:46px; flex-shrink:0; }
+  .ent .et{ flex:1; min-width:0; font-size:13.5px; line-height:1.3; } .ent .et .tg{ color:var(--muted); font-size:11px; }
+  .ent .ea{ font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:13.5px; white-space:nowrap; }
+  .ent .ea.in{ color:var(--green);} .ent .ea.out{ color:var(--ochre);} .ent .ea.none{ color:var(--faint);}
+  .view-all{ margin-top:14px; background:none; border:none; color:var(--green); font-size:13px; font-weight:700; cursor:pointer; padding:0; }
+
+  /* FAB + sheet */
+  .fab-wrap{ position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:480px; padding:16px 22px 24px; background:linear-gradient(to top, var(--paper) 60%, transparent); pointer-events:none; z-index:8; }
+  .fab{ pointer-events:auto; width:100%; padding:15px; background:var(--green); color:#fff; border:none; border-radius:15px; font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:15.5px; cursor:pointer; box-shadow:0 6px 18px rgba(31,111,84,0.32); transition:transform .08s ease; }
+  .fab:active{ transform:scale(0.98); }
+  .sheet-overlay{ position:fixed; inset:0; background:rgba(24,22,16,0.42); display:none; align-items:flex-end; justify-content:center; z-index:20; }
+  .sheet-overlay.show{ display:flex; animation:fade .18s ease; }
+  @keyframes fade{ from{opacity:0;} to{opacity:1;} }
+  .rsheet{ width:100%; max-width:480px; background:#fdfcf9; border-radius:24px 24px 0 0; padding:20px 20px 26px; animation:up .26s cubic-bezier(.22,.7,.24,1); }
+  @keyframes up{ from{transform:translateY(30px);} to{transform:translateY(0);} }
+  .rsheet h2{ font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:18px; margin:0 0 16px; }
+  .record-grid{ display:grid; grid-template-columns:1fr 1fr; gap:11px; }
+  .record-btn{ display:flex; flex-direction:column; align-items:center; gap:9px; padding:20px 12px; border-radius:16px; border:1px solid var(--line); background:#fdfcf9; cursor:pointer; transition:transform .08s ease; }
+  .record-btn:active{ transform:scale(0.97); }
+  .record-btn .r-emo{ width:46px; height:46px; border-radius:13px; display:flex; align-items:center; justify-content:center; font-size:21px; background:var(--green-tint); }
+  .record-btn .r-lab{ font-size:13.5px; font-weight:700; }
+  .sheet-cancel{ width:100%; margin-top:14px; padding:13px; border-radius:13px; border:1px solid var(--line); background:#fdfcf9; color:var(--ink); font-weight:700; font-size:14.5px; cursor:pointer; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <button class="icon-btn" aria-label="Go back">←</button>
+    <div class="tt"><h1 id="bizName">—</h1><p id="bizSub">—</p></div>
+    <button class="icon-btn" aria-label="More options">⋮</button>
+  </header>
+
+  <div class="switcher" id="switcher">
+    <button class="sw-btn" data-v="gym">Gym</button>
+    <button class="sw-btn" data-v="tiffin">Tiffin</button>
+    <button class="sw-btn" data-v="rental">Rental</button>
+  </div>
+
+  <div class="scroll">
+    <section class="hero">
+      <div class="over" id="heroOver">—</div>
+      <div class="big tnum" id="bigVal">₹0</div>
+      <div class="status" id="status"><span class="dot"></span><span id="statusText"></span></div>
+      <div class="split">
+        <div class="cell"><div class="clab" id="slLab">—</div><div class="cval tnum" id="slVal">—</div></div>
+        <div class="cell"><div class="clab" id="srLab">—</div><div class="cval ochre tnum" id="srVal">—</div></div>
+      </div>
+      <div class="meter">
+        <div class="mrow"><span class="mk" id="meterK">—</span><span class="mv tnum" id="meterV">—</span></div>
+        <div class="meter-track"><div class="meter-fill" id="meterFill"></div></div>
+      </div>
+    </section>
+
+    <div class="rule"></div>
+    <section class="sec">
+      <div class="sec-h"><span class="over">Today</span><span class="aside" id="todayCount"></span></div>
+      <div id="todayList"></div>
+    </section>
+
+    <div class="rule"></div>
+    <section class="sec">
+      <div class="sec-h"><span class="over" id="bandTitle">—</span><span class="aside" id="bandAside"></span></div>
+      <div class="band-bar" id="bandBar"></div>
+      <div class="legend" id="bandLegend"></div>
+    </section>
+
+    <div class="rule"></div>
+    <section class="sec">
+      <div class="sec-h"><span class="over" id="pulseTitle">This week</span></div>
+      <div class="pulse" id="pulse"></div>
+    </section>
+
+    <div class="rule"></div>
+    <section class="sec">
+      <div class="sec-h"><span class="over">Recent</span></div>
+      <div id="entriesList"></div>
+      <button class="view-all" onclick="console.log('nav: activity/all')">View all activity →</button>
+    </section>
+  </div>
+
+  <div class="fab-wrap"><button class="fab" id="recordBtn">+ Record</button></div>
+</div>
+
+<div class="sheet-overlay" id="recordOverlay">
+  <div class="rsheet">
+    <h2>Record something</h2>
+    <div class="record-grid" id="recordGrid"></div>
+    <button class="sheet-cancel" id="cancelRecord">Cancel</button>
+  </div>
+</div>
+
+<script>
+  const fmt = n => '₹' + Number(n).toLocaleString('en-IN');
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const relDay = d => d===0 ? 'Today' : d===1 ? '1 day' : d+' days';
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const CALL={c:'primary',t:'📞 Call',a:'call'}, REMIND={c:'ghost',t:'🔔 Remind',a:'remind'}, REMINDALL={c:'ghost',t:'🔔 Remind all',a:'remind'};
+
+  const V = {
+    gym:{
+      name:'Iron Temple Gym', sub:'Membership · Andheri',
+      heroOver:'Collected this month', collected:184000, expected:245000,
+      slLab:'Active members', slVal:'61',
+      srLab:'Outstanding',
+      statusText:'17 members still to pay',
+      today:[
+        {title:`Collect <b class="in">${fmt(61000)}</b> from 17 members`, desc:'Dues pending this cycle', btns:[CALL,REMINDALL]},
+        {title:`5 memberships expire this week`, desc:'Renew before they lapse', btns:[REMINDALL]},
+        {title:`Collect <b class="out">${fmt(4500)}</b> PT package`, desc:'Rohit — unpaid 6 days', btns:[CALL]}
+      ],
+      bandTitle:'Members', bandAside:'86 total',
+      segments:[{cls:'g',label:'Active',count:61},{cls:'o',label:'Due',count:17},{cls:'t',label:'Expired',count:8}],
+      pulseTitle:'This week',
+      pulse:[{v:'42',l:'check-ins today'},{v:'6',l:'joined this month'},{v:'5',l:'classes today'}],
+      entries:[
+        {kind:'in',text:'Priya S — membership renewed',tag:'Money-in',amount:2000,daysAgo:0},
+        {kind:'none',text:'Rahul K joined — Quarterly',tag:'Member',daysAgo:1},
+        {kind:'in',text:'PT fee — Neha',tag:'Money-in',amount:1500,daysAgo:1},
+        {kind:'none',text:'Yoga 7am batch marked',tag:'Class',daysAgo:2},
+        {kind:'out',text:'Treadmill belt repair',tag:'Expense',amount:3200,daysAgo:3}
+      ],
+      record:[['🧑','Add member','member'],['💰','Collect fee','collect'],['✅','Check-in','checkin'],['🧾','Expense','expense']]
+    },
+    tiffin:{
+      name:'Annapurna Tiffins', sub:'Meal subscription · Pune',
+      heroOver:'Collected this month', collected:118000, expected:132000,
+      slLab:'Active plans', slVal:'86',
+      srLab:'Outstanding',
+      statusText:'On track — 89% collected',
+      today:[
+        {title:`Collect <b class="in">${fmt(14000)}</b> from 6 customers`, desc:'Plan dues pending', btns:[CALL,REMINDALL]},
+        {title:`8 plans expire in 2 days`, desc:'Renew to avoid a gap', btns:[REMINDALL]},
+        {title:`3 pause requests to confirm`, desc:'Sanjay, Meera, Iqbal', btns:[{c:'ghost',t:'Review',a:'pauses'}]}
+      ],
+      bandTitle:"Today's deliveries", bandAside:'92 meals',
+      segments:[{cls:'g',label:'Delivered',count:84},{cls:'o',label:'Pending',count:6},{cls:'x',label:'Paused',count:2}],
+      pulseTitle:'This week',
+      pulse:[{v:'92',l:'meals out today'},{v:'4',l:'new this week'},{v:'2,140',l:'meals this month'}],
+      entries:[
+        {kind:'in',text:'Meena — monthly plan',tag:'Money-in',amount:3000,daysAgo:0},
+        {kind:'none',text:'Lunch route 2 delivered (44)',tag:'Delivery',daysAgo:0},
+        {kind:'none',text:'Sanjay paused 3 days',tag:'Plan',daysAgo:1},
+        {kind:'in',text:'Plan renewed — Kiran',tag:'Money-in',amount:2400,daysAgo:2},
+        {kind:'out',text:'Kitchen groceries',tag:'Expense',amount:4200,daysAgo:2}
+      ],
+      record:[['🧑','Add customer','customer'],['💰','Collect','collect'],['🍱','Mark delivery','delivery'],['🧾','Expense','expense']]
+    },
+    rental:{
+      name:'Green Meadows', sub:'Flat rentals · Nashik',
+      heroOver:'Rent collected this month', collected:170000, expected:280000,
+      slLab:'Occupied units', slVal:'10 / 12',
+      srLab:'Rent outstanding',
+      statusText:'Collections behind — 4 tenants unpaid',
+      today:[
+        {title:`Collect <b class="in">${fmt(70000)}</b> rent from 4 tenants`, desc:'Flats 2B, 3A, 4C, 6A', btns:[CALL,REMINDALL]},
+        {title:`Flat 3B lease expires in 20 days`, desc:'Renew or plan a re-let', btns:[{c:'ghost',t:'Open lease',a:'lease'}]},
+        {title:`2 units vacant`, desc:'List to reduce idle months', btns:[{c:'ghost',t:'List units',a:'list'}]}
+      ],
+      bandTitle:'Occupancy', bandAside:'12 units',
+      segments:[{cls:'g',label:'Paid',count:6},{cls:'o',label:'Due',count:4},{cls:'t',label:'Vacant',count:2}],
+      pulseTitle:'This month',
+      pulse:[{v:'12',l:'total units'},{v:'2',l:'vacant now'},{v:'₹4.8L',l:'deposits held'}],
+      entries:[
+        {kind:'in',text:'Flat 2A rent',tag:'Money-in',amount:18000,daysAgo:0},
+        {kind:'none',text:'Flat 5C lease renewed',tag:'Lease',daysAgo:1},
+        {kind:'out',text:'Plumbing repair — 3B',tag:'Expense',amount:2200,daysAgo:2},
+        {kind:'in',text:'Flat 4A rent',tag:'Money-in',amount:18000,daysAgo:2},
+        {kind:'none',text:'New tenant — Flat 1B',tag:'Tenant',daysAgo:4}
+      ],
+      record:[['🧑','Add tenant','tenant'],['💰','Collect rent','collect'],['🔧','Log maintenance','maint'],['🧾','Expense','expense']]
+    }
+  };
+
+  let current = 'gym';
+  const cfg = () => V[current];
+  const toneFor = pct => pct>=85 ? 'ok' : pct>=65 ? 'warn' : 'bad';
+
+  function countUp(el,target){
+    if(reduceMotion){ el.textContent=fmt(target); return; }
+    const start=performance.now(),dur=900;
+    (function tick(now){ const t=Math.min(1,(now-start)/dur),e=1-Math.pow(1-t,3); el.textContent=fmt(Math.round(target*e)); if(t<1) requestAnimationFrame(tick); })(start);
+  }
+
+  function render(){
+    const c = cfg();
+    const pct = Math.round(c.collected/c.expected*100);
+    const outstanding = c.expected - c.collected;
+    const tone = toneFor(pct);
+
+    document.getElementById('bizName').textContent = c.name;
+    document.getElementById('bizSub').textContent = c.sub;
+    document.querySelectorAll('.sw-btn').forEach(b=>b.classList.toggle('active', b.dataset.v===current));
+
+    document.getElementById('heroOver').textContent = c.heroOver;
+    countUp(document.getElementById('bigVal'), c.collected);
+    const st=document.getElementById('status'); st.className='status '+tone;
+    document.getElementById('statusText').textContent = c.statusText;
+
+    document.getElementById('slLab').textContent = c.slLab;
+    document.getElementById('slVal').textContent = c.slVal;
+    document.getElementById('srLab').textContent = c.srLab;
+    document.getElementById('srVal').textContent = fmt(outstanding);
+
+    document.getElementById('meterK').textContent = 'Collected of expected';
+    document.getElementById('meterV').textContent = `${fmt(c.collected)} of ${fmt(c.expected)} · ${pct}%`;
+    const fill=document.getElementById('meterFill'); fill.className='meter-fill '+tone;
+    const setW=()=>fill.style.width=Math.min(100,pct)+'%';
+    reduceMotion?setW():requestAnimationFrame(()=>requestAnimationFrame(setW));
+
+    // Today
+    document.getElementById('todayCount').textContent = c.today.length?`${c.today.length} to do`:'';
+    document.getElementById('todayList').innerHTML = c.today.map((it,i)=>`
+      <div class="act">
+        <span class="num">${String(i+1).padStart(2,'0')}</span>
+        <div class="body">
+          <div class="title">${it.title}</div>
+          <div class="desc">${esc(it.desc)}</div>
+          <div class="btns">${it.btns.map(b=>`<button class="abtn ${b.c}" data-do="${b.a}">${b.t}</button>`).join('')}</div>
+        </div>
+      </div>`).join('');
+
+    // Status band
+    document.getElementById('bandTitle').textContent = c.bandTitle;
+    document.getElementById('bandAside').textContent = c.bandAside;
+    const total = c.segments.reduce((a,s)=>a+s.count,0);
+    document.getElementById('bandBar').innerHTML = c.segments.map(s=>`<span class="sb ${s.cls}" style="flex-grow:${s.count}" title="${esc(s.label)}"></span>`).join('');
+    document.getElementById('bandLegend').innerHTML = c.segments.map(s=>`<span class="lg"><span class="ld ${s.cls}"></span><span class="ln"><b>${s.count}</b> <span class="lc">${esc(s.label)}</span></span></span>`).join('');
+
+    // Pulse
+    document.getElementById('pulseTitle').textContent = c.pulseTitle;
+    document.getElementById('pulse').innerHTML = c.pulse.map(p=>`<button data-target="${esc(p.l)}"><span class="pv tnum">${p.v}</span><span class="pl">${esc(p.l)}</span></button>`).join('');
+
+    // Recent
+    document.getElementById('entriesList').innerHTML = c.entries.map(e=>{
+      let a; if(e.kind==='in') a=`<span class="ea in">+${fmt(e.amount)}</span>`; else if(e.kind==='out') a=`<span class="ea out">−${fmt(e.amount)}</span>`; else a=`<span class="ea none">·</span>`;
+      return `<div class="ent"><span class="ed">${relDay(e.daysAgo)}</span><span class="et">${esc(e.text)} <span class="tg">· ${esc(e.tag)}</span></span>${a}</div>`;
+    }).join('');
+
+    // Record sheet
+    document.getElementById('recordGrid').innerHTML = c.record.map(r=>`<button class="record-btn" data-target="${esc(r[2])}"><span class="r-emo">${r[0]}</span><span class="r-lab">${esc(r[1])}</span></button>`).join('');
+  }
+
+  // switcher
+  document.getElementById('switcher').addEventListener('click', e=>{
+    const b=e.target.closest('[data-v]'); if(!b) return; current=b.dataset.v; render();
+  });
+  // today actions
+  document.getElementById('todayList').addEventListener('click', e=>{
+    const b=e.target.closest('[data-do]'); if(!b) return;
+    if(b.dataset.do==='call') alert('Calling (mock)');
+    else if(b.dataset.do==='remind') alert('Reminders sent (mock)');
+    else console.log('nav:',b.dataset.do);
+  });
+  document.getElementById('pulse').addEventListener('click', e=>{ const t=e.target.closest('[data-target]'); if(t) console.log('nav:',t.dataset.target); });
+
+  const overlay=document.getElementById('recordOverlay');
+  document.getElementById('recordBtn').addEventListener('click',()=>overlay.classList.add('show'));
+  document.getElementById('cancelRecord').addEventListener('click',()=>overlay.classList.remove('show'));
+  overlay.addEventListener('click',e=>{ if(e.target===overlay) overlay.classList.remove('show'); });
+  document.getElementById('recordGrid').addEventListener('click',e=>{ const b=e.target.closest('[data-target]'); if(!b) return; console.log('nav: record/',b.dataset.target); overlay.classList.remove('show'); });
+
+  render();
+</script>
+</body>
+</html>

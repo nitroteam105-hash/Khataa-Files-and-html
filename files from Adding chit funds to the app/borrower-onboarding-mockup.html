@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>New borrower — Ledgr</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f4f3ee; --card:#fbfaf5; --ink:#2b2a26; --muted:#7a766c; --faint:#a19c91;
+    --green:#1f6f54; --green-soft:#e6efea; --ochre:#b8862d; --ochre-soft:#f6eeda;
+    --terra:#b0503a; --terra-soft:#f8e8e3;
+    --line:rgba(43,42,38,.09); --line-strong:rgba(43,42,38,.16);
+    --shadow:0 1px 2px rgba(43,42,38,.05), 0 6px 16px -6px rgba(43,42,38,.12), inset 0 1px 0 rgba(255,255,255,.85);
+    --shadow-lift:0 2px 4px rgba(43,42,38,.06), 0 14px 30px -10px rgba(43,42,38,.18), inset 0 1px 0 rgba(255,255,255,.9);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{background:#e8e6df;font-family:'Inter',system-ui,sans-serif;color:var(--ink);
+    display:flex;justify-content:center;padding:24px 12px 48px;min-height:100vh}
+  .grain{position:fixed;inset:0;pointer-events:none;opacity:.35;z-index:99}
+
+  .phone{width:100%;max-width:412px;background:var(--paper);border-radius:28px;overflow:hidden;
+    position:relative;box-shadow:0 30px 60px -20px rgba(43,42,38,.35),0 0 0 1px rgba(43,42,38,.08);
+    display:flex;flex-direction:column;height:880px}
+
+  .top{display:flex;align-items:center;gap:12px;padding:18px 16px 8px}
+  .iconbtn{width:36px;height:36px;flex:0 0 36px;border-radius:11px;border:1px solid var(--line);
+    background:var(--card);display:grid;place-items:center;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.8)}
+  .iconbtn:active{transform:scale(.95)}
+  .ttl{flex:1;min-width:0}
+  .ttl h1{font-family:'Plus Jakarta Sans',sans-serif;font-size:15.5px;font-weight:700;margin:0;letter-spacing:-.01em}
+  .ttl .sub{font-size:11.5px;color:var(--muted);font-weight:500;margin-top:1px}
+  .steps{display:flex;gap:5px;padding:4px 16px 10px}
+  .steps i{flex:1;height:4px;border-radius:99px;background:rgba(43,42,38,.12);transition:.3s}
+  .steps i.on{background:var(--green)}
+  .steps i.done{background:rgba(31,111,84,.42)}
+
+  .body{flex:1;overflow-y:auto;padding:8px 18px 18px}
+  .foot{padding:12px 18px 18px;background:linear-gradient(to top,var(--paper) 65%,rgba(244,243,238,0));display:flex;gap:9px}
+
+  h2{font-family:'Plus Jakarta Sans',sans-serif;font-size:22px;font-weight:800;letter-spacing:-.03em;
+    line-height:1.18;margin:4px 0 6px}
+  .lede{font-size:13px;color:var(--muted);line-height:1.5;margin:0 0 16px;font-weight:500}
+  .eyebrow{font-size:10.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--faint);margin:18px 0 8px}
+  .eyebrow.first{margin-top:4px}
+  .eyebrow em{font-style:normal;color:rgba(161,156,145,.8);text-transform:none;letter-spacing:0;font-weight:600}
+
+  .btn{border-radius:14px;padding:13px 12px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;
+    font-size:14px;cursor:pointer;border:1px solid transparent;letter-spacing:-.01em;flex:1}
+  .btn.primary{background:var(--green);color:#f6faf8;
+    box-shadow:0 6px 18px -6px rgba(31,111,84,.6),inset 0 1px 0 rgba(255,255,255,.2)}
+  .btn.primary[disabled]{background:rgba(43,42,38,.14);color:var(--faint);box-shadow:none;cursor:not-allowed}
+  .btn.ghost{background:var(--card);color:var(--ink);border-color:var(--line-strong);box-shadow:var(--shadow);flex:0 0 36%}
+  .btn:not([disabled]):active{transform:scale(.985)}
+  .textbtn{background:none;border:0;color:var(--muted);font-family:'Inter',sans-serif;font-size:12.5px;
+    font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:10px 0;width:100%}
+
+  /* search + rows */
+  .search{display:flex;align-items:center;gap:9px;background:var(--card);border:1px solid var(--line-strong);
+    border-radius:14px;padding:12px 13px;box-shadow:var(--shadow);margin-bottom:12px}
+  .search input{border:0;background:transparent;outline:none;font-family:'Inter',sans-serif;font-size:13.5px;
+    width:100%;color:var(--ink);font-weight:500}
+  .search input::placeholder{color:var(--faint)}
+
+  .prow{display:flex;align-items:center;gap:11px;background:var(--card);border:1px solid var(--line);
+    border-radius:14px;padding:11px 12px;box-shadow:var(--shadow);cursor:pointer;margin-bottom:7px}
+  .prow[aria-pressed="true"]{border-color:var(--green);background:#f5faf8;
+    box-shadow:0 6px 16px -8px rgba(31,111,84,.45)}
+  .prow:active{transform:scale(.99)}
+  .av{width:36px;height:36px;flex:0 0 36px;border-radius:11px;display:grid;place-items:center;
+    background:var(--green-soft);color:var(--green);font-family:'Plus Jakarta Sans',sans-serif;
+    font-weight:700;font-size:12.5px}
+  .prow .t{flex:1;min-width:0}
+  .prow .n{font-size:13.5px;font-weight:600;letter-spacing:-.005em}
+  .prow .m{font-size:11.5px;color:var(--muted);margin-top:2px;font-weight:500}
+  .prow .m.warn{color:var(--terra);font-weight:600}
+  .radio{width:19px;height:19px;flex:0 0 19px;border-radius:50%;border:2px solid var(--line-strong);
+    display:grid;place-items:center}
+  .prow[aria-pressed="true"] .radio{border-color:var(--green);background:var(--green)}
+  .prow[aria-pressed="true"] .radio:after{content:'';width:7px;height:7px;border-radius:50%;background:#f6faf8}
+
+  .addnew{width:100%;border:1px dashed var(--line-strong);background:rgba(31,111,84,.05);border-radius:14px;
+    padding:13px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;color:var(--green);cursor:pointer;
+    text-align:left;display:flex;align-items:center;gap:9px;margin-top:5px}
+
+  /* fields */
+  .field{background:var(--card);border:1px solid var(--line-strong);border-radius:14px;padding:11px 13px;
+    box-shadow:var(--shadow);margin-bottom:9px}
+  .field label{display:block;font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--faint);margin-bottom:4px}
+  .field label em{font-style:normal;text-transform:none;letter-spacing:0;color:rgba(161,156,145,.85)}
+  .field .inline{display:flex;align-items:center;gap:7px}
+  .field .cur{font-family:'Plus Jakarta Sans',sans-serif;font-size:22px;font-weight:700;color:var(--faint)}
+  .field input{border:0;background:transparent;outline:none;width:100%;font-family:'Plus Jakarta Sans',sans-serif;
+    font-size:16px;font-weight:700;color:var(--ink);letter-spacing:-.015em}
+  .field input.big{font-size:24px;font-weight:800;letter-spacing:-.025em;font-variant-numeric:tabular-nums}
+  .field input::placeholder{color:rgba(161,156,145,.7);font-weight:600}
+  .two{display:flex;gap:9px}
+  .two .field{flex:1;margin-bottom:9px}
+
+  .chips{display:flex;flex-wrap:wrap;gap:7px}
+  .chip{border:1px solid var(--line-strong);background:var(--card);border-radius:11px;padding:9px 13px;
+    font-size:12.5px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;color:var(--ink);
+    box-shadow:var(--shadow)}
+  .chip[aria-pressed="true"]{background:var(--green);color:#f6faf8;border-color:var(--green);
+    box-shadow:0 6px 14px -6px rgba(31,111,84,.55)}
+  .chip.add{background:rgba(184,134,45,.08);border-style:dashed;color:#8a6420}
+  .chip:active{transform:scale(.97)}
+
+  .seg{display:flex;flex-direction:column;gap:7px}
+  .opt{display:flex;align-items:center;gap:11px;background:var(--card);border:1px solid var(--line);
+    border-radius:14px;padding:12px;box-shadow:var(--shadow);cursor:pointer}
+  .opt[aria-pressed="true"]{border-color:var(--green);background:#f5faf8}
+  .opt .t{flex:1}
+  .opt .n{font-size:13.5px;font-weight:600;letter-spacing:-.005em}
+  .opt .m{font-size:11.5px;color:var(--muted);margin-top:2px;font-weight:500;line-height:1.4}
+
+  .derived{background:var(--green-soft);border:1px solid rgba(31,111,84,.2);border-radius:14px;padding:13px;
+    margin-top:10px;box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
+  .derived .r{display:flex;justify-content:space-between;gap:12px;font-size:12.5px;font-weight:600;
+    color:#1c5c46;padding:3px 0}
+  .derived .r .n{font-variant-numeric:tabular-nums;white-space:nowrap}
+  .derived .r.tot{border-top:1px dashed rgba(31,111,84,.32);margin-top:6px;padding-top:8px;font-weight:700}
+  .derived .cap{font-size:11px;color:#3f7c66;margin-top:8px;font-weight:500;line-height:1.45}
+
+  .note{font-size:11.5px;color:var(--muted);line-height:1.5;padding:12px 13px;background:var(--ochre-soft);
+    border:1px solid rgba(184,134,45,.2);border-radius:14px;font-weight:500;margin-top:14px}
+  .note b{color:#8a6420;font-weight:700}
+
+  /* review */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow-lift);
+    padding:16px;margin-bottom:10px}
+  .card .hd{display:flex;align-items:center;gap:11px;padding-bottom:12px;border-bottom:1px dashed var(--line-strong);margin-bottom:10px}
+  .card .hd .n{font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:700;letter-spacing:-.015em}
+  .card .hd .m{font-size:11.5px;color:var(--muted);font-weight:500;margin-top:1px}
+  .rr{display:flex;justify-content:space-between;gap:14px;padding:6px 0;font-size:12.5px}
+  .rr .k{color:var(--muted);font-weight:500}
+  .rr .v{font-weight:600;text-align:right;letter-spacing:-.005em}
+  .rr .v.miss{color:var(--terra);font-weight:600}
+  .editlink{font-size:11.5px;font-weight:700;color:var(--green);background:none;border:0;cursor:pointer;
+    font-family:'Inter',sans-serif;padding:0}
+
+  .toast{position:fixed;left:50%;bottom:34px;transform:translate(-50%,20px);background:var(--ink);
+    color:#f7f6f1;padding:11px 18px;border-radius:12px;font-size:12.5px;font-weight:600;opacity:0;
+    pointer-events:none;transition:.25s;z-index:100;max-width:86%;text-align:center;
+    box-shadow:0 10px 30px -8px rgba(43,42,38,.5)}
+  .toast.on{opacity:1;transform:translate(-50%,0)}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<svg class="grain" xmlns="http://www.w3.org/2000/svg">
+  <filter id="g"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3"/>
+  <feColorMatrix type="saturate" values="0"/></filter>
+  <rect width="100%" height="100%" filter="url(#g)" opacity="0.055"/>
+</svg>
+
+<div class="phone">
+  <div class="top">
+    <div class="iconbtn" onclick="back()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2b2a26" stroke-width="2.2"
+        stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </div>
+    <div class="ttl"><h1>New borrower</h1><div class="sub" id="crumb"></div></div>
+  </div>
+  <div class="steps" id="steps"></div>
+  <div class="body" id="body"></div>
+  <div class="foot" id="foot"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+  function esc(s){return String(s).replace(/[&<>"']/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function inr(p){return '\u20B9'+(p/100).toLocaleString('en-IN',{maximumFractionDigits:0});}
+  function grp(n){return n.toLocaleString('en-IN');}
+  function ini(n){var p=n.trim().split(/\s+/);return ((p[0]||'')[0]+((p[1]||'')[0]||'')).toUpperCase();}
+
+  var CUSTOMERS = [
+    {n:'Mahesh Chauhan', ph:'98XXXXXX21', note:'Loan running \u00B7 \u20B950,000 outstanding', open:true},
+    {n:'Suresh Patil',   ph:'99XXXXXX07', note:'Cleared 2 loans \u00B7 paid on time'},
+    {n:'Kavita Shah',    ph:'97XXXXXX44', note:'Committee member \u00B7 no loan yet'},
+    {n:'Imran Qureshi',  ph:'96XXXXXX18', note:'Cleared 1 loan'},
+    {n:'Deepa Nair',     ph:'93XXXXXX62', note:'Committee member \u00B7 no loan yet'}
+  ];
+
+  var RATES = [
+    {k:1,   lab:'\u20B91'},
+    {k:1.5, lab:'\u20B91.50'},
+    {k:2,   lab:'\u20B92'},
+    {k:3,   lab:'\u20B93'}
+  ];
+
+  var BASIS = [
+    {k:'interest', n:'Interest only',      m:'Interest every month, principal returned whenever agreed. Most common.'},
+    {k:'emi',      n:'Equal instalments',  m:'A fixed amount every month that covers both interest and principal.'},
+    {k:'onetime',  n:'One-time return',    m:'Full amount comes back on a single agreed date.'},
+    {k:'daily',    n:'Daily collection',   m:'A small amount collected every day for a set number of days.'}
+  ];
+
+  var SECURITY = ['Nothing held','Gold','Vehicle RC','Property papers','Cheque','Post-dated cheques','Land record'];
+
+  var state = {
+    step:1,
+    q:'',
+    borrower:null,
+    newMode:false, newName:'', newPhone:'',
+    principal:5000000,
+    dateGiven:'13 Aug 2026',
+    rate:2, customRate:null,
+    basis:'interest',
+    months:'',
+    instalment:0,
+    days:'',
+    dailyAmt:0,
+    security:'Vehicle RC',
+    securityNote:'Bajaj Pulsar, RC book with me',
+    guarantor:'Suresh Patil'
+  };
+
+  var I = {
+    search:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a19c91" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.2-3.2"/></svg>',
+    plus:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1f6f54" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>'
+  };
+
+  function rateVal(){ return state.customRate!==null ? state.customRate : state.rate; }
+  function monthlyInterest(){ return Math.round(state.principal * rateVal() / 100); }
+
+  /* ---------------- steps ---------------- */
+  function s1(){
+    var q = state.q.trim().toLowerCase();
+    if(state.newMode){
+      var b = '<h2>Add the borrower</h2>'
+        + '<p class="lede">Name and a phone number are enough to start. Address and ID can go in later.</p>'
+        + '<div class="field"><label>Full name</label><input id="nn" placeholder="Mahesh Chauhan" value="'+esc(state.newName)+'"></div>'
+        + '<div class="field"><label>Phone <em>&mdash; used for reminders you send</em></label>'
+        + '<input id="np" inputmode="tel" placeholder="98765 43210" value="'+esc(state.newPhone)+'"></div>';
+      return {body:b, foot:'<button class="btn ghost" onclick="cancelNew()">Back</button>'
+        + '<button class="btn primary" id="go" '+(state.newName.trim()?'':'disabled')+' onclick="saveNew()">Add borrower</button>'};
+    }
+
+    var list = q ? CUSTOMERS.filter(function(c){return c.n.toLowerCase().indexOf(q)>-1;}) : CUSTOMERS;
+    var b = '<h2>Who is taking<br>the money?</h2>'
+      + '<p class="lede">Pick someone already in your book, or add a new person.</p>'
+      + '<div class="search">'+I.search+'<input id="q" placeholder="Search your people" value="'+esc(state.q)+'"></div>';
+
+    list.forEach(function(c,i){
+      var on = state.borrower && state.borrower.n===c.n;
+      b += '<div class="prow" aria-pressed="'+on+'" onclick="pick('+CUSTOMERS.indexOf(c)+')">'
+        + '<div class="av">'+esc(ini(c.n))+'</div>'
+        + '<div class="t"><div class="n">'+esc(c.n)+'</div>'
+        + '<div class="m'+(c.open?' warn':'')+'">'+esc(c.note)+'</div></div>'
+        + '<div class="radio"></div></div>';
+    });
+    if(!list.length) b += '<p class="lede">Nobody by that name yet.</p>';
+    b += '<button class="addnew" onclick="startNew()">'+I.plus+'<span>Add '
+      + (q ? '\u201C'+esc(state.q.trim())+'\u201D' : 'someone new')+'</span></button>';
+
+    return {body:b, foot:'<button class="btn primary" '+(state.borrower?'':'disabled')+' onclick="next()">Continue</button>'};
+  }
+
+  function s2(){
+    var b = '<h2>How much, and<br>on what terms?</h2>'
+      + '<p class="lede">Enter what the two of you agreed. Ledgr records these figures &mdash; it does not set them.</p>'
+      + '<div class="two">'
+      +   '<div class="field" style="flex:1.3"><label>Amount given</label><div class="inline">'
+      +     '<span class="cur">\u20B9</span><input id="amt" class="big" inputmode="numeric" value="'+esc(grp(state.principal/100))+'"></div></div>'
+      +   '<div class="field"><label>Date</label><input id="dt" value="'+esc(state.dateGiven)+'"></div>'
+      + '</div>'
+      + '<div class="eyebrow">Rate agreed <em>&mdash; per hundred, per month</em></div><div class="chips">';
+    RATES.forEach(function(r){
+      b += '<button class="chip" aria-pressed="'+(state.customRate===null && state.rate===r.k)+'" onclick="setRate('+r.k+')">'+r.lab+'</button>';
+    });
+    b += '<button class="chip add" onclick="customRate()">'
+      + (state.customRate!==null ? '\u20B9'+state.customRate : '+ Other')+'</button></div>';
+
+    b += '<div class="eyebrow">How it comes back</div><div class="seg">';
+    BASIS.forEach(function(x){
+      b += '<div class="opt" aria-pressed="'+(state.basis===x.k)+'" onclick="setBasis(\''+x.k+'\')">'
+        + '<div class="t"><div class="n">'+esc(x.n)+'</div><div class="m">'+esc(x.m)+'</div></div>'
+        + '<div class="radio"></div></div>';
+    });
+    b += '</div>';
+
+    if(state.basis==='emi'){
+      b += '<div class="two" style="margin-top:12px">'
+        + '<div class="field"><label>Instalment</label><div class="inline"><span class="cur" style="font-size:16px">\u20B9</span>'
+        + '<input id="inst" inputmode="numeric" placeholder="4,700" value="'+(state.instalment?esc(grp(state.instalment/100)):'')+'"></div></div>'
+        + '<div class="field"><label>For how many months</label><input id="mo" inputmode="numeric" placeholder="12" value="'+esc(state.months)+'"></div></div>';
+    }
+    if(state.basis==='daily'){
+      b += '<div class="two" style="margin-top:12px">'
+        + '<div class="field"><label>Per day</label><div class="inline"><span class="cur" style="font-size:16px">\u20B9</span>'
+        + '<input id="dailyAmt" inputmode="numeric" placeholder="600" value="'+(state.dailyAmt?esc(grp(state.dailyAmt/100)):'')+'"></div></div>'
+        + '<div class="field"><label>For how many days</label><input id="dd" inputmode="numeric" placeholder="100" value="'+esc(state.days)+'"></div></div>';
+    }
+    if(state.basis==='onetime'){
+      b += '<div class="field" style="margin-top:12px"><label>Return expected on</label>'
+        + '<input id="due" placeholder="12 Nov 2026" value=""></div>';
+    }
+
+    b += '<div id="derived"></div>';
+    b += '<div class="note">These are <b>your notes on what was agreed</b>. Ledgr will not charge interest by '
+      + 'itself, will not produce an agreement, and will not message the borrower on its own.</div>';
+
+    return {body:b, foot:'<button class="btn ghost" onclick="back()">Back</button>'
+      + '<button class="btn primary" onclick="next()">Continue</button>'};
+  }
+
+  function derivedHTML(){
+    var p = state.principal, r = rateVal(), mi = monthlyInterest();
+    var h = '<div class="derived">';
+    h += '<div class="r"><span>Interest each month</span><span class="n">'+esc(inr(mi))+'</span></div>';
+    h += '<div class="r"><span>Works out to</span><span class="n">'+(r*12).toFixed(r*12%1?1:0)+'% a year</span></div>';
+
+    if(state.basis==='emi' && state.instalment && parseInt(state.months||0,10)>0){
+      var n = parseInt(state.months,10), tot = state.instalment*n;
+      h += '<div class="r tot"><span>'+n+' instalments come to</span><span class="n">'+esc(inr(tot))+'</span></div>';
+      h += '<div class="cap">'+esc(inr(Math.max(0,tot-p)))+' more than the '+esc(inr(p))+' given.</div>';
+    } else if(state.basis==='daily' && state.dailyAmt && parseInt(state.days||0,10)>0){
+      var d = parseInt(state.days,10), t2 = state.dailyAmt*d;
+      h += '<div class="r tot"><span>'+d+' days come to</span><span class="n">'+esc(inr(t2))+'</span></div>';
+      h += '<div class="cap">'+esc(inr(Math.max(0,t2-p)))+' more than the '+esc(inr(p))+' given.</div>';
+    } else if(state.basis==='interest'){
+      h += '<div class="cap">Principal of '+esc(inr(p))+' stays outstanding until it is returned. '
+        + 'Ledgr will keep showing it separately from interest.</div>';
+    }
+    h += '</div>';
+    return h;
+  }
+
+  function s3(){
+    var b = '<h2>What is holding<br>this loan?</h2>'
+      + '<p class="lede">The thing most likely to get your money back. Skip it if there is nothing &mdash; but the loan will show as unsecured.</p>'
+      + '<div class="eyebrow first">Security held</div><div class="chips">';
+    SECURITY.forEach(function(s){
+      b += '<button class="chip" aria-pressed="'+(state.security===s)+'" onclick="setSec(\''+esc(s).replace(/'/g,"\\'")+'\')">'+esc(s)+'</button>';
+    });
+    b += '<button class="chip add" onclick="addSec()">+ Add</button></div>';
+
+    if(state.security!=='Nothing held'){
+      b += '<div class="field" style="margin-top:12px"><label>Details <em>&mdash; optional</em></label>'
+        + '<input id="sn" placeholder="Describe what you are holding" value="'+esc(state.securityNote)+'"></div>';
+    }
+
+    b += '<div class="eyebrow">Guarantor <em>&mdash; optional</em></div>'
+      + '<div class="field"><label>Who has stood for this loan</label>'
+      + '<input id="gu" placeholder="Name of the person" value="'+esc(state.guarantor)+'"></div>'
+      + '<div class="note">Ledgr keeps this as a note for your own reference. It does not create any claim '
+      + 'against the guarantor by itself.</div>';
+
+    return {body:b, foot:'<button class="btn ghost" onclick="back()">Back</button>'
+      + '<button class="btn primary" onclick="next()">Review</button>'};
+  }
+
+  function s4(){
+    var bs = BASIS.filter(function(x){return x.k===state.basis;})[0];
+    var b = '<h2>Check before<br>you save.</h2>'
+      + '<p class="lede">Once saved, changes to terms are kept as a trail rather than overwriting what is here.</p>'
+      + '<div class="card"><div class="hd"><div class="av">'+esc(ini(state.borrower.n))+'</div>'
+      + '<div style="flex:1"><div class="n">'+esc(state.borrower.n)+'</div><div class="m">'+esc(state.borrower.ph)+'</div></div>'
+      + '<button class="editlink" onclick="goto(1)">Change</button></div>'
+      + row('Amount given', inr(state.principal))
+      + row('Date', state.dateGiven)
+      + row('Rate agreed', '\u20B9'+rateVal()+' per hundred / month')
+      + row('Interest each month', inr(monthlyInterest()))
+      + row('How it comes back', bs.n)
+      + '</div>';
+
+    b += '<div class="card"><div class="rr"><span class="k" style="font-weight:700;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#a19c91">Security &amp; guarantor</span>'
+      + '<button class="editlink" onclick="goto(3)">Change</button></div>'
+      + row('Security held', state.security)
+      + (state.security!=='Nothing held' && state.securityNote ? row('Details', state.securityNote) : '')
+      + row('Guarantor', state.guarantor.trim() || 'None recorded', !state.guarantor.trim())
+      + '</div>';
+
+    b += '<div class="note">Saving this records the loan in <b>your book only</b>. Nothing is sent to '
+      + esc(state.borrower.n.split(' ')[0])+'. You can draft a receipt afterwards and send it yourself.</div>';
+
+    return {body:b, foot:'<button class="btn ghost" onclick="back()">Back</button>'
+      + '<button class="btn primary" onclick="save()">Save loan</button>'};
+  }
+
+  function row(k,v,miss){
+    return '<div class="rr"><span class="k">'+esc(k)+'</span><span class="v'+(miss?' miss':'')+'">'+esc(v)+'</span></div>';
+  }
+
+  /* ---------------- render ---------------- */
+  var LABELS = ['Who is borrowing','Amount and terms','Security and guarantor','Review'];
+  function render(){
+    var v = state.step===1?s1():state.step===2?s2():state.step===3?s3():s4();
+    document.getElementById('crumb').textContent = 'Step '+state.step+' of 4 \u00B7 '+LABELS[state.step-1];
+    var d=''; for(var i=1;i<=4;i++) d += '<i class="'+(i===state.step?'on':(i<state.step?'done':''))+'"></i>';
+    document.getElementById('steps').innerHTML = d;
+    document.getElementById('body').innerHTML = v.body;
+    document.getElementById('foot').innerHTML = v.foot;
+    document.getElementById('body').scrollTop = 0;
+    if(state.step===2) paintDerived();
+    bind();
+  }
+  function paintDerived(){
+    var el = document.getElementById('derived');
+    if(el) el.innerHTML = derivedHTML();
+  }
+
+  function onNum(id, setter){
+    var el = document.getElementById(id);
+    if(!el) return;
+    el.addEventListener('input', function(e){
+      var raw = e.target.value.replace(/[^0-9]/g,'');
+      setter(raw ? parseInt(raw,10) : 0);
+      e.target.value = raw ? parseInt(raw,10).toLocaleString('en-IN') : '';
+      paintDerived();
+    });
+  }
+  function onPlain(id, setter){
+    var el = document.getElementById(id);
+    if(!el) return;
+    el.addEventListener('input', function(e){ setter(e.target.value); paintDerived(); });
+  }
+
+  function bind(){
+    var q = document.getElementById('q');
+    if(q) q.addEventListener('input', function(e){
+      state.q = e.target.value; var p=e.target.selectionStart; render();
+      var n=document.getElementById('q'); if(n){n.focus();n.setSelectionRange(p,p);}
+    });
+    var nn = document.getElementById('nn');
+    if(nn) nn.addEventListener('input', function(e){
+      state.newName = e.target.value;
+      var g=document.getElementById('go'); if(g) g.disabled = !state.newName.trim();
+    });
+    onPlain('np', function(v){state.newPhone=v;});
+    onNum('amt', function(v){state.principal=v*100;});
+    onPlain('dt', function(v){state.dateGiven=v;});
+    onNum('inst', function(v){state.instalment=v*100;});
+    onPlain('mo', function(v){state.months=v.replace(/[^0-9]/g,'');});
+    onNum('dailyAmt', function(v){state.dailyAmt=v*100;});
+    onPlain('dd', function(v){state.days=v.replace(/[^0-9]/g,'');});
+    onPlain('sn', function(v){state.securityNote=v;});
+    onPlain('gu', function(v){state.guarantor=v;});
+  }
+
+  /* ---------------- actions ---------------- */
+  window.next = function(){ state.step=Math.min(4,state.step+1); render(); };
+  window.back = function(){ if(state.step===1){toast('Goes back to the borrower list');return;} state.step--; render(); };
+  window.goto = function(n){ state.step=n; render(); };
+  window.pick = function(i){ state.borrower=CUSTOMERS[i]; render(); };
+  window.startNew = function(){ state.newMode=true; state.newName=state.q.trim(); render(); };
+  window.cancelNew = function(){ state.newMode=false; render(); };
+  window.saveNew = function(){
+    var c = {n:state.newName.trim(), ph:state.newPhone.trim()||'No phone yet', note:'New \u00B7 first loan'};
+    CUSTOMERS.unshift(c); state.borrower=c; state.newMode=false; state.q=''; state.step=2; render();
+    toast(esc(c.n)+' added to your people');
+  };
+  window.setRate = function(r){ state.rate=r; state.customRate=null; render(); };
+  window.customRate = function(){
+    var v = prompt('Rate per hundred, per month'); if(v===null) return;
+    var n = parseFloat(v.replace(/[^0-9.]/g,''));
+    if(!isNaN(n) && n>0){ state.customRate=n; render(); toast('Saved \u2014 \u20B9'+n+' will appear as a choice next time'); }
+  };
+  window.setBasis = function(k){ state.basis=k; render(); };
+  window.setSec = function(s){ state.security=s; render(); };
+  window.addSec = function(){
+    var v = prompt('What are you holding?'); if(!v || !v.trim()) return;
+    SECURITY.splice(SECURITY.length-0,0,v.trim()); state.security=v.trim(); render();
+    toast('Saved \u2014 \u201C'+v.trim()+'\u201D will appear as a choice next time');
+  };
+  window.save = function(){ toast('Loan saved \u00B7 opens '+state.borrower.n+'\u2019s ledger'); };
+
+  var tt;
+  window.toast = function(m){
+    var el=document.getElementById('toast'); el.textContent=m; el.classList.add('on');
+    clearTimeout(tt); tt=setTimeout(function(){el.classList.remove('on');},2400);
+  };
+
+  state.borrower = null;
+  render();
+})();
+</script>
+</body>
+</html>

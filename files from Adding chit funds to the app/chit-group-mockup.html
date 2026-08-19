@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Committee Group — Ledgr</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f4f3ee;
+    --card:#fbfaf5;
+    --ink:#2b2a26;
+    --muted:#7a766c;
+    --faint:#a19c91;
+    --green:#1f6f54;
+    --green-soft:#e6efea;
+    --ochre:#b8862d;
+    --ochre-soft:#f6eeda;
+    --terra:#b0503a;
+    --terra-soft:#f8e8e3;
+    --line:rgba(43,42,38,.09);
+    --line-strong:rgba(43,42,38,.16);
+    --shadow:0 1px 2px rgba(43,42,38,.05), 0 6px 16px -6px rgba(43,42,38,.12), inset 0 1px 0 rgba(255,255,255,.85);
+    --shadow-lift:0 2px 4px rgba(43,42,38,.06), 0 14px 30px -10px rgba(43,42,38,.18), inset 0 1px 0 rgba(255,255,255,.9);
+    --r:18px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    background:#e8e6df;
+    font-family:'Inter',system-ui,sans-serif;
+    color:var(--ink);
+    display:flex;justify-content:center;
+    padding:24px 12px 48px;
+    min-height:100vh;
+  }
+  .grain{position:fixed;inset:0;pointer-events:none;opacity:.35;z-index:99}
+
+  .phone{
+    width:100%;max-width:412px;background:var(--paper);
+    border-radius:28px;overflow:hidden;position:relative;
+    box-shadow:0 30px 60px -20px rgba(43,42,38,.35), 0 0 0 1px rgba(43,42,38,.08);
+    display:flex;flex-direction:column;min-height:840px;
+  }
+
+  /* ---- app bar ---- */
+  .appbar{
+    display:flex;align-items:center;gap:12px;
+    padding:18px 16px 12px;background:var(--paper);
+    position:sticky;top:0;z-index:20;border-bottom:1px solid transparent;
+  }
+  .appbar.scrolled{border-bottom-color:var(--line)}
+  .iconbtn{
+    width:36px;height:36px;flex:0 0 36px;border-radius:11px;border:1px solid var(--line);
+    background:var(--card);display:grid;place-items:center;cursor:pointer;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.8);
+  }
+  .iconbtn:active{transform:scale(.95)}
+  .appbar h1{
+    font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;font-weight:700;
+    margin:0;letter-spacing:-.01em;line-height:1.2;flex:1;min-width:0;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .appbar .sub{font-size:11.5px;color:var(--muted);font-weight:500;margin-top:1px}
+
+  .scroll{flex:1;overflow-y:auto;padding:4px 16px 120px}
+
+  /* ---- hero ---- */
+  .hero{
+    background:var(--card);border:1px solid var(--line);border-radius:20px;
+    box-shadow:var(--shadow-lift);padding:18px 18px 16px;margin-bottom:12px;
+  }
+  .eyebrow{
+    font-size:10.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--faint);
+  }
+  .hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+  .cycle{
+    font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:13px;
+    color:var(--green);background:var(--green-soft);border-radius:99px;
+    padding:5px 11px;white-space:nowrap;
+  }
+  .due-amt{
+    font-family:'Plus Jakarta Sans',sans-serif;font-size:34px;font-weight:800;
+    letter-spacing:-.03em;margin:6px 0 2px;font-variant-numeric:tabular-nums;line-height:1;
+  }
+  .due-note{font-size:12.5px;color:var(--muted);font-weight:500}
+  .due-note b{color:var(--ink);font-weight:600}
+
+  .bar{
+    height:8px;border-radius:99px;background:rgba(43,42,38,.07);
+    margin:16px 0 8px;overflow:hidden;box-shadow:inset 0 1px 2px rgba(43,42,38,.08);
+  }
+  .bar span{display:block;height:100%;background:var(--green);border-radius:99px;transition:width .45s cubic-bezier(.4,0,.2,1)}
+  .barrow{display:flex;justify-content:space-between;font-size:12px;font-weight:600}
+  .barrow .l{color:var(--muted)}
+  .barrow .r{font-variant-numeric:tabular-nums;color:var(--ink)}
+
+  /* ---- alert ---- */
+  .alert{
+    display:flex;gap:11px;align-items:flex-start;
+    background:var(--terra-soft);border:1px solid rgba(176,80,58,.22);
+    border-radius:16px;padding:13px 14px;margin-bottom:12px;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.6);cursor:pointer;
+  }
+  .alert .dot{width:8px;height:8px;border-radius:50%;background:var(--terra);margin-top:5px;flex:0 0 8px}
+  .alert h4{
+    font-family:'Plus Jakarta Sans',sans-serif;margin:0 0 3px;font-size:13.5px;
+    font-weight:700;color:#8e3d2b;letter-spacing:-.01em;
+  }
+  .alert p{margin:0;font-size:12px;color:#9c5541;line-height:1.45;font-weight:500}
+
+  /* ---- tabs ---- */
+  .tabs{
+    display:flex;background:rgba(43,42,38,.055);border-radius:13px;padding:4px;
+    margin-bottom:14px;box-shadow:inset 0 1px 2px rgba(43,42,38,.07);
+  }
+  .tabs button{
+    flex:1;border:0;background:transparent;font-family:'Inter',sans-serif;
+    font-size:13px;font-weight:600;color:var(--muted);padding:8px 0;border-radius:10px;
+    cursor:pointer;transition:.2s;
+  }
+  .tabs button[aria-selected="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(43,42,38,.12)}
+
+  .chips{display:flex;gap:7px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{
+    border:1px solid var(--line-strong);background:var(--card);border-radius:99px;
+    padding:6px 13px;font-size:12px;font-weight:600;color:var(--muted);
+    cursor:pointer;white-space:nowrap;font-family:'Inter',sans-serif;
+  }
+  .chip[aria-pressed="true"]{background:var(--ink);color:#f7f6f1;border-color:var(--ink)}
+
+  /* ---- member rows ---- */
+  .list{display:flex;flex-direction:column;gap:8px}
+  .row{
+    display:flex;align-items:center;gap:12px;background:var(--card);
+    border:1px solid var(--line);border-radius:16px;padding:12px 13px;
+    box-shadow:var(--shadow);cursor:pointer;transition:transform .15s, box-shadow .15s;
+  }
+  .row:active{transform:scale(.985)}
+  .row.risk{border-color:rgba(176,80,58,.3);background:#fdf7f5}
+  .av{
+    width:38px;height:38px;flex:0 0 38px;border-radius:12px;display:grid;place-items:center;
+    font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:13px;
+    background:var(--green-soft);color:var(--green);letter-spacing:-.01em;
+  }
+  .row.risk .av{background:var(--terra-soft);color:var(--terra)}
+  .who{flex:1;min-width:0}
+  .who .nm{
+    font-size:13.5px;font-weight:600;letter-spacing:-.005em;
+    display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+  }
+  .who .meta{font-size:11.5px;color:var(--muted);margin-top:2px;font-weight:500}
+  .who .meta.warn{color:var(--terra);font-weight:600}
+  .tag{
+    font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+    padding:2.5px 6px;border-radius:6px;background:var(--ochre-soft);color:var(--ochre);
+  }
+  .tag.half{background:rgba(43,42,38,.06);color:var(--muted)}
+  .amt{text-align:right;flex:0 0 auto}
+  .amt .v{
+    font-size:13.5px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.01em;
+  }
+  .pill{
+    margin-top:4px;font-size:10px;font-weight:700;padding:3px 8px;border-radius:99px;
+    display:inline-block;letter-spacing:.02em;
+  }
+  .pill.paid{background:var(--green-soft);color:var(--green)}
+  .pill.pending{background:var(--terra-soft);color:var(--terra)}
+
+  /* ---- periods ---- */
+  .prow{
+    display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);
+    border-radius:16px;padding:12px 13px;box-shadow:var(--shadow);
+  }
+  .prow.current{border-color:rgba(31,111,84,.35);background:#f7faf8}
+  .pn{
+    width:38px;height:38px;flex:0 0 38px;border-radius:12px;display:grid;place-items:center;
+    background:rgba(43,42,38,.055);font-family:'Plus Jakarta Sans',sans-serif;
+    font-weight:700;font-size:13px;color:var(--muted);
+  }
+  .prow.current .pn{background:var(--green);color:#f7faf8}
+  .prow .who .meta b{color:var(--ink);font-weight:600}
+
+  .sechead{
+    font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--faint);margin:18px 0 9px;
+  }
+
+  /* ---- bottom bar ---- */
+  .bottom{
+    position:sticky;bottom:0;padding:12px 16px 16px;
+    background:linear-gradient(to top, var(--paper) 62%, rgba(244,243,238,0));
+    display:flex;gap:9px;
+  }
+  .btn{
+    flex:1;border-radius:14px;padding:13px 12px;font-family:'Plus Jakarta Sans',sans-serif;
+    font-weight:700;font-size:13.5px;cursor:pointer;border:1px solid transparent;letter-spacing:-.01em;
+  }
+  .btn.primary{background:var(--green);color:#f6faf8;box-shadow:0 6px 16px -6px rgba(31,111,84,.6), inset 0 1px 0 rgba(255,255,255,.2)}
+  .btn.ghost{background:var(--card);color:var(--ink);border-color:var(--line-strong);box-shadow:var(--shadow);flex:0 0 40%}
+  .btn:active{transform:scale(.98)}
+
+  .toast{
+    position:fixed;left:50%;bottom:34px;transform:translate(-50%,20px);
+    background:var(--ink);color:#f7f6f1;padding:11px 18px;border-radius:12px;
+    font-size:12.5px;font-weight:600;opacity:0;pointer-events:none;transition:.25s;z-index:100;
+    box-shadow:0 10px 30px -8px rgba(43,42,38,.5);
+  }
+  .toast.on{opacity:1;transform:translate(-50%,0)}
+
+  .empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:13px}
+
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<svg class="grain" xmlns="http://www.w3.org/2000/svg">
+  <filter id="g"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3"/>
+  <feColorMatrix type="saturate" values="0"/></filter>
+  <rect width="100%" height="100%" filter="url(#g)" opacity="0.055"/>
+</svg>
+
+<div class="phone">
+  <div class="appbar" id="appbar">
+    <div class="iconbtn" aria-label="Back">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2b2a26" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </div>
+    <div style="flex:1;min-width:0">
+      <h1 id="gname"></h1>
+      <div class="sub" id="gsub"></div>
+    </div>
+    <div class="iconbtn" aria-label="More">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="#2b2a26"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>
+    </div>
+  </div>
+
+  <div class="scroll" id="scroll"></div>
+
+  <div class="bottom">
+    <button class="btn ghost" onclick="toast('Opens the announce-amount sheet')">Set amount</button>
+    <button class="btn primary" onclick="toast('Opens record-payment for pending members')">Record payment</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- helpers ---------- */
+  function esc(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+  function inr(paise){
+    return '\u20B9' + (paise/100).toLocaleString('en-IN',{maximumFractionDigits:0});
+  }
+  function initials(n){
+    var p = n.trim().split(/\s+/);
+    return ((p[0]||'')[0] + (p[1]||'')[0]||'').toUpperCase();
+  }
+
+  /* ---------- state ---------- */
+  var state = {
+    tab:'members',
+    filter:'all',
+    group:{
+      name:'Shanti Nagar Committee',
+      chitValuePaise: 6000000,      // 60,000
+      tickets: 12,
+      months: 12,
+      basePaise: 500000,            // 5,000 base per ticket
+      currentPeriod: 5
+    },
+    // announced amount for the current period (entered by the organiser, never computed)
+    periodDuePaise: 420000,         // 4,200
+    members:[
+      {id:'m1', name:'Ramesh Gupta',  share:1,   paid:true,  prizedMonth:1, arrears:0},
+      {id:'m2', name:'Sunita Devi',   share:1,   paid:false, prizedMonth:2, arrears:2},
+      {id:'m3', name:'Anil Kumar',    share:1,   paid:true,  prizedMonth:3, arrears:0},
+      {id:'m4', name:'Farhan Sheikh', share:1,   paid:false, prizedMonth:4, arrears:1},
+      {id:'m5', name:'Meena Rao',     share:1,   paid:true,  prizedMonth:null, arrears:0},
+      {id:'m6', name:'Vikram Joshi',  share:0.5, paid:false, prizedMonth:null, arrears:0},
+      {id:'m7', name:'Deepa Nair',    share:1,   paid:true,  prizedMonth:null, arrears:0},
+      {id:'m8', name:'Suresh Patil',  share:1,   paid:true,  prizedMonth:null, arrears:0},
+      {id:'m9', name:'Kavita Shah',   share:0.5, paid:false, prizedMonth:null, arrears:0},
+      {id:'m10',name:'Imran Qureshi', share:1,   paid:true,  prizedMonth:null, arrears:0},
+      {id:'m11',name:'Lakshmi Iyer',  share:1,   paid:true,  prizedMonth:null, arrears:0},
+      {id:'m12',name:'Rajesh Mehta',  share:1,   paid:true,  prizedMonth:null, arrears:0, payoutThisPeriod:true}
+    ],
+    periods:[
+      {n:1, duePaise:500000, winner:'Ramesh Gupta',  payoutPaise:5100000, settled:true},
+      {n:2, duePaise:455000, winner:'Sunita Devi',   payoutPaise:5300000, settled:true},
+      {n:3, duePaise:440000, winner:'Anil Kumar',    payoutPaise:5450000, settled:true},
+      {n:4, duePaise:430000, winner:'Farhan Sheikh', payoutPaise:5500000, settled:true},
+      {n:5, duePaise:420000, winner:'Rajesh Mehta',  payoutPaise:5600000, settled:false}
+    ]
+  };
+
+  /* ---------- derived (never stored) ---------- */
+  function dueFor(m){ return Math.round(state.periodDuePaise * m.share); }
+  function derive(){
+    var expected=0, collected=0, paidCount=0, atRisk=[];
+    state.members.forEach(function(m){
+      var d = dueFor(m);
+      expected += d;
+      if(m.paid){ collected += d; paidCount++; }
+      if(m.prizedMonth && (!m.paid || m.arrears>0)) atRisk.push(m);
+    });
+    return {
+      expected:expected, collected:collected, paidCount:paidCount,
+      pendingCount: state.members.length - paidCount,
+      atRisk:atRisk,
+      pct: expected ? Math.round(collected/expected*100) : 0
+    };
+  }
+
+  /* ---------- render ---------- */
+  function render(){
+    var g = state.group, d = derive();
+
+    document.getElementById('gname').textContent = g.name;
+    document.getElementById('gsub').textContent =
+      inr(g.chitValuePaise) + ' \u00B7 ' + g.tickets + ' tickets \u00B7 ' + g.months + ' months';
+
+    var h = '';
+
+    /* hero */
+    h += '<div class="hero">'
+      +   '<div class="hero-top">'
+      +     '<div><div class="eyebrow">Amount due this month</div>'
+      +       '<div class="due-amt">'+esc(inr(state.periodDuePaise))+'</div>'
+      +       '<div class="due-note">Base '+esc(inr(g.basePaise))+' \u00B7 <b>set by you</b> on 3 Aug</div>'
+      +     '</div>'
+      +     '<div class="cycle">Month '+g.currentPeriod+' / '+g.months+'</div>'
+      +   '</div>'
+      +   '<div class="bar"><span style="width:'+d.pct+'%"></span></div>'
+      +   '<div class="barrow">'
+      +     '<span class="l">'+d.paidCount+' of '+state.members.length+' paid</span>'
+      +     '<span class="r">'+esc(inr(d.collected))+' / '+esc(inr(d.expected))+'</span>'
+      +   '</div>'
+      + '</div>';
+
+    /* vasooli alert */
+    if(d.atRisk.length){
+      var names = d.atRisk.map(function(m){return m.name.split(' ')[0];}).join(', ');
+      h += '<div class="alert" onclick="setFilter(\'risk\')">'
+        +   '<span class="dot"></span>'
+        +   '<div><h4>'+d.atRisk.length+' members owe after taking their payout</h4>'
+        +     '<p>'+esc(names)+' already received the pot and have dues outstanding. Tap to see only these.</p></div>'
+        + '</div>';
+    }
+
+    /* tabs */
+    h += '<div class="tabs" role="tablist">'
+      +   '<button role="tab" aria-selected="'+(state.tab==='members')+'" onclick="setTab(\'members\')">Members</button>'
+      +   '<button role="tab" aria-selected="'+(state.tab==='periods')+'" onclick="setTab(\'periods\')">Months</button>'
+      + '</div>';
+
+    h += state.tab==='members' ? renderMembers(d) : renderPeriods();
+
+    document.getElementById('scroll').innerHTML = h;
+  }
+
+  function renderMembers(d){
+    var h = '<div class="chips">'
+      + chip('all','All ('+state.members.length+')')
+      + chip('pending','Pending ('+d.pendingCount+')')
+      + chip('risk','Owes after payout ('+d.atRisk.length+')')
+      + chip('prized','Already received')
+      + '</div>';
+
+    var list = state.members.filter(function(m){
+      if(state.filter==='pending') return !m.paid;
+      if(state.filter==='risk')    return m.prizedMonth && (!m.paid || m.arrears>0);
+      if(state.filter==='prized')  return !!m.prizedMonth;
+      return true;
+    });
+
+    // pending first, then by name
+    list.sort(function(a,b){ return (a.paid?1:0)-(b.paid?1:0); });
+
+    if(!list.length) return h + '<div class="empty">No members match this filter.</div>';
+
+    h += '<div class="list">';
+    list.forEach(function(m){
+      var risk = m.prizedMonth && (!m.paid || m.arrears>0);
+      var meta = [];
+      if(m.prizedMonth) meta.push('Received pot in month '+m.prizedMonth);
+      if(m.payoutThisPeriod) meta.push('Receiving this month');
+      if(!m.prizedMonth && !m.payoutThisPeriod) meta.push('Not yet received');
+
+      h += '<div class="row'+(risk?' risk':'')+'" onclick="togglePaid(\''+esc(m.id)+'\')">'
+        +   '<div class="av">'+esc(initials(m.name))+'</div>'
+        +   '<div class="who">'
+        +     '<div class="nm">'+esc(m.name)
+        +       (m.share===0.5 ? '<span class="tag half">\u00BD ticket</span>' : '')
+        +       (m.payoutThisPeriod ? '<span class="tag">Payout</span>' : '')
+        +     '</div>'
+        +     '<div class="meta'+(m.arrears?' warn':'')+'">'
+        +        (m.arrears ? m.arrears+' earlier month'+(m.arrears>1?'s':'')+' also pending \u00B7 ' : '')
+        +        esc(meta.join(' \u00B7 '))
+        +     '</div>'
+        +   '</div>'
+        +   '<div class="amt"><div class="v">'+esc(inr(dueFor(m)))+'</div>'
+        +     '<span class="pill '+(m.paid?'paid':'pending')+'">'+(m.paid?'Paid':'Pending')+'</span></div>'
+        + '</div>';
+    });
+    h += '</div>';
+    h += '<div class="sechead">Tap any member to mark paid or pending</div>';
+    return h;
+  }
+
+  function renderPeriods(){
+    var h = '<div class="list">';
+    state.periods.slice().reverse().forEach(function(p){
+      var cur = !p.settled;
+      h += '<div class="prow'+(cur?' current':'')+'">'
+        +   '<div class="pn">'+p.n+'</div>'
+        +   '<div class="who">'
+        +     '<div class="nm">'+esc(p.winner)+(cur?'<span class="tag">In progress</span>':'')+'</div>'
+        +     '<div class="meta">Due <b>'+esc(inr(p.duePaise))+'</b> per ticket \u00B7 payout <b>'+esc(inr(p.payoutPaise))+'</b></div>'
+        +   '</div>'
+        + '</div>';
+    });
+    h += '</div>';
+    h += '<div class="sechead">Amounts are recorded as announced, not calculated</div>';
+    return h;
+  }
+
+  function chip(key,label){
+    return '<button class="chip" aria-pressed="'+(state.filter===key)+'" onclick="setFilter(\''+key+'\')">'+esc(label)+'</button>';
+  }
+
+  /* ---------- actions ---------- */
+  window.setTab = function(t){ state.tab=t; render(); };
+  window.setFilter = function(f){ state.filter=f; state.tab='members'; render(); };
+  window.togglePaid = function(id){
+    var m = state.members.filter(function(x){return x.id===id;})[0];
+    if(!m) return;
+    m.paid = !m.paid;
+    if(m.paid) m.arrears = 0;
+    render();
+    toast(m.paid ? esc(m.name)+' marked paid \u00B7 '+inr(dueFor(m)) : esc(m.name)+' moved back to pending');
+  };
+
+  var tt;
+  window.toast = function(msg){
+    var el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('on');
+    clearTimeout(tt);
+    tt = setTimeout(function(){ el.classList.remove('on'); }, 1900);
+  };
+
+  document.getElementById('scroll').addEventListener('scroll', function(e){
+    document.getElementById('appbar').classList.toggle('scrolled', e.target.scrollTop > 4);
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

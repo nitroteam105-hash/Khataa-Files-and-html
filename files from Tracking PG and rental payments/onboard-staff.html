@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Onboard Staff</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fbfbf9;--ink:#16161a;--muted:#62636a;--line:#e7e7e2;--card:#fff;
+    --accent:#1f6f54;--soft:#e8f3ee;--warm:#f4f2ec;--red:#b3261e;--amber:#b36b00;--ambersoft:#fff4e5;
+    --d:'Plus Jakarta Sans',sans-serif;--b:'Inter',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:var(--b);-webkit-font-smoothing:antialiased;padding-bottom:90px;}
+  .wrap{max-width:480px;margin:0 auto;padding:0 16px;}
+  h1,h2,h3{font-family:var(--d);letter-spacing:-.01em;}
+
+  .top{position:sticky;top:0;background:var(--bg);z-index:9;padding:14px 0 12px;border-bottom:1px solid var(--line);}
+  .top-in{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+  .back{font-size:20px;color:var(--muted);cursor:pointer;}
+  .top h1{font-size:18px;}.top .sub{font-size:12px;color:var(--muted);}
+  .dots{display:flex;gap:6px;}
+  .dots .d{flex:1;height:5px;border-radius:99px;background:var(--line);}
+  .dots .d.on{background:var(--accent);}.dots .d.done{background:var(--accent);opacity:.5;}
+
+  .step-h{margin:18px 0 4px;}
+  .step-h .n{font-family:var(--d);font-weight:700;font-size:12px;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;}
+  .step-h h2{font-size:22px;margin-top:5px;}
+  .step-h p{font-size:13.5px;color:var(--muted);margin-top:3px;}
+
+  label{display:block;font-size:12.5px;color:var(--muted);margin:14px 0 5px;font-weight:500;}
+  input,select,textarea{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;font-size:15px;font-family:var(--b);background:var(--card);color:var(--ink);}
+  textarea{min-height:54px;resize:vertical;line-height:1.4;}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);}
+  input.up{text-transform:uppercase;font-family:var(--d);font-weight:600;letter-spacing:.5px;}
+  .row{display:flex;gap:10px;}.row>*{flex:1;}
+  .opt-note{font-size:11.5px;color:var(--muted);margin-top:5px;}
+  .sub-h{font-family:var(--d);font-weight:700;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:20px 0 2px;padding-top:14px;border-top:1px dashed var(--line);}
+
+  /* depth preset cards */
+  .depth{display:flex;flex-direction:column;gap:10px;margin-top:8px;}
+  .dcard{border:1px solid var(--line);background:var(--card);border-radius:14px;padding:15px;cursor:pointer;transition:.12s;position:relative;}
+  .dcard:hover{border-color:var(--accent);}
+  .dcard.sel{border-color:var(--accent);background:var(--soft);}
+  .dcard.sel::after{content:'✓';position:absolute;top:14px;right:16px;color:var(--accent);font-weight:800;}
+  .dcard .ty{font-family:var(--d);font-weight:800;font-size:16px;}
+  .dcard .ds{font-size:12.5px;color:var(--muted);margin-top:3px;line-height:1.4;}
+
+  /* worker type seg */
+  .seg{display:flex;gap:6px;background:var(--warm);border-radius:10px;padding:4px;margin-top:5px;flex-wrap:wrap;}
+  .seg button{flex:1;border:none;background:none;padding:10px 6px;border-radius:7px;font-family:var(--d);font-weight:600;font-size:12.5px;color:var(--muted);cursor:pointer;white-space:nowrap;}
+  .seg button.on{background:var(--card);color:var(--accent);box-shadow:0 1px 2px rgba(0,0,0,.06);}
+
+  .upload{display:flex;align-items:center;gap:12px;background:var(--card);border:1px dashed #bbb;border-radius:12px;padding:13px;cursor:pointer;margin-top:8px;}
+  .upload.done{border-style:solid;border-color:var(--accent);background:var(--soft);}
+  .upload .ic{font-size:21px;}.upload .tx{flex:1;}.upload .tx h3{font-size:14px;}.upload .tx small{color:var(--muted);font-size:12px;}
+  .priv{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.5;background:var(--warm);padding:10px 12px;border-radius:10px;}
+
+  .toggle{display:flex;align-items:center;justify-content:space-between;padding:11px 0;}
+  .toggle .lbl{font-size:14px;font-weight:600;font-family:var(--d);}
+  .toggle .lbl small{display:block;font-size:12px;color:var(--muted);font-weight:400;font-family:var(--b);}
+  .sw{width:46px;height:26px;border-radius:99px;background:var(--line);position:relative;cursor:pointer;transition:.15s;flex-shrink:0;}
+  .sw.on{background:var(--accent);}
+  .sw::after{content:'';position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.15s;}
+  .sw.on::after{left:23px;}
+
+  .rev{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:10px;}
+  .rev .rr{display:flex;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--line);font-size:14px;}
+  .rev .rr:last-child{border:none;}
+  .rev .rr .k{color:var(--muted);}.rev .rr .v{font-weight:500;text-align:right;max-width:60%;}
+  .rev-h{font-family:var(--d);font-weight:700;font-size:12px;color:var(--muted);text-transform:uppercase;margin:16px 0 7px;letter-spacing:.04em;}
+
+  .bar{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);padding:12px 16px;z-index:9;}
+  .bar-in{max-width:480px;margin:0 auto;display:flex;gap:10px;align-items:center;}
+  .btn{font-family:var(--d);font-weight:700;font-size:15px;border:none;border-radius:11px;padding:14px;cursor:pointer;}
+  .btn.next{background:var(--accent);color:#fff;flex:1;}
+  .btn.back{background:var(--card);border:1px solid var(--line);color:var(--ink);flex:0 0 26%;}
+  .btn.skip{background:none;color:var(--muted);font-weight:600;font-size:13px;border:none;}
+  .savebar{text-align:center;margin-top:8px;}
+  .preset-tag{display:inline-block;font-size:11px;background:var(--soft);color:var(--accent);font-family:var(--d);font-weight:700;padding:3px 10px;border-radius:99px;}
+  .idcard{border:1px solid var(--line);border-radius:13px;padding:12px 14px;margin-top:10px;background:var(--card);}
+  .idcard-top{display:flex;justify-content:space-between;align-items:center;}
+  .idcard-n{font-family:var(--d);font-weight:700;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;}
+  .idrm{background:none;border:none;color:var(--red);font-size:12px;font-weight:600;cursor:pointer;}
+  .additem{width:100%;border:1px dashed #bbb;background:var(--bg);border-radius:10px;padding:11px;font-size:13.5px;cursor:pointer;color:var(--accent);font-family:var(--d);font-weight:600;margin-top:10px;}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+// depth presets — which sections each shows
+const DEPTHS={
+  simple:{name:'Simple',desc:'Name, contact, photo, ID, emergency, pay. Fastest — for daily wagers & quick hires.'},
+  standard:{name:'Standard',desc:'Everything in Simple + references, experience, documents & resume.'},
+  detailed:{name:'Detailed',desc:'Everything in Standard + compliance: EPFO/PF, police & background verification.'}
+};
+const WORKER_TYPES=['Employee','Freelancer','Daily wager','Contract'];
+const PAY_TYPES=['Daily','Weekly','Monthly','Per task'];
+
+let depth='simple';
+let step=0; // 0 = depth pick, then dynamic steps
+const d={
+  wtype:'Employee',
+  name:'',phone:'',gender:'Male',photo:false,
+  nativePlace:'',address:'',
+  ids:[{type:'Aadhaar',no:'',uploaded:false,verified:false}],
+  emg:'',emgph:'',
+  payType:'Monthly',pay:'',
+  // standard
+  referredBy:'',prevEmployer:'',experience:'',docsUploaded:false,resumeUploaded:false,
+  // detailed
+  epfo:'',esi:'',police:false,bgVerified:false
+};
+const $=id=>document.getElementById(id);
+const money=n=>'₹'+(+n||0).toLocaleString('en-IN');
+
+// steps depend on depth
+function stepList(){
+  const base=['depth','basics','idemg','pay'];
+  if(depth==='simple')return [...base,'review'];
+  if(depth==='standard')return [...base,'background','review'];
+  return [...base,'background','compliance','review']; // detailed
+}
+function curStep(){return stepList()[step];}
+
+function depthStep(){
+  const cards=Object.keys(DEPTHS).map(k=>`<div class="dcard ${depth===k?'sel':''}" onclick="setDepth('${k}')">
+    <div class="ty">${DEPTHS[k].name}</div><div class="ds">${DEPTHS[k].desc}</div></div>`).join('');
+  return `<div class="step-h"><span class="n">Start</span><h2>How much detail?</h2><p>Pick a level — you can change it anytime in Settings.</p></div>
+  <div class="depth">${cards}</div>
+  <div class="opt-note" style="margin-top:12px">💡 This is a quick preset. Later, you'll be able to pick exact fields in Business Settings.</div>`;
+}
+function basicsStep(){
+  return `<div class="step-h"><span class="n">Step ${stepNo()}</span><h2>Basics <span class="preset-tag">${DEPTHS[depth].name}</span></h2><p>Who you're onboarding.</p></div>
+  <label>Type</label>
+  <div class="seg">${WORKER_TYPES.map(t=>`<button class="${d.wtype===t?'on':''}" onclick="set('wtype','${t}')">${t}</button>`).join('')}</div>
+  <label>Full name</label><input value="${d.name}" oninput="set('name',this.value);refreshNext()" placeholder="e.g. Suresh Kumar">
+  <div class="row">
+    <div><label>Phone</label><input value="${d.phone}" oninput="set('phone',this.value);refreshNext()" placeholder="10-digit mobile" inputmode="numeric"></div>
+    <div><label>Gender</label><select onchange="set('gender',this.value)">${['Male','Female','Other'].map(g=>`<option ${d.gender===g?'selected':''}>${g}</option>`).join('')}</select></div>
+  </div>
+  <div class="upload ${d.photo?'done':''}" onclick="up('photo')"><span class="ic">${d.photo?'✅':'📷'}</span><div class="tx"><h3>${d.photo?'Photo added':'Add photo'}</h3><small>Worker photo for records</small></div></div>
+  <label>Native place <span class="opt-note">(hometown — where they're from)</span></label>
+  <input value="${d.nativePlace}" oninput="set('nativePlace',this.value)" placeholder="e.g. Raichur, Karnataka">
+  <label>Current address</label>
+  <input value="${d.address}" oninput="set('address',this.value)" placeholder="Where they live now">`;
+}
+function idemgStep(){
+  const idCards=d.ids.map((id,i)=>`
+    <div class="idcard">
+      <div class="idcard-top">
+        <span class="idcard-n">ID ${i+1}</span>
+        ${d.ids.length>1?`<button class="idrm" onclick="rmId(${i})">✕ Remove</button>`:''}
+      </div>
+      <div class="row">
+        <div><label>ID type</label><select onchange="setId(${i},'type',this.value)">${['Aadhaar','PAN','Passport','Driving licence','Voter ID'].map(t=>`<option ${id.type===t?'selected':''}>${t}</option>`).join('')}</select></div>
+        <div><label>ID number</label><input value="${(id.no||'').replace(/"/g,'&quot;')}" oninput="setId(${i},'no',this.value)" placeholder="Optional"></div>
+      </div>
+      <div class="upload ${id.uploaded?'done':''}" onclick="upId(${i})"><span class="ic">${id.uploaded?'✅':'🪪'}</span><div class="tx"><h3>${id.uploaded?id.type+' uploaded':'Upload '+id.type}</h3><small>${id.uploaded?'Saved to your Drive':'Photo or scan'}</small></div></div>
+      ${id.type==='Aadhaar'?`<div class="priv">🔒 Aadhaar isn't stored in our database — only in your own Google Drive. We keep just a ✓ flag.</div>`:''}
+      <div class="toggle"><div class="lbl">Verified<small>Checked the original</small></div><div class="sw ${id.verified?'on':''}" onclick="togId(${i})"></div></div>
+    </div>`).join('');
+  return `<div class="step-h"><span class="n">Step ${stepNo()}</span><h2>ID & emergency</h2><p>Identity and who to call if needed.</p></div>
+  ${idCards}
+  <button class="additem" onclick="addId()">+ Add another ID</button>
+  <div class="sub-h">Emergency contact</div>
+  <div class="row">
+    <div><input value="${d.emg}" oninput="set('emg',this.value)" placeholder="Name & relation"></div>
+    <div><input value="${d.emgph}" oninput="set('emgph',this.value)" placeholder="Phone" inputmode="numeric"></div>
+  </div>`;
+}
+function payStep(){
+  return `<div class="step-h"><span class="n">Step ${stepNo()}</span><h2>Pay</h2><p>How this ${d.wtype.toLowerCase()} is paid.</p></div>
+  <label>Pay type</label>
+  <div class="seg">${PAY_TYPES.map(t=>`<button class="${d.payType===t?'on':''}" onclick="set('payType','${t}')">${t}</button>`).join('')}</div>
+  <label>${d.payType==='Daily'?'Daily wage':d.payType==='Weekly'?'Weekly pay':d.payType==='Per task'?'Rate per task':'Monthly salary'} (₹)</label>
+  <input type="number" value="${d.pay}" oninput="set('pay',this.value)" placeholder="0" inputmode="numeric">
+  <label>UPI ID / number <span class="opt-note">(optional — enables one-tap pay)</span></label>
+  <input value="${d.upi||''}" oninput="set('upi',this.value)" placeholder="e.g. 9845012345@okicici">`;
+}
+function backgroundStep(){
+  return `<div class="step-h"><span class="n">Step ${stepNo()}</span><h2>Background</h2><p>References, experience & documents.</p></div>
+  <label>Referred by <span class="opt-note">(who recommended them)</span></label>
+  <input value="${d.referredBy}" oninput="set('referredBy',this.value)" placeholder="Name & phone">
+  <label>Previous employer</label>
+  <input value="${d.prevEmployer}" oninput="set('prevEmployer',this.value)" placeholder="Where they worked before">
+  <label>Experience / skills</label>
+  <textarea oninput="set('experience',this.value)" placeholder="e.g. 5 years welding, gate & grille work">${d.experience}</textarea>
+  <div class="sub-h">Documents</div>
+  <div class="upload ${d.docsUploaded?'done':''}" onclick="up('docsUploaded')"><span class="ic">${d.docsUploaded?'✅':'📄'}</span><div class="tx"><h3>${d.docsUploaded?'Documents added':'Upload documents'}</h3><small>Certificates, licences, etc.</small></div></div>
+  <div class="upload ${d.resumeUploaded?'done':''}" onclick="up('resumeUploaded')"><span class="ic">${d.resumeUploaded?'✅':'📋'}</span><div class="tx"><h3>${d.resumeUploaded?'Resume added':'Upload resume / bio-data'}</h3><small>If available</small></div></div>`;
+}
+function complianceStep(){
+  return `<div class="step-h"><span class="n">Step ${stepNo()}</span><h2>Compliance</h2><p>Statutory & verification — for formal roles.</p></div>
+  <label>EPFO / PF number <span class="opt-note">(optional)</span></label>
+  <input value="${d.epfo}" oninput="set('epfo',this.value)" placeholder="PF / UAN number">
+  <label>ESI number <span class="opt-note">(optional)</span></label>
+  <input value="${d.esi}" oninput="set('esi',this.value)" placeholder="ESI number">
+  <div class="sub-h">Verification</div>
+  <div class="toggle"><div class="lbl">Police verification done<small>For security / sensitive roles</small></div><div class="sw ${d.police?'on':''}" onclick="tog('police')"></div></div>
+  <div class="toggle"><div class="lbl">Background verification done<small>Reference / history checked</small></div><div class="sw ${d.bgVerified?'on':''}" onclick="tog('bgVerified')"></div></div>`;
+}
+function reviewStep(){
+  const chk=b=>b?'<span style="color:var(--accent)">✓</span>':'<span style="color:var(--muted)">—</span>';
+  let h=`<div class="step-h"><span class="n">Review</span><h2>Review & add</h2><p><span class="preset-tag">${DEPTHS[depth].name}</span> onboarding</p></div>
+  <div class="rev-h">Basics</div>
+  <div class="rev">
+    <div class="rr"><span class="k">Type</span><span class="v">${d.wtype}</span></div>
+    <div class="rr"><span class="k">Name</span><span class="v">${d.name||'—'}</span></div>
+    <div class="rr"><span class="k">Phone</span><span class="v">${d.phone||'—'}</span></div>
+    <div class="rr"><span class="k">Native place</span><span class="v">${d.nativePlace||'—'}</span></div>
+    <div class="rr"><span class="k">Address</span><span class="v">${d.address||'—'}</span></div>
+    <div class="rr"><span class="k">Photo</span><span class="v">${chk(d.photo)}</span></div>
+  </div>
+  <div class="rev-h">ID & emergency</div>
+  <div class="rev">
+    ${d.ids.map(id=>`<div class="rr"><span class="k">${id.type}${id.no?' · '+id.no:''}</span><span class="v">${chk(id.uploaded)} ${id.verified?'· verified':''}</span></div>`).join('')}
+    <div class="rr"><span class="k">Emergency</span><span class="v">${d.emg?d.emg+' · '+d.emgph:'—'}</span></div>
+  </div>
+  <div class="rev-h">Pay</div>
+  <div class="rev">
+    <div class="rr"><span class="k">${d.payType}</span><span class="v">${d.pay?money(d.pay):'—'}</span></div>
+  </div>`;
+  if(depth!=='simple'){
+    h+=`<div class="rev-h">Background</div>
+    <div class="rev">
+      <div class="rr"><span class="k">Referred by</span><span class="v">${d.referredBy||'—'}</span></div>
+      <div class="rr"><span class="k">Previous employer</span><span class="v">${d.prevEmployer||'—'}</span></div>
+      <div class="rr"><span class="k">Experience</span><span class="v">${d.experience||'—'}</span></div>
+      <div class="rr"><span class="k">Documents / Resume</span><span class="v">${chk(d.docsUploaded)} ${chk(d.resumeUploaded)}</span></div>
+    </div>`;
+  }
+  if(depth==='detailed'){
+    h+=`<div class="rev-h">Compliance</div>
+    <div class="rev">
+      <div class="rr"><span class="k">EPFO / PF</span><span class="v">${d.epfo||'—'}</span></div>
+      <div class="rr"><span class="k">ESI</span><span class="v">${d.esi||'—'}</span></div>
+      <div class="rr"><span class="k">Police verification</span><span class="v">${chk(d.police)}</span></div>
+      <div class="rr"><span class="k">Background verification</span><span class="v">${chk(d.bgVerified)}</span></div>
+    </div>`;
+  }
+  return h;
+}
+
+const RENDERERS={depth:depthStep,basics:basicsStep,idemg:idemgStep,pay:payStep,background:backgroundStep,compliance:complianceStep,review:reviewStep};
+function stepNo(){return step;} // step index works as a friendly number (1=basics...)
+
+function set(f,v){d[f]=v;if(['wtype','payType'].includes(f))render();}
+function setDepth(k){depth=k;const max=stepList().length-1;if(step>max)step=max;render();}
+function up(f){d[f]=true;render();}
+function tog(f){d[f]=!d[f];render();}
+function addId(){d.ids.push({type:'PAN',no:'',uploaded:false,verified:false});render();}
+function rmId(i){d.ids.splice(i,1);render();}
+function setId(i,f,v){d.ids[i][f]=v;}
+function upId(i){d.ids[i].uploaded=true;render();}
+function togId(i){d.ids[i].verified=!d.ids[i].verified;render();}
+function refreshNext(){const b=document.querySelector('.btn.next');if(!b)return;const ok=canNext();b.disabled=!ok;b.style.opacity=ok?'1':'.4';}
+function canNext(){
+  const s=curStep();
+  if(s==='basics')return d.name.trim()&&d.phone.trim();
+  return true;
+}
+
+function render(){
+  if(step==='done'){renderDone();return;}
+  const steps=stepList();
+  const s=steps[step];
+  const body=RENDERERS[s]();
+  // progress dots: skip the depth pick from the count
+  const dots=steps.map((x,i)=>`<div class="d ${i===step?'on':i<step?'done':''}"></div>`).join('');
+  const isLast=s==='review';
+  $('app').innerHTML=`
+  <div class="top"><div class="wrap">
+    <div class="top-in"><span class="back" onclick="goBack()">←</span>
+    <div><h1>Onboard staff</h1><div class="sub">Apex Signs & Fabrication${s!=='depth'?' · '+DEPTHS[depth].name:''}</div></div></div>
+    <div class="dots">${dots}</div>
+  </div></div>
+  <div class="wrap">${body}</div>
+  <div class="bar"><div class="bar-in">
+    ${step>0?'<button class="btn back" onclick="prev()">←</button>':''}
+    <button class="btn next" onclick="next()" ${canNext()?'':'disabled style="opacity:.4"'}>${isLast?'✓ Add staff':(s==='depth'?'Start →':'Continue →')}</button>
+  </div>
+  ${!isLast&&s!=='depth'?'<div class="savebar"><button class="btn skip" onclick="finish(true)">Save now, add rest later</button></div>':''}
+  </div>`;
+}
+function next(){
+  if(!canNext()){alert('Please enter name and phone to continue.');return;}
+  const steps=stepList();
+  if(step<steps.length-1){step++;render();window.scrollTo(0,0);}else finish(false);
+}
+function prev(){if(step>0){step--;render();window.scrollTo(0,0);}}
+function goBack(){if(step===0)alert('Back to Staff list');else prev();}
+function finish(early){step='done';d._early=early;renderDone();window.scrollTo(0,0);}
+function renderDone(){
+  $('app').innerHTML=`<div class="wrap" style="text-align:center;padding-top:50px">
+    <div style="font-size:50px">✅</div>
+    <h2 style="font-size:25px;margin:14px 0 6px;font-family:var(--d)">${d.name||'Staff'} added!</h2>
+    <p style="color:var(--muted);font-size:15px;line-height:1.5">${d.wtype} · ${d.payType} ${d.pay?money(d.pay):''}<br><span style="font-size:13px">${DEPTHS[depth].name} onboarding${d._early?' · basic info saved':''}</span></p>
+    <div style="background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:24px 0;text-align:left">
+      <div style="font-family:var(--d);font-weight:700;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px">Added to your team</div>
+      <div style="font-size:13.5px;color:var(--muted);line-height:1.6">You can record their salary, wages or advances anytime from their profile — it flows into Money Out.</div>
+    </div>
+    <button class="btn next" style="width:100%;margin-bottom:10px" onclick="alert('Opens the staff profile.')">View profile</button>
+    <button class="btn back" style="width:100%;flex:none" onclick="location.reload()">Add another</button>
+  </div>`;
+}
+render();
+</script>
+</body>
+</html>

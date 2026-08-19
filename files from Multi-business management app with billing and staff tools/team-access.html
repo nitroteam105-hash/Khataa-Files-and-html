@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team Access — Khaata</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1f6f54; --green-light: #e7f2ed;
+    --parchment: #fbfbf9; --ink: #1c1c1a; --muted: #6b6b64;
+    --border: #e6e4dd; --amber: #b5791f; --amber-light: #fbf1e2;
+    --purple: #6b5b95; --purple-light: #f0eef8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', sans-serif; background: var(--parchment); color: var(--ink);
+    max-width: 480px; margin: 0 auto; min-height: 100vh; padding-bottom: 100px;
+  }
+  header { padding: 24px 20px 12px; }
+  header h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 800; }
+  header p { font-size: 13px; color: var(--muted); margin-top: 3px; }
+
+  .section-label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin: 16px 20px 8px; }
+  .card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin: 0 20px 10px; }
+
+  .field { margin-bottom: 10px; }
+  .field:last-child { margin-bottom: 0; }
+  .field label { font-size: 11px; font-weight: 700; color: var(--muted); display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.02em; }
+  .field label .req { color: var(--amber); }
+  .field input, .field select { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 9px; font-size: 13.5px; font-family: 'Inter', sans-serif; background: #fff; }
+
+  .channel-row { display: flex; gap: 8px; }
+  .channel-opt { flex: 1; text-align: center; padding: 10px 6px; border-radius: 9px; border: 1.5px solid var(--border); font-size: 12px; font-weight: 700; cursor: pointer; background: #fff; color: var(--muted); }
+  .channel-opt.selected { border-color: var(--green); background: var(--green-light); color: var(--green); }
+
+  .status-badge { font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 999px; margin-left: 8px; cursor: pointer; }
+  .status-badge.pending { background: var(--amber-light); color: var(--amber); }
+  .status-badge.active { background: var(--green-light); color: var(--green); }
+  .resend-link { color: var(--green); font-size: 11.5px; font-weight: 700; cursor: pointer; }
+  .invite-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  .page-check-row { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .page-check-row:last-child { border-bottom: none; }
+  .page-check-row input { width: 18px; height: 18px; margin-top: 2px; flex-shrink: 0; }
+  .pc-name { font-size: 13.5px; font-weight: 600; }
+  .pc-desc { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+  .pc-sensitive { font-size: 10px; font-weight: 700; color: var(--amber); background: var(--amber-light); padding: 2px 7px; border-radius: 999px; margin-left: 6px; }
+
+  .level-picker { display: flex; gap: 6px; margin-top: 8px; }
+  .level-opt { padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border); font-size: 11.5px; font-weight: 700; color: var(--muted); cursor: pointer; background: #fff; }
+  .level-opt.selected { border-color: var(--purple); background: var(--purple-light); color: var(--purple); }
+
+  .save-btn { width: 100%; background: var(--green); color: #fff; border: none; padding: 15px; border-radius: 12px; font-weight: 700; font-size: 14.5px; cursor: pointer; margin: 4px 20px 10px; display: block; }
+
+  .note { font-size: 12px; color: var(--muted); margin: 4px 20px 0; line-height: 1.5; }
+
+  .team-row { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; margin: 0 20px 10px; }
+  .team-top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .team-name { font-weight: 700; font-size: 14.5px; }
+  .team-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .team-actions { display: flex; gap: 12px; }
+  .team-edit { color: var(--green); font-size: 13px; cursor: pointer; }
+  .team-remove { color: var(--muted); font-size: 12px; cursor: pointer; }
+  .team-pages { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+  .team-page-chip { font-size: 10.5px; font-weight: 600; background: var(--green-light); color: var(--green); padding: 3px 9px; border-radius: 999px; }
+
+  .empty-note { text-align: center; padding: 20px; color: var(--muted); font-size: 13px; }
+
+  .biz-group { margin: 0 20px 16px; }
+  .biz-group-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: var(--ink); color: #fff; border-radius: 10px 10px 0 0; }
+  .biz-group-name { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 13.5px; }
+  .biz-group-type { font-size: 10.5px; opacity: 0.75; margin-top: 1px; }
+  .biz-group-count { font-size: 11px; font-weight: 700; background: rgba(255,255,255,0.15); padding: 3px 9px; border-radius: 999px; }
+  .biz-group-body { border: 1px solid var(--border); border-top: none; border-radius: 0 0 10px 10px; background: #fff; }
+  .biz-quick-add { font-size: 12px; color: var(--green); font-weight: 700; cursor: pointer; padding: 12px 14px; display: block; text-align: center; }
+  .biz-member-row { padding: 12px 14px; border-bottom: 1px solid var(--border); }
+  .biz-member-row:last-child { border-bottom: none; }
+
+  .contact-pick-btn { width: 100%; border: 1.5px dashed var(--green); color: var(--green); background: none; border-radius: 10px; padding: 12px; font-weight: 700; font-size: 13.5px; cursor: pointer; margin-bottom: 12px; }
+  .search-input { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 9px; font-size: 13.5px; font-family: 'Inter', sans-serif; background: #fff; margin-bottom: 8px; }
+  .contact-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 4px; border-bottom: 1px solid var(--border); cursor: pointer; }
+  .contact-row:last-child { border-bottom: none; }
+  .contact-row:hover { background: var(--green-light); }
+  .contact-name { font-size: 13.5px; font-weight: 600; }
+  .contact-phone { font-size: 12px; color: var(--muted); }
+  .contact-empty { text-align: center; padding: 14px; color: var(--muted); font-size: 12.5px; }
+  .contact-note { font-size: 11px; color: var(--muted); padding: 8px 4px 4px; line-height: 1.5; }
+
+  .fab {
+    position: fixed; bottom: 24px; right: 20px; background: var(--green); color: #fff; border: none;
+    padding: 15px 22px; border-radius: 999px; font-weight: 700; font-size: 14px; cursor: pointer;
+    box-shadow: 0 4px 14px rgba(31,111,84,0.35); font-family: 'Inter', sans-serif; z-index: 10;
+  }
+  .back-link { font-size: 13px; font-weight: 700; color: var(--green); cursor: pointer; display: inline-block; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+
+<div id="dashboardScreen">
+<header>
+  <h1>Access Dashboard</h1>
+  <p>Everyone with access, grouped by business</p>
+</header>
+
+<div id="teamList"></div>
+
+<button class="fab" onclick="openAddScreen()">+ New User</button>
+</div>
+
+<div id="formScreen" style="display:none">
+<header>
+  <span class="back-link" onclick="closeFormScreen()">← Back to Dashboard</span>
+  <h1 id="formTitle">Add Person</h1>
+  <p>Give this person access to just the pages they need, for one specific business</p>
+</header>
+
+<div class="section-label">Add person</div>
+<div class="card">
+  <button class="contact-pick-btn" onclick="toggleContactPicker()">📇 Add from Contacts</button>
+  <div id="contactPicker" style="display:none">
+    <input type="text" class="search-input" id="contactSearch" placeholder="🔍 Search contacts..." oninput="renderContactList()">
+    <div id="contactList"></div>
+  </div>
+  <div class="field"><label>Name <span class="req">*</span></label><input type="text" id="personName" placeholder="Employee's full name"></div>
+  <div class="field"><label>Mobile <span class="req">*</span></label><input type="text" id="personMobile" placeholder="10-digit number"></div>
+  <div class="field"><label>Business <span class="req">*</span></label>
+    <select id="businessSelect" onchange="renderPageChecklist()"></select>
+  </div>
+  <div class="field">
+    <label>Send invite via <span class="req">*</span></label>
+    <div class="channel-row">
+      <div class="channel-opt" data-ch="whatsapp" onclick="pickChannel('whatsapp', this)">💬 WhatsApp</div>
+      <div class="channel-opt" data-ch="sms" onclick="pickChannel('sms', this)">📱 SMS</div>
+      <div class="channel-opt" data-ch="email" onclick="pickChannel('email', this)">✉️ Email</div>
+    </div>
+  </div>
+</div>
+
+<div class="section-label">Page access</div>
+<div class="card">
+  <div id="pageChecklist"></div>
+</div>
+<p class="note">Only the pages checked here will be visible to this person when they log in — everything else stays hidden, including for this same business's other pages.</p>
+
+<button class="save-btn" id="saveBtn" onclick="savePerson()">Save & Send Invite</button>
+</div>
+
+<script>
+const businesses = [
+  { id: 'pg', name: 'Sunshine PG', type: 'PG' },
+  { id: 'news', name: 'Sharma News Agency', type: 'Newspaper' },
+  { id: 'gym', name: 'FlexFit Gym', type: 'Gym' }
+];
+
+const GENERIC_PAGES = [
+  { id: 'home', name: 'Home / Dashboard', desc: "Today's summary, quick actions", noLevels: true },
+  { id: 'customers', name: 'Customers', desc: 'View and add customer records' },
+  { id: 'customers-delete', name: 'Customers — Delete Records', desc: 'Permanently remove a customer', sensitive: true },
+  { id: 'money', name: 'Money / Payments', desc: 'Record payments, view ledger' },
+  { id: 'money-void', name: 'Money — Void / Delete Transactions', desc: 'Reverse or remove a recorded payment', sensitive: true },
+  { id: 'bills', name: 'Bill Generation', desc: 'Create and share bills' },
+  { id: 'bills-cancel', name: 'Bills — Cancel / Delete', desc: 'Cancel or remove a generated bill', sensitive: true },
+  { id: 'vasooli', name: 'Vasooli / Follow-ups', desc: 'Daily list of pending dues' },
+  { id: 'documents', name: 'Documents', desc: 'Business documents, licenses' },
+  { id: 'staff', name: 'Staff', desc: 'View staff records and attendance' },
+  { id: 'staff-manage', name: 'Staff — Manage', desc: 'Salary changes, hire/terminate', sensitive: true },
+  { id: 'settings', name: 'Business Settings', desc: 'Fee plans, GST, business profile', sensitive: true },
+  { id: 'reports', name: 'Reports & Analytics', desc: 'Revenue and performance reports', sensitive: true, noLevels: true }
+];
+
+const TYPE_SPECIFIC_PAGES = {
+  'PG': [{ id: 'rooms', name: 'Room / Tenant Management', desc: 'Room layout, occupancy, sharing types' }],
+  'Newspaper': [{ id: 'delivery', name: 'Newspaper Delivery', desc: "Today's delivery list, skip tracking" }],
+  'Gym': [{ id: 'timetable', name: 'Timetable', desc: 'Batch schedule, instructor assignment' }],
+  'Dairy': [{ id: 'delivery', name: 'Dairy Delivery', desc: "Today's delivery list, skip tracking" }],
+  'Clinic': [{ id: 'appointments', name: 'Appointments', desc: 'Visit log, appointment booking' }],
+  'Coaching': [{ id: 'timetable', name: 'Timetable', desc: 'Batch schedule, instructor assignment' }]
+};
+
+let team = [];
+let editingTeamIdx = null;
+let selectedChannel = null;
+
+const mockContacts = [
+  { name: 'Ravi Kumar', phone: '98765 43210' },
+  { name: 'Sunita Devi', phone: '91234 56780' },
+  { name: 'Anil Sharma', phone: '99887 76655' },
+  { name: 'Priya Nair', phone: '90011 22334' },
+  { name: 'Manoj Verma', phone: '97788 99001' },
+  { name: 'Kavita Joshi', phone: '96655 44332' }
+];
+
+function toggleContactPicker() {
+  const el = document.getElementById('contactPicker');
+  const isOpen = el.style.display !== 'none';
+  el.style.display = isOpen ? 'none' : 'block';
+  if (!isOpen) {
+    document.getElementById('contactSearch').value = '';
+    renderContactList();
+  }
+}
+
+function renderContactList() {
+  const term = document.getElementById('contactSearch').value.trim().toLowerCase();
+  const container = document.getElementById('contactList');
+  const matches = mockContacts.filter(function(c) { return !term || c.name.toLowerCase().indexOf(term) !== -1; });
+  container.innerHTML = '';
+  if (!matches.length) {
+    container.innerHTML = '<div class="contact-empty">No matching contacts.</div>';
+    return;
+  }
+  matches.forEach(function(c) {
+    const row = document.createElement('div');
+    row.className = 'contact-row';
+    row.innerHTML = '<span class="contact-name"></span><span class="contact-phone"></span>';
+    row.querySelector('.contact-name').textContent = c.name;
+    row.querySelector('.contact-phone').textContent = c.phone;
+    row.onclick = function() { selectContact(c); };
+    container.appendChild(row);
+  });
+  const note = document.createElement('div');
+  note.className = 'contact-note';
+  note.textContent = 'Showing sample contacts for this preview — on your phone, this opens your real contact list.';
+  container.appendChild(note);
+}
+
+function selectContact(c) {
+  document.getElementById('personName').value = c.name;
+  document.getElementById('personMobile').value = c.phone.replace(/\s+/g, '');
+  document.getElementById('contactPicker').style.display = 'none';
+}
+
+function pickChannel(ch, el) {
+  selectedChannel = ch;
+  document.querySelectorAll('.channel-opt').forEach(function(o) { o.classList.remove('selected'); });
+  el.classList.add('selected');
+}
+
+function populateBusinessSelect() {
+  const sel = document.getElementById('businessSelect');
+  sel.innerHTML = businesses.map(function(b) { return '<option value="' + b.id + '">' + b.name + '</option>'; }).join('');
+}
+
+function currentBusiness() {
+  const id = document.getElementById('businessSelect').value;
+  return businesses.find(function(b) { return b.id === id; });
+}
+
+function renderPageChecklist(checkedIds, levelMap) {
+  checkedIds = checkedIds || [];
+  levelMap = levelMap || {};
+  const biz = currentBusiness();
+  const specific = TYPE_SPECIFIC_PAGES[biz.type] || [];
+  const allPages = specific.concat(GENERIC_PAGES);
+  const container = document.getElementById('pageChecklist');
+  container.innerHTML = '';
+  allPages.forEach(function(p) {
+    const isChecked = checkedIds.indexOf(p.id) !== -1;
+    const hasLevels = !p.sensitive && !p.noLevels;
+    const level = levelMap[p.id] || 'edit';
+
+    const row = document.createElement('div');
+    row.className = 'page-check-row';
+    let html =
+      '<input type="checkbox" id="pg-' + p.id + '" data-pageid="' + p.id + '" data-pagename="' + p.name + '"' +
+      (isChecked ? ' checked' : '') + (hasLevels ? ' onchange="toggleLevelPicker(\'' + p.id + '\')"' : '') + '>' +
+      '<div style="flex:1"><div class="pc-name"></div><div class="pc-desc"></div>';
+    if (hasLevels) {
+      html += '<div class="level-picker" id="lvl-' + p.id + '" style="display:' + (isChecked ? 'flex' : 'none') + '">' +
+        '<div class="level-opt' + (level === 'view' ? ' selected' : '') + '" data-lvl="view" onclick="setLevel(\'' + p.id + '\',\'view\',this)">View only</div>' +
+        '<div class="level-opt' + (level === 'edit' ? ' selected' : '') + '" data-lvl="edit" onclick="setLevel(\'' + p.id + '\',\'edit\',this)">Can edit</div>' +
+        '</div>';
+    }
+    html += '</div>';
+    row.innerHTML = html;
+    const nameEl = row.querySelector('.pc-name');
+    nameEl.textContent = p.name;
+    if (p.sensitive) {
+      const badge = document.createElement('span');
+      badge.className = 'pc-sensitive';
+      badge.textContent = 'Sensitive';
+      nameEl.appendChild(badge);
+    }
+    row.querySelector('.pc-desc').textContent = p.desc;
+    container.appendChild(row);
+  });
+}
+
+function toggleLevelPicker(pageId) {
+  const cb = document.getElementById('pg-' + pageId);
+  const picker = document.getElementById('lvl-' + pageId);
+  if (picker) picker.style.display = cb.checked ? 'flex' : 'none';
+}
+
+function setLevel(pageId, level, el) {
+  document.getElementById('pg-' + pageId).checked = true;
+  const picker = document.getElementById('lvl-' + pageId);
+  picker.querySelectorAll('.level-opt').forEach(function(o) { o.classList.remove('selected'); });
+  el.classList.add('selected');
+}
+
+function getCheckedPages() {
+  return Array.from(document.querySelectorAll('#pageChecklist input[type="checkbox"]:checked')).map(function(cb) {
+    const picker = document.getElementById('lvl-' + cb.dataset.pageid);
+    let level = null;
+    if (picker) {
+      const sel = picker.querySelector('.level-opt.selected');
+      level = sel ? sel.dataset.lvl : 'edit';
+    }
+    return { id: cb.dataset.pageid, name: cb.dataset.pagename, level: level };
+  });
+}
+
+function openAddScreen() {
+  editingTeamIdx = null;
+  document.getElementById('personName').value = '';
+  document.getElementById('personMobile').value = '';
+  document.getElementById('formTitle').textContent = 'Add Person';
+  document.getElementById('saveBtn').textContent = 'Save & Send Invite';
+  selectedChannel = null;
+  document.querySelectorAll('.channel-opt').forEach(function(o) { o.classList.remove('selected'); });
+  document.getElementById('businessSelect').selectedIndex = 0;
+  renderPageChecklist();
+  document.getElementById('dashboardScreen').style.display = 'none';
+  document.getElementById('formScreen').style.display = 'block';
+  window.scrollTo(0, 0);
+}
+
+function closeFormScreen() {
+  document.getElementById('formScreen').style.display = 'none';
+  document.getElementById('dashboardScreen').style.display = 'block';
+  window.scrollTo(0, 0);
+}
+
+function savePerson() {
+  const name = document.getElementById('personName').value.trim();
+  const mobile = document.getElementById('personMobile').value.trim();
+  if (!name || !mobile) { alert('Name and Mobile are required.'); return; }
+  if (!selectedChannel) { alert('Choose how to send the invite (WhatsApp, SMS, or Email).'); return; }
+  const biz = currentBusiness();
+  const pages = getCheckedPages();
+  if (!pages.length) { alert('Select at least one page for this person to access.'); return; }
+
+  const isNew = editingTeamIdx === null;
+  const entry = {
+    name: name, mobile: mobile, businessId: biz.id, businessName: biz.name, pages: pages,
+    inviteChannel: selectedChannel,
+    status: isNew ? 'pending' : team[editingTeamIdx].status
+  };
+
+  if (isNew) {
+    team.push(entry);
+    alert('Invite sent to ' + name + ' via ' + channelLabel(selectedChannel) + '.');
+  } else {
+    team[editingTeamIdx] = entry;
+    editingTeamIdx = null;
+  }
+  renderTeamList();
+  closeFormScreen();
+}
+
+function channelLabel(ch) {
+  return ch === 'whatsapp' ? 'WhatsApp' : (ch === 'sms' ? 'SMS' : 'Email');
+}
+
+function editPerson(idx) {
+  const t = team[idx];
+  document.getElementById('personName').value = t.name;
+  document.getElementById('personMobile').value = t.mobile;
+  document.getElementById('businessSelect').value = t.businessId;
+  const levelMap = {};
+  t.pages.forEach(function(p) { if (p.level) levelMap[p.id] = p.level; });
+  renderPageChecklist(t.pages.map(function(p) { return p.id; }), levelMap);
+  selectedChannel = t.inviteChannel;
+  document.querySelectorAll('.channel-opt').forEach(function(o) {
+    o.classList.toggle('selected', o.dataset.ch === t.inviteChannel);
+  });
+  editingTeamIdx = idx;
+  document.getElementById('formTitle').textContent = 'Edit Access';
+  document.getElementById('saveBtn').textContent = '✓ Save Changes';
+  document.getElementById('dashboardScreen').style.display = 'none';
+  document.getElementById('formScreen').style.display = 'block';
+  window.scrollTo(0, 0);
+}
+
+function removePerson(idx) {
+  if (confirm('Remove access for "' + team[idx].name + '"?')) {
+    team.splice(idx, 1);
+    renderTeamList();
+  }
+}
+
+function renderTeamList() {
+  const container = document.getElementById('teamList');
+  container.innerHTML = '';
+
+  businesses.forEach(function(biz) {
+    const members = team.filter(function(t) { return t.businessId === biz.id; });
+
+    const group = document.createElement('div');
+    group.className = 'biz-group';
+    group.innerHTML =
+      '<div class="biz-group-header"><div><div class="biz-group-name"></div><div class="biz-group-type"></div></div>' +
+      '<span class="biz-group-count"></span></div><div class="biz-group-body"></div>';
+    group.querySelector('.biz-group-name').textContent = biz.name;
+    group.querySelector('.biz-group-type').textContent = biz.type;
+    group.querySelector('.biz-group-count').textContent = members.length + (members.length === 1 ? ' person' : ' people');
+
+    const body = group.querySelector('.biz-group-body');
+
+    if (!members.length) {
+      body.innerHTML = '<div class="empty-note" style="padding:16px">No one has access to this business yet.</div>' +
+        '<span class="biz-quick-add" onclick="quickAddForBusiness(\'' + biz.id + '\')">+ Add person for ' + biz.name + '</span>';
+    } else {
+      members.forEach(function(t) {
+        const idx = team.indexOf(t);
+        const row = document.createElement('div');
+        row.className = 'biz-member-row';
+        row.innerHTML =
+          '<div class="team-top"><div><div class="team-name"></div><div class="invite-sub"></div></div>' +
+          '<div class="team-actions"><span class="team-edit" onclick="editPerson(' + idx + ')">Edit</span>' +
+          '<span class="team-remove" onclick="removePerson(' + idx + ')">Remove</span></div></div>' +
+          '<div class="team-pages"></div>' +
+          (t.status === 'pending' ? '<div style="margin-top:8px"><span class="resend-link" onclick="resendInvite(' + idx + ')">Resend invite</span></div>' : '');
+        row.querySelector('.team-name').textContent = t.name + ' · ' + t.mobile;
+        const statusBadge = document.createElement('span');
+        statusBadge.className = 'status-badge ' + t.status;
+        statusBadge.textContent = t.status === 'pending' ? 'Pending' : 'Active';
+        if (t.status === 'pending') statusBadge.onclick = function() { simulateActivate(idx); };
+        row.querySelector('.team-name').appendChild(statusBadge);
+        row.querySelector('.invite-sub').textContent = t.status === 'pending'
+          ? 'Invited via ' + channelLabel(t.inviteChannel) + ' — tap "Pending" to simulate activation'
+          : 'Active — last invited via ' + channelLabel(t.inviteChannel);
+        const pagesEl = row.querySelector('.team-pages');
+        t.pages.forEach(function(p) {
+          const chip = document.createElement('span');
+          chip.className = 'team-page-chip';
+          chip.textContent = p.name + (p.level === 'view' ? ' (View only)' : (p.level === 'edit' ? ' (Can edit)' : ''));
+          pagesEl.appendChild(chip);
+        });
+        body.appendChild(row);
+      });
+      const quickAdd = document.createElement('span');
+      quickAdd.className = 'biz-quick-add';
+      quickAdd.textContent = '+ Add another person for ' + biz.name;
+      quickAdd.onclick = function() { quickAddForBusiness(biz.id); };
+      body.appendChild(quickAdd);
+    }
+
+    container.appendChild(group);
+  });
+}
+
+function quickAddForBusiness(bizId) {
+  document.getElementById('personName').value = '';
+  document.getElementById('personMobile').value = '';
+  document.getElementById('businessSelect').value = bizId;
+  editingTeamIdx = null;
+  document.getElementById('formTitle').textContent = 'Add Person';
+  document.getElementById('saveBtn').textContent = 'Save & Send Invite';
+  selectedChannel = null;
+  document.querySelectorAll('.channel-opt').forEach(function(o) { o.classList.remove('selected'); });
+  renderPageChecklist();
+  document.getElementById('dashboardScreen').style.display = 'none';
+  document.getElementById('formScreen').style.display = 'block';
+  window.scrollTo(0, 0);
+}
+
+function simulateActivate(idx) {
+  team[idx].status = 'active';
+  renderTeamList();
+}
+
+function resendInvite(idx) {
+  alert('Invite resent to ' + team[idx].name + ' via ' + channelLabel(team[idx].inviteChannel) + '.');
+}
+
+populateBusinessSelect();
+renderPageChecklist();
+renderTeamList();
+</script>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Import Items</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#16161a;--mut:#62636a;--ln:#e7e7e2;--ac:#1f6f54;--sf:#e8f3ee;--wm:#f4f2ec;
+--rd:#b3261e;--rs:#fdecea;--am:#b36b00;--as:#fff4e5;--bl:#2a5db0;--bs:#e8eef9;
+--d:'Plus Jakarta Sans',system-ui,sans-serif;--b:'Inter',system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fbfbf9;color:var(--ink);font-family:var(--b);padding-bottom:96px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:480px;margin:0 auto;padding:0 16px}
+h1,h2,h3{font-family:var(--d);letter-spacing:-.01em}
+.top{position:sticky;top:0;background:#fbfbf9;z-index:9;padding:13px 0;border-bottom:1px solid var(--ln);display:flex;align-items:center;gap:11px}
+.top .bk{font-size:20px;color:var(--mut);cursor:pointer}.top h1{font-size:18px;flex:1}.top .s{font-size:12px;color:var(--mut)}
+/* stepper */
+.steps{display:flex;align-items:center;gap:4px;margin:14px 0 4px}
+.steps .st{flex:1;height:4px;border-radius:3px;background:var(--ln)}
+.steps .st.on{background:var(--ac)}
+.steplbl{font-size:11.5px;color:var(--mut);font-weight:600;margin-bottom:2px}
+/* upload */
+.drop{background:#fff;border:1.5px dashed #c3c8c2;border-radius:14px;padding:30px 18px;text-align:center;cursor:pointer;margin-top:8px}
+.drop .e{font-size:34px}.drop .t{font-family:var(--d);font-weight:700;font-size:15px;margin-top:8px}.drop .d{font-size:12px;color:var(--mut);margin-top:4px;line-height:1.5}
+.drop.loaded{border-style:solid;border-color:var(--ac);background:var(--sf)}
+.tmpl{background:#fff;border:1px solid var(--ln);border-radius:12px;padding:13px;margin-top:12px;font-size:12.5px;color:var(--mut);line-height:1.5}
+.tmpl b{color:var(--ink)}
+.tmpl a{color:var(--ac);font-weight:700;cursor:pointer}
+.filecard{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--ln);border-radius:12px;padding:13px;margin-top:12px}
+.filecard .fi{width:40px;height:40px;border-radius:10px;background:var(--sf);display:flex;align-items:center;justify-content:center;font-size:19px}
+.filecard .fn{flex:1}.filecard .fnm{font-family:var(--d);font-weight:700;font-size:13.5px}.filecard .fs{font-size:11.5px;color:var(--mut);margin-top:1px}
+/* map */
+.maprow{background:#fff;border:1px solid var(--ln);border-radius:12px;padding:12px 13px;margin-bottom:9px;display:flex;align-items:center;gap:11px}
+.maprow .mf{flex:1}.maprow .mfl{font-family:var(--d);font-weight:700;font-size:13.5px}.maprow .mfl .req{color:var(--rd)}
+.maprow .mfs{font-size:11px;color:var(--mut);margin-top:1px}
+.maprow select{width:150px;flex-shrink:0;padding:9px 10px;border:1px solid var(--ln);border-radius:9px;font-size:13px;font-family:var(--b);background:#fbfbf9}
+.maprow.matched select{border-color:var(--ac);background:var(--sf)}
+.maphint{font-size:11.5px;color:var(--mut);margin:2px 2px 12px;line-height:1.45}
+/* preview */
+.sumbar{display:flex;gap:8px;margin-bottom:12px}
+.sumbar .sx{flex:1;background:#fff;border:1px solid var(--ln);border-radius:11px;padding:11px;text-align:center}
+.sumbar .sv{font-family:var(--d);font-weight:800;font-size:19px}.sumbar .sl{font-size:10.5px;color:var(--mut);margin-top:1px}
+.sumbar .ok .sv{color:var(--ac)}.sumbar .prob .sv{color:var(--am)}
+.pvrow{background:#fff;border:1px solid var(--ln);border-radius:11px;padding:11px 12px;margin-bottom:7px;display:flex;align-items:center;gap:11px}
+.pvrow.bad{border-color:#eecccc;background:#fffafa}
+.pvrow .ic{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.ic.ok{background:var(--sf);color:var(--ac)}.ic.bad{background:var(--rs)}
+.pvrow .pm{flex:1;min-width:0}.pvrow .pn{font-family:var(--d);font-weight:700;font-size:13.5px}
+.pvrow .pd{font-size:11.5px;color:var(--mut);margin-top:1px}
+.pvrow .pd .warn{color:var(--rd);font-weight:600}
+.pvrow .pp{font-family:var(--d);font-weight:800;font-size:14px;flex-shrink:0}
+.demo{background:#fff;border:1px dashed #cdd3ce;border-radius:12px;padding:10px 12px;margin:12px 0}
+.demo .dh{font-size:11px;color:var(--mut);margin-bottom:8px;font-weight:600}
+.demo .drow{display:flex;gap:8px}
+.demo .drow button{flex:1;border:1px solid var(--ln);background:#fbfbf9;border-radius:9px;padding:8px;font-family:var(--d);font-weight:700;font-size:12px;color:var(--mut);cursor:pointer}
+.demo .drow button.on{background:var(--sf);border-color:var(--ac);color:var(--ac)}
+.done-ic{width:64px;height:64px;border-radius:50%;background:var(--ac);color:#fff;display:flex;align-items:center;justify-content:center;font-size:32px;margin:30px auto 16px}
+.done-t{text-align:center;font-family:var(--d);font-weight:800;font-size:20px}
+.done-d{text-align:center;font-size:13px;color:var(--mut);margin-top:6px;line-height:1.5}
+.fab{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(transparent,#fbfbf9 20%);padding:16px;display:flex;justify-content:center}
+.fab .in{max-width:480px;width:100%;display:flex;gap:10px}
+.btn{flex:1;font-family:var(--d);font-weight:700;font-size:15px;border:none;border-radius:12px;padding:15px;cursor:pointer;background:var(--ac);color:#fff;box-shadow:0 4px 16px rgba(31,111,84,.3)}
+.btn:disabled{opacity:.45;box-shadow:none}
+.btn.s{flex:0 0 auto;background:#fff;border:1px solid var(--ln);color:var(--ink);box-shadow:none;padding:15px 18px}
+.hidden{display:none}
+.toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:11px 18px;border-radius:22px;font-size:13px;font-weight:600;opacity:0;transition:all .3s;z-index:40;pointer-events:none}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+</style></head><body>
+<div class="top wrap"><span class="bk" onclick="back()">←</span><div style="flex:1"><h1 id="ttl">Import Items</h1><div class="s">Sharma Hardware</div></div></div>
+<div class="wrap">
+  <div class="demo"><div class="dh">Demo — capabilities from setup:</div>
+    <div class="drow"><button id="capGst" class="on" onclick="toggleCap('gst')">GST</button><button id="capStock" class="on" onclick="toggleCap('stock')">Stock</button></div>
+  </div>
+
+  <div class="steps"><div class="st on" id="s1"></div><div class="st" id="s2"></div><div class="st" id="s3"></div></div>
+  <div class="steplbl" id="steplbl">Step 1 of 3 · Upload your file</div>
+
+  <div id="body"></div>
+</div>
+
+<div class="fab"><div class="in" id="fab"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+var cap={gst:true,stock:true};
+var step=1;
+var fileLoaded=false;
+/* mock uploaded sheet: headers + rows (deliberately a bit messy) */
+var sheet={
+ headers:['Product','MRP','Sale Rate','Qty','Tax %','Group'],
+ rows:[
+  ['UltraTech Cement 50kg','450','410','120','28','Cement'],
+  ['Asian Paints Apcolite 1L','','340','8','18','Paint'],
+  ['TMT Steel Rod 12mm','','68','','18','Steel'],
+  ['PVC Pipe 1inch','160','','15','18','Plumbing'],   // missing price -> problem
+  ['Wall Putty 40kg','1200','1050','18','18','Paint'],
+  ['CPVC Elbow','','22','340','18','Plumbing'],
+  ['Binding Wire 1kg','','75','60','18','Steel'],
+ ]
+};
+/* our target fields */
+function targetFields(){
+ var f=[{k:'name',l:'Item name',req:true,guess:['product','item','name']},
+        {k:'price',l:'Selling price',req:true,guess:['sale rate','rate','price','mrp']},
+        {k:'cat',l:'Category',req:false,guess:['group','category','cat']}];
+ if(cap.stock)f.push({k:'stock',l:'Opening stock',req:false,guess:['qty','quantity','stock']});
+ if(cap.gst)f.push({k:'gst',l:'GST rate',req:false,guess:['tax %','gst','tax']});
+ return f;
+}
+var mapping={}; // fieldKey -> header index (or -1)
+var $=function(i){return document.getElementById(i)};
+function money(n){return '\u20b9'+(+n||0).toLocaleString('en-IN')}
+function toggleCap(k){cap[k]=!cap[k];$('cap'+(k==='gst'?'Gst':'Stock')).classList.toggle('on',cap[k]);autoMap();render();}
+
+function autoMap(){
+ mapping={};
+ targetFields().forEach(function(f){
+  var found=-1;
+  sheet.headers.forEach(function(h,i){if(found<0&&f.guess.indexOf(h.toLowerCase())>=0)found=i;});
+  mapping[f.k]=found;
+ });
+}
+/* build a normalised record from a row using mapping */
+function recFor(row){
+ var r={};
+ targetFields().forEach(function(f){var idx=mapping[f.k];r[f.k]=idx>=0?(row[idx]||'').trim():'';});
+ // clean price like "410/-" or "\u20b9410"
+ if(r.price)r.price=r.price.replace(/[^0-9.]/g,'');
+ return r;
+}
+function problem(r){
+ if(!r.name)return 'No name';
+ if(!r.price||+r.price<=0)return 'No price';
+ return '';
+}
+
+function setStep(n){step=n;['1','2','3'].forEach(function(x){$('s'+x).classList.toggle('on',+x<=n)});
+ $('steplbl').textContent='Step '+n+' of 3 · '+({1:'Upload your file',2:'Match the columns',3:'Preview & import'}[n]);
+ render();}
+
+function render(){
+ if(step===1)renderUpload();
+ else if(step===2)renderMap();
+ else if(step===3)renderPreview();
+ else renderDone();
+ renderFab();
+}
+function renderUpload(){
+ $('body').innerHTML=fileLoaded
+  ? '<div class="filecard"><div class="fi">\ud83d\udcc4</div><div class="fn"><div class="fnm">items_export.csv</div><div class="fs">'+sheet.rows.length+' rows \u00b7 '+sheet.headers.length+' columns detected</div></div><div style="color:var(--ac);font-size:20px">\u2713</div></div>'
+    +'<div class="tmpl">Looks good \u2014 next you\u2019ll match their columns to your fields.</div>'
+  : '<div class="drop" onclick="loadFile()"><div class="e">\ud83d\udcc4</div><div class="t">Tap to choose a CSV or Excel file</div><div class="d">From Vyapar, KhataBook, a spreadsheet \u2014 any .csv / .xlsx export</div></div>'
+    +'<div class="tmpl">First row should be headers (Item, Price, etc.). Variants and pack-units can\u2019t be imported \u2014 add those later. <a onclick="toast(\'Downloads a template CSV\')">Download a template</a></div>';
+}
+function renderMap(){
+ var opts=function(sel){return '<option value="-1">\u2014 not in file \u2014</option>'+sheet.headers.map(function(h,i){return '<option value="'+i+'" '+(sel===i?'selected':'')+'>'+h+'</option>'}).join('')};
+ $('body').innerHTML='<div class="maphint">We\u2019ve auto-matched what we could. Check the ones that matter \u2014 <b>name</b> and <b>price</b> are required.</div>'
+  +targetFields().map(function(f){var m=mapping[f.k];return '<div class="maprow '+(m>=0?'matched':'')+'"><div class="mf"><div class="mfl">'+f.l+(f.req?' <span class="req">*</span>':'')+'</div><div class="mfs">'+(m>=0?'from \u201c'+sheet.headers[m]+'\u201d':'not mapped')+'</div></div><select onchange="mapping[\''+f.k+'\']=+this.value;render()">'+opts(m)+'</select></div>'}).join('');
+}
+function renderPreview(){
+ var recs=sheet.rows.map(recFor);
+ var good=recs.filter(function(r){return !problem(r)});
+ var bad=recs.filter(function(r){return problem(r)});
+ $('body').innerHTML='<div class="sumbar"><div class="sx ok"><div class="sv">'+good.length+'</div><div class="sl">ready to import</div></div>'+(bad.length?'<div class="sx prob"><div class="sv">'+bad.length+'</div><div class="sl">need attention</div></div>':'')+'</div>'
+  +recs.map(function(r){var p=problem(r);
+    var det=[];if(r.cat)det.push(r.cat);if(cap.stock&&r.stock)det.push(r.stock+' in stock');if(cap.gst&&r.gst)det.push('GST '+r.gst+'%');
+    return '<div class="pvrow '+(p?'bad':'')+'"><div class="ic '+(p?'bad':'ok')+'">'+(p?'\u26a0\ufe0f':'\u2713')+'</div><div class="pm"><div class="pn">'+(r.name||'(no name)')+'</div><div class="pd">'+(p?'<span class="warn">'+p+' \u2014 will be skipped</span>':det.join(' \u00b7 '))+'</div></div><div class="pp">'+(r.price?money(r.price):'\u2014')+'</div></div>';
+  }).join('')
+  +(bad.length?'<div class="tmpl" style="margin-top:4px">Rows with problems are skipped. You can fix them in your file and re-import, or add them by hand.</div>':'');
+}
+function renderDone(){
+ var good=sheet.rows.map(recFor).filter(function(r){return !problem(r)}).length;
+ $('body').innerHTML='<div class="done-ic">\u2713</div><div class="done-t">'+good+' items imported</div><div class="done-d">Added to your catalogue. Set any variants, MRP or pack-units from the item list when you need them.</div>';
+}
+function renderFab(){
+ if(step===1)$('fab').innerHTML='<button class="btn" '+(fileLoaded?'':'disabled')+' onclick="setStep(2)">Continue</button>';
+ else if(step===2){var ok=mapping.name>=0&&mapping.price>=0;$('fab').innerHTML='<button class="btn s" onclick="setStep(1)">Back</button><button class="btn" '+(ok?'':'disabled')+' onclick="setStep(3)">Preview</button>';}
+ else if(step===3){var good=sheet.rows.map(recFor).filter(function(r){return !problem(r)}).length;$('fab').innerHTML='<button class="btn s" onclick="setStep(2)">Back</button><button class="btn" onclick="setStep(4)">Import '+good+' items</button>';}
+ else $('fab').innerHTML='<button class="btn" onclick="toast(\'Opens item list\')">Done</button>';
+}
+function loadFile(){fileLoaded=true;autoMap();render();toast('File loaded (mock)');}
+function back(){if(step>1&&step<4)setStep(step-1);else toast('Back');}
+var tT;function toast(m){var t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(tT);tT=setTimeout(function(){t.classList.remove('on')},1700);}
+autoMap();render();
+</script></body></html>

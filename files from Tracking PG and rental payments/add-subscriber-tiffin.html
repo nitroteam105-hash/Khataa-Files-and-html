@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tiffin — Add Subscriber</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fbfbf9;--ink:#16161a;--muted:#62636a;--line:#e7e7e2;--card:#fff;
+    --accent:#1f6f54;--soft:#e8f3ee;--warm:#f4f2ec;--red:#b3261e;--amber:#b36b00;--ambersoft:#fff4e5;
+    --d:'Plus Jakarta Sans',sans-serif;--b:'Inter',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:var(--b);-webkit-font-smoothing:antialiased;padding-bottom:88px;}
+  .wrap{max-width:480px;margin:0 auto;padding:0 16px;}
+  h1,h2,h3{font-family:var(--d);letter-spacing:-.01em;}
+
+  .top{position:sticky;top:0;background:var(--bg);z-index:9;padding:14px 0 12px;border-bottom:1px solid var(--line);}
+  .top-in{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+  .back{font-size:20px;color:var(--muted);cursor:pointer;}
+  .top h1{font-size:18px;}.top .sub{font-size:12px;color:var(--muted);}
+  .dots{display:flex;gap:6px;}
+  .dots .d{flex:1;height:5px;border-radius:99px;background:var(--line);}
+  .dots .d.on{background:var(--accent);}.dots .d.done{background:var(--accent);opacity:.5;}
+
+  .step-h{margin:18px 0 4px;}
+  .step-h .n{font-family:var(--d);font-weight:700;font-size:12px;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;}
+  .step-h h2{font-size:22px;margin-top:5px;}
+  .step-h p{font-size:13.5px;color:var(--muted);margin-top:3px;}
+
+  label{display:block;font-size:12.5px;color:var(--muted);margin:14px 0 5px;font-weight:500;}
+  input,select,textarea{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;font-size:15px;font-family:var(--b);background:var(--card);color:var(--ink);}
+  textarea{min-height:60px;resize:vertical;line-height:1.4;}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);}
+  .row{display:flex;gap:10px;}.row>*{flex:1;}
+  .opt-note{font-size:11.5px;color:var(--muted);}
+  .onetime-h{font-family:var(--d);font-weight:700;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:20px 0 4px;padding-top:14px;border-top:1px dashed var(--line);}
+
+  /* meal toggles */
+  .meals{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px;}
+  .meal{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:13px 6px;text-align:center;cursor:pointer;transition:.12s;}
+  .meal:hover{border-color:var(--accent);}
+  .meal.sel{border-color:var(--accent);background:var(--soft);}
+  .meal .ic{font-size:22px;}
+  .meal .nm{font-family:var(--d);font-weight:700;font-size:13px;margin-top:3px;}
+  .meal .pr{font-size:11px;color:var(--muted);}
+  .meal.sel .pr{color:var(--accent);font-weight:600;}
+
+  /* plan cards */
+  .plans{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:6px;}
+  .plan{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:13px;cursor:pointer;transition:.12s;position:relative;}
+  .plan:hover{border-color:var(--accent);}
+  .plan.sel{border-color:var(--accent);background:var(--soft);}
+  .plan.sel::after{content:'✓';position:absolute;top:9px;right:11px;color:var(--accent);font-weight:700;}
+  .plan .ty{font-family:var(--d);font-weight:700;font-size:14px;}
+  .plan .sh{font-size:11px;color:var(--muted);margin-top:1px;}
+
+  /* segmented */
+  .seg{display:flex;gap:6px;background:var(--warm);border-radius:10px;padding:4px;margin-top:5px;}
+  .seg button{flex:1;border:none;background:none;padding:9px;border-radius:7px;font-family:var(--d);font-weight:600;font-size:13px;color:var(--muted);cursor:pointer;}
+  .seg button.on{background:var(--card);color:var(--accent);box-shadow:0 1px 2px rgba(0,0,0,.06);}
+
+  /* days */
+  .days{display:flex;gap:6px;margin-top:6px;}
+  .day{flex:1;border:1px solid var(--line);background:var(--card);border-radius:9px;padding:9px 0;text-align:center;font-family:var(--d);font-weight:600;font-size:12px;color:var(--muted);cursor:pointer;}
+  .day.sel{border-color:var(--accent);background:var(--soft);color:var(--accent);}
+
+  .mtotal{display:flex;justify-content:space-between;align-items:center;background:var(--ink);color:#fff;border-radius:12px;padding:14px 16px;margin-top:12px;font-family:var(--d);font-weight:700;}
+  .mtotal span:last-child{font-size:20px;font-weight:800;}
+  .mtotal .est{font-size:11px;color:#b8b9bd;font-weight:500;}
+
+  .rev{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:10px;}
+  .rev .rr{display:flex;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--line);font-size:14px;}
+  .rev .rr:last-child{border:none;}
+  .rev .rr .k{color:var(--muted);}.rev .rr .v{font-weight:500;text-align:right;}
+  .rev-h{font-family:var(--d);font-weight:700;font-size:12px;color:var(--muted);text-transform:uppercase;margin:16px 0 7px;letter-spacing:.04em;}
+
+  .bar{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);padding:12px 16px;z-index:9;}
+  .bar-in{max-width:480px;margin:0 auto;display:flex;gap:10px;align-items:center;}
+  .btn{font-family:var(--d);font-weight:700;font-size:15px;border:none;border-radius:11px;padding:14px;cursor:pointer;}
+  .btn.next{background:var(--accent);color:#fff;flex:1;}
+  .btn.back{background:var(--card);border:1px solid var(--line);color:var(--ink);flex:0 0 26%;}
+  .btn.skip{background:none;color:var(--muted);font-weight:600;font-size:13px;border:none;}
+  .savebar{text-align:center;margin-top:8px;}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+const STEPS=['Subscriber','Meal plan','Delivery','Review'];
+let step=0;
+const MEALS=[
+  {key:'breakfast',ic:'🌅',nm:'Breakfast',price:40},
+  {key:'lunch',ic:'🍱',nm:'Lunch',price:70},
+  {key:'dinner',ic:'🌙',nm:'Dinner',price:70}
+];
+const PLANS=[
+  {ty:'Daily',sh:'Pay as you go',days:1},
+  {ty:'Weekly',sh:'7 days',days:7},
+  {ty:'Monthly',sh:'~26 days',days:26},
+  {ty:'Trial',sh:'3 days',days:3}
+];
+const DAYS=['M','T','W','T','F','S','S'];
+const d={
+  name:'',phone:'',address:'',
+  meals:['lunch','dinner'], veg:'Veg', planIdx:2,
+  activeDays:[0,1,2,3,4,5], mode:'Delivery', startDate:'2026-06-24',
+  notes:''
+};
+const $=id=>document.getElementById(id);
+const money=n=>'₹'+(+n||0).toLocaleString('en-IN');
+function set(f,v){d[f]=v;}
+function perDayMeal(){return MEALS.filter(m=>d.meals.includes(m.key)).reduce((a,m)=>a+m.price,0);}
+function planDays(){return PLANS[d.planIdx].days;}
+function estTotal(){
+  // per-day meal cost × active days in the plan period (cap weekly/monthly by selected weekdays ratio)
+  const p=PLANS[d.planIdx];
+  if(p.ty==='Daily')return perDayMeal();
+  const ratio=d.activeDays.length/7;
+  return Math.round(perDayMeal()*p.days*ratio);
+}
+
+function subscriber(){
+  return `<div class="step-h"><span class="n">Step 1 of 4</span><h2>Subscriber</h2><p>Who's getting the tiffin.</p></div>
+  <label>Full name</label><input value="${d.name}" oninput="set('name',this.value);refreshNext()" placeholder="e.g. Rahul / Acme Office">
+  <label>Phone number</label><input value="${d.phone}" oninput="set('phone',this.value);refreshNext()" placeholder="10-digit mobile" inputmode="numeric">
+  <label>Delivery address</label><textarea oninput="set('address',this.value)" placeholder="Flat / office, area, landmark...">${d.address}</textarea>`;
+}
+function planStep(){
+  const mealCards=MEALS.map(m=>`<div class="meal ${d.meals.includes(m.key)?'sel':''}" onclick="toggleMeal('${m.key}')">
+    <div class="ic">${m.ic}</div><div class="nm">${m.nm}</div><div class="pr">${money(m.price)}</div></div>`).join('');
+  const planCards=PLANS.map((p,i)=>`<div class="plan ${d.planIdx===i?'sel':''}" onclick="set('planIdx',${i});render()">
+    <div class="ty">${p.ty}</div><div class="sh">${p.sh}</div></div>`).join('');
+  return `<div class="step-h"><span class="n">Step 2 of 4</span><h2>Meal plan</h2><p>Which meals, and how often.</p></div>
+  <label>Meals per day <span class="opt-note">(tap to select)</span></label>
+  <div class="meals">${mealCards}</div>
+  <label>Food type</label>
+  <div class="seg">
+    <button class="${d.veg==='Veg'?'on':''}" onclick="set('veg','Veg');render()">Veg</button>
+    <button class="${d.veg==='Non-veg'?'on':''}" onclick="set('veg','Non-veg');render()">Non-veg</button>
+    <button class="${d.veg==='Both'?'on':''}" onclick="set('veg','Both');render()">Both</button>
+  </div>
+  <label>Plan</label>
+  <div class="plans">${planCards}</div>
+  <label>Delivery days</label>
+  <div class="days">${DAYS.map((dy,i)=>`<div class="day ${d.activeDays.includes(i)?'sel':''}" onclick="toggleDay(${i})">${dy}</div>`).join('')}</div>
+  <div class="mtotal"><div><span>Est. ${PLANS[d.planIdx].ty.toLowerCase()} total</span><div class="est">${money(perDayMeal())}/day × ${d.meals.length} meal(s)</div></div><span id="mtot">${money(estTotal())}</span></div>`;
+}
+function delivery(){
+  return `<div class="step-h"><span class="n">Step 3 of 4</span><h2>Delivery</h2><p>How and when it reaches them.</p></div>
+  <label>Mode</label>
+  <div class="seg">
+    <button class="${d.mode==='Delivery'?'on':''}" onclick="set('mode','Delivery');render()">🛵 Delivery</button>
+    <button class="${d.mode==='Pickup'?'on':''}" onclick="set('mode','Pickup');render()">🏃 Pickup</button>
+  </div>
+  <label>Start date</label><input type="date" value="${d.startDate}" oninput="set('startDate',this.value)">
+  <label>Notes for kitchen / delivery <span class="opt-note">(allergies, no onion, gate code...)</span></label>
+  <textarea oninput="set('notes',this.value)" placeholder="e.g. Jain food, ring bell, leave at reception">${d.notes}</textarea>`;
+}
+function review(){
+  const mealNames=MEALS.filter(m=>d.meals.includes(m.key)).map(m=>m.nm).join(', ')||'None';
+  const dayNames=d.activeDays.map(i=>['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][i]).join(', ');
+  return `<div class="step-h"><span class="n">Step 4 of 4</span><h2>Review & add</h2><p>Quick check before saving.</p></div>
+  <div class="rev-h">Subscriber</div>
+  <div class="rev">
+    <div class="rr"><span class="k">Name</span><span class="v">${d.name||'—'}</span></div>
+    <div class="rr"><span class="k">Phone</span><span class="v">${d.phone||'—'}</span></div>
+    <div class="rr"><span class="k">Address</span><span class="v" style="max-width:60%">${d.address||'—'}</span></div>
+  </div>
+  <div class="rev-h">Meal plan</div>
+  <div class="rev">
+    <div class="rr"><span class="k">Meals</span><span class="v">${mealNames}</span></div>
+    <div class="rr"><span class="k">Type</span><span class="v">${d.veg}</span></div>
+    <div class="rr"><span class="k">Plan</span><span class="v">${PLANS[d.planIdx].ty}</span></div>
+    <div class="rr"><span class="k">Days</span><span class="v" style="max-width:60%">${dayNames}</span></div>
+    <div class="rr"><span class="k" style="font-weight:700;color:var(--ink)">Est. ${PLANS[d.planIdx].ty.toLowerCase()}</span><span class="v" style="font-weight:800;color:var(--accent)">${money(estTotal())}</span></div>
+  </div>
+  <div class="rev-h">Delivery</div>
+  <div class="rev">
+    <div class="rr"><span class="k">Mode</span><span class="v">${d.mode}</span></div>
+    <div class="rr"><span class="k">Starts</span><span class="v">${new Date(d.startDate).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}</span></div>
+    <div class="rr"><span class="k">Notes</span><span class="v" style="max-width:60%">${d.notes||'—'}</span></div>
+  </div>`;
+}
+
+function toggleMeal(k){const i=d.meals.indexOf(k);if(i<0)d.meals.push(k);else d.meals.splice(i,1);render();}
+function toggleDay(i){const k=d.activeDays.indexOf(i);if(k<0)d.activeDays.push(i);else d.activeDays.splice(k,1);d.activeDays.sort();render();}
+function refreshNext(){const b=document.querySelector('.btn.next');if(!b)return;const ok=canNext();b.disabled=!ok;b.style.opacity=ok?'1':'.4';}
+function canNext(){
+  if(step===0)return d.name.trim()&&d.phone.trim();
+  if(step===1)return d.meals.length>0&&d.activeDays.length>0;
+  return true;
+}
+
+function render(){
+  if(step==='done'){renderDone();return;}
+  const body=[subscriber,planStep,delivery,review][step]();
+  const dots=STEPS.map((s,i)=>`<div class="d ${i===step?'on':i<step?'done':''}"></div>`).join('');
+  const isLast=step===STEPS.length-1;
+  $('app').innerHTML=`
+  <div class="top"><div class="wrap">
+    <div class="top-in"><span class="back" onclick="goBack()">←</span>
+    <div><h1>Add subscriber</h1><div class="sub">Amma's Tiffin · ${STEPS[step]}</div></div></div>
+    <div class="dots">${dots}</div>
+  </div></div>
+  <div class="wrap">${body}</div>
+  <div class="bar"><div class="bar-in">
+    ${step>0?'<button class="btn back" onclick="prev()">←</button>':''}
+    <button class="btn next" onclick="next()" ${canNext()?'':'disabled style="opacity:.4"'}>${isLast?'✓ Add subscriber':'Continue →'}</button>
+  </div>
+  ${!isLast&&step>0?'<div class="savebar"><button class="btn skip" onclick="finish(true)">Save now, add rest later</button></div>':''}
+  </div>`;
+}
+function next(){if(!canNext()){alert(step===0?'Enter name and phone.':'Select at least one meal and one day.');return;}if(step<STEPS.length-1){step++;render();window.scrollTo(0,0);}else finish(false);}
+function prev(){if(step>0){step--;render();window.scrollTo(0,0);}}
+function goBack(){if(step===0)alert('Back to Subscribers list');else prev();}
+function finish(early){step='done';d._early=early;renderDone();window.scrollTo(0,0);}
+function renderDone(){
+  const mealNames=MEALS.filter(m=>d.meals.includes(m.key)).map(m=>m.nm).join(' + ');
+  $('app').innerHTML=`<div class="wrap" style="text-align:center;padding-top:50px">
+    <div style="font-size:50px">✅</div>
+    <h2 style="font-size:25px;margin:14px 0 6px;font-family:var(--d)">${d.name||'Subscriber'} added!</h2>
+    <p style="color:var(--muted);font-size:15px;line-height:1.5">${mealNames} · ${d.veg} · ${PLANS[d.planIdx].ty} · ${d.mode}<br><span style="font-size:13px">Starts ${new Date(d.startDate).toLocaleDateString('en-IN',{day:'2-digit',month:'short'})}</span></p>
+    <div style="background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:24px 0;text-align:left">
+      <div style="font-family:var(--d);font-weight:700;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px">${PLANS[d.planIdx].ty} plan</div>
+      <div style="display:flex;justify-content:space-between;font-size:14px;padding:4px 0;color:var(--muted)"><span>${money(perDayMeal())}/day × ${d.activeDays.length} days</span><span></span></div>
+      <div style="display:flex;justify-content:space-between;font-family:var(--d);font-weight:800;font-size:19px;border-top:1px solid var(--line);margin-top:6px;padding-top:9px"><span>Est. total</span><span>${money(estTotal())}</span></div>
+    </div>
+    <button class="btn next" style="width:100%;margin-bottom:10px" onclick="collectAndBill()">💸 Collect payment & generate bill</button>
+    <button class="btn back" style="width:100%;flex:none" onclick="alert('Skipped — the subscription is active. Bill anytime.')">Skip for now</button>
+    <p style="font-size:12px;color:var(--muted);margin-top:16px;line-height:1.5">Daily headcount & deliveries are marked from the home screen — pause/skip days adjust the bill automatically.</p>
+  </div>`;
+}
+function collectAndBill(){alert('Opens the bill generator, pre-filled:\n\n'+PLANS[d.planIdx].ty+' plan\n'+money(perDayMeal())+'/day × '+d.activeDays.length+' days\n= '+money(estTotal())+' (estimate)\n\nFinal bill adjusts for pause/skip days.');}
+render();
+</script>
+</body>
+</html>

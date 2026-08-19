@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loan detail — Ledgr</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f4f3ee; --card:#fbfaf5; --ink:#2b2a26; --muted:#7a766c; --faint:#a19c91;
+    --green:#1f6f54; --green-soft:#e6efea;
+    --ochre:#b8862d; --ochre-soft:#f6eeda;
+    --terra:#b0503a; --terra-soft:#f8e8e3;
+    --line:rgba(43,42,38,.09); --line-strong:rgba(43,42,38,.16);
+    --shadow:0 1px 2px rgba(43,42,38,.05), 0 6px 16px -6px rgba(43,42,38,.12), inset 0 1px 0 rgba(255,255,255,.85);
+    --shadow-lift:0 2px 4px rgba(43,42,38,.06), 0 14px 30px -10px rgba(43,42,38,.18), inset 0 1px 0 rgba(255,255,255,.9);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{background:#e8e6df;font-family:'Inter',system-ui,sans-serif;color:var(--ink);
+    display:flex;justify-content:center;padding:24px 12px 48px;min-height:100vh}
+  .grain{position:fixed;inset:0;pointer-events:none;opacity:.35;z-index:99}
+
+  .phone{width:100%;max-width:412px;background:var(--paper);border-radius:28px;overflow:hidden;
+    position:relative;box-shadow:0 30px 60px -20px rgba(43,42,38,.35),0 0 0 1px rgba(43,42,38,.08);
+    display:flex;flex-direction:column;min-height:860px}
+
+  .appbar{display:flex;align-items:center;gap:12px;padding:18px 16px 12px;background:var(--paper);
+    position:sticky;top:0;z-index:20;border-bottom:1px solid transparent}
+  .appbar.scrolled{border-bottom-color:var(--line)}
+  .iconbtn{width:36px;height:36px;flex:0 0 36px;border-radius:11px;border:1px solid var(--line);
+    background:var(--card);display:grid;place-items:center;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.8)}
+  .iconbtn:active{transform:scale(.95)}
+  .appbar h1{font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;font-weight:700;margin:0;
+    letter-spacing:-.01em;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .appbar .sub{font-size:11.5px;color:var(--muted);font-weight:500;margin-top:1px}
+
+  .scroll{flex:1;overflow-y:auto;padding:4px 16px 24px}
+
+  .hero{background:var(--card);border:1px solid var(--line);border-radius:20px;
+    box-shadow:var(--shadow-lift);padding:18px;margin-bottom:12px}
+  .eyebrow{font-size:10.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--faint)}
+  .big{font-family:'Plus Jakarta Sans',sans-serif;font-size:36px;font-weight:800;letter-spacing:-.03em;
+    margin:6px 0 0;font-variant-numeric:tabular-nums;line-height:1}
+  .split{display:flex;gap:10px;margin-top:16px}
+  .cell{flex:1;background:rgba(43,42,38,.04);border-radius:13px;padding:11px 12px;
+    box-shadow:inset 0 1px 2px rgba(43,42,38,.05)}
+  .cell.warn{background:var(--terra-soft)}
+  .cell .k{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+  .cell.warn .k{color:#b5715f}
+  .cell .v{font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:700;
+    margin-top:4px;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+  .cell.warn .v{color:var(--terra)}
+
+  .alert{display:flex;gap:11px;align-items:flex-start;background:var(--terra-soft);
+    border:1px solid rgba(176,80,58,.22);border-radius:16px;padding:13px 14px;margin-bottom:12px;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.6)}
+  .alert .dot{width:8px;height:8px;border-radius:50%;background:var(--terra);margin-top:5px;flex:0 0 8px}
+  .alert h4{font-family:'Plus Jakarta Sans',sans-serif;margin:0 0 3px;font-size:13.5px;font-weight:700;
+    color:#8e3d2b;letter-spacing:-.01em}
+  .alert p{margin:0;font-size:12px;color:#9c5541;line-height:1.45;font-weight:500}
+
+  .tabs{display:flex;background:rgba(43,42,38,.055);border-radius:13px;padding:4px;margin-bottom:14px;
+    box-shadow:inset 0 1px 2px rgba(43,42,38,.07)}
+  .tabs button{flex:1;border:0;background:transparent;font-family:'Inter',sans-serif;font-size:13px;
+    font-weight:600;color:var(--muted);padding:8px 0;border-radius:10px;cursor:pointer;transition:.2s}
+  .tabs button[aria-selected="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(43,42,38,.12)}
+
+  .sechead{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--faint);margin:16px 0 9px}
+
+  /* ledger */
+  .led{position:relative;padding-left:26px}
+  .led:before{content:'';position:absolute;left:7px;top:6px;bottom:6px;width:2px;
+    background:linear-gradient(to bottom,transparent,var(--line-strong) 12%,var(--line-strong) 88%,transparent)}
+  .ev{position:relative;margin-bottom:9px}
+  .ev:before{content:'';position:absolute;left:-23px;top:16px;width:10px;height:10px;border-radius:50%;
+    background:var(--card);border:2px solid var(--faint)}
+  .ev.pay:before{border-color:var(--green);background:var(--green)}
+  .ev.due:before{border-color:var(--ochre);background:var(--ochre-soft)}
+  .ev.unpaid:before{border-color:var(--terra);background:var(--terra-soft)}
+  .ev.out:before{border-color:var(--ink);background:var(--ink)}
+  .evcard{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:11px 13px;
+    box-shadow:var(--shadow);display:flex;gap:10px;align-items:flex-start}
+  .ev.unpaid .evcard{border-color:rgba(176,80,58,.28);background:#fdf7f5}
+  .evcard .t{flex:1;min-width:0}
+  .evcard .nm{font-size:13px;font-weight:600;letter-spacing:-.005em}
+  .evcard .dt{font-size:11px;color:var(--muted);margin-top:2px;font-weight:500}
+  .evcard .amt{font-family:'Inter',sans-serif;font-size:13.5px;font-weight:700;
+    font-variant-numeric:tabular-nums;white-space:nowrap}
+  .evcard .amt.in{color:var(--green)}
+  .evcard .amt.owed{color:var(--terra)}
+  .alloc{font-size:11px;color:var(--muted);margin-top:5px;font-weight:500;
+    background:rgba(43,42,38,.04);border-radius:7px;padding:4px 7px;display:inline-block}
+
+  /* terms */
+  .trow{display:flex;justify-content:space-between;gap:14px;padding:12px 13px;background:var(--card);
+    border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);margin-bottom:8px}
+  .trow .k{font-size:12.5px;color:var(--muted);font-weight:500}
+  .trow .v{font-size:13px;font-weight:600;text-align:right;letter-spacing:-.005em}
+  .note{font-size:11.5px;color:var(--muted);line-height:1.5;padding:12px 13px;background:var(--ochre-soft);
+    border:1px solid rgba(184,134,45,.2);border-radius:14px;font-weight:500}
+  .note b{color:#8a6420;font-weight:700}
+
+  .bottom{position:sticky;bottom:0;padding:12px 16px 16px;
+    background:linear-gradient(to top,var(--paper) 62%,rgba(244,243,238,0));display:flex;gap:9px}
+  .btn{border-radius:14px;padding:13px 12px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;
+    font-size:13.5px;cursor:pointer;border:1px solid transparent;letter-spacing:-.01em;flex:1}
+  .btn.primary{background:var(--green);color:#f6faf8;
+    box-shadow:0 6px 16px -6px rgba(31,111,84,.6),inset 0 1px 0 rgba(255,255,255,.2)}
+  .btn.ghost{background:var(--card);color:var(--ink);border-color:var(--line-strong);box-shadow:var(--shadow);flex:0 0 44%}
+  .btn:active{transform:scale(.98)}
+
+  /* sheet */
+  .scrim{position:absolute;inset:0;background:rgba(43,42,38,.42);opacity:0;pointer-events:none;
+    transition:.25s;z-index:40}
+  .scrim.on{opacity:1;pointer-events:auto}
+  .sheet{position:absolute;left:0;right:0;bottom:0;background:var(--paper);border-radius:24px 24px 0 0;
+    padding:10px 16px 18px;transform:translateY(105%);transition:transform .3s cubic-bezier(.4,0,.2,1);
+    z-index:41;box-shadow:0 -12px 40px -10px rgba(43,42,38,.35)}
+  .sheet.on{transform:translateY(0)}
+  .grab{width:38px;height:4px;border-radius:99px;background:var(--line-strong);margin:0 auto 14px}
+  .sheet h3{font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;font-weight:700;margin:0 0 3px;letter-spacing:-.01em}
+  .sheet .sh{font-size:12px;color:var(--muted);margin:0 0 14px;font-weight:500}
+  .amtin{background:var(--card);border:1px solid var(--line-strong);border-radius:16px;padding:14px;
+    box-shadow:var(--shadow);display:flex;align-items:center;gap:8px;margin-bottom:10px}
+  .amtin span{font-family:'Plus Jakarta Sans',sans-serif;font-size:26px;font-weight:700;color:var(--faint)}
+  .amtin input{border:0;background:transparent;font-family:'Plus Jakarta Sans',sans-serif;font-size:26px;
+    font-weight:800;color:var(--ink);width:100%;outline:none;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+  .quick{display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap}
+  .qb{border:1px solid var(--line-strong);background:var(--card);border-radius:99px;padding:7px 13px;
+    font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;color:var(--ink)}
+  .qb:active{transform:scale(.96)}
+  .seg{display:flex;background:rgba(43,42,38,.055);border-radius:12px;padding:3px;margin-bottom:12px;
+    box-shadow:inset 0 1px 2px rgba(43,42,38,.07)}
+  .seg button{flex:1;border:0;background:transparent;font-family:'Inter',sans-serif;font-size:12px;
+    font-weight:600;color:var(--muted);padding:8px 0;border-radius:9px;cursor:pointer}
+  .seg button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(43,42,38,.12)}
+  .prev{background:var(--green-soft);border:1px solid rgba(31,111,84,.2);border-radius:14px;
+    padding:12px 13px;margin-bottom:14px}
+  .prev .r{display:flex;justify-content:space-between;font-size:12.5px;font-weight:600;padding:3px 0;color:#1c5c46}
+  .prev .r.tot{border-top:1px dashed rgba(31,111,84,.3);margin-top:6px;padding-top:8px;font-weight:700}
+  .prev .r .n{font-variant-numeric:tabular-nums}
+
+  .toast{position:fixed;left:50%;bottom:34px;transform:translate(-50%,20px);background:var(--ink);
+    color:#f7f6f1;padding:11px 18px;border-radius:12px;font-size:12.5px;font-weight:600;opacity:0;
+    pointer-events:none;transition:.25s;z-index:100;box-shadow:0 10px 30px -8px rgba(43,42,38,.5);max-width:88%;text-align:center}
+  .toast.on{opacity:1;transform:translate(-50%,0)}
+
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<svg class="grain" xmlns="http://www.w3.org/2000/svg">
+  <filter id="g"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3"/>
+  <feColorMatrix type="saturate" values="0"/></filter>
+  <rect width="100%" height="100%" filter="url(#g)" opacity="0.055"/>
+</svg>
+
+<div class="phone">
+  <div class="appbar" id="appbar">
+    <div class="iconbtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2b2a26"
+      stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></div>
+    <div style="flex:1;min-width:0"><h1 id="bname"></h1><div class="sub" id="bsub"></div></div>
+    <div class="iconbtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="#2b2a26">
+      <circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></div>
+  </div>
+
+  <div class="scroll" id="scroll"></div>
+
+  <div class="bottom">
+    <button class="btn ghost" onclick="draftReminder()">Draft reminder</button>
+    <button class="btn primary" onclick="openSheet()">Record repayment</button>
+  </div>
+
+  <div class="scrim" id="scrim" onclick="closeSheet()"></div>
+  <div class="sheet" id="sheet">
+    <div class="grab"></div>
+    <h3>Record repayment</h3>
+    <p class="sh">Mahesh Chauhan &middot; 13 Aug 2026</p>
+    <div class="amtin"><span>&#8377;</span><input id="amtField" type="text" inputmode="numeric" value="3,000"></div>
+    <div class="quick" id="quick"></div>
+    <div class="eyebrow" style="margin-bottom:7px">Apply payment to</div>
+    <div class="seg" id="seg"></div>
+    <div class="prev" id="prev"></div>
+    <button class="btn primary" style="width:100%" onclick="commit()">Save repayment</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  function esc(s){return String(s).replace(/[&<>"']/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function inr(p){return '\u20B9'+(p/100).toLocaleString('en-IN',{maximumFractionDigits:0});}
+  function num(p){return (p/100).toLocaleString('en-IN',{maximumFractionDigits:0});}
+
+  var state = {
+    tab:'ledger',
+    borrower:{name:'Mahesh Chauhan', phone:'98XXXXXX21', since:'12 Feb 2026'},
+    terms:{
+      principalPaise:5000000,
+      rateLabel:'\u20B92 per hundred, monthly',
+      ratePctYear:'24% a year',
+      basis:'Interest only \u00B7 principal on demand',
+      monthlyInterestPaise:100000,
+      startDate:'12 Feb 2026',
+      security:'Bajaj Pulsar RC book held',
+      guarantor:'Suresh Patil'
+    },
+    events:[
+      {t:'out',  d:'12 Feb 2026', label:'Loan given',            amt:5000000, kind:'principal'},
+      {t:'due',  d:'12 Mar 2026', label:'Interest for March',    amt:100000,  settled:true},
+      {t:'pay',  d:'14 Mar 2026', label:'Repayment \u00B7 cash', amt:100000,  alloc:'\u20B91,000 interest'},
+      {t:'due',  d:'12 Apr 2026', label:'Interest for April',    amt:100000,  settled:true},
+      {t:'pay',  d:'14 Apr 2026', label:'Repayment \u00B7 UPI',  amt:100000,  alloc:'\u20B91,000 interest'},
+      {t:'due',  d:'12 May 2026', label:'Interest for May',      amt:100000,  settled:true},
+      {t:'pay',  d:'14 May 2026', label:'Repayment \u00B7 cash', amt:100000,  alloc:'\u20B91,000 interest'},
+      {t:'unpaid', d:'12 Jun 2026', label:'Interest for June',   amt:100000},
+      {t:'unpaid', d:'12 Jul 2026', label:'Interest for July',   amt:100000},
+      {t:'unpaid', d:'12 Aug 2026', label:'Interest for August', amt:100000}
+    ],
+    sheet:{amountPaise:300000, order:'interest'},
+    lastPaymentDays:91
+  };
+
+  function derived(){
+    var principal=0, interestDue=0, received=0;
+    state.events.forEach(function(e){
+      if(e.t==='out') principal += e.amt;
+      if(e.t==='unpaid') interestDue += e.amt;
+      if(e.t==='pay') received += e.amt;
+    });
+    return {principal:principal, interestDue:interestDue, received:received,
+            outstanding:principal+interestDue,
+            monthsBehind: state.events.filter(function(e){return e.t==='unpaid';}).length};
+  }
+
+  function render(){
+    var d = derived(), b = state.borrower;
+    document.getElementById('bname').textContent = b.name;
+    document.getElementById('bsub').textContent = 'Lending since '+b.since+' \u00B7 '+b.phone;
+
+    var h = '';
+    h += '<div class="hero">'
+      + '<div class="eyebrow">Total outstanding</div>'
+      + '<div class="big">'+esc(inr(d.outstanding))+'</div>'
+      + '<div class="split">'
+      +   '<div class="cell"><div class="k">Principal</div><div class="v">'+esc(inr(d.principal))+'</div></div>'
+      +   '<div class="cell warn"><div class="k">Interest due</div><div class="v">'+esc(inr(d.interestDue))+'</div></div>'
+      + '</div></div>';
+
+    if(d.monthsBehind){
+      h += '<div class="alert"><span class="dot"></span><div>'
+        + '<h4>'+d.monthsBehind+' months of interest unpaid</h4>'
+        + '<p>Last received '+state.lastPaymentDays+' days ago, on 14 May. Principal has not reduced since the loan was given.</p>'
+        + '</div></div>';
+    }
+
+    h += '<div class="tabs" role="tablist">'
+      + '<button role="tab" aria-selected="'+(state.tab==='ledger')+'" onclick="setTab(\'ledger\')">Ledger</button>'
+      + '<button role="tab" aria-selected="'+(state.tab==='terms')+'" onclick="setTab(\'terms\')">Terms</button>'
+      + '</div>';
+
+    h += state.tab==='ledger' ? ledger() : terms();
+    document.getElementById('scroll').innerHTML = h;
+  }
+
+  function ledger(){
+    var h = '<div class="led">';
+    state.events.slice().reverse().forEach(function(e){
+      var cls = e.t;
+      var amtCls = e.t==='pay' ? 'in' : (e.t==='unpaid' ? 'owed' : '');
+      var sign = e.t==='pay' ? '+ ' : '';
+      h += '<div class="ev '+cls+'"><div class="evcard"><div class="t">'
+        + '<div class="nm">'+esc(e.label)+(e.t==='unpaid'?' \u00B7 pending':'')+'</div>'
+        + '<div class="dt">'+esc(e.d)+'</div>'
+        + (e.alloc ? '<div class="alloc">Applied to '+esc(e.alloc)+'</div>' : '')
+        + '</div><div class="amt '+amtCls+'">'+sign+esc(inr(e.amt))+'</div></div></div>';
+    });
+    h += '</div>';
+    h += '<div class="sechead">Interest is posted as you record it, never auto-charged</div>';
+    return h;
+  }
+
+  function terms(){
+    var t = state.terms;
+    var rows = [
+      ['Principal given', inr(t.principalPaise)],
+      ['Rate as agreed', t.rateLabel],
+      ['Works out to', t.ratePctYear],
+      ['Repayment basis', t.basis],
+      ['Interest per month', inr(t.monthlyInterestPaise)],
+      ['Started on', t.startDate],
+      ['Security held', t.security],
+      ['Guarantor', t.guarantor]
+    ];
+    var h = '';
+    rows.forEach(function(r){
+      h += '<div class="trow"><div class="k">'+esc(r[0])+'</div><div class="v">'+esc(r[1])+'</div></div>';
+    });
+    h += '<div class="sechead">About these terms</div>'
+      + '<div class="note">These are <b>your notes on what was agreed</b>. Ledgr records the figures you '
+      + 'enter and does not set rates, generate agreements, or send anything to '+esc(state.borrower.name)+' on its own.</div>';
+    return h;
+  }
+
+  /* ---- sheet ---- */
+  function sheetRender(){
+    var d = derived(), s = state.sheet;
+    var quicks = [100000, 300000, 500000, d.principal + d.interestDue];
+    var labels = ['One month','Clear interest','\u20B95,000','Settle fully'];
+    var q = '';
+    quicks.forEach(function(v,i){
+      q += '<button class="qb" onclick="setAmt('+v+')">'+esc(labels[i])+'</button>';
+    });
+    document.getElementById('quick').innerHTML = q;
+
+    document.getElementById('seg').innerHTML =
+        '<button aria-pressed="'+(s.order==='interest')+'" onclick="setOrder(\'interest\')">Interest first</button>'
+      + '<button aria-pressed="'+(s.order==='principal')+'" onclick="setOrder(\'principal\')">Principal first</button>';
+
+    var amt = s.amountPaise, toI, toP;
+    if(s.order==='interest'){ toI = Math.min(amt, d.interestDue); toP = Math.min(amt-toI, d.principal); }
+    else { toP = Math.min(amt, d.principal); toI = Math.min(amt-toP, d.interestDue); }
+    var extra = amt - toI - toP;
+
+    var p = '<div class="r"><span>To interest due</span><span class="n">'+esc(inr(toI))+'</span></div>'
+          + '<div class="r"><span>To principal</span><span class="n">'+esc(inr(toP))+'</span></div>'
+          + (extra>0 ? '<div class="r"><span>Advance kept on account</span><span class="n">'+esc(inr(extra))+'</span></div>' : '')
+          + '<div class="r tot"><span>Outstanding after this</span><span class="n">'
+          + esc(inr(Math.max(0, d.outstanding - toI - toP)))+'</span></div>';
+    document.getElementById('prev').innerHTML = p;
+  }
+
+  window.setTab = function(t){ state.tab=t; render(); };
+  window.setAmt = function(v){ state.sheet.amountPaise=v;
+    document.getElementById('amtField').value = num(v); sheetRender(); };
+  window.setOrder = function(o){ state.sheet.order=o; sheetRender(); };
+
+  document.getElementById('amtField').addEventListener('input', function(e){
+    var raw = e.target.value.replace(/[^0-9]/g,'');
+    state.sheet.amountPaise = (parseInt(raw||'0',10))*100;
+    e.target.value = raw ? parseInt(raw,10).toLocaleString('en-IN') : '';
+    sheetRender();
+  });
+
+  window.openSheet = function(){
+    sheetRender();
+    document.getElementById('scrim').classList.add('on');
+    document.getElementById('sheet').classList.add('on');
+  };
+  window.closeSheet = function(){
+    document.getElementById('scrim').classList.remove('on');
+    document.getElementById('sheet').classList.remove('on');
+  };
+  window.commit = function(){
+    var d = derived(), s = state.sheet, amt = s.amountPaise;
+    if(amt<=0){ toast('Enter an amount first'); return; }
+    var toI, toP;
+    if(s.order==='interest'){ toI=Math.min(amt,d.interestDue); toP=Math.min(amt-toI,d.principal); }
+    else { toP=Math.min(amt,d.principal); toI=Math.min(amt-toP,d.interestDue); }
+
+    // settle unpaid interest months oldest first
+    var rem = toI;
+    state.events.forEach(function(e){
+      if(e.t==='unpaid' && rem>0){
+        if(rem >= e.amt){ e.t='due'; e.settled=true; rem -= e.amt; }
+      }
+    });
+    if(toP>0){ state.events.forEach(function(e){ if(e.t==='out') e.amt -= toP; }); }
+
+    var bits=[]; if(toI>0) bits.push(inr(toI)+' interest'); if(toP>0) bits.push(inr(toP)+' principal');
+    state.events.push({t:'pay', d:'13 Aug 2026', label:'Repayment \u00B7 cash', amt:amt,
+      alloc: bits.join(' and ')});
+    state.lastPaymentDays = 0;
+    closeSheet(); render();
+    toast('Recorded '+inr(amt)+' \u00B7 '+bits.join(', '));
+  };
+
+  window.draftReminder = function(){
+    toast('Opens WhatsApp with a draft \u2014 you send it yourself');
+  };
+
+  var tt;
+  window.toast = function(m){
+    var el=document.getElementById('toast'); el.textContent=m; el.classList.add('on');
+    clearTimeout(tt); tt=setTimeout(function(){el.classList.remove('on');},2200);
+  };
+
+  document.getElementById('scroll').addEventListener('scroll', function(e){
+    document.getElementById('appbar').classList.toggle('scrolled', e.target.scrollTop>4);
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

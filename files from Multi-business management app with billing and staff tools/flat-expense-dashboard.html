@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Expense Dashboard — Khaata</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1f6f54; --green-light: #e7f2ed;
+    --parchment: #fbfbf9; --ink: #1c1c1a; --muted: #6b6b64;
+    --border: #e6e4dd; --amber: #b5791f; --amber-light: #fbf1e2;
+    --red: #b3261e; --red-light: #fbeceb; --purple: #6b5b95; --purple-light: #f0eef8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', sans-serif; background: var(--parchment); color: var(--ink);
+    max-width: 480px; margin: 0 auto; min-height: 100vh; padding-bottom: 100px;
+  }
+  header { padding: 24px 20px 12px; }
+  header h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 800; }
+  header p { font-size: 13px; color: var(--muted); margin-top: 3px; }
+  .back-link { font-size: 13px; font-weight: 700; color: var(--green); cursor: pointer; display: inline-block; margin-bottom: 8px; }
+
+  .section-label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin: 16px 20px 8px; }
+  .card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin: 0 20px 10px; }
+
+  .field { margin-bottom: 10px; }
+  .field:last-child { margin-bottom: 0; }
+  .field label { font-size: 11px; font-weight: 700; color: var(--muted); display: block; margin-bottom: 4px; text-transform: uppercase; }
+  .field input, .field select { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 9px; font-size: 13.5px; font-family: 'Inter', sans-serif; background: #fff; }
+
+  .method-row { display: flex; gap: 8px; }
+  .method-opt { flex: 1; text-align: center; padding: 10px 6px; border-radius: 10px; border: 1.5px solid var(--border); font-size: 12px; font-weight: 700; cursor: pointer; background: #fff; color: var(--muted); }
+  .method-opt.selected { border-color: var(--green); background: var(--green-light); color: var(--green); }
+
+  .flat-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .flat-row:last-child { border-bottom: none; }
+  .flat-row input[type="checkbox"] { width: 18px; height: 18px; flex-shrink: 0; }
+  .flat-row-name { font-weight: 600; font-size: 13.5px; }
+  .flat-row-occ { font-size: 11px; color: var(--muted); }
+  .flat-row-occ.vacant { color: var(--amber); font-weight: 600; }
+  .flat-row-amt { font-weight: 700; color: var(--green); font-size: 13.5px; min-width: 70px; text-align: right; }
+  .flat-row-amt-input { width: 80px; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; text-align: right; }
+  .flat-row.excluded { opacity: 0.45; }
+
+  .total-check { display: flex; justify-content: space-between; padding: 12px 16px; margin: 0 20px 10px; border-radius: 10px; font-size: 13px; font-weight: 700; }
+  .total-check.match { background: var(--green-light); color: var(--green); }
+  .total-check.mismatch { background: var(--red-light); color: var(--red); }
+
+  .sticky-footer {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px;
+    background: #fff; border-top: 1px solid var(--border); padding: 12px 20px; box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
+  }
+  .confirm-btn { width: 100%; background: var(--green); color: #fff; border: none; padding: 15px; border-radius: 12px; font-weight: 700; font-size: 14.5px; cursor: pointer; }
+
+  .note { font-size: 12px; color: var(--muted); margin: 4px 20px 10px; line-height: 1.5; }
+
+  #successScreen { display: none; text-align: center; padding: 50px 30px; }
+  .success-icon { width: 60px; height: 60px; border-radius: 50%; background: var(--green-light); color: var(--green); display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 16px; }
+  .success-title { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 18px; }
+  .success-row { display: flex; justify-content: space-between; padding: 10px 4px; border-bottom: 1px solid var(--border); font-size: 13.5px; text-align: left; }
+  .success-list { text-align: left; margin-top: 20px; background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 4px 12px; }
+  .success-btn { margin-top: 20px; background: var(--green-light); color: var(--green); border: none; padding: 12px 20px; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; }
+
+  .month-row { display: flex; gap: 8px; margin: 0 20px 14px; }
+  .month-opt { flex: 1; text-align: center; padding: 10px 6px; border-radius: 10px; border: 1.5px solid var(--border); font-size: 12px; font-weight: 700; cursor: pointer; background: #fff; color: var(--muted); }
+  .month-opt.selected { border-color: var(--green); background: var(--green-light); color: var(--green); }
+
+  .exp-card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin: 0 20px 10px; }
+  .exp-top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .exp-name { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 15px; }
+  .exp-cat { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--purple-light); color: var(--purple); margin-left: 6px; vertical-align: middle; }
+  .status-badge { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
+  .status-badge.pending { background: var(--amber-light); color: var(--amber); }
+  .status-badge.done { background: var(--green-light); color: var(--green); }
+  .exp-entry { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 12.5px; }
+  .exp-entry-info { color: var(--muted); }
+  .exp-entry-actions { display: flex; gap: 10px; flex-shrink: 0; }
+  .exp-entry-actions span { color: var(--green); font-weight: 700; cursor: pointer; }
+  .split-now-btn { width: 100%; margin-top: 10px; background: var(--green); color: #fff; border: none; padding: 10px; border-radius: 8px; font-weight: 700; font-size: 12.5px; cursor: pointer; }
+  .add-another-btn { width: 100%; margin-top: 8px; background: none; border: 1.5px dashed var(--green); color: var(--green); padding: 9px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<div id="dashboardScreen">
+<header>
+  <h1>Expense Dashboard</h1>
+  <p>Green Residency — what's split, what's still pending</p>
+</header>
+
+<div class="month-row" id="dashMonthRow"></div>
+
+<div id="expCardsContainer"></div>
+
+<script>
+const flats = [
+  { id: 'f101', name: 'Flat 101', occupants: 3, area: 850 },
+  { id: 'f102', name: 'Flat 102', occupants: 2, area: 700 },
+  { id: 'f103', name: 'Flat 103', occupants: 0, area: 650 },
+  { id: 'f104', name: 'Flat 104', occupants: 4, area: 1100 },
+  { id: 'f105', name: 'Flat 105', occupants: 1, area: 500 },
+  { id: 'f106', name: 'Flat 106', occupants: 0, area: 650 },
+  { id: 'f107', name: 'Flat 107', occupants: 2, area: 750 }
+];
+
+const expenseGroups = [
+  { id: 'eg1', name: 'Electricity Meter A', category: 'Utility', flatIds: ['f101', 'f102', 'f103'] },
+  { id: 'eg2', name: 'Electricity Meter B', category: 'Utility', flatIds: ['f104', 'f105', 'f106', 'f107'] },
+  { id: 'eg3', name: 'Water Meter (Whole Building)', category: 'Utility', flatIds: ['f101', 'f102', 'f103', 'f104', 'f105', 'f106', 'f107'] },
+  { id: 'eg4', name: 'Lift Repair Fund', category: 'Repair / Maintenance', flatIds: ['f101', 'f102', 'f103', 'f104', 'f105', 'f106', 'f107'] }
+];
+
+const REFERENCE_TODAY = new Date('2026-07-15');
+
+// Seed one example completed split so the Done state is visible from the start
+let splitHistory = [
+  { id: 'sh1', groupId: 'eg1', billMonthKey: '2026-07', totalAmount: 1000, expenseDate: '2026-07-10', method: 'person', manualAmounts: {}, includedFlatIds: ['f101', 'f102'], daysAgoLabel: '5 days ago' }
+];
+let historyIdCounter = 2;
+
+let dashboardMonth = 'current'; // 'current' | 'next' | 'custom'
+let dashboardCustomMonth = null; // 'YYYY-MM' when custom
+
+function monthLabel(date) { return date.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }); }
+function currentMonthDate() { return new Date(REFERENCE_TODAY.getFullYear(), REFERENCE_TODAY.getMonth(), 1); }
+function nextMonthDate() { return new Date(REFERENCE_TODAY.getFullYear(), REFERENCE_TODAY.getMonth() + 1, 1); }
+function monthKey(date) { return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0'); }
+
+function dashboardMonthKey() {
+  if (dashboardMonth === 'current') return monthKey(currentMonthDate());
+  if (dashboardMonth === 'next') return monthKey(nextMonthDate());
+  return dashboardCustomMonth || monthKey(currentMonthDate());
+}
+
+function dashboardMonthDisplayLabel() {
+  if (dashboardMonth === 'current') return monthLabel(currentMonthDate());
+  if (dashboardMonth === 'next') return monthLabel(nextMonthDate());
+  if (!dashboardCustomMonth) return 'Pick a month';
+  const parts = dashboardCustomMonth.split('-');
+  return monthLabel(new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, 1));
+}
+
+function setDashboardMonth(which) {
+  dashboardMonth = which;
+  if (which === 'custom') {
+    const val = prompt('Enter month (YYYY-MM), e.g. 2026-09:', dashboardCustomMonth || monthKey(currentMonthDate()));
+    if (val) dashboardCustomMonth = val;
+  }
+  renderDashMonthRow();
+  renderExpCards();
+}
+
+function renderDashMonthRow() {
+  const container = document.getElementById('dashMonthRow');
+  container.innerHTML = '';
+  const opts = [
+    { key: 'current', label: monthLabel(currentMonthDate()) },
+    { key: 'next', label: monthLabel(nextMonthDate()) },
+    { key: 'custom', label: dashboardMonth === 'custom' ? dashboardMonthDisplayLabel() : 'Custom' }
+  ];
+  opts.forEach(function(o) {
+    const btn = document.createElement('div');
+    btn.className = 'month-opt' + (dashboardMonth === o.key ? ' selected' : '');
+    btn.textContent = o.label;
+    btn.onclick = function() { setDashboardMonth(o.key); };
+    container.appendChild(btn);
+  });
+}
+
+function recordsFor(groupId, billMonthKey) {
+  return splitHistory.filter(function(r) { return r.groupId === groupId && r.billMonthKey === billMonthKey; });
+}
+
+function renderExpCards() {
+  const container = document.getElementById('expCardsContainer');
+  container.innerHTML = '';
+  const mKey = dashboardMonthKey();
+
+  expenseGroups.forEach(function(g) {
+    const records = recordsFor(g.id, mKey);
+    const card = document.createElement('div');
+    card.className = 'exp-card';
+
+    let entriesHtml = '';
+    if (records.length) {
+      entriesHtml = records.map(function(r) {
+        return '<div class="exp-entry"><span class="exp-entry-info">₹' + r.totalAmount + ' · ' + r.daysAgoLabel + '</span>' +
+          '<div class="exp-entry-actions"><span onclick="openEditRecord(\'' + r.id + '\')">Edit</span></div></div>';
+      }).join('');
+      entriesHtml += '<button class="add-another-btn" onclick="confirmAddAnother(\'' + g.id + '\')">+ Add Another for This Month</button>';
+    } else {
+      entriesHtml = '<button class="split-now-btn" onclick="openNewSplit(\'' + g.id + '\')">Split Now</button>';
+    }
+
+    card.innerHTML =
+      '<div class="exp-top"><div><span class="exp-name"></span><span class="exp-cat"></span></div>' +
+      '<span class="status-badge ' + (records.length ? 'done' : 'pending') + '">' + (records.length ? '✓ Split' : 'Pending') + '</span></div>' +
+      entriesHtml;
+    card.querySelector('.exp-name').textContent = g.name;
+    card.querySelector('.exp-cat').textContent = g.category;
+    container.appendChild(card);
+  });
+}
+
+function confirmAddAnother(groupId) {
+  const g = expenseGroups.find(function(x) { return x.id === groupId; });
+  if (confirm(g.name + ' already has a split for ' + dashboardMonthDisplayLabel() + ' — add another entry anyway?')) {
+    openNewSplit(groupId);
+  }
+}
+
+renderDashMonthRow();
+renderExpCards();
+</script>
+</div>
+
+<div id="formScreen" style="display:none">
+<header>
+  <span class="back-link" onclick="closeFormScreen()">← Back to Dashboard</span>
+  <h1 id="formTitle">Split Shared Expense</h1>
+  <p>Green Residency — allocate any shared cost across flats</p>
+</header>
+
+<div class="section-label">Bill details</div>
+<div class="card">
+  <div class="field"><label>Expense group</label>
+    <select id="groupSelect" onchange="onGroupChange()"></select>
+  </div>
+  <div class="field"><label>Date of expense</label>
+    <input type="date" id="expenseDate" value="2026-07-15">
+  </div>
+  <div class="field"><label>Total amount (₹)</label>
+    <input type="text" id="totalBill" placeholder="e.g. 4200" oninput="recalculate()">
+  </div>
+</div>
+
+<div class="section-label">Add to which bill?</div>
+<div class="card">
+  <div class="method-row">
+    <div class="method-opt selected" data-billmonth="current" onclick="setBillMonth('current', this)" id="billOptCurrent"></div>
+    <div class="method-opt" data-billmonth="next" onclick="setBillMonth('next', this)" id="billOptNext"></div>
+    <div class="method-opt" data-billmonth="custom" onclick="setBillMonth('custom', this)">Custom</div>
+  </div>
+  <div id="customMonthField" style="display:none;margin-top:10px">
+    <input type="month" id="customMonth" value="2026-07">
+  </div>
+  <p class="note" style="margin:8px 0 0">This expense will appear as a line item on the selected month's bill for each included flat, not necessarily the month the cost was incurred.</p>
+</div>
+
+<div class="section-label">Split method</div>
+<div class="card">
+  <div class="method-row">
+    <div class="method-opt selected" data-method="person" onclick="setMethod('person', this)">Per-person</div>
+    <div class="method-opt" data-method="area" onclick="setMethod('area', this)">By area</div>
+    <div class="method-opt" data-method="equal" onclick="setMethod('equal', this)">Equal split</div>
+    <div class="method-opt" data-method="manual" onclick="setMethod('manual', this)">Manual</div>
+  </div>
+</div>
+
+<div class="section-label">Flats included in this expense</div>
+<div class="card" id="flatsCard"></div>
+
+<div class="total-check" id="totalCheck"></div>
+
+<p class="note">Uncheck any flat to exclude it from this split — useful when a flat is vacant this month. The remaining amount is divided only among the flats still included.</p>
+
+<div class="sticky-footer">
+  <button class="confirm-btn" id="confirmBtn" onclick="confirmSplit()">Apply Split to Bills</button>
+</div>
+</div>
+
+<div id="successScreen">
+  <div class="success-icon">✓</div>
+  <div class="success-title" id="successTitle">Split applied</div>
+  <div class="success-list" id="successList"></div>
+  <button class="success-btn" onclick="backToDashboard()">Back to Dashboard</button>
+</div>
+
+<script>
+let currentMethod = 'person';
+let currentBillMonth = 'current';
+let editingRecordId = null;
+
+function flatById(id) { return flats.find(function(f) { return f.id === id; }); }
+
+function currentGroup() {
+  const id = document.getElementById('groupSelect').value;
+  return expenseGroups.find(function(g) { return g.id === id; });
+}
+
+function populateGroupSelect() {
+  const sel = document.getElementById('groupSelect');
+  sel.innerHTML = expenseGroups.map(function(g) {
+    return '<option value="' + g.id + '">' + g.name + ' (' + g.category + ')</option>';
+  }).join('');
+}
+
+function populateBillMonthLabels() {
+  document.getElementById('billOptCurrent').textContent = monthLabel(currentMonthDate());
+  document.getElementById('billOptNext').textContent = monthLabel(nextMonthDate());
+}
+
+function setBillMonth(which, el) {
+  currentBillMonth = which;
+  document.querySelectorAll('#billOptCurrent, #billOptNext, .method-opt[data-billmonth="custom"]').forEach(function(o) { o.classList.remove('selected'); });
+  el.classList.add('selected');
+  document.getElementById('customMonthField').style.display = which === 'custom' ? 'block' : 'none';
+}
+
+function resolvedBillMonthKey() {
+  if (currentBillMonth === 'current') return monthKey(currentMonthDate());
+  if (currentBillMonth === 'next') return monthKey(nextMonthDate());
+  return document.getElementById('customMonth').value || monthKey(currentMonthDate());
+}
+
+function resolvedBillMonthLabelForForm() {
+  const key = resolvedBillMonthKey();
+  const parts = key.split('-');
+  return monthLabel(new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, 1));
+}
+
+function onGroupChange() {
+  renderFlatsCard();
+}
+
+function setMethod(method, el) {
+  currentMethod = method;
+  document.querySelectorAll('.method-opt[data-method]').forEach(function(o) { o.classList.remove('selected'); });
+  el.classList.add('selected');
+  renderFlatsCard();
+}
+
+function isIncluded(flatId) {
+  const cb = document.getElementById('inc-' + flatId);
+  return cb ? cb.checked : true;
+}
+
+function toggleInclude() { recalculate(); }
+
+function largestRemainderSplit(items, total, weightFn) {
+  const totalWeight = items.reduce(function(s, it) { return s + weightFn(it); }, 0);
+  if (totalWeight === 0) return items.map(function(it) { return { item: it, amount: 0 }; });
+  const exact = items.map(function(it) { return { item: it, exact: total * weightFn(it) / totalWeight }; });
+  const floors = exact.map(function(e) { return Math.floor(e.exact); });
+  const usedTotal = floors.reduce(function(a, b) { return a + b; }, 0);
+  let remainder = total - usedTotal;
+  const withFrac = exact.map(function(e, i) { return { item: e.item, floor: floors[i], frac: e.exact - floors[i] }; });
+  const sorted = withFrac.slice().sort(function(a, b) { return b.frac - a.frac; });
+  for (let i = 0; i < remainder && i < sorted.length; i++) { sorted[i].floor += 1; }
+  return withFrac.map(function(w) { return { item: w.item, amount: w.floor }; });
+}
+
+let manualAmounts = {};
+
+function renderFlatsCard() {
+  const group = currentGroup();
+  const container = document.getElementById('flatsCard');
+  container.innerHTML = '';
+  const groupFlats = group.flatIds.map(flatById);
+
+  groupFlats.forEach(function(f) {
+    const row = document.createElement('div');
+    row.className = 'flat-row';
+    const defaultChecked = editingRecordId ? (includedForEditing.indexOf(f.id) !== -1) : (f.occupants > 0);
+    row.innerHTML =
+      '<input type="checkbox" id="inc-' + f.id + '"' + (defaultChecked ? ' checked' : '') + ' onchange="toggleInclude()">' +
+      '<div style="flex:1"><div class="flat-row-name"></div><div class="flat-row-occ"></div></div>' +
+      '<div class="flat-row-amt-wrap"></div>';
+    row.querySelector('.flat-row-name').textContent = f.name;
+    const occEl = row.querySelector('.flat-row-occ');
+    occEl.textContent = (f.occupants === 0 ? 'Vacant' : f.occupants + ' occupant' + (f.occupants === 1 ? '' : 's')) + ' · ' + f.area + ' sqft';
+    if (f.occupants === 0) occEl.classList.add('vacant');
+    container.appendChild(row);
+  });
+
+  recalculate();
+}
+
+let includedForEditing = [];
+
+function recalculate() {
+  const group = currentGroup();
+  if (!group) return;
+  const groupFlats = group.flatIds.map(flatById);
+  const totalBill = parseFloat(document.getElementById('totalBill').value) || 0;
+  const included = groupFlats.filter(function(f) { return isIncluded(f.id); });
+
+  let shares = [];
+  if (currentMethod === 'manual') {
+    shares = included.map(function(f) { return { item: f, amount: manualAmounts[f.id] || 0 }; });
+  } else if (currentMethod === 'equal') {
+    shares = largestRemainderSplit(included, totalBill, function() { return 1; });
+  } else if (currentMethod === 'area') {
+    shares = largestRemainderSplit(included, totalBill, function(f) { return f.area; });
+  } else {
+    shares = largestRemainderSplit(included, totalBill, function(f) { return f.occupants; });
+  }
+
+  groupFlats.forEach(function(f, idx) {
+    const row = document.querySelectorAll('.flat-row')[idx];
+    if (!row) return;
+    row.classList.toggle('excluded', !isIncluded(f.id));
+    const wrap = row.querySelector('.flat-row-amt-wrap');
+    if (!isIncluded(f.id)) {
+      wrap.innerHTML = '<span class="flat-row-amt" style="color:var(--muted)">Excluded</span>';
+      return;
+    }
+    const share = shares.find(function(s) { return s.item.id === f.id; });
+    if (currentMethod === 'manual') {
+      wrap.innerHTML = '<input type="text" class="flat-row-amt-input" id="manual-' + f.id + '" value="' + (manualAmounts[f.id] || '') + '" placeholder="₹" oninput="onManualInput(\'' + f.id + '\')">';
+    } else {
+      wrap.innerHTML = '<span class="flat-row-amt">₹' + (share ? share.amount : 0) + '</span>';
+    }
+  });
+
+  const allocatedTotal = shares.reduce(function(s, x) { return s + x.amount; }, 0);
+  const checkEl = document.getElementById('totalCheck');
+  const diff = totalBill - allocatedTotal;
+  if (Math.abs(diff) < 0.5) {
+    checkEl.className = 'total-check match';
+    checkEl.innerHTML = '<span>Allocated</span><span>₹' + allocatedTotal + ' of ₹' + totalBill + ' \u2713</span>';
+  } else {
+    checkEl.className = 'total-check mismatch';
+    checkEl.innerHTML = '<span>Allocated</span><span>₹' + allocatedTotal + ' of ₹' + totalBill + ' (₹' + Math.abs(diff) + ' ' + (diff > 0 ? 'short' : 'over') + ')</span>';
+  }
+}
+
+function onManualInput(flatId) {
+  const val = document.getElementById('manual-' + flatId).value;
+  manualAmounts[flatId] = parseFloat(val) || 0;
+  recalculate();
+}
+
+function openNewSplit(groupId) {
+  editingRecordId = null;
+  includedForEditing = [];
+  manualAmounts = {};
+  document.getElementById('formTitle').textContent = 'Split Shared Expense';
+  document.getElementById('confirmBtn').textContent = 'Apply Split to Bills';
+  document.getElementById('groupSelect').value = groupId;
+  document.getElementById('totalBill').value = '';
+  document.getElementById('expenseDate').value = '2026-07-15';
+  currentMethod = 'person';
+  document.querySelectorAll('.method-opt[data-method]').forEach(function(o) { o.classList.remove('selected'); });
+  document.querySelector('.method-opt[data-method="person"]').classList.add('selected');
+  // Pre-set billing month to match dashboard's currently viewed month
+  currentBillMonth = dashboardMonth;
+  document.querySelectorAll('#billOptCurrent, #billOptNext, .method-opt[data-billmonth="custom"]').forEach(function(o) { o.classList.remove('selected'); });
+  if (dashboardMonth === 'custom') {
+    document.querySelector('.method-opt[data-billmonth="custom"]').classList.add('selected');
+    document.getElementById('customMonthField').style.display = 'block';
+    document.getElementById('customMonth').value = dashboardCustomMonth || monthKey(currentMonthDate());
+  } else {
+    document.getElementById('billOpt' + (dashboardMonth === 'current' ? 'Current' : 'Next')).classList.add('selected');
+    document.getElementById('customMonthField').style.display = 'none';
+  }
+  renderFlatsCard();
+  showFormScreen();
+}
+
+function openEditRecord(recordId) {
+  const r = splitHistory.find(function(x) { return x.id === recordId; });
+  editingRecordId = recordId;
+  includedForEditing = r.includedFlatIds.slice();
+  manualAmounts = Object.assign({}, r.manualAmounts);
+  document.getElementById('formTitle').textContent = 'Edit Split';
+  document.getElementById('confirmBtn').textContent = '✓ Save Changes';
+  document.getElementById('groupSelect').value = r.groupId;
+  document.getElementById('totalBill').value = r.totalAmount;
+  document.getElementById('expenseDate').value = r.expenseDate;
+  currentMethod = r.method;
+  document.querySelectorAll('.method-opt[data-method]').forEach(function(o) { o.classList.remove('selected'); });
+  document.querySelector('.method-opt[data-method="' + r.method + '"]').classList.add('selected');
+  const parts = r.billMonthKey.split('-');
+  const y = parseInt(parts[0], 10), m = parseInt(parts[1], 10);
+  const recMonthKey = r.billMonthKey;
+  currentBillMonth = recMonthKey === monthKey(currentMonthDate()) ? 'current' : (recMonthKey === monthKey(nextMonthDate()) ? 'next' : 'custom');
+  document.querySelectorAll('#billOptCurrent, #billOptNext, .method-opt[data-billmonth="custom"]').forEach(function(o) { o.classList.remove('selected'); });
+  if (currentBillMonth === 'custom') {
+    document.querySelector('.method-opt[data-billmonth="custom"]').classList.add('selected');
+    document.getElementById('customMonthField').style.display = 'block';
+    document.getElementById('customMonth').value = recMonthKey;
+  } else {
+    document.getElementById('billOpt' + (currentBillMonth === 'current' ? 'Current' : 'Next')).classList.add('selected');
+    document.getElementById('customMonthField').style.display = 'none';
+  }
+  renderFlatsCard();
+  showFormScreen();
+}
+
+function showFormScreen() {
+  document.getElementById('dashboardScreen').style.display = 'none';
+  document.getElementById('successScreen').style.display = 'none';
+  document.getElementById('formScreen').style.display = 'block';
+  window.scrollTo(0, 0);
+}
+
+function closeFormScreen() {
+  document.getElementById('formScreen').style.display = 'none';
+  document.getElementById('dashboardScreen').style.display = 'block';
+  renderExpCards();
+  window.scrollTo(0, 0);
+}
+
+function backToDashboard() {
+  document.getElementById('successScreen').style.display = 'none';
+  document.getElementById('dashboardScreen').style.display = 'block';
+  renderDashMonthRow();
+  renderExpCards();
+  window.scrollTo(0, 0);
+}
+
+function confirmSplit() {
+  const group = currentGroup();
+  const totalBill = parseFloat(document.getElementById('totalBill').value) || 0;
+  if (!totalBill) { alert('Enter the total bill amount.'); return; }
+  const groupFlats = group.flatIds.map(flatById).filter(function(f) { return isIncluded(f.id); });
+  if (!groupFlats.length) { alert('At least one flat must be included in the split.'); return; }
+
+  let shares = [];
+  if (currentMethod === 'manual') {
+    shares = groupFlats.map(function(f) { return { item: f, amount: manualAmounts[f.id] || 0 }; });
+  } else if (currentMethod === 'equal') {
+    shares = largestRemainderSplit(groupFlats, totalBill, function() { return 1; });
+  } else if (currentMethod === 'area') {
+    shares = largestRemainderSplit(groupFlats, totalBill, function(f) { return f.area; });
+  } else {
+    shares = largestRemainderSplit(groupFlats, totalBill, function(f) { return f.occupants; });
+  }
+
+  const billMonthKey = resolvedBillMonthKey();
+  const record = {
+    id: editingRecordId || ('sh' + (historyIdCounter++)),
+    groupId: group.id,
+    billMonthKey: billMonthKey,
+    totalAmount: totalBill,
+    expenseDate: document.getElementById('expenseDate').value,
+    method: currentMethod,
+    manualAmounts: Object.assign({}, manualAmounts),
+    includedFlatIds: groupFlats.map(function(f) { return f.id; }),
+    daysAgoLabel: 'just now'
+  };
+
+  if (editingRecordId) {
+    const idx = splitHistory.findIndex(function(r) { return r.id === editingRecordId; });
+    splitHistory[idx] = record;
+  } else {
+    splitHistory.push(record);
+  }
+
+  document.getElementById('successTitle').textContent = group.name + ' — ₹' + totalBill + ' split';
+  const list = document.getElementById('successList');
+  list.innerHTML = '';
+  const metaRow = document.createElement('div');
+  metaRow.className = 'success-row';
+  metaRow.style.borderBottom = '2px solid var(--border)';
+  metaRow.style.fontWeight = '700';
+  metaRow.innerHTML = '<span>Expense dated ' + record.expenseDate + '</span><span>Billed to ' + resolvedBillMonthLabelForForm() + '</span>';
+  list.appendChild(metaRow);
+  shares.forEach(function(s) {
+    const row = document.createElement('div');
+    row.className = 'success-row';
+    row.innerHTML = '<span>' + s.item.name + '</span><span>₹' + s.amount + '</span>';
+    list.appendChild(row);
+  });
+
+  document.getElementById('formScreen').style.display = 'none';
+  document.getElementById('successScreen').style.display = 'block';
+  window.scrollTo(0, 0);
+}
+
+populateGroupSelect();
+populateBillMonthLabels();
+</script>
+</body>
+</html>

@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Khaata — MVP Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f4f3ee; --paper-2:#faf9f5; --card:#fffefb;
+  --ink:#23211c; --ink-2:#5a564c; --muted:#8a8578;
+  --green:#1f6f54; --green-soft:#e6efe9;
+  --ochre:#c08a2e; --ochre-soft:#f6eeda;
+  --terra:#b5563f; --terra-soft:#f7e7e2;
+  --line:#e2ded2;
+  --r:18px; --r-sm:12px;
+  --shadow:0 1px 2px rgba(35,33,28,.05), 0 6px 18px -8px rgba(35,33,28,.18);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:Inter,system-ui,sans-serif; font-size:15px; line-height:1.45;
+  -webkit-font-smoothing:antialiased;
+  padding-bottom:64px;
+}
+body::before{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+  opacity:.32; mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/><feColorMatrix type='saturate' values='0'/></filter><rect width='140' height='140' filter='url(%23g)' opacity='.22'/></svg>");
+}
+.wrap{position:relative; z-index:1; max-width:1100px; margin:0 auto; padding:18px 14px 0}
+h1,h2,h3,.num{font-family:'Plus Jakarta Sans',sans-serif}
+
+/* ---------- header ---------- */
+header{margin-bottom:16px}
+.eyebrow{font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); font-weight:600}
+h1{font-size:26px; font-weight:800; margin:2px 0 2px; letter-spacing:-.02em}
+.sub{color:var(--ink-2); font-size:13.5px; margin:0}
+
+.meter{
+  background:var(--card); border:1px solid var(--line); border-radius:var(--r);
+  box-shadow:var(--shadow); padding:16px; margin-top:14px; position:relative; overflow:hidden;
+}
+.meter::before{content:""; position:absolute; inset:0 0 auto; height:1px; background:rgba(255,255,255,.9)}
+.meter-top{display:flex; align-items:baseline; justify-content:space-between; gap:10px}
+.big{font-family:'Plus Jakarta Sans'; font-size:34px; font-weight:800; letter-spacing:-.03em; line-height:1}
+.big small{font-size:15px; font-weight:600; color:var(--muted); letter-spacing:0}
+.meter-label{font-size:12px; color:var(--muted); font-weight:600; text-align:right}
+.bar{height:10px; border-radius:99px; background:#eae6db; margin-top:12px; display:flex; overflow:hidden}
+.bar i{display:block; height:100%}
+.legend{display:flex; flex-wrap:wrap; gap:10px 14px; margin-top:11px}
+.legend span{font-size:11.5px; color:var(--ink-2); display:flex; align-items:center; gap:5px; font-weight:500}
+.dot{width:9px; height:9px; border-radius:3px; display:inline-block}
+
+/* ---------- tabs / controls ---------- */
+.tabs{display:flex; gap:6px; background:#eae6db; padding:4px; border-radius:14px; margin:16px 0 12px}
+.tabs button{
+  flex:1; border:0; background:transparent; padding:9px 8px; border-radius:11px;
+  font-family:'Plus Jakarta Sans'; font-weight:700; font-size:13.5px; color:var(--ink-2); cursor:pointer;
+}
+.tabs button[aria-selected="true"]{background:var(--card); color:var(--ink); box-shadow:0 1px 3px rgba(35,33,28,.12)}
+
+.filters{display:flex; flex-wrap:wrap; gap:7px; margin-bottom:14px; align-items:center}
+.chip{
+  border:1px solid var(--line); background:var(--paper-2); color:var(--ink-2);
+  padding:6px 11px; border-radius:99px; font-size:12.5px; font-weight:600; cursor:pointer;
+  font-family:Inter;
+}
+.chip[aria-pressed="true"]{background:var(--ink); color:var(--paper); border-color:var(--ink)}
+input[type=search]{
+  flex:1; min-width:150px; border:1px solid var(--line); background:var(--paper-2);
+  border-radius:99px; padding:8px 13px; font:inherit; font-size:13px; color:var(--ink);
+}
+input[type=search]:focus, .chip:focus-visible, button:focus-visible{outline:2px solid var(--green); outline-offset:2px}
+
+/* ---------- section + rows ---------- */
+.section{margin-bottom:20px}
+.section h2{
+  font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted);
+  font-weight:700; margin:0 0 8px 3px; display:flex; justify-content:space-between; align-items:center;
+}
+.section h2 em{font-style:normal; letter-spacing:0; text-transform:none; font-size:11.5px; font-weight:600}
+.rows{background:var(--card); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow); overflow:hidden}
+.row{display:flex; align-items:center; gap:10px; padding:12px 14px; border-top:1px solid var(--line); cursor:pointer}
+.row:first-child{border-top:0}
+.row:hover{background:var(--paper-2)}
+.row.out{opacity:.42}
+.row-main{flex:1; min-width:0}
+.row-name{font-weight:600; font-size:14.5px; letter-spacing:-.01em; display:flex; align-items:center; gap:6px; flex-wrap:wrap}
+.row-meta{font-size:11.5px; color:var(--muted); margin-top:3px; display:flex; gap:9px; flex-wrap:wrap; align-items:center}
+.core{font-size:10px; font-weight:800; color:var(--green); background:var(--green-soft); padding:2px 6px; border-radius:5px; letter-spacing:.06em}
+.mvp-off{font-size:10px; font-weight:700; color:var(--muted); background:#eeeae0; padding:2px 6px; border-radius:5px; letter-spacing:.06em}
+.varies{font-size:10px; font-weight:800; color:#8a6416; background:var(--ochre-soft); padding:2px 6px; border-radius:5px; letter-spacing:.06em}
+.inherit{background:transparent; border:1px dashed var(--line); color:var(--muted)}
+.toggle{display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:14px}
+.switch{border:1px solid var(--line); background:var(--paper-2); border-radius:99px; padding:6px 13px; font-family:'Plus Jakarta Sans'; font-weight:700; font-size:12px; cursor:pointer; color:var(--ink-2)}
+.switch[aria-pressed="true"]{background:var(--ochre-soft); border-color:#e8d5a8; color:#8a6416}
+.cbadge{background:var(--ochre-soft); color:#8a6416; font-weight:700; padding:1px 6px; border-radius:5px; font-size:10.5px}
+
+.status{
+  border:1px solid var(--line); background:var(--paper-2); color:var(--ink-2);
+  font-family:'Plus Jakarta Sans'; font-weight:700; font-size:11.5px; letter-spacing:.02em;
+  padding:6px 11px; border-radius:99px; cursor:pointer; white-space:nowrap; min-width:78px; text-align:center;
+}
+.s-gap{background:var(--terra-soft); border-color:#e7c9c0; color:var(--terra)}
+.s-specced{background:#edeae1; border-color:#ded9cc; color:var(--ink-2)}
+.s-mockup{background:var(--ochre-soft); border-color:#e8d5a8; color:#8a6416}
+.s-built{background:var(--green-soft); border-color:#c3dbcd; color:var(--green)}
+.s-tested{background:var(--green); border-color:var(--green); color:#f2f7f4}
+
+/* ---------- business readiness ---------- */
+.ring{width:38px; height:38px; flex:0 0 38px; border-radius:50%; display:grid; place-items:center; font-size:10.5px; font-weight:800; font-family:'Plus Jakarta Sans'; color:var(--ink-2)}
+.stars{color:var(--ochre); font-size:11.5px; letter-spacing:1px}
+
+/* ---------- detail sheet ---------- */
+.scrim{position:fixed; inset:0; background:rgba(35,33,28,.42); z-index:20; display:none}
+.scrim.on{display:block}
+.sheet{
+  position:fixed; z-index:21; left:0; right:0; bottom:0; max-height:88vh; overflow:auto;
+  background:var(--paper-2); border-radius:22px 22px 0 0; padding:18px 16px 30px;
+  box-shadow:0 -10px 40px rgba(35,33,28,.25); transform:translateY(100%); transition:transform .26s cubic-bezier(.2,.8,.2,1);
+}
+.sheet.on{transform:translateY(0)}
+@media (min-width:760px){
+  .sheet{left:50%; right:auto; bottom:0; width:620px; transform:translate(-50%,100%); border-radius:22px 22px 0 0}
+  .sheet.on{transform:translate(-50%,0)}
+}
+@media (prefers-reduced-motion:reduce){ .sheet{transition:none} }
+.sheet h3{margin:0 0 3px; font-size:20px; font-weight:800; letter-spacing:-.02em}
+.sheet .kicker{font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); font-weight:700}
+.close{position:absolute; top:14px; right:14px; border:0; background:#eae6db; width:30px; height:30px; border-radius:50%; cursor:pointer; font-size:16px; line-height:1; color:var(--ink-2)}
+.panel{background:var(--card); border:1px solid var(--line); border-radius:var(--r-sm); padding:13px; margin-top:13px}
+.panel h4{margin:0 0 9px; font-size:11px; letter-spacing:.13em; text-transform:uppercase; color:var(--muted); font-family:'Plus Jakarta Sans'; font-weight:700}
+.kv{display:flex; justify-content:space-between; gap:10px; padding:6px 0; border-top:1px dashed var(--line); font-size:13.5px}
+.kv:first-of-type{border-top:0}
+.kv b{font-weight:600}
+.ladder{display:flex; flex-wrap:wrap; gap:6px; margin-top:4px}
+textarea{
+  width:100%; border:1px solid var(--line); border-radius:var(--r-sm); padding:11px; font:inherit; font-size:14px;
+  background:var(--paper-2); resize:vertical; min-height:74px; color:var(--ink);
+}
+textarea:focus{outline:2px solid var(--green); outline-offset:1px}
+.btn{
+  border:0; background:var(--green); color:#f4f7f5; font-family:'Plus Jakarta Sans'; font-weight:700; font-size:13.5px;
+  padding:10px 16px; border-radius:11px; cursor:pointer; margin-top:9px;
+}
+.btn.ghost{background:transparent; color:var(--ink-2); border:1px solid var(--line)}
+.note{border-left:2px solid var(--green); padding:2px 0 2px 11px; margin:11px 0; font-size:14px}
+.note time{display:block; font-size:11px; color:var(--muted); font-weight:600; margin-bottom:2px}
+.note .del{float:right; border:0; background:none; color:var(--muted); cursor:pointer; font-size:12px}
+.empty{color:var(--muted); font-size:13.5px; font-style:italic}
+.unlock{display:flex; gap:4px; align-items:center; margin-top:8px}
+.unlock i{display:block; height:6px; border-radius:99px; background:var(--ochre)}
+
+footer{max-width:1100px; margin:26px auto 0; padding:16px 14px 30px; border-top:1px solid var(--line); display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+footer .hint{font-size:11.5px; color:var(--muted); flex-basis:100%; margin-top:4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="eyebrow">Khaata · build log</div>
+  <h1>MVP Screen Tracker</h1>
+  <p class="sub">MVP line = every screen that is <b>core</b> for the SUB or JOB engine. Change the engines below and the line redraws.</p>
+
+  <div class="meter">
+    <div class="meter-top">
+      <div><div class="big" id="pct">0<small>%</small></div><div style="font-size:12px;color:var(--muted);font-weight:600;margin-top:3px" id="pctSub">—</div></div>
+      <div class="meter-label" id="blockers">—</div>
+    </div>
+    <div class="bar" id="bar"></div>
+    <div class="legend" id="legend"></div>
+  </div>
+</header>
+
+<div class="tabs" role="tablist">
+  <button role="tab" id="tabScreens" aria-selected="true">Screens</button>
+  <button role="tab" id="tabBiz" aria-selected="false">Businesses</button>
+</div>
+
+<div id="controls"></div>
+<div id="view"></div>
+
+<footer>
+  <button class="btn ghost" id="expJson">Export JSON</button>
+  <button class="btn ghost" id="impJson">Import JSON</button>
+  <button class="btn ghost" id="expCsv">Export CSV for Excel</button>
+  <button class="btn ghost" id="reset">Reset</button>
+  <input type="file" id="file" accept="application/json" hidden>
+  <div class="hint">Saved on this device only. Export before clearing browser data.</div>
+</footer>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true"><button class="close" id="sheetClose" aria-label="Close">×</button><div id="sheetBody"></div></div>
+
+<script>
+"use strict";
+
+/* ============ DATA ============
+   marks = one char per engine, order: SUB APPT EVENT JOB SALE
+   C core(always on) · N preset on · F preset off · X not offered      */
+const ENGINES = ["SUB","APPT","EVENT","JOB","SALE"];
+const SCREENS = [
+ ["First-run wizard","Spine","CCCCC","Built"],
+ ["Business type picker","Spine","CCCCC","GAP"],
+ ["Business setup / settings","Spine","CCCCC","Specced"],
+ ["Business switcher","Spine","CCCCC","GAP"],
+ ["Customer list","Spine","CCCCC","Built"],
+ ["Customer add / edit","Spine","CCCCC","Built"],
+ ["Customer ledger / statement","Spine","CCCCC","GAP"],
+ ["Money in entry","Spine","CCCCC","Specced"],
+ ["Money out entry","Spine","CCCCC","Specced"],
+ ["Vasooli / follow-up list","Spine","CCCCC","Mockup"],
+ ["Mini dashboard (home)","Spine","CCCCC","Specced"],
+ ["App settings","Spine","CCCCC","GAP"],
+ ["Global search","Spine","NNNNN","GAP"],
+
+ ["Bill / invoice generator","Bills","CNCCC","Specced"],
+ ["Item / price book","Bills","NCNCC","GAP"],
+ ["Payment recording + receipt","Bills","CCCCC","GAP"],
+ ["Send / share (WhatsApp, PDF)","Bills","CNCCN","GAP"],
+ ["Quotation / estimate","Bills","FFCCF","Specced"],
+ ["Bill theme / branding","Bills","NNNNN","Specced"],
+ ["Number sequence config","Bills","NNNNN","Specced"],
+ ["Saved text blocks / terms","Bills","FXFNF","GAP"],
+ ["Contract / agreement","Bills","FXFFX","GAP"],
+
+ ["Plan / package definition","Recurring","CFXXX","GAP"],
+ ["Subscription assignment","Recurring","CFXXX","GAP"],
+ ["Recurring bill auto-generate","Recurring","CFXXF","GAP"],
+ ["Renewal / due list","Recurring","CFXXF","GAP"],
+
+ ["Staff list / onboarding","People","NNNCN","Specced"],
+ ["Staff attendance","People","NFFCF","Specced"],
+ ["Staff salary / payout","People","NNNCN","GAP"],
+ ["Customer attendance","People","NXXXX","Specced"],
+ ["Advance / loan to staff","People","FFFCF","GAP"],
+
+ ["Calendar","Scheduling","NCCNF","Specced"],
+ ["Timetable / batches","Scheduling","NXXXX","Specced"],
+ ["Slot booking","Scheduling","FCXFX","GAP"],
+ ["Day queue / today's list","Scheduling","FCCNX","GAP"],
+ ["Date-block booking","Scheduling","XFCFX","GAP"],
+
+ ["Service catalogue","Appointment","XCNNX","Specced"],
+ ["Walk-in quick bill","Appointment","XCXXC","GAP"],
+ ["Repeat visit history","Appointment","FCXFF","GAP"],
+
+ ["Advance vs balance tracker","Event","XFCCF","GAP"],
+ ["Package builder","Event","XFCNX","GAP"],
+ ["Event team payout","Event","XXCNX","GAP"],
+
+ ["Job card / project","Job","XFNCX","GAP"],
+ ["Stage / milestone tracker","Job","XXFCX","Mockup"],
+ ["Material & labour log","Job","XXXCX","Mockup"],
+ ["Budget vs actual","Job","XXFCX","GAP"],
+
+ ["Udhaar / credit book","Sale","FFXFC","GAP"],
+ ["Stock / inventory","Sale","XFFFC","Mockup"],
+ ["Purchase entry","Sale","XXXFC","GAP"],
+
+ ["Full dashboard","Reports","NNNNN","Specced"],
+ ["Aging report","Reports","CNNNC","GAP"],
+ ["Customer statement PDF","Reports","NNNNC","GAP"],
+ ["Collection summary","Reports","CNNNN","GAP"],
+ ["P&L","Reports","NNNNN","GAP"],
+ ["GST / tax report","Reports","FFFFN","Specced"],
+ ["Monthly summary","Reports","NNNNN","GAP"],
+ ["Staff attendance report","Reports","NFFCF","GAP"],
+
+ ["Feature toggle screen","System","CCCCC","GAP"],
+ ["Login / auth","System","NNNNN","GAP"],
+ ["Paywall / upgrade","System","NNNNN","GAP"],
+ ["Backup / restore","System","NNNNN","Specced"],
+ ["Export (CSV / JSON)","System","NNNNN","GAP"],
+ ["Document vault (Drive)","System","NNNNN","Specced"],
+ ["Reminders / notifications","System","NNNNN","GAP"]
+];
+const SECTION_ORDER = ["Spine","Bills","Recurring","People","Scheduling","Appointment","Event","Job","Sale","Reports","System"];
+const SECTION_LABEL = {Spine:"Universal spine",Bills:"Bills & documents",Recurring:"Recurring · SUB engine",People:"People · staff",Scheduling:"Scheduling",Appointment:"APPT engine",Event:"EVENT engine",Job:"JOB engine",Sale:"SALE engine",Reports:"Reports & dashboard",System:"System"};
+
+/* business|engine|stars */
+const BIZ = {
+"Stay & Rental":["PG|SUB|3","Boys hostel|SUB|3","Girls hostel|SUB|3","Rental rooms / chawl|SUB|3","Student hostel|SUB|2","Co-living|SUB|2","Lodge|APPT|2","Banquet hall|EVENT|2","Marriage hall|EVENT|2","Shop / commercial landlord|SUB|2","Service apartment|APPT|1","Homestay|APPT|1","Guest house|APPT|1","Labour dormitory|SUB|1","Old age home|SUB|1","Party hall|EVENT|1","Farmhouse rental|EVENT|1","Godown / warehouse rental|SUB|1","Parking lot|SUB|1","Self-storage|SUB|1"],
+"Fitness":["Gym|SUB|3","Yoga studio|SUB|3","Zumba / dance fitness|SUB|2","Karate / martial arts|SUB|2","Swimming academy|SUB|2","Personal trainer|SUB|2","CrossFit box|SUB|1","Aerobics|SUB|1"],
+"Wellness":["Spa|APPT|2","Massage centre|APPT|2","Physiotherapy|APPT|2","Ayurveda centre|APPT|1","Dietician|APPT|1","Meditation centre|SUB|1"],
+"Beauty & Grooming":["Barber shop|APPT|3","Men's saloon|APPT|3","Beauty parlour|APPT|3","Unisex salon|APPT|3","Makeup artist|EVENT|3","Bridal studio|EVENT|2","Hair / skin clinic|APPT|2","Mehendi artist|EVENT|1","Nail studio|APPT|1","Tattoo studio|APPT|1"],
+"Health":["GP clinic|APPT|3","Dental clinic|APPT|3","Eye clinic|APPT|2","Diagnostic lab|APPT|2","Ayurvedic clinic|APPT|2","Homeopathy clinic|APPT|2","Vet clinic|APPT|2","Pharmacy|SALE|2","Scan centre|APPT|1","Psychologist / counsellor|APPT|1","Speech therapy|SUB|1","Home nursing agency|SUB|1","Ambulance service|JOB|1"],
+"Education":["Coaching class|SUB|3","Tuition centre|SUB|3","Play school|SUB|3","Creche / daycare|SUB|3","Driving school|SUB|3","Preschool|SUB|2","Music school|SUB|2","Dance academy|SUB|2","Art class|SUB|2","Abacus|SUB|2","Computer institute|SUB|2","Spoken English class|SUB|2","UPSC / NEET prep|SUB|2","Reading room / study hall|SUB|2","Vocational training|SUB|1","Hobby class|SUB|1"],
+"Food":["Tiffin / dabba service|SUB|3","Student mess|SUB|3","Catering|EVENT|3","Milk delivery|SUB|3","Water can supply|SUB|3","Bakery|SALE|2","Sweet shop|SALE|2","Cloud kitchen|SALE|2","Restaurant|SALE|1","Cafe|SALE|1","Food truck|SALE|1","Juice / tea stall|SALE|1","Ice cream parlour|SALE|1"],
+"Retail":["Cement / building material|SALE|3","Seeds & fertilizer|SALE|3","Newspaper agency|SUB|3","Kirana|SALE|2","Garment shop|SALE|2","Mobile shop|SALE|2","Electronics|SALE|2","Hardware|SALE|2","Paint shop|SALE|2","Jewellery|SALE|2","Auto parts|SALE|2","Gas agency|SUB|2","Footwear|SALE|1","Furniture shop|SALE|1","Optical|SALE|1","Stationery / xerox|SALE|1","Book shop|SALE|1","Toy shop|SALE|1","Gift shop|SALE|1","Pet shop|SALE|1","Plant nursery|SALE|1","Tyre shop|SALE|1","Sanitary ware|SALE|1","Liquor shop|SALE|1"],
+"Repair & Technical":["Mobile repair|JOB|3","Car garage|JOB|3","Two-wheeler garage|JOB|3","Water purifier service|SUB|3","Electrician|JOB|2","Plumber|JOB|2","AC service|JOB|2","Laptop repair|JOB|2","Appliance repair|JOB|2","Car wash|APPT|2","CCTV installer|JOB|2","Solar installer|JOB|2","Pest control|SUB|2","Puncture shop|SALE|1","Battery shop|SALE|1","Watch repair|JOB|1","Cobbler|JOB|1","Cycle repair|JOB|1","Borewell contractor|JOB|1","Generator service|SUB|1"],
+"Trades & Construction":["Building contractor|JOB|3","Labour contractor|JOB|3","Mason contractor|JOB|2","Carpenter|JOB|2","House painter|JOB|2","Tiles / marble contractor|JOB|2","Fabrication / welding|JOB|2","Aluminium & glass works|JOB|2","Interior designer|JOB|2","JCB / earthmoving hire|JOB|2","POP / false ceiling|JOB|1","Waterproofing|JOB|1","Architect|JOB|1","Civil consultant|JOB|1","Scaffolding rental|SUB|1"],
+"Events":["Photographer|EVENT|3","Tent house|EVENT|3","Videographer|EVENT|2","Decorator|EVENT|2","Wedding planner|EVENT|2","DJ / sound|EVENT|2","Band / orchestra|EVENT|1","Light decoration|EVENT|1","Balloon decorator|EVENT|1","Anchor / host|EVENT|1","Wedding card printer|JOB|1","Pandit / priest booking|EVENT|1"],
+"Transport":["School van|SUB|3","Cab operator|APPT|2","Auto fleet owner|SUB|2","Truck / transport|JOB|2","Bus / travels|EVENT|2","Packers & movers|EVENT|2","Car rental|APPT|2","Bike rental|APPT|2","Tractor hire|APPT|2","Tour operator|EVENT|1","Courier franchise|JOB|1","Tempo / mini truck|APPT|1","Crane hire|APPT|1","Driver supply agency|SUB|1"],
+"Professional":["Tax / GST consultant|SUB|3","Property manager|SUB|3","Private tutor|SUB|3","Chartered accountant|SUB|2","Advocate|JOB|2","Insurance agent|SUB|2","Travel agent|EVENT|2","Cyber cafe / CSC centre|SALE|2","Notary|APPT|1","Loan / DSA agent|JOB|1","Real estate broker|JOB|1","Recruitment agency|JOB|1","Visa consultant|JOB|1","Astrologer|APPT|1","Marketing agency|SUB|1","Web designer|SUB|1","Freelance developer|SUB|1","Typing & documentation centre|JOB|1"],
+"Manufacturing & Job Work":["Tailoring|JOB|3","Boutique|JOB|3","Embroidery job work|JOB|2","Printing press|JOB|2","Flex / signboard|JOB|2","Flour mill|SALE|2","Brick kiln|JOB|2","Screen printing|JOB|1","Furniture making|JOB|1","Oil mill|SALE|1","Rice mill|SALE|1","Papad / pickle unit|SALE|1","Agarbatti / candle unit|SALE|1","Packaging unit|JOB|1","Handicraft unit|SALE|1"],
+"Agriculture & Allied":["Dairy farm|SUB|3","Poultry farm|SALE|2","Crop farming|JOB|2","Mandi commission agent|SALE|2","Agri equipment rental|APPT|2","Milk cooperative|SUB|2","Goat farm|SALE|1","Fish farm|SALE|1","Cold storage|SUB|1","Beekeeping|SALE|1"],
+"Household Services":["Laundry|APPT|3","Dry cleaning|APPT|3","Ironing / istri service|SUB|3","Maid agency|SUB|2","Cook service|SUB|2","Cleaning service|SUB|2","Security agency|SUB|2","Housekeeping contractor|SUB|2","Gardener|SUB|1","Nanny agency|SUB|1","Elder care service|SUB|1"],
+"Pets":["Pet grooming|APPT|2","Pet boarding|APPT|1","Dog training|SUB|1"],
+"Goods Rental":["Furniture rental|SUB|2","Camera rental|APPT|2","Sound system rental|EVENT|2","Construction equipment rental|APPT|2","Appliance rental|SUB|1","Crockery rental|EVENT|1","Costume rental|APPT|1","Book library|SUB|1"],
+"Sports & Recreation":["Turf / box cricket|APPT|3","Badminton court|APPT|2","Cricket academy|SUB|2","Gaming / PS cafe|APPT|2","Football academy|SUB|1","Snooker parlour|APPT|1","Play zone|APPT|1","Skating rink|SUB|1"],
+"Community":["Apartment society / RWA|SUB|3","Milk cooperative (community)|SUB|2","Temple trust|JOB|1","NGO|JOB|1","Community fund (chanda)|JOB|1"],
+"Personal ledgers":["Marriage|JOB|3","Home construction|JOB|3","Renovation / interiors|JOB|2","Medical treatment|JOB|2","Education / foreign study|JOB|2","Farming season|JOB|2","Vehicle purchase|JOB|1","Festival / community fund|JOB|1"]
+};
+
+const LADDER = ["GAP","Specced","Mockup","Built","Tested"];
+const SCLASS = {GAP:"s-gap",Specced:"s-specced",Mockup:"s-mockup",Built:"s-built",Tested:"s-tested"};
+const SCOLOR = {GAP:"#b5563f",Specced:"#c9c3b4",Mockup:"#c08a2e",Built:"#5aa885",Tested:"#1f6f54"};
+const DONE = ["Built","Tested"];
+
+/* ============ STATE ============ */
+const KEY = "khaata-mvp-tracker-v1";
+const DEFAULT_STATE = {
+  mvpEngines:["SUB","JOB"],
+  status:{}, notes:{}, bizNotes:{},
+  varies:{},      // screenName -> true  (status may differ per business type)
+  overrides:{},   // "screenName|businessName" -> status
+  view:"screens", onlyMvp:true, hideDone:false, onlyVaries:false,
+  q:"", bizEngine:"ALL", bizStars:0
+};
+let S = load();
+
+function load(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(!raw) return seed(structuredClone(DEFAULT_STATE));
+    return Object.assign(structuredClone(DEFAULT_STATE), JSON.parse(raw));
+  }catch(e){ return seed(structuredClone(DEFAULT_STATE)); }
+}
+function seed(st){ SCREENS.forEach(s=>{ st.status[s[0]] = s[3]; }); return st; }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+function esc(t){ return String(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function statusOf(n){ return S.status[n] || "GAP"; }
+function varies(n){ return !!S.varies[n]; }
+function ovKey(n,b){ return n+"|"+b; }
+/* what this business actually has: its own override, else the base build */
+function effStatus(n,b){ return (varies(n) && S.overrides[ovKey(n,b)]) || statusOf(n); }
+function overridesFor(n){
+  const out=[];
+  for(const k in S.overrides){ const [scr,biz]=k.split("|"); if(scr===n) out.push([biz,S.overrides[k]]); }
+  return out.sort();
+}
+/* a varying screen is only finished when no business is left behind */
+function screenDone(s){
+  const n=s[0];
+  if(!DONE.includes(statusOf(n))) return false;
+  return overridesFor(n).every(o=>DONE.includes(o[1]));
+}
+function markOf(scr, eng){ return scr[2][ENGINES.indexOf(eng)]; }
+function isMvp(scr){ return S.mvpEngines.some(e => markOf(scr,e)==="C"); }
+function mvpList(){ return SCREENS.filter(isMvp); }
+
+/* businesses that need a given screen (mark C or N) */
+function unlockedBy(scr){
+  let all=0, three=0;
+  for(const cat in BIZ) for(const b of BIZ[cat]){
+    const [,eng,st] = b.split("|");
+    const m = markOf(scr,eng);
+    if(m==="C"||m==="N"){ all++; if(+st===3) three++; }
+  }
+  return {all, three};
+}
+function bizScreens(eng){
+  return SCREENS.filter(s=>{ const m=markOf(s,eng); return m==="C"||m==="N"; });
+}
+function readiness(name, eng){
+  const req = bizScreens(eng);
+  const core = req.filter(s=>markOf(s,eng)==="C");
+  const done = req.filter(s=>DONE.includes(effStatus(s[0],name)));
+  const coreLeft = core.filter(s=>!DONE.includes(effStatus(s[0],name))).length;
+  const set = req.filter(s=>S.overrides[ovKey(s[0],name)]).length;
+  return {pct: req.length?Math.round(done.length/req.length*100):0, done:done.length, total:req.length, coreLeft, set};
+}
+
+/* ============ RENDER ============ */
+const $ = id => document.getElementById(id);
+
+function renderMeter(){
+  const list = mvpList();
+  const counts = {}; LADDER.forEach(l=>counts[l]=0);
+  list.forEach(s=>counts[statusOf(s[0])]++);
+  const total = list.length || 1;
+  const done = list.filter(screenDone).length;
+  const stragglers = list.filter(s=>DONE.includes(statusOf(s[0])) && !screenDone(s)).length;
+  $("pct").innerHTML = Math.round(done/total*100) + "<small>%</small>";
+  $("pctSub").textContent = done + " of " + list.length + " MVP screens built";
+  $("blockers").innerHTML = counts.GAP + " not started<br>" + S.mvpEngines.join(" + ") + " engines"
+    + (stragglers?`<br><span style="color:var(--ochre)">${stragglers} built, variants pending</span>`:"");
+  $("bar").innerHTML = LADDER.map(l=>{
+    const w = counts[l]/total*100;
+    return w ? `<i style="width:${w}%;background:${SCOLOR[l]}"></i>` : "";
+  }).join("");
+  $("legend").innerHTML = LADDER.map(l=>
+    `<span><i class="dot" style="background:${SCOLOR[l]}"></i>${l} ${counts[l]}</span>`).join("");
+}
+
+function renderControls(){
+  if(S.view==="screens"){
+    $("controls").innerHTML = `
+    <div class="filters">
+      <button class="chip" id="fMvp" aria-pressed="${S.onlyMvp}">MVP only</button>
+      <button class="chip" id="fDone" aria-pressed="${S.hideDone}">Hide done</button>
+      <button class="chip" id="fVar" aria-pressed="${S.onlyVaries}">Varies by type</button>
+      <input type="search" id="q" placeholder="Find a screen…" value="${esc(S.q)}">
+    </div>
+    <div class="filters" style="margin-top:-6px">
+      <span style="font-size:11.5px;color:var(--muted);font-weight:600">MVP engines:</span>
+      ${ENGINES.map(e=>`<button class="chip eng" data-e="${e}" aria-pressed="${S.mvpEngines.includes(e)}">${e}</button>`).join("")}
+    </div>`;
+    $("fMvp").onclick = ()=>{ S.onlyMvp=!S.onlyMvp; save(); render(); };
+    $("fDone").onclick = ()=>{ S.hideDone=!S.hideDone; save(); render(); };
+    $("fVar").onclick = ()=>{ S.onlyVaries=!S.onlyVaries; save(); render(); };
+    $("q").oninput = e=>{ S.q=e.target.value; save(); renderView(); };
+    document.querySelectorAll(".eng").forEach(b=>b.onclick=()=>{
+      const e=b.dataset.e;
+      S.mvpEngines = S.mvpEngines.includes(e) ? S.mvpEngines.filter(x=>x!==e) : S.mvpEngines.concat(e);
+      if(!S.mvpEngines.length) S.mvpEngines=[e];
+      save(); render();
+    });
+  } else {
+    $("controls").innerHTML = `
+    <div class="filters">
+      ${["ALL",...ENGINES].map(e=>`<button class="chip be" data-e="${e}" aria-pressed="${S.bizEngine===e}">${e}</button>`).join("")}
+      <button class="chip" id="fStar" aria-pressed="${S.bizStars===3}">★★★ only</button>
+    </div>
+    <div class="filters" style="margin-top:-6px">
+      <input type="search" id="q" placeholder="Find a business…" value="${esc(S.q)}">
+    </div>`;
+    document.querySelectorAll(".be").forEach(b=>b.onclick=()=>{ S.bizEngine=b.dataset.e; save(); render(); });
+    $("fStar").onclick = ()=>{ S.bizStars = S.bizStars===3?0:3; save(); render(); };
+    $("q").oninput = e=>{ S.q=e.target.value; save(); renderView(); };
+  }
+}
+
+function renderScreens(){
+  const q = S.q.trim().toLowerCase();
+  let html = "";
+  SECTION_ORDER.forEach(sec=>{
+    let rows = SCREENS.filter(s=>s[1]===sec);
+    if(S.onlyMvp) rows = rows.filter(isMvp);
+    if(S.onlyVaries) rows = rows.filter(s=>varies(s[0]));
+    if(S.hideDone) rows = rows.filter(s=>!screenDone(s));
+    if(q) rows = rows.filter(s=>s[0].toLowerCase().includes(q));
+    if(!rows.length) return;
+    const dn = rows.filter(screenDone).length;
+    html += `<div class="section"><h2>${esc(SECTION_LABEL[sec])}<em>${dn}/${rows.length}</em></h2><div class="rows">`;
+    rows.forEach(s=>{
+      const st = statusOf(s[0]);
+      const mvp = isMvp(s);
+      const u = unlockedBy(s);
+      const nc = (S.notes[s[0]]||[]).length;
+      const ov = overridesFor(s[0]);
+      const pend = ov.filter(o=>!DONE.includes(o[1])).length;
+      html += `<div class="row ${mvp?"":"out"}" data-s="${esc(s[0])}">
+        <div class="row-main">
+          <div class="row-name">${esc(s[0])}
+            ${mvp?'<span class="core">MVP</span>':'<span class="mvp-off">LATER</span>'}
+            ${varies(s[0])?'<span class="varies">VARIES</span>':''}
+            ${nc?`<span class="cbadge">${nc} note${nc>1?"s":""}</span>`:""}
+          </div>
+          <div class="row-meta"><span>unlocks ${u.all} businesses</span>${u.three?`<span>${u.three} ★★★</span>`:""}${ov.length?`<span style="color:var(--ochre);font-weight:600">${ov.length} set${pend?` · ${pend} pending`:""}</span>`:""}</div>
+        </div>
+        <button class="status ${SCLASS[st]}" data-cycle="${esc(s[0])}">${st}</button>
+      </div>`;
+    });
+    html += `</div></div>`;
+  });
+  $("view").innerHTML = html || `<p class="empty">Nothing matches that filter.</p>`;
+  bindRows();
+}
+
+function renderBiz(){
+  const q = S.q.trim().toLowerCase();
+  let html = "";
+  for(const cat in BIZ){
+    let rows = BIZ[cat].map(b=>b.split("|"));
+    if(S.bizEngine!=="ALL") rows = rows.filter(r=>r[1]===S.bizEngine);
+    if(S.bizStars===3) rows = rows.filter(r=>+r[2]===3);
+    if(q) rows = rows.filter(r=>r[0].toLowerCase().includes(q));
+    if(!rows.length) continue;
+    html += `<div class="section"><h2>${esc(cat)}<em>${rows.length}</em></h2><div class="rows">`;
+    rows.forEach(r=>{
+      const [name,eng,stars] = r;
+      const R = readiness(name, eng);
+      const col = R.pct>=80?"var(--green)":R.pct>=40?"var(--ochre)":"var(--terra)";
+      const nc = (S.bizNotes[name]||[]).length;
+      html += `<div class="row" data-b="${esc(name)}|${eng}">
+        <div class="ring" style="background:conic-gradient(${col} ${R.pct*3.6}deg, #eae6db 0)">
+          <span style="background:var(--card);width:28px;height:28px;border-radius:50%;display:grid;place-items:center">${R.pct}</span>
+        </div>
+        <div class="row-main">
+          <div class="row-name">${esc(name)} ${nc?`<span class="cbadge">${nc}</span>`:""}</div>
+          <div class="row-meta"><span>${eng}</span><span class="stars">${"★".repeat(+stars)}</span><span>${R.done}/${R.total} · ${R.coreLeft} core left</span>${R.set?`<span style="color:var(--ochre);font-weight:600">${R.set} own</span>`:""}</div>
+        </div>
+      </div>`;
+    });
+    html += `</div></div>`;
+  }
+  $("view").innerHTML = html || `<p class="empty">No business matches that filter.</p>`;
+  bindRows();
+}
+
+function bindRows(){
+  document.querySelectorAll("[data-cycle]").forEach(b=>b.onclick=e=>{
+    e.stopPropagation();
+    const n = b.dataset.cycle;
+    S.status[n] = LADDER[(LADDER.indexOf(statusOf(n))+1) % LADDER.length];
+    save(); render();
+  });
+  document.querySelectorAll("[data-s]").forEach(r=>r.onclick=()=>openScreen(r.dataset.s));
+  document.querySelectorAll("[data-b]").forEach(r=>r.onclick=()=>{
+    const [n,e] = r.dataset.b.split("|"); openBiz(n,e);
+  });
+}
+
+/* ============ SHEET ============ */
+function openSheet(html){
+  $("sheetBody").innerHTML = html;
+  $("scrim").classList.add("on"); $("sheet").classList.add("on");
+}
+function closeSheet(){ $("scrim").classList.remove("on"); $("sheet").classList.remove("on"); }
+$("scrim").onclick = closeSheet; $("sheetClose").onclick = closeSheet;
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeSheet(); });
+
+const MARKTXT = {C:"Core — always on",N:"On by default",F:"Off by default",X:"Not offered"};
+
+function openScreen(name){
+  const scr = SCREENS.find(s=>s[0]===name); if(!scr) return;
+  const st = statusOf(name);
+  const u = unlockedBy(scr);
+  const ov = overridesFor(name);
+  const notes = S.notes[name] || [];
+  openSheet(`
+    <div class="kicker">${esc(SECTION_LABEL[scr[1]])}</div>
+    <h3>${esc(name)}</h3>
+    <div class="ladder">${LADDER.map(l=>`<button class="status ${l===st?SCLASS[l]:""}" data-set="${l}">${l}</button>`).join("")}</div>
+
+    <div class="panel">
+      <div class="toggle">
+        <div><b>Varies by business type</b>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px">${varies(name)?"Each business can hold its own status. The status above is the base build.":"One build serves every business type."}</div>
+        </div>
+        <button class="switch" id="varTog" aria-pressed="${varies(name)}">${varies(name)?"On":"Off"}</button>
+      </div>
+      ${varies(name)&&ov.length?`<div style="margin-top:10px">${ov.map(o=>
+        `<div class="kv"><b>${esc(o[0])}</b><span style="color:${SCOLOR[o[1]]};font-weight:600">${o[1]}</span></div>`).join("")}</div>`:""}
+      ${varies(name)&&!ov.length?`<p class="empty" style="margin:9px 0 0">No business set yet — open one from the Businesses tab and set it there.</p>`:""}
+    </div>
+
+    <div class="panel">
+      <h4>Who needs it</h4>
+      ${ENGINES.map(e=>`<div class="kv"><b>${e}</b><span>${MARKTXT[markOf(scr,e)]}</span></div>`).join("")}
+      <div class="unlock"><i style="width:${Math.min(100,u.all/2.5)}%"></i><span style="font-size:12px;color:var(--muted);font-weight:600">${u.all} businesses · ${u.three} of them ★★★</span></div>
+    </div>
+
+    <div class="panel">
+      <h4>Notes</h4>
+      <textarea id="noteIn" placeholder="Defect, decision, or open question…"></textarea>
+      <button class="btn" id="noteAdd">Add note</button>
+      <div id="noteList">${notes.length?notes.map((n,i)=>`
+        <div class="note"><button class="del" data-del="${i}">remove</button><time>${esc(n.t)}</time>${esc(n.b)}</div>`).join("")
+        :`<p class="empty">No notes yet.</p>`}</div>
+    </div>`);
+
+  document.querySelectorAll("[data-set]").forEach(b=>b.onclick=()=>{
+    S.status[name]=b.dataset.set; save(); render(); openScreen(name);
+  });
+  $("varTog").onclick = ()=>{
+    if(varies(name)){
+      if(ov.length && !confirm("Switching this off discards "+ov.length+" per-business status"+(ov.length>1?"es":"")+". Continue?")) return;
+      delete S.varies[name];
+      ov.forEach(o=>delete S.overrides[ovKey(name,o[0])]);
+    } else S.varies[name]=true;
+    save(); render(); openScreen(name);
+  };
+  $("noteAdd").onclick = ()=>{
+    const v = $("noteIn").value.trim(); if(!v) return;
+    (S.notes[name] = S.notes[name] || []).push({t:stamp(), b:v});
+    save(); render(); openScreen(name);
+  };
+  document.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{
+    S.notes[name].splice(+b.dataset.del,1); save(); render(); openScreen(name);
+  });
+}
+
+function openBiz(name, eng){
+  const R = readiness(name, eng);
+  const req = bizScreens(eng);
+  const notes = S.bizNotes[name] || [];
+  const core = req.filter(s=>markOf(s,eng)==="C");
+  const blockers = core.filter(s=>!DONE.includes(effStatus(s[0],name)));
+
+  const line = s=>{
+    const own = varies(s[0]) ? S.overrides[ovKey(s[0],name)] : null;
+    const st = effStatus(s[0],name);
+    const cls = own ? SCLASS[st] : "inherit";
+    return `<div class="kv"><b>${esc(s[0])}${markOf(s,eng)==="C"?" ·":""}</b>
+      ${varies(s[0])
+        ? `<button class="status ${cls}" data-bset="${esc(s[0])}" title="Tap to set for ${esc(name)}">${own?st:st+" ↩"}</button>`
+        : `<span style="color:${SCOLOR[st]};font-weight:600">${st}</span>`}</div>`;
+  };
+
+  openSheet(`
+    <div class="kicker">${eng} engine</div>
+    <h3>${esc(name)}</h3>
+    <p class="sub">${R.pct}% ready · ${R.done} of ${R.total} screens built${blockers.length?` · ${blockers.length} core blocking`:" · nothing blocking"}${R.set?` · ${R.set} set for this business`:""}</p>
+
+    ${blockers.length?`<div class="panel"><h4>Blocking launch</h4>${blockers.map(line).join("")}</div>`:""}
+
+    <div class="panel"><h4>All screens for this type</h4>
+      ${req.map(line).join("")}
+      <p class="empty" style="margin:9px 0 0">↩ means inherited from the base build. Tap to set a status just for ${esc(name)}. Screens without a button are shared — mark those as varying from the screen itself.</p>
+    </div>
+
+    <div class="panel">
+      <h4>Notes</h4>
+      <textarea id="bnoteIn" placeholder="Preset tweaks, label overrides, field defaults…"></textarea>
+      <button class="btn" id="bnoteAdd">Add note</button>
+      <div>${notes.length?notes.map((n,i)=>`
+        <div class="note"><button class="del" data-bdel="${i}">remove</button><time>${esc(n.t)}</time>${esc(n.b)}</div>`).join("")
+        :`<p class="empty">No notes yet.</p>`}</div>
+    </div>`);
+
+  /* cycle: inherit → GAP → Specced → Mockup → Built → Tested → inherit */
+  document.querySelectorAll("[data-bset]").forEach(b=>b.onclick=e=>{
+    e.stopPropagation();
+    const scr = b.dataset.bset, k = ovKey(scr,name), cur = S.overrides[k];
+    if(!cur) S.overrides[k] = LADDER[0];
+    else if(cur === LADDER[LADDER.length-1]) delete S.overrides[k];
+    else S.overrides[k] = LADDER[LADDER.indexOf(cur)+1];
+    save(); render(); openBiz(name,eng);
+  });
+
+  $("bnoteAdd").onclick = ()=>{
+    const v = $("bnoteIn").value.trim(); if(!v) return;
+    (S.bizNotes[name] = S.bizNotes[name] || []).push({t:stamp(), b:v});
+    save(); render(); openBiz(name,eng);
+  };
+  document.querySelectorAll("[data-bdel]").forEach(b=>b.onclick=()=>{
+    S.bizNotes[name].splice(+b.dataset.bdel,1); save(); render(); openBiz(name,eng);
+  });
+}
+function stamp(){
+  return new Date().toLocaleString("en-IN",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"});
+}
+
+/* ============ TABS + IO ============ */
+$("tabScreens").onclick = ()=>{ S.view="screens"; S.q=""; save(); render(); };
+$("tabBiz").onclick = ()=>{ S.view="biz"; S.q=""; save(); render(); };
+
+$("expJson").onclick = ()=>{
+  dl(new Blob([JSON.stringify(S,null,2)],{type:"application/json"}), "khaata-tracker.json");
+};
+$("expCsv").onclick = ()=>{
+  const head = ["Section","Screen","Business","Status","In MVP","Varies","SUB","APPT","EVENT","JOB","SALE","Businesses","Star3","Notes"];
+  const rows = [];
+  SCREENS.forEach(s=>{
+    const u = unlockedBy(s);
+    const notes = (S.notes[s[0]]||[]).map(n=>n.t+" — "+n.b).join(" | ");
+    rows.push([s[1],s[0],"(base)",statusOf(s[0]),isMvp(s)?"Yes":"No",varies(s[0])?"Yes":"No",...s[2].split(""),u.all,u.three,notes]);
+    overridesFor(s[0]).forEach(o=>
+      rows.push([s[1],s[0],o[0],o[1],isMvp(s)?"Yes":"No","Yes","","","","","","","",""]));
+  });
+  const csv = [head,...rows].map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(",")).join("\r\n");
+  dl(new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"}), "khaata-tracker.csv");
+};
+$("impJson").onclick = ()=>$("file").click();
+$("file").onchange = e=>{
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = ()=>{ try{ S = Object.assign(structuredClone(DEFAULT_STATE), JSON.parse(r.result)); save(); render(); }
+                   catch(err){ alert("That file isn't a tracker export."); } };
+  r.readAsText(f); e.target.value="";
+};
+$("reset").onclick = ()=>{
+  if(confirm("Reset every status and note back to the starting point?")){
+    S = seed(structuredClone(DEFAULT_STATE)); save(); render();
+  }
+};
+function dl(blob, name){
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = name; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 1500);
+}
+
+function renderView(){ S.view==="screens" ? renderScreens() : renderBiz(); }
+function render(){
+  $("tabScreens").setAttribute("aria-selected", S.view==="screens");
+  $("tabBiz").setAttribute("aria-selected", S.view==="biz");
+  renderMeter(); renderControls(); renderView();
+}
+render();
+</script>
+</body>
+</html>

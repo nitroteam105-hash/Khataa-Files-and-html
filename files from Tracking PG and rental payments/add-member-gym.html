@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FitZone — Add Member</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fbfbf9;--ink:#16161a;--muted:#62636a;--line:#e7e7e2;--card:#fff;
+    --accent:#1f6f54;--soft:#e8f3ee;--warm:#f4f2ec;--red:#b3261e;--amber:#b36b00;--ambersoft:#fff4e5;
+    --d:'Plus Jakarta Sans',sans-serif;--b:'Inter',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:var(--b);-webkit-font-smoothing:antialiased;padding-bottom:88px;}
+  .wrap{max-width:480px;margin:0 auto;padding:0 16px;}
+  h1,h2,h3{font-family:var(--d);letter-spacing:-.01em;}
+
+  .top{position:sticky;top:0;background:var(--bg);z-index:9;padding:14px 0 12px;border-bottom:1px solid var(--line);}
+  .top-in{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+  .back{font-size:20px;color:var(--muted);cursor:pointer;}
+  .top h1{font-size:18px;}.top .sub{font-size:12px;color:var(--muted);}
+  .dots{display:flex;gap:6px;}
+  .dots .d{flex:1;height:5px;border-radius:99px;background:var(--line);}
+  .dots .d.on{background:var(--accent);}.dots .d.done{background:var(--accent);opacity:.5;}
+
+  .step-h{margin:18px 0 4px;}
+  .step-h .n{font-family:var(--d);font-weight:700;font-size:12px;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;}
+  .step-h h2{font-size:22px;margin-top:5px;}
+  .step-h p{font-size:13.5px;color:var(--muted);margin-top:3px;}
+
+  label{display:block;font-size:12.5px;color:var(--muted);margin:14px 0 5px;font-weight:500;}
+  input,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;font-size:15px;font-family:var(--b);background:var(--card);color:var(--ink);}
+  input:focus,select:focus{outline:none;border-color:var(--accent);}
+  .row{display:flex;gap:10px;}.row>*{flex:1;}
+  .opt-note{font-size:11.5px;color:var(--muted);}
+
+  /* plan cards */
+  .plans{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:6px;}
+  .plan{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:14px;cursor:pointer;transition:.12s;position:relative;}
+  .plan:hover{border-color:var(--accent);}
+  .plan.sel{border-color:var(--accent);background:var(--soft);}
+  .plan.sel::after{content:'✓';position:absolute;top:9px;right:11px;color:var(--accent);font-weight:700;}
+  .plan .dur{font-family:var(--d);font-weight:700;font-size:15px;}
+  .plan .pr{font-family:var(--d);font-weight:800;font-size:18px;color:var(--accent);margin-top:3px;}
+  .plan .per{font-size:11px;color:var(--muted);}
+
+  .expiry{display:flex;justify-content:space-between;align-items:center;background:var(--ink);color:#fff;border-radius:12px;padding:14px 16px;margin-top:12px;}
+  .expiry .lb{font-size:12px;color:#b8b9bd;}
+  .expiry .v{font-family:var(--d);font-weight:700;font-size:16px;}
+
+  .charges-wrap{margin-top:8px;}
+  .charge-row{display:flex;gap:8px;align-items:center;margin-bottom:8px;}
+  .charge-row select{flex:1.4;}.charge-row input{flex:1;}
+  .charge-row .rm{width:38px;height:44px;border:1px solid var(--line);background:var(--card);border-radius:9px;color:var(--red);font-size:14px;cursor:pointer;flex-shrink:0;}
+  .add-charge{width:100%;border:1px dashed #bbb;background:var(--bg);border-radius:10px;padding:11px;font-size:13.5px;cursor:pointer;color:var(--accent);font-family:var(--d);font-weight:600;}
+  .dtype.sel{background:var(--ink)!important;color:#fff!important;border-color:var(--ink)!important;}
+  .onetime-h{font-family:var(--d);font-weight:700;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:20px 0 4px;padding-top:14px;border-top:1px dashed var(--line);}
+
+  .upload{display:flex;align-items:center;gap:12px;background:var(--card);border:1px dashed #bbb;border-radius:12px;padding:14px;cursor:pointer;margin-top:5px;}
+  .upload .ic{font-size:22px;}.upload .tx{flex:1;}.upload .tx h3{font-size:14px;}.upload .tx small{color:var(--muted);font-size:12px;}
+  .upload.done{border-style:solid;border-color:var(--accent);background:var(--soft);}
+  .priv{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.5;background:var(--warm);padding:10px 12px;border-radius:10px;}
+  .collapse-h{display:flex;justify-content:space-between;align-items:center;cursor:pointer;padding:12px 0;}
+  .collapse-h .lbl{font-size:14.5px;font-weight:600;font-family:var(--d);}
+  .collapse-h .lbl small{display:block;font-size:12px;color:var(--muted);font-weight:400;font-family:var(--b);}
+  .collapse-body{display:none;}.collapse-body.show{display:block;}
+
+  .toggle{display:flex;align-items:center;justify-content:space-between;padding:12px 0;}
+  .toggle .lbl{font-size:14.5px;font-weight:600;font-family:var(--d);}
+  .toggle .lbl small{display:block;font-size:12px;color:var(--muted);font-weight:400;font-family:var(--b);}
+  .sw{width:46px;height:26px;border-radius:99px;background:var(--line);position:relative;cursor:pointer;transition:.15s;flex-shrink:0;}
+  .sw.on{background:var(--accent);}
+  .sw::after{content:'';position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.15s;}
+  .sw.on::after{left:23px;}
+
+  .rev{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:10px;}
+  .rev .rr{display:flex;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--line);font-size:14px;}
+  .rev .rr:last-child{border:none;}
+  .rev .rr .k{color:var(--muted);}.rev .rr .v{font-weight:500;text-align:right;}
+  .rev-h{font-family:var(--d);font-weight:700;font-size:12px;color:var(--muted);text-transform:uppercase;margin:16px 0 7px;letter-spacing:.04em;}
+
+  .bar{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);padding:12px 16px;z-index:9;}
+  .bar-in{max-width:480px;margin:0 auto;display:flex;gap:10px;align-items:center;}
+  .btn{font-family:var(--d);font-weight:700;font-size:15px;border:none;border-radius:11px;padding:14px;cursor:pointer;}
+  .btn.next{background:var(--accent);color:#fff;flex:1;}
+  .btn.back{background:var(--card);border:1px solid var(--line);color:var(--ink);flex:0 0 26%;}
+  .btn.skip{background:none;color:var(--muted);font-weight:600;font-size:13px;border:none;}
+  .savebar{text-align:center;margin-top:8px;}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+const STEPS=['Basics','Plan','Health & ID','Safety','Review'];
+let step=0;
+const PLANS=[
+  {dur:'1 Month',months:1,price:1500},
+  {dur:'3 Months',months:3,price:4000},
+  {dur:'6 Months',months:6,price:7000},
+  {dur:'12 Months',months:12,price:12000}
+];
+const ADDONS=['Personal Training','Diet Plan','Locker','Steam/Sauna','Group Class','Other'];
+const d={
+  name:'',phone:'',gender:'Male',batch:'Any time',join:'2026-06-23',
+  planIdx:1,addons:[],joinfee:500,discount:0,disctype:'flat',
+  height:'',weight:'',goal:'General fitness',
+  idtype:'Aadhaar',idno:'',idUploaded:false,photoUploaded:false,verified:false,
+  emg:'',emgph:'',medical:''
+};
+const $=id=>document.getElementById(id);
+const money=n=>'₹'+(+n||0).toLocaleString('en-IN');
+function set(f,v){d[f]=v;}
+function plan(){return PLANS[d.planIdx];}
+function expiryDate(){
+  const dt=new Date(d.join); dt.setMonth(dt.getMonth()+plan().months);
+  return dt.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+}
+function monthlyTotalNote(){return plan().price + d.addons.reduce((a,c)=>a+(+c.amt||0),0);}
+
+function basics(){
+  return `<div class="step-h"><span class="n">Step 1 of 5</span><h2>Member basics</h2><p>The essentials to create the record.</p></div>
+  <label>Full name</label><input value="${d.name}" oninput="set('name',this.value);refreshNext()" placeholder="e.g. Neha Sharma">
+  <label>Phone number</label><input value="${d.phone}" oninput="set('phone',this.value);refreshNext()" placeholder="10-digit mobile" inputmode="numeric">
+  <div class="row">
+    <div><label>Gender</label><select onchange="set('gender',this.value)">${['Male','Female','Other'].map(g=>`<option ${d.gender===g?'selected':''}>${g}</option>`).join('')}</select></div>
+    <div><label>Join date</label><input type="date" value="${d.join}" oninput="set('join',this.value)"></div>
+  </div>
+  <label>Batch / timing <span class="opt-note">(optional)</span></label>
+  <select onchange="set('batch',this.value)">${['Any time','Morning (5–10 AM)','Evening (5–10 PM)','Weekend only'].map(b=>`<option ${d.batch===b?'selected':''}>${b}</option>`).join('')}</select>`;
+}
+function planStep(){
+  const cards=PLANS.map((p,i)=>`<div class="plan ${d.planIdx===i?'sel':''}" onclick="set('planIdx',${i});render()">
+    <div class="dur">${p.dur}</div><div class="pr">${money(p.price)}</div><div class="per">${money(Math.round(p.price/p.months))}/mo</div></div>`).join('');
+  const addonRows=d.addons.map((c,i)=>`
+    <div class="charge-row">
+      <select onchange="setAddon(${i},'name',this.value)">${ADDONS.map(t=>`<option ${c.name===t?'selected':''}>${t}</option>`).join('')}</select>
+      <input type="number" value="${c.amt}" placeholder="0/mo" oninput="setAddon(${i},'amt',this.value)">
+      <button class="rm" onclick="rmAddon(${i})">✕</button>
+    </div>`).join('');
+  return `<div class="step-h"><span class="n">Step 2 of 5</span><h2>Membership plan</h2><p>Pick a plan — expiry is set automatically.</p></div>
+  <div class="plans">${cards}</div>
+  <div class="expiry"><div><div class="lb">Plan expires on</div><div class="v">${expiryDate()}</div></div><div class="v">${money(plan().price)}</div></div>
+  <label style="margin-top:16px">Add-ons <span class="opt-note">(optional, monthly)</span></label>
+  <div class="charges-wrap">${addonRows}</div>
+  <button class="add-charge" onclick="addAddon()">+ Add-on (personal training, diet…)</button>
+
+  <div class="collapse-h" onclick="toggleDiscount()" style="border-top:1px dashed var(--line);margin-top:14px">
+    <div class="lbl">Joining discount<small>Festival offer, first-month deal, etc.</small></div>
+    <div class="sw ${d.discount>0||d._discOpen?'on':''}" id="discsw"></div>
+  </div>
+  <div class="collapse-body ${d._discOpen?'show':''}" id="discbody">
+    <div class="charge-row">
+      <input type="number" value="${d.discount||''}" placeholder="0" oninput="set('discount',+this.value);updTotals()">
+      <button class="dtype ${d.disctype==='flat'?'sel':''}" onclick="set('disctype','flat');render()" style="width:42px;height:44px;border:1px solid var(--line);background:var(--card);border-radius:9px;font-family:var(--d);font-weight:700;cursor:pointer">₹</button>
+      <button class="dtype ${d.disctype==='pct'?'sel':''}" onclick="set('disctype','pct');render()" style="width:42px;height:44px;border:1px solid var(--line);background:var(--card);border-radius:9px;font-family:var(--d);font-weight:700;cursor:pointer">%</button>
+    </div>
+  </div>
+
+  <div class="onetime-h">One-time</div>
+  <label>Joining / admission fee</label><input type="number" value="${d.joinfee}" oninput="set('joinfee',+this.value)">
+  <div class="opt-note" style="margin-top:5px">One-time — not part of the plan price.</div>`;
+}
+function healthId(){
+  return `<div class="step-h"><span class="n">Step 3 of 5</span><h2>Health & ID</h2><p>All optional — fill what you need.</p></div>
+  <div class="collapse-h" onclick="document.getElementById('healthbody').classList.toggle('show')">
+    <div class="lbl">Health basics<small>Height, weight, goal — for progress tracking</small></div><span style="color:var(--accent)">▾</span>
+  </div>
+  <div class="collapse-body" id="healthbody">
+    <div class="row">
+      <div><label>Height (cm)</label><input type="number" value="${d.height}" oninput="set('height',this.value)" placeholder="170"></div>
+      <div><label>Weight (kg)</label><input type="number" value="${d.weight}" oninput="set('weight',this.value)" placeholder="68"></div>
+    </div>
+    <label>Fitness goal</label><select onchange="set('goal',this.value)">${['General fitness','Weight loss','Muscle gain','Strength','Endurance'].map(g=>`<option ${d.goal===g?'selected':''}>${g}</option>`).join('')}</select>
+  </div>
+  <div class="onetime-h" style="border-top:1px dashed var(--line)">ID & photo</div>
+  <div class="row">
+    <div><label>ID type</label><select onchange="set('idtype',this.value)">${['Aadhaar','PAN','Passport','Driving licence'].map(t=>`<option ${d.idtype===t?'selected':''}>${t}</option>`).join('')}</select></div>
+    <div><label>ID number</label><input value="${d.idno}" oninput="set('idno',this.value)" placeholder="Optional"></div>
+  </div>
+  <div class="upload ${d.idUploaded?'done':''}" onclick="fakeUpload('idUploaded')"><span class="ic">${d.idUploaded?'✅':'🪪'}</span><div class="tx"><h3>${d.idUploaded?'ID uploaded':'Upload ID'}</h3><small>${d.idUploaded?'Saved to your Drive':'Photo or scan'}</small></div></div>
+  ${d.idtype==='Aadhaar'?`<div class="priv">🔒 Aadhaar is <b>not stored in our database</b> — only in your own Google Drive. We keep just a ✓ flag.</div>`:''}
+  <div class="upload ${d.photoUploaded?'done':''}" onclick="fakeUpload('photoUploaded')"><span class="ic">${d.photoUploaded?'✅':'📷'}</span><div class="tx"><h3>${d.photoUploaded?'Photo added':'Member photo'}</h3><small>For check-in & records</small></div></div>
+  <div class="toggle"><div class="lbl">Mark ID as verified<small>You\u2019ve checked the original</small></div><div class="sw ${d.verified?'on':''}" onclick="toggleSw('verified')"></div></div>`;
+}
+function safety(){
+  return `<div class="step-h"><span class="n">Step 4 of 5</span><h2>Safety & medical</h2><p>Important for physical activity.</p></div>
+  <div class="row">
+    <div><label>Emergency contact</label><input value="${d.emg}" oninput="set('emg',this.value)" placeholder="Name"></div>
+    <div><label>Their phone</label><input value="${d.emgph}" oninput="set('emgph',this.value)" inputmode="numeric"></div>
+  </div>
+  <label>Medical notes <span class="opt-note">(injuries, conditions — optional)</span></label>
+  <input value="${d.medical}" oninput="set('medical',this.value)" placeholder="e.g. knee injury, asthma">`;
+}
+function review(){
+  const chk=b=>b?'<span style="color:var(--accent)">✓</span>':'<span style="color:var(--muted)">—</span>';
+  return `<div class="step-h"><span class="n">Step 5 of 5</span><h2>Review & add</h2><p>Quick check before you save.</p></div>
+  <div class="rev-h">Member</div>
+  <div class="rev">
+    <div class="rr"><span class="k">Name</span><span class="v">${d.name||'—'}</span></div>
+    <div class="rr"><span class="k">Phone</span><span class="v">${d.phone||'—'}</span></div>
+    <div class="rr"><span class="k">Batch</span><span class="v">${d.batch}</span></div>
+    <div class="rr"><span class="k">Joined</span><span class="v">${new Date(d.join).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}</span></div>
+  </div>
+  <div class="rev-h">Plan</div>
+  <div class="rev">
+    <div class="rr"><span class="k">Plan</span><span class="v">${plan().dur} · ${money(plan().price)}</span></div>
+    <div class="rr"><span class="k">Expires</span><span class="v" style="color:var(--accent);font-weight:700">${expiryDate()}</span></div>
+    ${d.discount>0?`<div class="rr"><span class="k">Joining discount</span><span class="v" style="color:var(--accent)">− ${money(discountAmt())}</span></div>`:''}
+    ${d.addons.map(c=>`<div class="rr"><span class="k">${c.name}</span><span class="v">${money(c.amt)}/mo</span></div>`).join('')}
+    <div class="rr"><span class="k">Joining fee (one-time)</span><span class="v">${money(d.joinfee)}</span></div>
+  </div>
+  <div class="rev-h">Health & ID</div>
+  <div class="rev">
+    <div class="rr"><span class="k">Height / Weight</span><span class="v">${d.height||'—'} cm · ${d.weight||'—'} kg</span></div>
+    <div class="rr"><span class="k">Goal</span><span class="v">${d.goal}</span></div>
+    <div class="rr"><span class="k">ID (${d.idtype})</span><span class="v">${chk(d.idUploaded)}</span></div>
+    <div class="rr"><span class="k">Photo</span><span class="v">${chk(d.photoUploaded)}</span></div>
+    <div class="rr"><span class="k">Verified</span><span class="v">${chk(d.verified)}</span></div>
+  </div>
+  <div class="rev-h">Safety</div>
+  <div class="rev">
+    <div class="rr"><span class="k">Emergency</span><span class="v">${d.emg?d.emg+' · '+d.emgph:'—'}</span></div>
+    <div class="rr"><span class="k">Medical notes</span><span class="v">${d.medical||'—'}</span></div>
+  </div>`;
+}
+
+function addAddon(){const used=d.addons.map(c=>c.name);const next=ADDONS.find(t=>!used.includes(t))||'Other';d.addons.push({name:next,amt:0});render();}
+function setAddon(i,f,v){d.addons[i][f]=f==='amt'?(+v||0):v;}
+function rmAddon(i){d.addons.splice(i,1);render();}
+function toggleDiscount(){d._discOpen=!d._discOpen;if(!d._discOpen)d.discount=0;render();}
+function discountAmt(){const base=plan().price;return d.disctype==='pct'?Math.round(base*Math.min(d.discount,100)/100):Math.min(d.discount,base);}
+function updTotals(){}
+function fakeUpload(f){d[f]=true;render();}
+function toggleSw(f){d[f]=!d[f];render();}
+function refreshNext(){const b=document.querySelector('.btn.next');if(!b)return;const ok=step!==0||(d.name.trim()&&d.phone.trim());b.disabled=!ok;b.style.opacity=ok?'1':'.4';}
+
+function render(){
+  if(step==='done'){renderDone();return;}
+  const body=[basics,planStep,healthId,safety,review][step]();
+  const dots=STEPS.map((s,i)=>`<div class="d ${i===step?'on':i<step?'done':''}"></div>`).join('');
+  const isLast=step===STEPS.length-1;
+  const canNext=step!==0||(d.name.trim()&&d.phone.trim());
+  $('app').innerHTML=`
+  <div class="top"><div class="wrap">
+    <div class="top-in"><span class="back" onclick="goBack()">←</span>
+    <div><h1>Add member</h1><div class="sub">FitZone Gym · ${STEPS[step]}</div></div></div>
+    <div class="dots">${dots}</div>
+  </div></div>
+  <div class="wrap">${body}</div>
+  <div class="bar"><div class="bar-in">
+    ${step>0?'<button class="btn back" onclick="prev()">←</button>':''}
+    <button class="btn next" onclick="next()" ${canNext?'':'disabled style="opacity:.4"'}>${isLast?'✓ Add member':'Continue →'}</button>
+  </div>
+  ${!isLast&&step>0?'<div class="savebar"><button class="btn skip" onclick="finish(true)">Save now, add rest later</button></div>':''}
+  </div>`;
+}
+function next(){if(step===0&&!(d.name.trim()&&d.phone.trim())){alert('Please enter name and phone to continue.');return;}if(step<STEPS.length-1){step++;render();window.scrollTo(0,0);}else finish(false);}
+function prev(){if(step>0){step--;render();window.scrollTo(0,0);}}
+function goBack(){if(step===0)alert('Back to Members list');else prev();}
+
+function finish(early){ step='done'; d._early=early; renderDone(); window.scrollTo(0,0); }
+
+function firstPayment(){
+  // what's due now at joining: plan price - discount + joining fee
+  return plan().price - discountAmt() + (+d.joinfee||0);
+}
+function renderDone(){
+  const due=firstPayment();
+  $('app').innerHTML=`
+  <div class="wrap" style="text-align:center;padding-top:50px">
+    <div style="font-size:50px">✅</div>
+    <h2 style="font-size:25px;margin:14px 0 6px;font-family:var(--d)">${d.name||'Member'} added!</h2>
+    <p style="color:var(--muted);font-size:15px;line-height:1.5">${plan().dur} plan · expires <b style="color:var(--accent)">${expiryDate()}</b>${d._early?'<br><span style="font-size:13px">Basic info saved — add documents anytime.</span>':''}</p>
+
+    <div style="background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:24px 0;text-align:left">
+      <div style="font-family:var(--d);font-weight:700;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px">Due at joining</div>
+      <div class="rr" style="display:flex;justify-content:space-between;font-size:14px;padding:4px 0;color:var(--muted)"><span>${plan().dur} plan</span><span>${money(plan().price)}</span></div>
+      ${d.discount>0?`<div class="rr" style="display:flex;justify-content:space-between;font-size:14px;padding:4px 0;color:var(--accent)"><span>Joining discount</span><span>− ${money(discountAmt())}</span></div>`:''}
+      <div class="rr" style="display:flex;justify-content:space-between;font-size:14px;padding:4px 0;color:var(--muted)"><span>Joining fee</span><span>${money(d.joinfee)}</span></div>
+      <div class="rr" style="display:flex;justify-content:space-between;font-family:var(--d);font-weight:800;font-size:19px;border-top:1px solid var(--line);margin-top:6px;padding-top:9px"><span>Total</span><span>${money(due)}</span></div>
+    </div>
+
+    <button class="btn next" style="width:100%;margin-bottom:10px" onclick="collectAndBill()">💸 Collect payment & generate bill</button>
+    <button class="btn back" style="width:100%;flex:none" onclick="alert('Skipped — you can bill anytime from their profile.')">Skip for now</button>
+  </div>`;
+}
+function collectAndBill(){
+  alert('Opens the bill generator, pre-filled:\n\n'+plan().dur+' plan'+(d.discount>0?'\n− '+money(discountAmt())+' discount':'')+'\n+ '+money(d.joinfee)+' joining fee\n= '+money(firstPayment())+' due\n\nRecord payment → generate receipt → done.');
+}
+render();
+</script>
+</body>
+</html>

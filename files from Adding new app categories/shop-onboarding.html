@@ -1,0 +1,222 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Shop Setup</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#16161a;--mut:#62636a;--ln:#e7e7e2;--ac:#1f6f54;--sf:#e8f3ee;--wm:#f4f2ec;
+--rd:#b3261e;--rs:#fdecea;--am:#b36b00;--as:#fff4e5;--bl:#2a5db0;--bs:#e8eef9;
+--d:'Plus Jakarta Sans',system-ui,sans-serif;--b:'Inter',system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fbfbf9;color:var(--ink);font-family:var(--b);padding-bottom:92px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:480px;margin:0 auto;padding:0 16px}
+h1,h2,h3{font-family:var(--d);letter-spacing:-.01em}
+.top{position:sticky;top:0;background:#fbfbf9;z-index:9;padding:13px 0;border-bottom:1px solid var(--ln);display:flex;align-items:center;gap:11px}
+.top .bk{font-size:20px;color:var(--mut);cursor:pointer}
+.top h1{font-size:18px;flex:1}.top .s{font-size:12px;color:var(--mut)}
+/* tier picker */
+.tierpick{margin:16px 0 6px}
+.tierpick .lbl{font-size:12px;color:var(--mut);margin-bottom:9px;font-weight:600}
+.tiers{display:flex;gap:8px}
+.tier{flex:1;border:1.5px solid var(--ln);background:#fff;border-radius:13px;padding:13px 10px;cursor:pointer;text-align:center}
+.tier.on{border-color:var(--ac);background:var(--sf)}
+.tier .tn{font-family:var(--d);font-weight:800;font-size:14px}
+.tier .td{font-size:10.5px;color:var(--mut);margin-top:3px;line-height:1.35}
+.tier.on .tn{color:var(--ac)}
+.tierhint{font-size:11.5px;color:var(--mut);text-align:center;margin:10px 2px 0;line-height:1.45}
+/* sections */
+.sec{margin-top:18px}
+.sec>.sh{font-family:var(--d);font-weight:700;font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.04em;margin:0 2px 9px}
+.card{background:#fff;border:1px solid var(--ln);border-radius:14px;padding:15px;margin-bottom:11px}
+label{display:block;font-size:12px;color:var(--mut);margin:13px 0 5px;font-weight:500}
+label:first-child{margin-top:0}
+label .opt{font-weight:400;color:#9aa09a}
+label .req{color:var(--rd)}
+input,select,textarea{width:100%;padding:12px;border:1px solid var(--ln);border-radius:10px;font-size:15px;font-family:var(--b);background:#fff;color:var(--ink)}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px var(--sf)}
+textarea{resize:vertical;min-height:60px}
+.row{display:flex;gap:10px}.row>*{flex:1}
+/* shop type grid */
+.typegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.typegrid button{border:1.5px solid var(--ln);background:#fbfbf9;border-radius:11px;padding:12px 4px;font-family:var(--d);font-weight:700;font-size:12px;color:var(--ink);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px}
+.typegrid button .e{font-size:20px}
+.typegrid button.on{border-color:var(--ac);background:var(--sf);color:var(--ac)}
+/* toggle */
+.togrow{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--ln)}
+.togrow:last-child{border:none}
+.togrow .tb{flex:1}.togrow .tt{font-family:var(--d);font-weight:700;font-size:14px}.togrow .ts{font-size:11.5px;color:var(--mut);margin-top:2px;line-height:1.4}
+.preset{font-size:9px;font-weight:700;padding:1px 6px;border-radius:5px;margin-left:6px;vertical-align:middle;background:var(--wm);color:var(--mut)}
+.preset.chg{background:var(--as);color:var(--am)}
+.switch{width:46px;height:28px;border-radius:20px;background:#d5dbd7;position:relative;cursor:pointer;flex-shrink:0;transition:background .2s}
+.switch.on{background:var(--ac)}
+.knob{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:left .2s}
+.switch.on .knob{left:21px}
+.gstin{margin-top:12px}
+/* logo + docs */
+.logo{width:80px;height:80px;border-radius:14px;border:1.5px dashed #c3c8c2;background:#fbfbf9;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:22px;color:var(--mut);cursor:pointer;gap:3px}
+.logo small{font-size:9.5px}
+.logo.set{border-style:solid;border-color:var(--ac);background:var(--sf);color:var(--ac)}
+.docrow{display:flex;align-items:center;gap:11px;background:#fbfbf9;border:1px solid var(--ln);border-radius:11px;padding:11px 12px;margin-bottom:8px}
+.docrow .di{width:34px;height:34px;border-radius:9px;background:var(--wm);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.docrow .dn{flex:1;font-size:13.5px;font-weight:500}
+.docrow .db{border:1px solid var(--ac);background:#fff;color:var(--ac);border-radius:8px;padding:7px 12px;font-family:var(--d);font-weight:700;font-size:12px;cursor:pointer}
+.docrow.done .db{background:var(--sf);border-style:solid}
+.fab{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(transparent,#fbfbf9 22%);padding:16px;display:flex;justify-content:center}
+.fab button{max-width:480px;width:100%;background:var(--ac);color:#fff;border:none;border-radius:13px;padding:15px;font-family:var(--d);font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 4px 16px rgba(31,111,84,.3)}
+.fab button:disabled{opacity:.45;box-shadow:none}
+.hidden{display:none}
+.toast{position:fixed;bottom:92px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:11px 18px;border-radius:22px;font-size:13px;font-weight:600;opacity:0;transition:all .3s;z-index:40;pointer-events:none}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+</style></head><body>
+<div class="top wrap"><span class="bk">←</span><div style="flex:1"><h1>Shop Setup</h1><div class="s">Get billing in a minute</div></div></div>
+<div class="wrap">
+
+  <div class="tierpick">
+    <div class="lbl">How much do you want to set up now?</div>
+    <div class="tiers">
+      <div class="tier" id="tSimple" onclick="setTier('simple')"><div class="tn">Simple</div><div class="td">Just start billing</div></div>
+      <div class="tier on" id="tStandard" onclick="setTier('standard')"><div class="tn">Standard</div><div class="td">The usual details</div></div>
+      <div class="tier" id="tComplete" onclick="setTier('complete')"><div class="tn">Complete</div><div class="td">Everything now</div></div>
+    </div>
+    <div class="tierhint" id="tierHint"></div>
+  </div>
+
+  <!-- IDENTITY -->
+  <div class="sec">
+    <div class="sh">Shop details</div>
+    <div class="card">
+      <div class="row" id="logoRow">
+        <div style="flex:0 0 auto"><div class="logo" id="logo" onclick="setLogo()"><span id="logoIc">🏪</span><small id="logoTx">Logo</small></div></div>
+        <div style="flex:1"><label>Shop name <span class="req">*</span></label><input id="name" placeholder="e.g. Sharma General Store" oninput="sync()"></div>
+      </div>
+      <label>Phone <span class="req" id="phoneReq">*</span></label><input id="phone" type="tel" placeholder="10-digit mobile" oninput="sync()">
+      <div id="addrWrap"><label>Address <span class="opt">— printed on the bill</span></label><textarea id="addr" placeholder="Shop no, street, area, city, PIN"></textarea></div>
+    </div>
+  </div>
+
+  <!-- SHOP TYPE -->
+  <div class="sec" id="typeSec">
+    <div class="sh">Shop type <span style="text-transform:none;font-weight:400"> — sets sensible defaults</span></div>
+    <div class="card">
+      <div class="typegrid" id="typeGrid"></div>
+      <div id="customTypeWrap" class="hidden" style="margin-top:12px"><label>Your shop type</label><input id="customType" placeholder="e.g. Sweets & Namkeen" oninput="customType=this.value;sync()"></div>
+    </div>
+  </div>
+
+  <!-- GST -->
+  <div class="sec" id="gstSec">
+    <div class="sh">Tax</div>
+    <div class="card">
+      <div class="togrow"><div class="tb"><div class="tt">GST registered</div><div class="ts">Turn on for tax invoices with GSTIN, HSN and GST rates.</div></div><div class="switch" id="gstSwitch" onclick="toggleGst()"><div class="knob"></div></div></div>
+      <div class="gstin hidden" id="gstinWrap"><label>GSTIN</label><input id="gstin" placeholder="22AAAAA0000A1Z5" style="text-transform:uppercase"></div>
+    </div>
+  </div>
+
+  <!-- CAPABILITIES (complete only) -->
+  <div class="sec hidden" id="capSec">
+    <div class="sh">What this shop tracks</div>
+    <div class="card" id="capCard"></div>
+  </div>
+
+  <!-- BILL PREFERENCES (complete only) -->
+  <div class="sec hidden" id="billSec">
+    <div class="sh">Bill preferences</div>
+    <div class="card">
+      <div class="row"><div><label>Bill number prefix</label><input id="prefix" value="INV-" placeholder="INV-"></div><div><label>Start from</label><input id="startno" type="number" value="1"></div></div>
+      <label>Footer / terms <span class="opt">— printed at bill bottom</span></label><textarea id="footer" placeholder="e.g. Goods once sold will not be taken back.">Goods once sold will not be taken back.</textarea>
+      <div class="togrow" style="margin-top:6px"><div class="tb"><div class="tt">Round off bill total</div><div class="ts">Round to the nearest rupee on each bill.</div></div><div class="switch on" id="roundSwitch" onclick="this.classList.toggle('on')"><div class="knob"></div></div></div>
+    </div>
+  </div>
+
+  <!-- DOCUMENTS (complete only) -->
+  <div class="sec hidden" id="docSec">
+    <div class="sh">Shop documents <span style="text-transform:none;font-weight:400"> — optional</span></div>
+    <div class="card">
+      <div class="docrow" id="doc0"><div class="di">📄</div><div class="dn">GST certificate</div><button class="db" onclick="attachDoc(0)">Attach</button></div>
+      <div class="docrow" id="doc1"><div class="di">📄</div><div class="dn">Shop licence / Gumasta</div><button class="db" onclick="attachDoc(1)">Attach</button></div>
+      <div class="docrow" id="doc2"><div class="di">📄</div><div class="dn">Owner ID proof</div><button class="db" onclick="attachDoc(2)">Attach</button></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="fab"><button id="saveBtn" onclick="save()">Save &amp; start billing</button></div>
+<div class="toast" id="toast"></div>
+
+<script>
+var tier='standard', gst=false;
+var TYPES=[
+ {id:'grocery',e:'🛒',n:'Grocery',caps:{stock:true,cat:true,udhaar:true}},
+ {id:'hardware',e:'🔧',n:'Hardware',caps:{stock:true,cat:true,udhaar:true}},
+ {id:'pharmacy',e:'💊',n:'Pharmacy',caps:{stock:true,cat:true,udhaar:false}},
+ {id:'general',e:'🏪',n:'General',caps:{stock:false,cat:false,udhaar:true}},
+ {id:'electronics',e:'📱',n:'Electronics',caps:{stock:true,cat:true,udhaar:false}},
+ {id:'other',e:'✨',n:'Other',caps:{stock:false,cat:false,udhaar:false}},
+];
+var shopType='grocery', customType='';
+var caps={stock:true,cat:true,udhaar:true};          // current
+var capsChanged={stock:false,cat:false,udhaar:false}; // whether owner overrode preset
+var CAP_DEFS=[
+ {k:'stock',t:'Stock / inventory',d:'Track quantity in hand, low-stock alerts.'},
+ {k:'cat',t:'Categories',d:'Group items (aisles/sections) for faster billing.'},
+ {k:'udhaar',t:'Customer credit (udhaar)',d:'Let customers keep a running balance.'},
+];
+var TIER_HINT={
+ simple:'Just your shop name and phone \u2014 you can add the rest anytime later.',
+ standard:'Name, address, phone, GST and shop type. Good for most shops.',
+ complete:'Everything up front \u2014 logo, GST details, capabilities, bill format and documents.'
+};
+var $=function(i){return document.getElementById(i)};
+
+function setTier(t){
+ tier=t;
+ ['Simple','Standard','Complete'].forEach(function(x){$('t'+x).classList.toggle('on',x.toLowerCase()===t)});
+ $('tierHint').textContent=TIER_HINT[t];
+ // field visibility by tier
+ var isS=t==='simple',isC=t==='complete';
+ $('addrWrap').classList.toggle('hidden',isS);
+ $('logoRow').classList.toggle('hidden',false);
+ $('logo').style.display=isC?'flex':'none';
+ $('typeSec').classList.toggle('hidden',isS);
+ $('gstSec').classList.toggle('hidden',isS);
+ $('capSec').classList.toggle('hidden',!isC);
+ $('billSec').classList.toggle('hidden',!isC);
+ $('docSec').classList.toggle('hidden',!isC);
+ $('phoneReq').style.display=isS?'inline':'inline';
+ sync();
+}
+function fillTypes(){
+ $('typeGrid').innerHTML=TYPES.map(function(t){return '<button class="'+(shopType===t.id?'on':'')+'" onclick="pickType(\''+t.id+'\')"><span class="e">'+t.e+'</span>'+t.n+'</button>'}).join('');
+}
+function pickType(id){
+ shopType=id;var t=TYPES.find(function(x){return x.id===id});
+ var isOther=(id==='other');
+ $('customTypeWrap').classList.toggle('hidden',!isOther);
+ if(!isOther)customType='';
+ // preset capabilities (only those the owner hasn't manually overridden)
+ Object.keys(t.caps).forEach(function(k){if(!capsChanged[k])caps[k]=t.caps[k]});
+ fillTypes();renderCaps();sync();
+}
+function renderCaps(){
+ $('capCard').innerHTML=CAP_DEFS.map(function(c){
+  var tag=capsChanged[c.k]?'<span class="preset chg">CHANGED</span>':'<span class="preset">PRESET</span>';
+  return '<div class="togrow"><div class="tb"><div class="tt">'+c.t+tag+'</div><div class="ts">'+c.d+'</div></div><div class="switch '+(caps[c.k]?'on':'')+'" onclick="toggleCap(\''+c.k+'\')"><div class="knob"></div></div></div>';
+ }).join('');
+}
+function toggleCap(k){caps[k]=!caps[k];capsChanged[k]=true;renderCaps();}
+function toggleGst(){gst=!gst;$('gstSwitch').classList.toggle('on',gst);$('gstinWrap').classList.toggle('hidden',!gst);}
+function setLogo(){var l=$('logo');var on=l.classList.toggle('set');$('logoIc').textContent=on?'\u2705':'\ud83c\udfea';$('logoTx').textContent=on?'Added':'Logo';}
+function attachDoc(i){var r=$('doc'+i);r.classList.add('done');r.querySelector('.db').textContent='\u2705 Attached';toast('Attached (mock)');}
+
+function sync(){
+ var okName=$('name').value.trim();
+ var okPhone=$('phone').value.trim().length>=10;
+ var typeShown=(tier!=='simple');
+ var okType=!typeShown||shopType!=='other'||customType.trim();
+ $('saveBtn').disabled=!(okName&&okPhone&&okType);
+}
+function save(){
+ if($('saveBtn').disabled)return;
+ toast('Shop saved \u2014 ready to bill');
+}
+
+setTier('standard');fillTypes();renderCaps();sync();
+</script></body></html>

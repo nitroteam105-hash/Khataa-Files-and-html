@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Khaata — Money</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fbfbf9;--ink:#16161a;--muted:#62636a;--line:#e7e7e2;--card:#fff;
+    --green:#1f6f54;--greensoft:#e8f3ee;--red:#b3261e;--redsoft:#fdecea;
+    --amber:#b36b00;--ambersoft:#fff4e5;--warm:#f4f2ec;
+    --d:'Plus Jakarta Sans',sans-serif;--b:'Inter',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:var(--b);-webkit-font-smoothing:antialiased;padding-bottom:80px;}
+  .wrap{max-width:460px;margin:0 auto;padding:0 16px;}
+  h1,h2,h3{font-family:var(--d);letter-spacing:-.01em;}
+
+  /* HEADER */
+  .head{position:sticky;top:0;background:var(--bg);z-index:9;padding:14px 0 0;border-bottom:1px solid var(--line);}
+  .head-in{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+  .back{font-size:20px;cursor:pointer;color:var(--muted);}
+  .head h1{font-size:20px;}
+  .head .biz{font-size:12.5px;color:var(--muted);}
+
+  /* NET SUMMARY */
+  .net{background:var(--ink);color:#fff;border-radius:16px;padding:16px;margin-bottom:14px;}
+  .net .lb{font-size:12px;color:#b8b9bd;}
+  .net .big{font-family:var(--d);font-weight:800;font-size:28px;margin:2px 0 12px;}
+  .net .io{display:flex;gap:10px;}
+  .net .io div{flex:1;background:rgba(255,255,255,.07);border-radius:10px;padding:9px 11px;}
+  .net .io .n{font-family:var(--d);font-weight:700;font-size:16px;}
+  .net .io .n.g{color:#7fd4a8;}.net .io .n.r{color:#ff9b91;}
+  .net .io .s{font-size:11px;color:#b8b9bd;}
+
+  /* TABS */
+  .tabs{display:flex;gap:0;background:var(--warm);border-radius:11px;padding:4px;}
+  .tabs button{flex:1;border:none;background:none;padding:10px;font-family:var(--d);font-weight:700;font-size:14px;border-radius:8px;cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:6px;}
+  .tabs button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08);}
+  .tabs button.on.in{color:var(--green);}
+  .tabs button.on.out{color:var(--red);}
+
+  /* TOTALS BAR */
+  .totbar{display:flex;justify-content:space-between;align-items:center;margin:16px 0 10px;}
+  .totbar .t{font-family:var(--d);font-weight:800;font-size:22px;}
+  .totbar .t.in{color:var(--green);}.totbar .t.out{color:var(--red);}
+  .totbar .sub{font-size:12px;color:var(--muted);}
+  .filter{font-size:12.5px;color:var(--muted);border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--card);cursor:pointer;}
+
+  /* GROUP */
+  .gp-label{font-size:11.5px;color:var(--muted);font-family:var(--d);font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin:16px 0 8px;}
+
+  /* TXN */
+  .txn{display:flex;align-items:center;gap:11px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:8px;}
+  .txn .ic{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+  .txn .ic.in{background:var(--greensoft);}.txn .ic.out{background:var(--redsoft);}
+  .txn .mid{flex:1;min-width:0;}
+  .txn .mid h3{font-size:14px;font-weight:600;font-family:var(--b);}
+  .txn .mid small{color:var(--muted);font-size:12px;}
+  .txn .amt{font-family:var(--d);font-weight:700;font-size:15px;text-align:right;}
+  .txn .amt.in{color:var(--green);}.txn .amt.out{color:var(--red);}
+  .txn .amt small{display:block;font-size:10px;color:var(--muted);font-weight:400;}
+  .tag{display:inline-block;font-size:10px;padding:1px 6px;border-radius:99px;margin-top:2px;}
+  .tag.dep{background:var(--ambersoft);color:var(--amber);}
+
+  /* FAB */
+  .fab{position:fixed;bottom:84px;left:50%;transform:translateX(-50%);max-width:460px;width:calc(100% - 32px);}
+  .fab button{width:100%;border:none;border-radius:12px;padding:14px;font-family:var(--d);font-weight:700;font-size:15px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
+  .fab button.in{background:var(--green);}.fab button.out{background:var(--red);}
+
+  /* BOTTOM NAV */
+  .nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:8px 0 10px;z-index:9;}
+  .nav a{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10.5px;color:var(--muted);cursor:pointer;font-family:var(--d);font-weight:600;flex:1;}
+  .nav a.on{color:var(--green);}
+  .nav a .ic{font-size:19px;}
+  :focus-visible{outline:2px solid var(--green);outline-offset:2px;}
+</style>
+</head>
+<body>
+
+<div class="head"><div class="wrap">
+  <div class="head-in">
+    <span class="back">←</span>
+    <div><h1>Money</h1><div class="biz">All businesses · June 2026</div></div>
+  </div>
+  <div class="net">
+    <div class="lb">Net this month</div>
+    <div class="big" id="netAmt">₹1,22,500</div>
+    <div class="io">
+      <div><div class="n g">₹1,84,500</div><div class="s">Money In</div></div>
+      <div><div class="n r">₹62,000</div><div class="s">Money Out</div></div>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="on in" id="tabIn" onclick="show('in')">↓ Money In</button>
+    <button class="out" id="tabOut" onclick="show('out')">↑ Money Out</button>
+  </div>
+</div></div>
+
+<div class="wrap" id="content"></div>
+
+<div class="fab"><button class="in" id="fab" onclick="addTxn()">+ Add money in</button></div>
+
+<div class="nav">
+  <a><span class="ic">🏠</span>Home</a>
+  <a><span class="ic">👥</span>People</a>
+  <a class="on"><span class="ic">📒</span>Money</a>
+  <a><span class="ic">📊</span>Reports</a>
+  <a><span class="ic">⚙️</span>Settings</a>
+</div>
+
+<script>
+const IN=[
+  {g:'Today',items:[
+    {ic:'🛏️',t:'Ravi Kumar — Rent',s:'Sunrise PG · Room 101 · UPI',a:6000},
+    {ic:'🏋️',t:'Neha — Membership',s:'FitZone · Quarterly · Cash',a:4500}
+  ]},
+  {g:'Yesterday',items:[
+    {ic:'🍱',t:'Arjun — Tiffin plan',s:'Amma Tiffin · Monthly · UPI',a:2500},
+    {ic:'🛏️',t:'Priya — Rent',s:'Sunrise PG · Room 102 · UPI',a:6000},
+    {ic:'🛏️',t:'Dev — Security deposit',s:'Sunrise PG · Room 205 · Bank',a:10000,dep:true}
+  ]},
+  {g:'18 June',items:[
+    {ic:'🏋️',t:'Sana — Membership',s:'FitZone · Monthly · UPI',a:1500},
+    {ic:'🍱',t:'Kiran — Tiffin plan',s:'Amma Tiffin · Monthly · Cash',a:2500}
+  ]}
+];
+const OUT=[
+  {g:'This week',items:[
+    {ic:'👷',t:'Lakshmi — Salary',s:'Amma Tiffin · Cook · 26 days',a:6933},
+    {ic:'👷',t:'Ramesh — Salary',s:'Sunrise PG · Caretaker',a:9000},
+    {ic:'⚡',t:'Electricity bill',s:'Sunrise PG · BESCOM',a:7200}
+  ]},
+  {g:'Last week',items:[
+    {ic:'🛒',t:'Groceries',s:'Amma Tiffin · vegetables + rice',a:11500},
+    {ic:'💧',t:'Water tanker',s:'Sunrise PG · 2 tankers',a:2400},
+    {ic:'🔧',t:'Gym equipment repair',s:'FitZone · treadmill',a:3500}
+  ]},
+  {g:'Earlier',items:[
+    {ic:'🏠',t:'Building rent',s:'Sunrise PG · paid to landlord',a:18000},
+    {ic:'📶',t:'Internet + WiFi',s:'All locations',a:3467}
+  ]}
+];
+
+let tab='in';
+const money=n=>'₹'+(+n).toLocaleString('en-IN');
+
+function show(t){
+  tab=t;
+  document.getElementById('tabIn').className='in'+(t==='in'?' on':'');
+  document.getElementById('tabOut').className='out'+(t==='out'?' on':'');
+  const fab=document.getElementById('fab');
+  fab.className=t; fab.textContent=t==='in'?'+ Add money in':'+ Add money out';
+  render();
+}
+function render(){
+  const data=tab==='in'?IN:OUT;
+  const total=data.reduce((a,g)=>a+g.items.reduce((x,i)=>x+i.a,0),0);
+  const cnt=data.reduce((a,g)=>a+g.items.length,0);
+  let html=`<div class="totbar"><div><div class="t ${tab}">${money(total)}</div><div class="sub">${cnt} entries · ${tab==='in'?'received':'paid'} this month</div></div><div class="filter">All ▾</div></div>`;
+  data.forEach(g=>{
+    html+=`<div class="gp-label">${g.g}</div>`;
+    g.items.forEach(i=>{
+      html+=`<div class="txn"><div class="ic ${tab}">${i.ic}</div>
+        <div class="mid"><h3>${i.t}</h3><small>${i.s}</small>${i.dep?'<span class="tag dep">refundable deposit</span>':''}</div>
+        <div class="amt ${tab}">${tab==='in'?'+':'−'}${money(i.a)}</div></div>`;
+    });
+  });
+  document.getElementById('content').innerHTML=html;
+}
+function addTxn(){alert(tab==='in'?'Add Money In: record a payment received (rent, fee, deposit...)':'Add Money Out: record an expense (salary, bill, supplies...)');}
+show('in');
+</script>
+</body>
+</html>

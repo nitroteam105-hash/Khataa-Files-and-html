@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>New Customer — Khaata</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1f6f54; --green-light: #e7f2ed;
+    --parchment: #fbfbf9; --ink: #1c1c1a; --muted: #6b6b64;
+    --border: #e6e4dd; --amber: #b5791f; --amber-light: #fbf1e2;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', sans-serif; background: var(--parchment); color: var(--ink);
+    max-width: 480px; margin: 0 auto; min-height: 100vh; padding-bottom: 100px;
+  }
+  header { padding: 24px 20px 12px; }
+  header h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 800; }
+  header p { font-size: 13px; color: var(--muted); margin-top: 3px; }
+
+  .section-label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin: 16px 20px 8px; }
+  .card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin: 0 20px 10px; }
+
+  .field { margin-bottom: 10px; }
+  .field:last-child { margin-bottom: 0; }
+  .field label { font-size: 11px; font-weight: 700; color: var(--muted); display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.02em; }
+  .field label .req { color: var(--amber); }
+  .field input { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 9px; font-size: 13.5px; font-family: 'Inter', sans-serif; background: #fff; }
+
+  .area-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .area-chip-opt { padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border); font-size: 11.5px; font-weight: 600; color: var(--muted); background: #fff; cursor: pointer; }
+  .area-chip-opt.selected { border-color: var(--green); background: var(--green-light); color: var(--green); }
+
+  .type-row { display: flex; gap: 8px; }
+  .type-opt { flex: 1; text-align: center; padding: 12px 8px; border-radius: 10px; border: 1.5px solid var(--border); font-size: 12.5px; font-weight: 700; cursor: pointer; background: #fff; color: var(--muted); }
+  .type-opt.selected { border-color: var(--green); background: var(--green-light); color: var(--green); }
+
+  .conditional-section { display: block; }
+  .conditional-section.hidden { display: none; }
+
+  .product-card { border: 1.5px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 8px; cursor: pointer; }
+  .product-card.selected { border-color: var(--green); background: var(--green-light); }
+  .product-top { display: flex; justify-content: space-between; align-items: center; }
+  .product-name { font-weight: 700; font-size: 13.5px; }
+  .product-price { font-weight: 700; color: var(--green); font-size: 13px; }
+  .product-check { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--border); flex-shrink: 0; }
+  .product-card.selected .product-check { background: var(--green); border-color: var(--green); position: relative; }
+  .product-card.selected .product-check::after { content: '✓'; color: #fff; font-size: 11px; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); }
+
+  .sticky-footer {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px;
+    background: #fff; border-top: 1px solid var(--border); padding: 12px 20px; box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
+  }
+  .save-btn { width: 100%; background: var(--green); color: #fff; border: none; padding: 15px; border-radius: 12px; font-weight: 700; font-size: 14.5px; cursor: pointer; }
+
+  .note { font-size: 11.5px; color: var(--muted); margin-top: 8px; line-height: 1.5; }
+
+  #successScreen { display: none; text-align: center; padding: 60px 30px; }
+  .success-icon { width: 64px; height: 64px; border-radius: 50%; background: var(--green-light); color: var(--green); display: flex; align-items: center; justify-content: center; font-size: 30px; margin: 0 auto 16px; }
+  .success-title { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 18px; }
+  .success-sub { font-size: 13px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+  .success-btn { margin-top: 24px; background: var(--green-light); color: var(--green); border: none; padding: 12px 20px; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<div id="formScreen">
+<header>
+  <h1>New Customer</h1>
+  <p>Sunrise Dairy</p>
+</header>
+
+<div class="section-label">Basic details</div>
+<div class="card">
+  <div class="field"><label>Name <span class="req">*</span></label><input type="text" id="custName" placeholder="Customer's full name"></div>
+  <div class="field"><label>Mobile <span class="req">*</span></label><input type="text" id="custMobile" placeholder="10-digit number"></div>
+  <div class="field"><label>Area</label><input type="text" id="custArea" placeholder="e.g. Sector 12" oninput="syncAreaChips()">
+    <div class="area-chips" id="areaChips"></div>
+  </div>
+  <div class="field"><label>Delivery address <span style="text-transform:none;font-weight:400">(optional)</span></label><input type="text" id="custAddress" placeholder="House/flat no., street"></div>
+</div>
+<p class="note" style="padding:0 20px">Area helps organize the daily delivery list and lets you filter/search by zone.</p>
+
+<div class="section-label">Customer type</div>
+<div class="card">
+  <div class="type-row">
+    <div class="type-opt selected" data-type="delivery" onclick="selectType('delivery', this)">Delivery</div>
+    <div class="type-opt" data-type="retail" onclick="selectType('retail', this)">Retail only</div>
+    <div class="type-opt" data-type="both" onclick="selectType('both', this)">Both</div>
+  </div>
+</div>
+
+<div class="conditional-section" id="productSection">
+  <div class="section-label">Delivery product</div>
+  <div class="card" id="productCard"></div>
+</div>
+
+<div class="sticky-footer">
+  <button class="save-btn" onclick="saveCustomer()">Save Customer</button>
+</div>
+</div>
+
+<div id="successScreen">
+  <div class="success-icon">✓</div>
+  <div class="success-title" id="successName">Customer added</div>
+  <div class="success-sub" id="successSub"></div>
+  <button class="success-btn" onclick="addAnother()">+ Add Another Customer</button>
+</div>
+
+<script>
+const products = [
+  { id: 'cow', name: 'Cow Milk (1L Daily)', amt: 1500 },
+  { id: 'toned', name: 'Toned Milk (1L Daily)', amt: 1350 },
+  { id: 'curd', name: 'Curd (500g Daily)', amt: 600 }
+];
+// Areas already in use by existing customers — grows as new areas get typed and saved
+let existingAreas = ['Sector 12', 'Sector 15', 'MG Road', 'Green Park'];
+let custType = 'delivery';
+let selectedProductId = products[0].id;
+
+function renderAreaChips() {
+  const container = document.getElementById('areaChips');
+  const current = document.getElementById('custArea').value.trim();
+  container.innerHTML = '';
+  existingAreas.forEach(function(a) {
+    const chip = document.createElement('div');
+    chip.className = 'area-chip-opt' + (current === a ? ' selected' : '');
+    chip.textContent = a;
+    chip.onclick = function() {
+      document.getElementById('custArea').value = a;
+      renderAreaChips();
+    };
+    container.appendChild(chip);
+  });
+}
+
+function syncAreaChips() {
+  renderAreaChips();
+}
+
+function selectType(type, el) {
+  custType = type;
+  document.querySelectorAll('.type-opt').forEach(function(o) { o.classList.remove('selected'); });
+  el.classList.add('selected');
+  document.getElementById('productSection').classList.toggle('hidden', type === 'retail');
+}
+
+function renderProducts() {
+  const container = document.getElementById('productCard');
+  container.innerHTML = '';
+  products.forEach(function(p) {
+    const card = document.createElement('div');
+    card.className = 'product-card' + (selectedProductId === p.id ? ' selected' : '');
+    card.innerHTML =
+      '<div class="product-top"><div><div class="product-name"></div></div>' +
+      '<div style="display:flex;align-items:center;gap:10px"><div class="product-price"></div><div class="product-check"></div></div></div>';
+    card.querySelector('.product-name').textContent = p.name;
+    card.querySelector('.product-price').textContent = '₹' + p.amt + '/mo';
+    card.onclick = function() { selectedProductId = p.id; renderProducts(); };
+    container.appendChild(card);
+  });
+}
+
+function saveCustomer() {
+  const name = document.getElementById('custName').value.trim();
+  const mobile = document.getElementById('custMobile').value.trim();
+  if (!name || !mobile) {
+    alert('Name and Mobile are required.');
+    return;
+  }
+  const area = document.getElementById('custArea').value.trim();
+  if (area && existingAreas.indexOf(area) === -1) {
+    existingAreas.push(area);
+  }
+  let sub = '';
+  if (custType === 'retail') {
+    sub = 'Retail customer' + (area ? ' · ' + area : '');
+  } else {
+    const p = products.find(function(x) { return x.id === selectedProductId; });
+    sub = p.name + ' · ₹' + p.amt + '/mo' + (area ? ' · ' + area : '') + (custType === 'both' ? ' · also walk-in retail' : '');
+  }
+  document.getElementById('successName').textContent = name + ' added';
+  document.getElementById('successSub').textContent = sub;
+  document.getElementById('formScreen').style.display = 'none';
+  document.getElementById('successScreen').style.display = 'block';
+}
+
+function addAnother() {
+  document.getElementById('custName').value = '';
+  document.getElementById('custMobile').value = '';
+  document.getElementById('custArea').value = '';
+  document.getElementById('custAddress').value = '';
+  custType = 'delivery';
+  selectedProductId = products[0].id;
+  document.querySelectorAll('.type-opt').forEach(function(o) { o.classList.remove('selected'); });
+  document.querySelector('.type-opt[data-type="delivery"]').classList.add('selected');
+  document.getElementById('productSection').classList.remove('hidden');
+  renderProducts();
+  renderAreaChips();
+  document.getElementById('successScreen').style.display = 'none';
+  document.getElementById('formScreen').style.display = 'block';
+  window.scrollTo(0, 0);
+}
+
+renderProducts();
+renderAreaChips();
+</script>
+</body>
+</html>

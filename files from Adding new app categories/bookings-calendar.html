@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bookings Calendar</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--green:#1f6f54;--green-dark:#175843;--green-soft:#e7f0ec;--green-tint:#f1f7f4;--paper:#fbfbf9;--card:#fff;--ink:#1c2420;--muted:#6b7770;--line:#e4e8e5;--amber:#b9791f;--amber-soft:#f7edda;--danger:#b23b3b;--danger-soft:#f7e6e6;--shadow:0 1px 2px rgba(28,36,32,.04),0 6px 18px rgba(28,36,32,.05)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:'Plus Jakarta Sans',sans-serif}
+.wrap{max-width:620px;margin:0 auto;padding-bottom:40px}
+.top{position:sticky;top:0;z-index:20;background:rgba(251,251,249,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top-in{max-width:620px;margin:0 auto;padding:14px 18px;display:flex;align-items:center;gap:12px}
+.back{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;font-size:18px;cursor:pointer;flex-shrink:0}
+.top-title{font-weight:700;font-size:17px;letter-spacing:-.01em}
+.top-sub{font-size:12px;color:var(--muted);font-weight:500;margin-top:1px;max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.viewtog{margin-left:auto;display:flex;background:var(--green-soft);border-radius:10px;padding:3px}
+.viewtog button{border:none;background:transparent;font-family:'Plus Jakarta Sans';font-weight:700;font-size:12.5px;color:var(--green-dark);padding:7px 12px;border-radius:8px;cursor:pointer}
+.viewtog button.on{background:var(--card);box-shadow:var(--shadow);color:var(--green)}
+.scopebar{padding:12px 18px 2px}
+.scope-btn{width:100%;display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:13px;padding:12px 14px;cursor:pointer;text-align:left}
+.scope-dots{display:flex;flex-shrink:0}
+.scope-dots i{width:11px;height:11px;border-radius:50%;display:block;margin-left:-4px;border:2px solid var(--card)}
+.scope-dots i:first-child{margin-left:0}
+.scope-txt{flex:1;min-width:0}
+.scope-label{font-family:'Plus Jakarta Sans';font-weight:700;font-size:15px;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.scope-meta{font-size:11.5px;color:var(--muted);margin-top:1px}
+.caret{font-size:16px;color:var(--muted);flex-shrink:0}
+.money{margin:10px 18px 4px;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:12px 8px;display:flex}
+.money div{flex:1;text-align:center;border-right:1px solid var(--line)}
+.money div:last-child{border-right:none}
+.money .n{font-family:'Plus Jakarta Sans';font-weight:800;font-size:17px;letter-spacing:-.02em}
+.money .n.due{color:var(--amber)}
+.money .l{font-size:10.5px;color:var(--muted);font-weight:600;margin-top:2px;letter-spacing:.02em}
+.mnav{display:flex;align-items:center;justify-content:space-between;padding:14px 20px 8px}
+.mnav h2{font-size:19px;font-weight:800;letter-spacing:-.02em}
+.mnav .navbtns{display:flex;gap:6px}
+.navbtn{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;font-size:16px;cursor:pointer;color:var(--ink)}
+.navbtn:active{background:var(--green-tint)}
+.today-btn{font-family:'Plus Jakarta Sans';font-weight:700;font-size:12.5px;color:var(--green);background:var(--green-soft);border:none;border-radius:10px;padding:0 12px;cursor:pointer}
+.cal{padding:0 14px}
+.dow{display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:4px}
+.dow span{text-align:center;font-size:11px;font-weight:700;color:var(--muted);padding:6px 0;letter-spacing:.03em}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cell{aspect-ratio:1/1.05;border-radius:11px;display:flex;flex-direction:column;align-items:center;padding-top:7px;cursor:pointer;position:relative;border:1px solid transparent}
+.cell.pad{cursor:default}
+.cell .num{font-size:13.5px;font-weight:600;color:var(--ink)}
+.cell.pad .num{color:#c4ccc7}
+.cell.today{background:var(--green-tint)}
+.cell.today .num{color:var(--green);font-weight:800}
+.cell.sel{border-color:var(--green);background:var(--card);box-shadow:var(--shadow)}
+.cell.sel .num{color:var(--green);font-weight:800}
+.cell .dots{display:flex;gap:2px;margin-top:5px;flex-wrap:wrap;justify-content:center;max-width:34px}
+.cell .dots i{width:5px;height:5px;border-radius:50%;display:block}
+.cell .more{font-size:8px;font-weight:700;color:var(--muted);line-height:1}
+.detail{padding:20px 18px 0}
+.detail-head{display:flex;align-items:baseline;gap:8px;margin-bottom:14px}
+.detail-head h3{font-size:16px;font-weight:800;letter-spacing:-.01em}
+.detail-head .cnt{font-size:12.5px;color:var(--muted);font-weight:600}
+.bcard{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);margin-bottom:11px;overflow:hidden;display:flex}
+.bcard .stripe{width:4px;flex-shrink:0}
+.bcard .bc-body{flex:1;padding:13px 15px;min-width:0}
+.bc-top{display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.bc-biz{font-size:10.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase}
+.bc-time{margin-left:auto;font-size:11.5px;font-weight:600;color:var(--muted)}
+.bc-name{font-family:'Plus Jakarta Sans';font-weight:700;font-size:15.5px;letter-spacing:-.01em}
+.bc-type{font-size:12.5px;color:var(--muted);margin-top:1px}
+.bc-multi{font-size:11px;font-weight:600;color:var(--amber);background:var(--amber-soft);display:inline-block;padding:2px 8px;border-radius:6px;margin-top:7px}
+.bc-money{display:flex;gap:16px;margin-top:11px;padding-top:11px;border-top:1px solid var(--line)}
+.bc-money .m{flex:1}
+.bc-money .mv{font-family:'Plus Jakarta Sans';font-weight:700;font-size:14px}
+.bc-money .mv.due{color:var(--amber)}.bc-money .mv.paid{color:var(--green)}
+.bc-money .ml{font-size:10px;color:var(--muted);font-weight:600;letter-spacing:.02em;margin-top:1px}
+.bc-status{align-self:center;font-size:11px;font-weight:700;padding:5px 10px;border-radius:20px}
+.st-paid{background:var(--green-soft);color:var(--green-dark)}
+.st-partial{background:var(--amber-soft);color:var(--amber)}
+.st-pending{background:var(--danger-soft);color:var(--danger)}
+.empty{text-align:center;padding:36px 18px;color:var(--muted)}
+.empty .big{font-size:32px;margin-bottom:10px}.empty p{font-size:13.5px}
+.month-label{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:18px 4px 10px}
+.month-label:first-child{margin-top:4px}
+.datechip{display:flex;flex-direction:column;align-items:center;justify-content:center;width:46px;flex-shrink:0;padding:8px 0;background:var(--green-tint);border-radius:11px}
+.datechip .d{font-family:'Plus Jakarta Sans';font-weight:800;font-size:17px;line-height:1;color:var(--green-dark)}
+.datechip .m{font-size:10px;font-weight:700;color:var(--green);text-transform:uppercase;margin-top:2px}
+.datechip .wd{font-size:9px;color:var(--muted);font-weight:600;margin-top:1px}
+.ucard{display:flex;gap:12px;align-items:stretch;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:11px;margin-bottom:10px}
+.scrim{position:fixed;inset:0;background:rgba(20,28,24,.4);z-index:40;display:none;align-items:flex-end;justify-content:center}
+.scrim.on{display:flex}
+.sheet{background:var(--paper);width:100%;max-width:620px;border-radius:20px 20px 0 0;padding:18px 16px calc(16px + env(safe-area-inset-bottom));max-height:90vh;overflow-y:auto;animation:up .28s cubic-bezier(.2,.8,.2,1)}
+@keyframes up{from{transform:translateY(100%)}to{transform:none}}
+.sheet-grab{width:40px;height:4px;background:#d5dbd7;border-radius:2px;margin:0 auto 14px}
+.sheet-h{display:flex;align-items:center;margin:0 2px 12px}
+.sheet-h h3{font-size:17px;font-weight:800;letter-spacing:-.02em}
+.sheet-h .cx{margin-left:auto;font-size:14px;font-weight:700;color:var(--green);background:none;border:none;cursor:pointer}
+.search{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:11px;font-family:'Inter';font-size:14px;background:var(--card);margin-bottom:6px}
+.search:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px var(--green-soft)}
+.sh-label{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:14px 4px 8px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.opt{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer}
+.opt.sel-row{border-color:var(--green);background:var(--green-tint)}
+.opt .icn{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;font-size:16px;flex-shrink:0;background:var(--green-soft);color:var(--green-dark)}
+.opt .grp-dots{display:flex;flex-shrink:0;width:38px}
+.opt .grp-dots i{width:13px;height:13px;border-radius:50%;margin-left:-5px;border:2px solid var(--card)}
+.opt .grp-dots i:first-child{margin-left:0}
+.opt .o-body{flex:1;min-width:0}
+.opt .o-name{font-family:'Plus Jakarta Sans';font-weight:700;font-size:14.5px}
+.opt .o-meta{font-size:11.5px;color:var(--muted);margin-top:1px}
+.opt .o-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.opt .check{width:24px;height:24px;border-radius:7px;border:1.5px solid var(--line);flex-shrink:0;display:grid;place-items:center;font-size:14px;color:#fff}
+.opt .check.on{background:var(--green);border-color:var(--green)}
+.opt .tick{color:var(--green);font-weight:800;font-size:16px}
+.applybar{position:sticky;bottom:0;background:linear-gradient(transparent,var(--paper) 30%);padding:14px 2px 2px;display:flex;gap:10px;margin-top:4px}
+.applybar button{padding:13px;border-radius:12px;font-family:'Plus Jakarta Sans';font-weight:700;font-size:14px;cursor:pointer;border:none}
+.btn-save{background:var(--card);border:1px solid var(--line);color:var(--green);flex:0 0 auto}
+.btn-apply{background:var(--green);color:#fff;box-shadow:0 4px 12px rgba(31,111,84,.25);flex:1}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="top"><div class="top-in">
+  <button class="back">‹</button>
+  <div><div class="top-title">Bookings</div><div class="top-sub" id="topSub">All businesses</div></div>
+  <div class="viewtog">
+    <button class="on" id="vMonth" onclick="setView('month')">Month</button>
+    <button id="vList" onclick="setView('list')">Upcoming</button>
+  </div>
+</div></div>
+
+<div class="wrap">
+  <div class="scopebar">
+    <button class="scope-btn" onclick="openScope()">
+      <span class="scope-dots" id="scopeDots"></span>
+      <span class="scope-txt"><span class="scope-label" id="scopeLabel">All businesses</span><span class="scope-meta" id="scopeMeta"></span></span>
+      <span class="caret">⌄</span>
+    </button>
+  </div>
+  <div class="money" id="money"></div>
+  <div id="monthView">
+    <div class="mnav">
+      <h2 id="monthTitle"></h2>
+      <div class="navbtns">
+        <button class="today-btn" onclick="goToday()">Today</button>
+        <button class="navbtn" onclick="shiftMonth(-1)">‹</button>
+        <button class="navbtn" onclick="shiftMonth(1)">›</button>
+      </div>
+    </div>
+    <div class="cal">
+      <div class="dow"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div>
+      <div class="grid" id="grid"></div>
+    </div>
+    <div class="detail" id="detail"></div>
+  </div>
+  <div id="listView" class="hidden" style="padding:6px 18px 0"></div>
+</div>
+
+<div class="scrim" id="scopeSheet">
+  <div class="sheet">
+    <div class="sheet-grab"></div>
+    <div class="sheet-h"><h3>Show bookings for</h3><button class="cx" onclick="closeScope()">Done</button></div>
+    <input class="search" id="bizSearch" placeholder="Search businesses…" oninput="renderSheet()">
+    <div id="sheetBody"></div>
+    <div class="applybar hidden" id="applyBar">
+      <button class="btn-save" id="saveGrpBtn" onclick="saveGroup()">＋ Save as group</button>
+      <button class="btn-apply" onclick="applyMulti()">Apply <span id="applyCount"></span></button>
+    </div>
+  </div>
+</div>
+
+<script>
+const BIZ={
+  photo:{name:'Aperture Photography',color:'#1f6f54'},
+  makeup:{name:'Glow Makeup Studio',color:'#a1568a'},
+  mehendi:{name:'Henna by Ritu',color:'#7b5cc0'},
+  catering:{name:'Annapurna Catering',color:'#b9791f'},
+  tent:{name:'Sharma Tent House',color:'#3f6d8f'},
+  decor:{name:'Bloom Décor',color:'#6f8f3f'},
+  dj:{name:'BeatBox DJ & Sound',color:'#b5603f'},
+  cakes:{name:'Sugar Lane Cakes',color:'#9c4f6b'},
+};
+const TODAY='2026-07-19';
+let groups=[
+  {id:'g1',name:'Wedding Core',members:['photo','makeup','mehendi']},
+  {id:'g2',name:'Décor & Setup',members:['tent','decor','dj']},
+];
+let bookings=[
+  {biz:'makeup',name:'Aisha Khan',type:'Bridal HD Makeup',start:'2026-07-19',end:'2026-07-19',time:'6:00 AM',total:18000,advance:9000},
+  {biz:'mehendi',name:'Aisha Khan',type:'Bridal Mehendi',start:'2026-07-19',end:'2026-07-19',time:'2:00 PM',total:12000,advance:6000},
+  {biz:'photo',name:'Verma Wedding',type:'Wedding Full Day',start:'2026-07-24',end:'2026-07-25',time:'All day',total:80000,advance:24000},
+  {biz:'dj',name:'Verma Wedding',type:'Sound + lighting',start:'2026-07-24',end:'2026-07-25',time:'Evening',total:35000,advance:10000},
+  {biz:'catering',name:'Rotary Club Meet',type:'Standard Veg · 120',start:'2026-07-26',end:'2026-07-26',time:'Lunch',total:54000,advance:15000},
+  {biz:'tent',name:'Sharma Function',type:'Chairs, tent, lights',start:'2026-07-26',end:'2026-07-28',time:'—',total:32000,advance:16000},
+  {biz:'decor',name:'Sharma Function',type:'Stage + floral',start:'2026-07-26',end:'2026-07-26',time:'—',total:28000,advance:0},
+  {biz:'makeup',name:'Priya Nair',type:'Party Makeup',start:'2026-07-31',end:'2026-07-31',time:'4:00 PM',total:4000,advance:0},
+  {biz:'photo',name:'Iyer Pre-Wedding',type:'Pre-Wedding Shoot',start:'2026-08-09',end:'2026-08-09',time:'7:00 AM',total:25000,advance:10000},
+  {biz:'catering',name:'Desai Reception',type:'Premium Non-veg · 300',start:'2026-08-15',end:'2026-08-15',time:'Dinner',total:225000,advance:60000},
+  {biz:'cakes',name:'Desai Reception',type:'3-tier fondant',start:'2026-08-15',end:'2026-08-15',time:'Dinner',total:9000,advance:9000},
+  {biz:'tent',name:'Ganesh Pandal',type:'Shamiana + stage',start:'2026-08-22',end:'2026-08-27',time:'—',total:48000,advance:20000},
+  {biz:'photo',name:'Reddy Wedding',type:'Wedding Full Day',start:'2026-11-21',end:'2026-11-23',time:'All day',total:120000,advance:40000},
+  {biz:'makeup',name:'Reddy Bride',type:'Bridal + Reception',start:'2026-11-21',end:'2026-11-22',time:'5:30 AM',total:35000,advance:17500},
+  {biz:'mehendi',name:'Reddy Mehendi',type:'Bridal + family',start:'2026-11-20',end:'2026-11-20',time:'11:00 AM',total:20000,advance:8000},
+  {biz:'catering',name:'Reddy Sangeet',type:'Mixed menu · 250',start:'2026-11-22',end:'2026-11-22',time:'Dinner',total:187500,advance:50000},
+];
+
+const ALL=Object.keys(BIZ);
+let active=new Set(ALL);
+let pending=null;
+let cur={y:2026,m:6},sel=TODAY,view='month';
+
+const MON=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const MON3=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const WD3=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const iso=(y,m,d)=>`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+const parse=s=>{const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);};
+const covers=(bk,d)=>d>=bk.start&&d<=bk.end;
+const fmtRs=n=>'₹'+(+n).toLocaleString('en-IN');
+function statusOf(bk){const b=bk.total-bk.advance;if(b<=0)return'paid';if(bk.advance<=0)return'pending';return'partial';}
+const setsEqual=(a,b)=>a.size===b.size&&[...a].every(x=>b.has(x));
+
+function scopeName(){
+  if(active.size===ALL.length)return{label:'All businesses',meta:`${ALL.length} businesses`};
+  if(active.size===1){const id=[...active][0];return{label:BIZ[id].name,meta:'Single business'};}
+  const g=groups.find(g=>setsEqual(new Set(g.members),active));
+  if(g)return{label:g.name,meta:`${g.members.length} businesses · group`};
+  return{label:`${active.size} businesses`,meta:'Custom selection'};
+}
+function renderScopeBtn(){
+  const{label,meta}=scopeName();
+  document.getElementById('scopeLabel').textContent=label;
+  document.getElementById('scopeMeta').textContent=meta;
+  const ids=active.size===ALL.length?ALL.slice(0,4):[...active].slice(0,4);
+  document.getElementById('scopeDots').innerHTML=ids.map(id=>`<i style="background:${BIZ[id].color}"></i>`).join('');
+  document.getElementById('topSub').textContent=label;
+}
+
+function openScope(){pending=null;document.getElementById('bizSearch').value='';renderSheet();document.getElementById('scopeSheet').classList.add('on');document.body.style.overflow='hidden';}
+function closeScope(){document.getElementById('scopeSheet').classList.remove('on');document.body.style.overflow='';}
+document.getElementById('scopeSheet').addEventListener('click',e=>{if(e.target.id==='scopeSheet')closeScope();});
+
+function renderSheet(){
+  const q=document.getElementById('bizSearch').value.trim().toLowerCase();
+  const multi=pending!==null;
+  let html='';
+  if(!q){
+    const allSel=active.size===ALL.length&&!multi;
+    html+=`<div class="opt ${allSel?'sel-row':''}" onclick="pickAll()"><span class="icn">▦</span><div class="o-body"><div class="o-name">All businesses</div><div class="o-meta">Every booking, one view</div></div>${allSel?'<span class="tick">✓</span>':''}</div>`;
+    if(groups.length){
+      html+=`<div class="sh-label">Your groups</div>`;
+      groups.forEach(g=>{
+        const gSel=!multi&&setsEqual(new Set(g.members),active);
+        const dots=g.members.slice(0,4).map(id=>`<i style="background:${BIZ[id].color}"></i>`).join('');
+        html+=`<div class="opt ${gSel?'sel-row':''}" onclick="pickGroup('${g.id}')"><span class="grp-dots">${dots}</span><div class="o-body"><div class="o-name">${g.name}</div><div class="o-meta">${g.members.length} businesses</div></div>${gSel?'<span class="tick">✓</span>':''}</div>`;
+      });
+    }
+    html+=`<div class="sh-label"><span>Businesses</span><span style="font-weight:600;text-transform:none;letter-spacing:0">tap to focus · check to combine</span></div>`;
+  }
+  const list=ALL.filter(id=>BIZ[id].name.toLowerCase().includes(q));
+  list.forEach(id=>{
+    const checked=multi?pending.has(id):(active.size===1&&active.has(id));
+    const solo=!multi&&active.size===1&&active.has(id);
+    html+=`<div class="opt ${solo?'sel-row':''}"><span class="o-dot" style="background:${BIZ[id].color}"></span><div class="o-body" onclick="pickOne('${id}')"><div class="o-name">${BIZ[id].name}</div></div><div class="check ${checked?'on':''}" onclick="toggleCheck('${id}')">${checked?'✓':''}</div></div>`;
+  });
+  if(!list.length)html+=`<div class="empty" style="padding:20px"><p>No business matches “${q}”.</p></div>`;
+  document.getElementById('sheetBody').innerHTML=html;
+  const bar=document.getElementById('applyBar');
+  if(multi&&pending.size){bar.classList.remove('hidden');document.getElementById('applyCount').textContent=`(${pending.size})`;document.getElementById('saveGrpBtn').style.display=pending.size>=2?'block':'none';}
+  else bar.classList.add('hidden');
+}
+function pickAll(){active=new Set(ALL);afterPick();}
+function pickGroup(id){active=new Set(groups.find(x=>x.id===id).members);afterPick();}
+function pickOne(id){active=new Set([id]);afterPick();}
+function afterPick(){pending=null;renderScopeBtn();renderAll();closeScope();}
+function toggleCheck(id){if(pending===null)pending=new Set(active.size===ALL.length?[]:active);pending.has(id)?pending.delete(id):pending.add(id);renderSheet();}
+function applyMulti(){if(pending&&pending.size)active=new Set(pending);pending=null;renderScopeBtn();renderAll();closeScope();}
+function saveGroup(){if(!pending||pending.size<2)return;const n=prompt('Name this group','New group');if(!n)return;groups.push({id:'g'+Date.now(),name:n.trim(),members:[...pending]});active=new Set(pending);pending=null;renderScopeBtn();renderAll();closeScope();}
+
+function renderMoney(){
+  const im=bookings.filter(b=>active.has(b.biz)&&(()=>{const d=parse(b.start);return d.getFullYear()===cur.y&&d.getMonth()===cur.m;})());
+  const coll=im.reduce((s,b)=>s+b.advance,0),due=im.reduce((s,b)=>s+(b.total-b.advance),0);
+  document.getElementById('money').innerHTML=`<div><div class="n">${im.length}</div><div class="l">BOOKINGS</div></div><div><div class="n" style="color:var(--green)">${fmtRs(coll)}</div><div class="l">COLLECTED</div></div><div><div class="n due">${fmtRs(due)}</div><div class="l">BALANCE DUE</div></div>`;
+}
+function renderGrid(){
+  document.getElementById('monthTitle').textContent=`${MON[cur.m]} ${cur.y}`;
+  const first=new Date(cur.y,cur.m,1).getDay(),days=new Date(cur.y,cur.m+1,0).getDate();
+  let html='';
+  for(let i=0;i<first;i++)html+=`<div class="cell pad"></div>`;
+  for(let d=1;d<=days;d++){
+    const ds=iso(cur.y,cur.m,d);
+    const db=bookings.filter(b=>active.has(b.biz)&&covers(b,ds));
+    let dots='';db.slice(0,3).forEach(b=>dots+=`<i style="background:${BIZ[b.biz].color}"></i>`);
+    if(db.length>3)dots+=`<span class="more">+${db.length-3}</span>`;
+    const cls=['cell'];if(ds===TODAY)cls.push('today');if(ds===sel)cls.push('sel');
+    html+=`<div class="${cls.join(' ')}" onclick="pickDay('${ds}')"><span class="num">${d}</span><div class="dots">${dots}</div></div>`;
+  }
+  document.getElementById('grid').innerHTML=html;
+}
+function pickDay(ds){sel=ds;renderGrid();renderDetail();}
+function renderDetail(){
+  const d=parse(sel);
+  const db=bookings.filter(b=>active.has(b.biz)&&covers(b,sel)).sort((a,b)=>a.time.localeCompare(b.time));
+  const head=`<div class="detail-head"><h3>${WD3[d.getDay()]}, ${d.getDate()} ${MON[d.getMonth()]}</h3><span class="cnt">${db.length} booking${db.length!==1?'s':''}</span></div>`;
+  document.getElementById('detail').innerHTML=db.length?head+db.map(cardHtml).join(''):head+`<div class="empty"><div class="big">🗓️</div><p>No bookings this day. It's free to take one.</p></div>`;
+}
+function cardHtml(b){
+  const bal=b.total-b.advance,st=statusOf(b),c=BIZ[b.biz].color;
+  const multi=b.start!==b.end?`<span class="bc-multi">Multi-day · ${parse(b.start).getDate()} ${MON3[parse(b.start).getMonth()]} – ${parse(b.end).getDate()} ${MON3[parse(b.end).getMonth()]}</span>`:'';
+  const L={paid:'Fully paid',partial:'Advance paid',pending:'Unpaid'}[st],C={paid:'st-paid',partial:'st-partial',pending:'st-pending'}[st];
+  return `<div class="bcard"><div class="stripe" style="background:${c}"></div><div class="bc-body"><div class="bc-top"><span class="bc-biz" style="color:${c}">${BIZ[b.biz].name}</span><span class="bc-time">${b.time}</span></div><div class="bc-name">${b.name}</div><div class="bc-type">${b.type}</div>${multi}<div class="bc-money"><div class="m"><div class="mv paid">${fmtRs(b.advance)}</div><div class="ml">ADVANCE</div></div><div class="m"><div class="mv ${bal>0?'due':'paid'}">${fmtRs(bal>0?bal:0)}</div><div class="ml">BALANCE DUE</div></div><div class="bc-status ${C}">${L}</div></div></div></div>`;
+}
+function renderList(){
+  const up=bookings.filter(b=>active.has(b.biz)&&b.end>=TODAY).sort((a,b)=>a.start.localeCompare(b.start));
+  const el=document.getElementById('listView');
+  if(!up.length){el.innerHTML=`<div class="empty"><div class="big">🗓️</div><p>No upcoming bookings for this selection.</p></div>`;return;}
+  let html='',key='';
+  up.forEach(b=>{
+    const d=parse(b.start),k=`${MON[d.getMonth()]} ${d.getFullYear()}`;
+    if(k!==key){html+=`<div class="month-label">${k}</div>`;key=k;}
+    const bal=b.total-b.advance,st=statusOf(b),c=BIZ[b.biz].color;
+    const L={paid:'Paid',partial:'Advance',pending:'Unpaid'}[st],C={paid:'st-paid',partial:'st-partial',pending:'st-pending'}[st];
+    const range=b.start!==b.end?`–${parse(b.end).getDate()}`:'';
+    html+=`<div class="ucard"><div class="datechip"><span class="d">${d.getDate()}${range}</span><span class="m">${MON3[d.getMonth()]}</span><span class="wd">${WD3[d.getDay()]}</span></div><div class="bc-body" style="padding:2px 2px 2px 4px"><div class="bc-top"><span class="bc-biz" style="color:${c}">${BIZ[b.biz].name}</span><span class="bc-time">${b.time}</span></div><div class="bc-name" style="font-size:14.5px">${b.name}</div><div class="bc-type">${b.type}</div><div class="bc-money" style="margin-top:8px;padding-top:8px"><div class="m"><div class="mv paid" style="font-size:13px">${fmtRs(b.advance)}</div><div class="ml">ADVANCE</div></div><div class="m"><div class="mv ${bal>0?'due':'paid'}" style="font-size:13px">${fmtRs(bal>0?bal:0)}</div><div class="ml">DUE</div></div><div class="bc-status ${C}" style="align-self:center">${L}</div></div></div></div>`;
+  });
+  el.innerHTML=html;
+}
+function setView(v){
+  view=v;
+  document.getElementById('vMonth').classList.toggle('on',v==='month');
+  document.getElementById('vList').classList.toggle('on',v==='list');
+  document.getElementById('monthView').classList.toggle('hidden',v!=='month');
+  document.getElementById('listView').classList.toggle('hidden',v!=='list');
+  document.getElementById('money').style.display=v==='month'?'flex':'none';
+  renderAll();
+}
+function shiftMonth(n){cur.m+=n;if(cur.m<0){cur.m=11;cur.y--;}if(cur.m>11){cur.m=0;cur.y++;}renderAll();}
+function goToday(){cur={y:2026,m:6};sel=TODAY;renderAll();}
+function renderAll(){renderScopeBtn();if(view==='month'){renderMoney();renderGrid();renderDetail();}else renderList();}
+renderAll();
+</script>
+</body>
+</html>

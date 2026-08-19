@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Documents</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--green:#1f6f54;--green-dark:#175843;--green-soft:#e7f0ec;--green-tint:#f1f7f4;--paper:#fbfbf9;--card:#fff;--ink:#1c2420;--muted:#6b7770;--line:#e4e8e5;--amber:#b9791f;--amber-soft:#f7edda;--danger:#b23b3b;--danger-soft:#f7e6e6;--shadow:0 1px 2px rgba(28,36,32,.04),0 6px 18px rgba(28,36,32,.05)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:'Plus Jakarta Sans',sans-serif}
+.wrap{max-width:620px;margin:0 auto;padding-bottom:40px}
+.top{position:sticky;top:0;z-index:20;background:rgba(251,251,249,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top-in{max-width:620px;margin:0 auto;padding:14px 18px;display:flex;align-items:center;gap:12px}
+.back{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;font-size:18px;cursor:pointer;flex-shrink:0}
+.top-title{font-weight:700;font-size:16px;letter-spacing:-.01em}
+.top-sub{font-size:12px;color:var(--muted);font-weight:500;margin-top:1px}
+.chip{margin-left:auto;font-size:11px;font-weight:700;color:var(--green);background:var(--green-soft);padding:5px 10px;border-radius:20px;flex-shrink:0}
+.intro{font-size:13px;color:var(--muted);padding:16px 18px 4px;line-height:1.55}
+.sect-label{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:18px 20px 10px}
+.list{padding:0 18px}
+.hubcard{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);margin-bottom:10px;display:flex;align-items:center;gap:13px;padding:14px 15px;cursor:pointer}
+.hub-ic{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;font-size:18px;flex-shrink:0;background:var(--green-soft)}
+.hub-body{flex:1;min-width:0}
+.hub-name{font-family:'Plus Jakarta Sans';font-weight:700;font-size:15px;letter-spacing:-.01em}
+.hub-meta{font-size:12.5px;color:var(--muted);margin-top:2px}
+.hub-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0}
+.prog{font-family:'Plus Jakarta Sans';font-weight:700;font-size:12.5px;color:var(--green-dark)}
+.prog.warn{color:var(--amber)}.prog.bad{color:var(--danger)}
+.flag{font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:20px}
+.flag.amber{background:var(--amber-soft);color:var(--amber)}
+.flag.red{background:var(--danger-soft);color:var(--danger)}
+.flag.ok{background:var(--green-soft);color:var(--green-dark)}
+.bar{height:5px;border-radius:3px;background:var(--line);overflow:hidden;width:64px;margin-top:2px}
+.bar i{display:block;height:100%;background:var(--green);border-radius:3px}
+.rec-head{padding:16px 18px 6px}
+.rec-title-row{display:flex;align-items:center;gap:12px}
+.rec-ic{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:20px;background:var(--green-soft);flex-shrink:0}
+.rec-title{font-size:19px;font-weight:800;letter-spacing:-.02em}
+.rec-sub{font-size:12.5px;color:var(--muted);margin-top:1px}
+/* filter pills */
+.rec-summary{display:flex;gap:8px;margin:14px 0 2px;flex-wrap:wrap}
+.pill{font-size:11.5px;font-weight:700;padding:6px 11px;border-radius:20px;cursor:pointer;border:1.5px solid transparent;user-select:none}
+.pill.ok{background:var(--green-soft);color:var(--green-dark)}
+.pill.miss{background:#eef1ef;color:var(--muted)}
+.pill.amber{background:var(--amber-soft);color:var(--amber)}
+.pill.red{background:var(--danger-soft);color:var(--danger)}
+.pill.on{border-color:currentColor}
+.filterhint{font-size:11.5px;color:var(--muted);padding:4px 2px 0;display:flex;align-items:center;gap:6px}
+.filterhint .clr{color:var(--green);font-weight:700;cursor:pointer}
+.doccard{background:var(--card);border:1px solid var(--line);border-radius:13px;box-shadow:var(--shadow);margin-bottom:9px;padding:13px 15px}
+.doc-main{display:flex;align-items:center;gap:12px}
+.doc-status-ic{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;font-size:15px;flex-shrink:0}
+.si-ok{background:var(--green-soft)}.si-miss{background:#eef1ef}.si-amber{background:var(--amber-soft)}.si-red{background:var(--danger-soft)}
+.doc-body{flex:1;min-width:0}
+.doc-name{font-family:'Plus Jakarta Sans';font-weight:700;font-size:14.5px;letter-spacing:-.01em}
+.doc-name .own{font-size:10px;font-weight:700;color:var(--green-dark);background:var(--green-soft);padding:1px 6px;border-radius:5px;margin-left:5px;vertical-align:middle}
+.doc-file{font-size:12px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stchip{font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:20px;margin-top:5px;display:inline-block}
+.st-ok{background:var(--green-soft);color:var(--green-dark)}
+.st-miss{background:#eef1ef;color:var(--muted)}
+.st-amber{background:var(--amber-soft);color:var(--amber)}
+.st-red{background:var(--danger-soft);color:var(--danger)}
+.doc-action{flex-shrink:0}
+.attach-btn{border:1px solid var(--green);background:var(--card);color:var(--green);font-family:'Plus Jakarta Sans';font-weight:700;font-size:12.5px;padding:8px 13px;border-radius:10px;cursor:pointer}
+.attach-btn:active{background:var(--green-tint)}
+.kebab{width:32px;height:32px;border-radius:8px;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;cursor:pointer;color:var(--muted);font-size:16px}
+.doc-expiry{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);display:flex;align-items:center;gap:8px;font-size:12px}
+.doc-expiry .lbl{color:var(--muted);font-weight:600}
+.doc-expiry .val{font-weight:700;margin-left:auto}
+.doc-expiry .val.amber{color:var(--amber)}.doc-expiry .val.red{color:var(--danger)}
+.custom-add{width:100%;padding:12px;border:1.5px dashed var(--line);border-radius:12px;background:transparent;color:var(--green);font-family:'Plus Jakarta Sans';font-weight:700;font-size:13.5px;cursor:pointer;margin-top:4px}
+.custom-add:active{background:var(--green-tint);border-color:var(--green)}
+.emptyfilter{text-align:center;padding:30px 18px;color:var(--muted);font-size:13px}
+/* sheet */
+.scrim{position:fixed;inset:0;background:rgba(20,28,24,.4);z-index:40;display:none;align-items:flex-end;justify-content:center}
+.scrim.on{display:flex}
+.sheet{background:var(--paper);width:100%;max-width:620px;border-radius:20px 20px 0 0;padding:18px 16px calc(16px + env(safe-area-inset-bottom));max-height:90vh;overflow-y:auto;animation:up .28s cubic-bezier(.2,.8,.2,1)}
+@keyframes up{from{transform:translateY(100%)}to{transform:none}}
+.sheet-grab{width:40px;height:4px;background:#d5dbd7;border-radius:2px;margin:0 auto 14px}
+.sheet h3{font-size:17px;font-weight:800;letter-spacing:-.02em;margin:0 2px 3px}
+.sheet .subt{font-size:12.5px;color:var(--muted);margin:0 2px 16px;line-height:1.45}
+.srcrow{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 14px;margin-bottom:9px;cursor:pointer}
+.srcrow.on{border-color:var(--green);background:var(--green-tint)}
+.srcrow .si{width:36px;height:36px;border-radius:9px;background:var(--green-soft);display:grid;place-items:center;font-size:17px;flex-shrink:0}
+.srcrow .st{font-family:'Plus Jakarta Sans';font-weight:700;font-size:14.5px}
+.srcrow .ss{font-size:12px;color:var(--muted);margin-top:1px}
+.srcrow .tick{margin-left:auto;color:var(--green);font-weight:800;font-size:16px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12.5px;font-weight:600;margin:0 2px 6px}
+.field .hint{font-weight:400;color:var(--muted)}
+.field input{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:11px;font-family:'Inter';font-size:15px;background:var(--card)}
+.field input:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px var(--green-soft)}
+.togrow{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:14px}
+.togrow .tb{flex:1}.togrow .tt{font-weight:600;font-size:14px}.togrow .ts{font-size:12px;color:var(--muted);margin-top:1px}
+.switch{width:46px;height:28px;border-radius:20px;background:#d5dbd7;position:relative;cursor:pointer;flex-shrink:0;transition:background .2s}
+.switch.on{background:var(--green)}
+.knob{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:left .2s}
+.switch.on .knob{left:21px}
+.divider{text-align:center;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.05em;margin:6px 0 12px;position:relative}
+/* menu sheet */
+.menuitem{display:flex;align-items:center;gap:13px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 15px;margin-bottom:8px;cursor:pointer;font-family:'Plus Jakarta Sans';font-weight:700;font-size:14.5px}
+.menuitem .mi{font-size:17px}
+.menuitem.danger{color:var(--danger)}
+.menuitem .msub{font-family:'Inter';font-weight:400;font-size:12px;color:var(--muted);margin-top:2px}
+.menuitem .mtxt{flex:1}
+.foot{display:flex;gap:10px;margin-top:6px}
+.btn-ghost{padding:13px 18px;border-radius:12px;border:1px solid var(--line);background:var(--card);font-family:'Plus Jakarta Sans';font-weight:700;font-size:14px;color:var(--muted);cursor:pointer}
+.btn-primary{flex:1;padding:13px;border-radius:12px;border:none;background:var(--green);color:#fff;font-family:'Plus Jakarta Sans';font-weight:700;font-size:14.5px;cursor:pointer;box-shadow:0 4px 12px rgba(31,111,84,.25)}
+.btn-primary:disabled{opacity:.45;box-shadow:none}
+/* confirm dialog */
+.cscrim{position:fixed;inset:0;background:rgba(20,28,24,.45);z-index:50;display:none;align-items:center;justify-content:center;padding:20px}
+.cscrim.on{display:flex}
+.confirm{background:var(--card);width:100%;max-width:380px;border-radius:18px;padding:22px 20px;animation:pop .2s ease}
+@keyframes pop{from{transform:scale(.94);opacity:0}to{transform:none;opacity:1}}
+.confirm .cic{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font-size:22px;margin-bottom:14px}
+.confirm h3{font-size:17px;font-weight:800;margin-bottom:6px}
+.confirm p{font-size:13.5px;color:var(--muted);margin-bottom:18px;line-height:1.5}
+.confirm .step2{background:var(--danger-soft);border-radius:10px;padding:10px 12px;font-size:12.5px;color:var(--danger);font-weight:600;margin-bottom:16px}
+.confirm .row{display:flex;gap:10px}
+.confirm button{flex:1;padding:12px;border-radius:11px;font-family:'Plus Jakarta Sans';font-weight:700;font-size:14px;cursor:pointer;border:none}
+.confirm .keep{background:var(--card);border:1px solid var(--line);color:var(--muted)}
+.confirm .go-amber{background:var(--amber);color:#fff}
+.confirm .go-red{background:var(--danger);color:#fff}
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:11px 18px;border-radius:22px;font-size:13px;font-weight:600;opacity:0;transition:all .3s;z-index:60;pointer-events:none}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="top"><div class="top-in">
+  <button class="back" id="backBtn" onclick="goBack()">‹</button>
+  <div><div class="top-title" id="topTitle">Documents</div><div class="top-sub" id="topSub">Parties &amp; projects</div></div>
+  <span class="chip">DOCS</span>
+</div></div>
+
+<div class="wrap">
+  <div id="hubView">
+    <p class="intro">Every agreement, ID and approval, kept where it belongs. Party papers follow the person; project papers stay with the site.</p>
+    <div class="sect-label">Parties</div>
+    <div class="list" id="partyHub"></div>
+    <div class="sect-label">Projects / Sites</div>
+    <div class="list" id="projHub"></div>
+  </div>
+
+  <div id="recView" class="hidden">
+    <div class="rec-head">
+      <div class="rec-title-row">
+        <div class="rec-ic" id="recIc"></div>
+        <div><div class="rec-title" id="recTitle"></div><div class="rec-sub" id="recSub"></div></div>
+      </div>
+      <div class="rec-summary" id="recSummary"></div>
+      <div class="filterhint hidden" id="filterHint"></div>
+    </div>
+    <div class="list" id="docList"></div>
+    <div class="list"><button class="custom-add" onclick="openAddDoc()">＋ Add document</button></div>
+  </div>
+</div>
+
+<!-- ATTACH SHEET (used by row Attach / Replace) -->
+<div class="scrim" id="attachSheet"><div class="sheet">
+  <div class="sheet-grab"></div>
+  <h3 id="attachHead">Attach document</h3>
+  <div class="subt">Pick a source. In the app this opens Drive or your phone; here it's simulated.</div>
+  <div id="attachExpiry" class="hidden">
+    <div class="field"><label>Expiry date <span class="hint">— we'll warn before it lapses</span></label><input type="date" id="attExpiryIn"></div>
+  </div>
+  <div class="srcrow" onclick="doAttach('Drive')"><div class="si">🗂️</div><div><div class="st">Google Drive</div><div class="ss">Your linked Drive folder</div></div></div>
+  <div class="srcrow" onclick="doAttach('Camera')"><div class="si">📷</div><div><div class="st">Camera</div><div class="ss">Scan a paper copy now</div></div></div>
+  <div class="srcrow" onclick="doAttach('Files')"><div class="si">📁</div><div><div class="st">Phone files</div><div class="ss">PDF or image from this device</div></div></div>
+  <div class="foot"><button class="btn-ghost" onclick="closeSheet('attachSheet')">Cancel</button></div>
+</div></div>
+
+<!-- ADD DOC SHEET (name + optional attach + optional expiry, one flow) -->
+<div class="scrim" id="addDocSheet"><div class="sheet">
+  <div class="sheet-grab"></div>
+  <h3>Add document</h3>
+  <div class="subt">Name it, and attach right now if you have the file — or just add the name and attach later.</div>
+  <div class="field"><label>Document name <span style="color:var(--danger)">*</span></label><input type="text" id="newDocName" placeholder="e.g. Revised drawing v2" oninput="syncAdd()"></div>
+  <div class="togrow"><div class="tb"><div class="tt">This document expires</div><div class="ts">IDs, licences, approvals — we'll flag before it lapses.</div></div><div class="switch" id="newExpToggle" onclick="togExp(this)"><div class="knob"></div></div></div>
+  <div class="field hidden" id="newExpWrap"><label>Expiry date</label><input type="date" id="newExpIn"></div>
+  <div class="divider">ATTACH NOW  (optional)</div>
+  <div class="srcrow" data-src="Drive" onclick="pickAddSrc(this,'Drive')"><div class="si">🗂️</div><div><div class="st">Google Drive</div></div><span class="tick hidden">✓</span></div>
+  <div class="srcrow" data-src="Camera" onclick="pickAddSrc(this,'Camera')"><div class="si">📷</div><div><div class="st">Camera scan</div></div><span class="tick hidden">✓</span></div>
+  <div class="srcrow" data-src="Files" onclick="pickAddSrc(this,'Files')"><div class="si">📁</div><div><div class="st">Phone files</div></div><span class="tick hidden">✓</span></div>
+  <div class="foot"><button class="btn-ghost" onclick="closeSheet('addDocSheet')">Cancel</button><button class="btn-primary" id="addSaveBtn" onclick="addDoc()" disabled>Add</button></div>
+</div></div>
+
+<!-- ROW MENU SHEET -->
+<div class="scrim" id="menuSheet"><div class="sheet">
+  <div class="sheet-grab"></div>
+  <h3 id="menuHead">Document</h3>
+  <div class="subt" id="menuSub"></div>
+  <div id="menuItems"></div>
+  <div class="foot"><button class="btn-ghost" onclick="closeSheet('menuSheet')" style="flex:1">Close</button></div>
+</div></div>
+
+<!-- CONFIRM DIALOG (single or double) -->
+<div class="cscrim" id="confirmScrim"><div class="confirm">
+  <div class="cic" id="cIc"></div>
+  <h3 id="cTitle"></h3>
+  <p id="cBody"></p>
+  <div class="step2 hidden" id="cStep2"></div>
+  <div class="row"><button class="keep" onclick="closeConfirm()">Cancel</button><button id="cGo"></button></div>
+</div></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const TODAY=new Date('2026-07-20');
+function d(name,expires,file,expiry,own){return{name,expires:!!expires,file:file||null,expiry:expiry||null,own:!!own};}
+const RECORDS={
+  contractor:{type:'party',ic:'👷',title:'M/s Sharma Constructions',sub:'Civil contractor',docs:[
+    d('Company licence',true,{src:'Drive'},'2026-09-10'),d('GST certificate',false,{src:'Drive'}),
+    d('Construction agreement (client)',false,{src:'Files'}),d('Contractor ID proof',true,{src:'Drive'},'2029-03-01'),
+    d('Client ID proof',false,null)]},
+  thekedar:{type:'party',ic:'🤝',title:'Ramesh Thekedar',sub:'Labour contractor',docs:[
+    d('Thekedar agreement',false,{src:'Files'}),d('Thekedar ID proof',true,{src:'Drive'},'2026-08-05'),
+    d('Worker ID proofs (safety)',false,null),d('Labour insurance',true,null,null)]},
+  workers:{type:'party',ic:'👥',title:'Site workers',sub:'12 workers · safety records',docs:[
+    d('Worker ID — batch 1 (6)',false,{src:'Camera'}),d('Worker ID — batch 2 (6)',false,null),
+    d('Safety induction sign-off',false,null)]},
+  reddy:{type:'project',ic:'🏗️',title:'Reddy Bungalow',sub:'Kompally · started 12 May 2026',docs:[
+    d('Sanctioned building plan',true,{src:'Drive'},'2027-05-01'),d('Soil test report',false,{src:'Drive'}),
+    d('Structural drawings',false,{src:'Files'}),d('Foundation drawing',false,{src:'Files'}),
+    d('Municipal approval',true,{src:'Drive'},'2026-07-28'),d('Commencement certificate',false,{src:'Drive'}),
+    d('Completion certificate',false,null),d('Property title documents',false,null)]},
+  greenview:{type:'project',ic:'🏢',title:'Greenview Apartments',sub:'Miyapur · started 3 Feb 2026',docs:[
+    d('Sanctioned building plan',true,{src:'Drive'},'2028-01-01'),d('Soil test report',false,{src:'Drive'}),
+    d('Structural drawings',false,{src:'Drive'}),d('Municipal approval',true,{src:'Drive'},'2026-06-30'),
+    d('Fire NOC',true,null,null),d('Completion certificate',false,null)]},
+};
+const PARTY_ORDER=['contractor','thekedar','workers'],PROJ_ORDER=['reddy','greenview'];
+let curRec=null,curDocIdx=null,filter=null,attachMode='attach';
+let addSrc=null;
+
+const daysTo=s=>Math.round((new Date(s)-TODAY)/864e5);
+function statusOf(doc){if(!doc.file)return'missing';if(doc.expires&&doc.expiry){const dd=daysTo(doc.expiry);if(dd<0)return'expired';if(dd<=30)return'expiring';}return'attached';}
+const STMETA={attached:{ic:'✓',si:'si-ok',chip:'st-ok',label:'Attached'},missing:{ic:'—',si:'si-miss',chip:'st-miss',label:'Missing'},expiring:{ic:'!',si:'si-amber',chip:'st-amber',label:'Expiring soon'},expired:{ic:'✕',si:'si-red',chip:'st-red',label:'Expired'}};
+const fmtD=s=>new Date(s).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+
+function recStats(rec){let att=0,miss=0,amber=0,red=0;rec.docs.forEach(doc=>{const s=statusOf(doc);if(s==='attached')att++;else if(s==='missing')miss++;else if(s==='expiring'){att++;amber++;}else if(s==='expired')red++;});return{att,miss,amber,red,total:rec.docs.length};}
+
+/* hub */
+function hubRow(key){
+  const rec=RECORDS[key],s=recStats(rec),pct=Math.round(s.att/s.total*100);
+  let flag='',pc='';
+  if(s.red){flag='<span class="flag red">Expired</span>';pc='bad';}
+  else if(s.amber){flag='<span class="flag amber">Expiring</span>';pc='warn';}
+  else if(s.miss===0){flag='<span class="flag ok">Complete</span>';}
+  else{flag=`<span class="flag amber">${s.miss} missing</span>`;pc='warn';}
+  return `<div class="hubcard" onclick="openRec('${key}')"><div class="hub-ic">${rec.ic}</div>
+    <div class="hub-body"><div class="hub-name">${rec.title}</div><div class="hub-meta">${rec.sub}</div></div>
+    <div class="hub-right"><div class="prog ${pc}">${s.att}/${s.total}</div><div class="bar"><i style="width:${pct}%"></i></div>${flag}</div></div>`;
+}
+function renderHub(){document.getElementById('partyHub').innerHTML=PARTY_ORDER.map(hubRow).join('');document.getElementById('projHub').innerHTML=PROJ_ORDER.map(hubRow).join('');}
+
+/* record */
+function openRec(key){
+  curRec=key;filter=null;const rec=RECORDS[key];
+  document.getElementById('hubView').classList.add('hidden');
+  document.getElementById('recView').classList.remove('hidden');
+  document.getElementById('recIc').textContent=rec.ic;
+  document.getElementById('recTitle').textContent=rec.title;
+  document.getElementById('recSub').textContent=(rec.type==='party'?'Party documents':'Project documents')+' · '+rec.sub;
+  document.getElementById('topSub').textContent=rec.title;
+  renderRec();window.scrollTo({top:0});
+}
+function setFilter(f){filter=(filter===f)?null:f;renderRec();}
+function renderRec(){
+  const rec=RECORDS[curRec],s=recStats(rec);
+  const P=(cls,key,label,n)=>`<span class="pill ${cls} ${filter===key?'on':''}" onclick="setFilter('${key}')">${n} ${label}</span>`;
+  let pills=P('ok','attached','attached',s.att);
+  if(s.miss)pills+=P('miss','missing','missing',s.miss);
+  if(s.amber)pills+=P('amber','expiring','expiring',s.amber);
+  if(s.red)pills+=P('red','expired','expired',s.red);
+  document.getElementById('recSummary').innerHTML=pills;
+  const fh=document.getElementById('filterHint');
+  if(filter){fh.classList.remove('hidden');fh.innerHTML=`Showing ${filter} only · <span class="clr" onclick="setFilter('${filter}')">clear</span>`;}
+  else fh.classList.add('hidden');
+  const rows=rec.docs.map((doc,i)=>({doc,i})).filter(({doc})=>{
+    if(!filter)return true;const st=statusOf(doc);
+    if(filter==='attached')return st==='attached'||st==='expiring';
+    return st===filter;
+  });
+  document.getElementById('docList').innerHTML=rows.length?rows.map(({doc,i})=>docRow(doc,i)).join(''):`<div class="emptyfilter">Nothing ${filter} here.</div>`;
+}
+function docRow(doc,i){
+  const st=statusOf(doc),m=STMETA[st];
+  let exp='';
+  if(doc.expires){
+    if(doc.file&&doc.expiry){const dd=daysTo(doc.expiry);const cls=dd<0?'red':dd<=30?'amber':'';const tail=dd<0?` · expired ${-dd}d ago`:dd<=30?` · in ${dd} days`:'';exp=`<div class="doc-expiry"><span class="lbl">Valid until</span><span class="val ${cls}">${fmtD(doc.expiry)}${tail}</span></div>`;}
+    else if(!doc.file)exp=`<div class="doc-expiry"><span class="lbl">Expiry</span><span class="val" style="color:var(--muted)">set on attach</span></div>`;
+  }
+  const action=doc.file?`<button class="kebab" onclick="openMenu(${i})">⋯</button>`:`<button class="attach-btn" onclick="openAttach(${i})">Attach</button>`;
+  const fileLine=doc.file?`<div class="doc-file">📎 ${doc.name.replace(/[^a-z0-9]+/gi,'-').toLowerCase()}.pdf · via ${doc.file.src}</div>`:'';
+  const own=doc.own?'<span class="own">custom</span>':'';
+  return `<div class="doccard"><div class="doc-main">
+    <div class="doc-status-ic ${m.si}">${m.ic}</div>
+    <div class="doc-body"><div class="doc-name">${doc.name}${own}</div>${fileLine}<span class="stchip ${m.chip}">${m.label}</span></div>
+    <div class="doc-action">${action}</div></div>${exp}</div>`;
+}
+
+/* attach / replace */
+function openAttach(i){attachMode='attach';curDocIdx=i;const doc=RECORDS[curRec].docs[i];document.getElementById('attachHead').textContent='Attach — '+doc.name;document.getElementById('attachExpiry').classList.toggle('hidden',!doc.expires);document.getElementById('attExpiryIn').value=doc.expiry||'';openSheet('attachSheet');}
+function doAttach(src){const doc=RECORDS[curRec].docs[curDocIdx];doc.file={src};if(doc.expires){const v=document.getElementById('attExpiryIn').value;doc.expiry=v||doc.expiry||null;}closeSheet('attachSheet');renderRec();toast(attachMode==='attach'?'Attached via '+src:'Replaced with '+src+' file');}
+
+/* row menu */
+function openMenu(i){
+  curDocIdx=i;const doc=RECORDS[curRec].docs[i];
+  document.getElementById('menuHead').textContent=doc.name;
+  document.getElementById('menuSub').textContent=doc.file?`Attached via ${doc.file.src}`:'';
+  let items=`<div class="menuitem" onclick="menuReplace()"><span class="mi">🔄</span><div class="mtxt"><div>Replace file</div><div class="msub">Swap for a different file — keeps this item</div></div></div>`;
+  items+=`<div class="menuitem" onclick="menuRemove()"><span class="mi">📄</span><div class="mtxt"><div>Remove file</div><div class="msub">Back to “missing”. The checklist item stays.</div></div></div>`;
+  if(doc.own)items+=`<div class="menuitem danger" onclick="menuDeleteRow()"><span class="mi">🗑</span><div class="mtxt"><div>Delete this document</div><div class="msub">Removes the item entirely — custom docs only</div></div></div>`;
+  document.getElementById('menuItems').innerHTML=items;
+  openSheet('menuSheet');
+}
+function menuReplace(){closeSheet('menuSheet');attachMode='replace';const doc=RECORDS[curRec].docs[curDocIdx];document.getElementById('attachHead').textContent='Replace — '+doc.name;document.getElementById('attachExpiry').classList.toggle('hidden',!doc.expires);document.getElementById('attExpiryIn').value=doc.expiry||'';openSheet('attachSheet');}
+function menuRemove(){
+  closeSheet('menuSheet');
+  showConfirm({tier:1,icon:'📄',iconBg:'var(--amber-soft)',title:'Remove this file?',
+    body:`The file for “${RECORDS[curRec].docs[curDocIdx].name}” is cleared and the item goes back to Missing. You can attach a new one anytime.`,
+    goClass:'go-amber',goText:'Remove file',onGo:()=>{const doc=RECORDS[curRec].docs[curDocIdx];doc.file=null;doc.expiry=doc.expires?null:doc.expiry;renderRec();toast('File removed');}});
+}
+function menuDeleteRow(){
+  closeSheet('menuSheet');
+  const nm=RECORDS[curRec].docs[curDocIdx].name;
+  showConfirm({tier:2,icon:'🗑',iconBg:'var(--danger-soft)',title:'Delete this document?',
+    body:`“${nm}” will be removed from this checklist entirely, along with any attached file.`,
+    step2:'This can’t be undone. Confirm you want to permanently delete it.',
+    goClass:'go-red',goText:'Delete',onGo:()=>{RECORDS[curRec].docs.splice(curDocIdx,1);renderRec();toast('Document deleted');}});
+}
+
+/* add doc (name + optional attach + optional expiry) */
+function openAddDoc(){document.getElementById('newDocName').value='';document.getElementById('newExpToggle').classList.remove('on');document.getElementById('newExpWrap').classList.add('hidden');document.getElementById('newExpIn').value='';addSrc=null;document.querySelectorAll('#addDocSheet .srcrow').forEach(r=>{r.classList.remove('on');r.querySelector('.tick').classList.add('hidden');});syncAdd();openSheet('addDocSheet');}
+function togExp(el){el.classList.toggle('on');document.getElementById('newExpWrap').classList.toggle('hidden',!el.classList.contains('on'));}
+function pickAddSrc(row,src){if(addSrc===src){addSrc=null;row.classList.remove('on');row.querySelector('.tick').classList.add('hidden');return;}addSrc=src;document.querySelectorAll('#addDocSheet .srcrow').forEach(r=>{const on=r.dataset.src===src;r.classList.toggle('on',on);r.querySelector('.tick').classList.toggle('hidden',!on);});}
+function syncAdd(){document.getElementById('addSaveBtn').disabled=!document.getElementById('newDocName').value.trim();}
+function addDoc(){
+  const name=document.getElementById('newDocName').value.trim();if(!name)return;
+  const expires=document.getElementById('newExpToggle').classList.contains('on');
+  const expiry=expires?(document.getElementById('newExpIn').value||null):null;
+  const file=addSrc?{src:addSrc}:null;
+  RECORDS[curRec].docs.push(d(name,expires,file,expiry,true));
+  closeSheet('addDocSheet');renderRec();toast(file?'Added & attached':'Added to checklist');
+}
+
+/* confirm dialog engine (tier 1 = single, tier 2 = shows extra warning line) */
+let confirmGo=null;
+function showConfirm(o){
+  document.getElementById('cIc').textContent=o.icon;document.getElementById('cIc').style.background=o.iconBg;
+  document.getElementById('cTitle').textContent=o.title;document.getElementById('cBody').textContent=o.body;
+  const s2=document.getElementById('cStep2');
+  if(o.tier===2&&o.step2){s2.textContent=o.step2;s2.classList.remove('hidden');}else s2.classList.add('hidden');
+  const go=document.getElementById('cGo');go.className=o.goClass;go.textContent=o.goText;confirmGo=o.onGo;
+  document.getElementById('confirmScrim').classList.add('on');document.body.style.overflow='hidden';
+}
+document.getElementById('cGo').addEventListener('click',()=>{if(confirmGo)confirmGo();closeConfirm();});
+function closeConfirm(){document.getElementById('confirmScrim').classList.remove('on');document.body.style.overflow='';confirmGo=null;}
+
+/* nav / helpers */
+function goBack(){
+  if(!document.getElementById('recView').classList.contains('hidden')){
+    document.getElementById('recView').classList.add('hidden');
+    document.getElementById('hubView').classList.remove('hidden');
+    document.getElementById('topSub').textContent='Parties & projects';
+    curRec=null;filter=null;renderHub();window.scrollTo({top:0});
+  }
+}
+function openSheet(id){document.getElementById(id).classList.add('on');document.body.style.overflow='hidden';}
+function closeSheet(id){document.getElementById(id).classList.remove('on');document.body.style.overflow='';}
+document.querySelectorAll('.scrim').forEach(s=>s.addEventListener('click',e=>{if(e.target===s)closeSheet(s.id);}));
+document.getElementById('confirmScrim').addEventListener('click',e=>{if(e.target.id==='confirmScrim')closeConfirm();});
+let tT;function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('on'),1700);}
+
+renderHub();
+</script>
+</body>
+</html>

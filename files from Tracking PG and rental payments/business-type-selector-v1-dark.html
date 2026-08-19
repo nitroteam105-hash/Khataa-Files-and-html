@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What do you manage?</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0B2E4F;--ink-deep:#071F38;--ink-deeper:#051628;
+    --paper:#EAF4FB;--paper-dim:#8FB5D4;
+    --line-soft:#274F70;--accent:#FF8A3D;--accent-soft:#FFD9B3;
+    --ok:#6FCF97;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    background:var(--ink);
+    background-image:
+      linear-gradient(rgba(143,189,227,0.04) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(143,189,227,0.04) 1px,transparent 1px);
+    background-size:26px 26px;
+    color:var(--paper);font-family:'Inter',sans-serif;
+    min-height:100vh;display:flex;align-items:center;justify-content:center;
+    padding:20px;-webkit-font-smoothing:antialiased;
+  }
+
+  .shell{width:100%;max-width:520px;}
+
+  /* HEADER */
+  .head{text-align:center;margin-bottom:28px;}
+  .head .tag{
+    display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10px;
+    letter-spacing:.14em;text-transform:uppercase;color:var(--accent);
+    border:1px solid rgba(255,138,61,.25);border-radius:99px;padding:5px 14px;
+    margin-bottom:14px;
+  }
+  .head h1{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;margin-bottom:6px;}
+  .head p{font-size:13.5px;color:var(--paper-dim);line-height:1.5;}
+
+  /* SEARCH */
+  .search-wrap{
+    position:relative;margin-bottom:22px;
+  }
+  .search-wrap svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);opacity:.45;}
+  .search{
+    width:100%;background:var(--ink-deep);border:1px solid var(--line-soft);border-radius:11px;
+    padding:13px 14px 13px 42px;color:var(--paper);font-size:14px;font-family:'Inter',sans-serif;
+  }
+  .search::placeholder{color:var(--paper-dim);opacity:.6;}
+  .search:focus{outline:none;border-color:var(--accent);}
+
+  /* CATEGORY */
+  .cat{margin-bottom:22px;}
+  .cat-label{
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--paper-dim);margin-bottom:10px;padding-left:2px;
+  }
+  .cat-count{
+    display:inline-block;background:var(--line-soft);border-radius:99px;
+    font-size:9.5px;padding:2px 7px;margin-left:6px;vertical-align:middle;
+    color:var(--paper-dim);letter-spacing:0;
+  }
+
+  /* GRID */
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+  @media(max-width:480px){.grid{grid-template-columns:repeat(3,1fr);}}
+
+  /* CARD */
+  .card{
+    display:flex;flex-direction:column;align-items:center;gap:6px;
+    background:var(--ink-deep);border:1px solid var(--line-soft);border-radius:12px;
+    padding:14px 6px 12px;cursor:pointer;transition:all .15s ease;
+    position:relative;
+  }
+  .card:hover{border-color:var(--accent);transform:translateY(-2px);}
+  .card:active{transform:scale(.97);}
+  .card.selected{border-color:var(--accent);background:rgba(255,138,61,.1);}
+  .card.selected::after{
+    content:'✓';position:absolute;top:6px;right:7px;
+    font-size:10px;font-weight:700;color:var(--ink-deep);
+    background:var(--accent);width:16px;height:16px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+  }
+
+  .card-icon{
+    width:46px;height:46px;border-radius:10px;
+    background:var(--ink-deeper);border:1px solid rgba(143,189,227,.08);
+    display:flex;align-items:center;justify-content:center;font-size:22px;
+    transition:background .15s ease;
+  }
+  .card:hover .card-icon{background:rgba(255,138,61,.08);}
+  .card-name{
+    font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;
+    text-align:center;line-height:1.3;color:var(--paper);
+    max-width:100%;overflow:hidden;text-overflow:ellipsis;
+  }
+
+  /* FOOTER */
+  .foot{
+    margin-top:24px;padding-top:18px;border-top:1px dashed var(--line-soft);
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .foot-count{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--paper-dim);}
+  .foot-count strong{color:var(--accent-soft);}
+  .foot-btn{
+    font-family:'Space Grotesk',sans-serif;font-size:13.5px;font-weight:600;
+    background:var(--accent);color:var(--ink-deep);border:none;border-radius:9px;
+    padding:11px 22px;cursor:pointer;transition:all .12s ease;opacity:.35;
+    pointer-events:none;
+  }
+  .foot-btn.active{opacity:1;pointer-events:auto;}
+  .foot-btn.active:hover{background:var(--accent-soft);}
+
+  /* VS BADGE */
+  .vs{
+    margin-top:18px;text-align:center;
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--paper-dim);
+    letter-spacing:.04em;
+  }
+  .vs strong{color:var(--ok);}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <div class="head">
+    <span class="tag">Step 0 — Identity</span>
+    <h1>What do you manage?</h1>
+    <p>Pick your business type. The app adapts its labels, billing, and features to match.</p>
+  </div>
+
+  <div class="search-wrap">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+    <input class="search" type="text" placeholder="Search — try 'gym', 'tiffin', 'newspaper', 'milk'..." id="searchInput">
+  </div>
+
+  <div id="catContainer"></div>
+
+  <div class="foot">
+    <span class="foot-count" id="footCount">0 selected</span>
+    <button class="foot-btn" id="footBtn">Continue →</button>
+  </div>
+
+  <div class="vs">RentOk: 16 types &nbsp;·&nbsp; Ours: <strong>62 types</strong></div>
+
+</div>
+
+<script>
+(function(){
+  const DATA = [
+    { cat:'Residential & Stay', items:[
+      {icon:'🛏️',name:'PG Rooms'},{icon:'🏨',name:'Hostel'},{icon:'🤝',name:'Co-Living'},
+      {icon:'🏢',name:'Flats'},{icon:'🏠',name:'Independent Floors'},{icon:'🏡',name:'Villa'},
+      {icon:'🌇',name:'Penthouse'},{icon:'🔑',name:'Studio Appt.'},{icon:'🏘️',name:'RKs / Kothi'},
+      {icon:'🏖️',name:'Homestay'},{icon:'🛎️',name:'Hotel / Lodge'},{icon:'🕌',name:'Dharamshala'},
+      {icon:'🧓',name:'Old Age Home'},{icon:'🏥',name:'Rehab Center'},
+      {icon:'🏬',name:'Service Appt.'}
+    ]},
+    { cat:'Education & Coaching', items:[
+      {icon:'📚',name:'Tuition Center'},{icon:'💃',name:'Dance Class'},{icon:'🎵',name:'Music Class'},
+      {icon:'🎨',name:'Art Class'},{icon:'🗣️',name:'Language Inst.'},{icon:'👶',name:'Preschool / Daycare'},
+      {icon:'💻',name:'Computer Center'},{icon:'🚗',name:'Driving School'}
+    ]},
+    { cat:'Fitness & Wellness', items:[
+      {icon:'🏋️',name:'Gym'},{icon:'🧘',name:'Yoga / Pilates'},{icon:'🏊',name:'Swimming Pool'},
+      {icon:'🥊',name:'Martial Arts'},{icon:'⚽',name:'Sports Academy'},{icon:'💆',name:'Spa / Salon'},
+      {icon:'🦴',name:'Physiotherapy'}
+    ]},
+    { cat:'Commercial & Workspace', items:[
+      {icon:'💼',name:'Co-working'},{icon:'🏪',name:'Shops / Complex'},{icon:'🏭',name:'Warehouse'},
+      {icon:'📦',name:'Market / Stalls'}
+    ]},
+    { cat:'Community & Religious', items:[
+      {icon:'🏘️',name:'Gated Community'},{icon:'🛕',name:'Temple / Church'},{icon:'🎪',name:'Community Hall'},
+      {icon:'🏌️',name:'Club / Society'}
+    ]},
+    { cat:'Vehicle & Storage', items:[
+      {icon:'🅿️',name:'Parking Lot'},{icon:'📦',name:'Self-Storage'},{icon:'⛵',name:'Boat Marina'}
+    ]},
+    { cat:'Healthcare', items:[
+      {icon:'🩺',name:'Clinic'},{icon:'🐾',name:'Pet Boarding / Vet'}
+    ]},
+    { cat:'Creative & Hobby', items:[
+      {icon:'📸',name:'Photo / Art Studio'},{icon:'🔧',name:'Maker Space'},{icon:'🎙️',name:'Podcast / Rehearsal'}
+    ]},
+    { cat:'Other', items:[
+      {icon:'⚡',name:'EV Charging'},{icon:'👕',name:'Laundromat'},
+      {icon:'📖',name:'Library / Study Hall'},{icon:'🌱',name:'Farm / Garden'}
+    ]},
+    { cat:'Food & Kitchen', items:[
+      {icon:'🍱',name:'Tiffin / Dabba'},{icon:'🍽️',name:'Catering'},{icon:'🧁',name:'Home Bakery'},
+      {icon:'🍛',name:'Mess / Canteen'},{icon:'🥤',name:'Juice / Tea Bar'},
+      {icon:'🥗',name:'Meal Prep / Diet'},{icon:'🎂',name:'Cake / Sweet Shop'},
+      {icon:'🍳',name:'Cloud Kitchen'}
+    ]},
+    { cat:'Delivery & Route', items:[
+      {icon:'📰',name:'Newspaper'},{icon:'🥛',name:'Milk Delivery'},{icon:'💧',name:'Water Can Supply'},
+      {icon:'💐',name:'Flower Delivery'},{icon:'👔',name:'Laundry Pickup'},{icon:'🛒',name:'Grocery Sub.'},
+      {icon:'👕',name:'Dhobi / Ironing'},{icon:'🔥',name:'Gas Cylinder'},
+      {icon:'🗑️',name:'Garbage Collection'},{icon:'👶',name:'Baby Supply Sub.'}
+    ]}
+  ];
+
+  let selected = null;
+
+  function renderAll(filter){
+    const container = document.getElementById('catContainer');
+    container.innerHTML = '';
+    const q = (filter||'').toLowerCase().trim();
+
+    DATA.forEach(cat=>{
+      const filtered = q ? cat.items.filter(i=> i.name.toLowerCase().includes(q)) : cat.items;
+      if (!filtered.length) return;
+
+      const section = document.createElement('div');
+      section.className = 'cat';
+      section.innerHTML =
+        '<div class="cat-label">'+cat.cat+'<span class="cat-count">'+filtered.length+'</span></div>'+
+        '<div class="grid">'+
+          filtered.map(item=>{
+            const sel = selected===item.name ? ' selected' : '';
+            return '<div class="card'+sel+'" data-name="'+item.name+'">'+
+              '<div class="card-icon">'+item.icon+'</div>'+
+              '<div class="card-name">'+item.name+'</div></div>';
+          }).join('')+
+        '</div>';
+      container.appendChild(section);
+    });
+
+    container.querySelectorAll('.card').forEach(card=>{
+      card.addEventListener('click',()=>{
+        const name = card.dataset.name;
+        selected = selected===name ? null : name;
+        renderAll(document.getElementById('searchInput').value);
+      });
+    });
+
+    const countEl = document.getElementById('footCount');
+    const btnEl = document.getElementById('footBtn');
+    if (selected){
+      countEl.innerHTML = 'Selected: <strong>'+selected+'</strong>';
+      btnEl.classList.add('active');
+    } else {
+      countEl.textContent = '0 selected';
+      btnEl.classList.remove('active');
+    }
+  }
+
+  document.getElementById('searchInput').addEventListener('input', function(){
+    renderAll(this.value);
+  });
+
+  renderAll();
+})();
+</script>
+</body>
+</html>

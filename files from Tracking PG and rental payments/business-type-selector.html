@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What do you manage?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Inter:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --parchment:#fdfcfc;
+    --sand:#f5f3f1;
+    --border:#e5e5e5;
+    --ink:#000000;
+    --drift:#777169;
+    --fog:#a59f97;
+    --white:#ffffff;
+
+    --font-display:'DM Sans',system-ui,sans-serif;
+    --font-body:'Inter',system-ui,sans-serif;
+    --font-mono:'IBM Plex Mono',monospace;
+
+    --radius-card:20px;
+    --radius-pill:9999px;
+    --radius-input:4px;
+
+    --shadow-ring:rgba(0,0,0,0.06) 0px 0px 0px 1px, rgba(0,0,0,0.04) 0px 1px 2px 0px, rgba(0,0,0,0.04) 0px 2px 4px 0px;
+    --shadow-card:rgba(0,0,0,0.4) 0px 0px 1px 0px, rgba(0,0,0,0.04) 0px 1px 1px 0px, rgba(0,0,0,0.04) 0px 2px 4px 0px;
+    --shadow-inset:rgba(0,0,0,0.075) 0px 0px 0px 0.5px inset;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    background:var(--parchment);color:var(--ink);
+    font-family:var(--font-body);-webkit-font-smoothing:antialiased;
+    min-height:100vh;display:flex;justify-content:center;
+    padding:48px 20px 40px;
+  }
+
+  .shell{width:100%;max-width:580px;}
+
+  /* HEADER */
+  .head{margin-bottom:32px;}
+  .head .tag{
+    display:inline-block;font-family:var(--font-mono);font-size:12px;
+    color:var(--drift);letter-spacing:0.04em;margin-bottom:12px;
+  }
+  .head h1{
+    font-family:var(--font-display);font-weight:300;font-size:36px;
+    line-height:1.13;letter-spacing:-0.72px;color:var(--ink);margin-bottom:8px;
+  }
+  .head p{font-size:16px;line-height:1.5;color:var(--drift);letter-spacing:0.16px;}
+
+  /* SEARCH */
+  .search-wrap{position:relative;margin-bottom:28px;}
+  .search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--fog);}
+  .search{
+    width:100%;background:var(--white);border:1px solid var(--border);
+    border-radius:var(--radius-input);padding:14px 16px 14px 44px;
+    font-family:var(--font-body);font-size:15px;color:var(--ink);
+    letter-spacing:0.01em;
+  }
+  .search::placeholder{color:var(--fog);}
+  .search:focus{outline:none;border-color:var(--ink);}
+
+  /* CATEGORY */
+  .cat{margin-bottom:24px;}
+  .cat-header{
+    display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-left:4px;
+  }
+  .cat-label{
+    font-family:var(--font-body);font-size:14px;font-weight:500;
+    color:var(--ink);letter-spacing:0.01em;
+  }
+  .cat-count{
+    font-family:var(--font-mono);font-size:11px;color:var(--fog);
+    background:var(--sand);border-radius:var(--radius-pill);padding:2px 8px;
+    box-shadow:var(--shadow-inset);
+  }
+
+  /* GRID */
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+  @media(max-width:520px){.grid{grid-template-columns:repeat(3,1fr);}}
+
+  /* CARD */
+  .card{
+    display:flex;flex-direction:column;align-items:center;gap:8px;
+    background:var(--sand);border:none;border-radius:var(--radius-card);
+    padding:16px 8px 14px;cursor:pointer;transition:all .15s ease;
+    position:relative;
+  }
+  .card:hover{background:var(--white);box-shadow:var(--shadow-card);}
+  .card:active{transform:scale(.97);}
+  .card.selected{background:var(--white);box-shadow:var(--shadow-card);}
+  .card.selected::after{
+    content:'✓';position:absolute;top:8px;right:8px;
+    font-size:10px;font-weight:500;color:var(--white);
+    background:var(--ink);width:18px;height:18px;border-radius:var(--radius-pill);
+    display:flex;align-items:center;justify-content:center;
+  }
+
+  .card-icon{
+    width:48px;height:48px;border-radius:12px;
+    background:var(--parchment);box-shadow:var(--shadow-inset);
+    display:flex;align-items:center;justify-content:center;
+    font-size:22px;transition:all .15s ease;
+  }
+  .card:hover .card-icon,.card.selected .card-icon{background:var(--sand);}
+
+  .card-name{
+    font-family:var(--font-body);font-size:11.5px;font-weight:500;
+    text-align:center;line-height:1.3;color:var(--ink);letter-spacing:0.01em;
+  }
+
+  /* FOOTER */
+  .foot{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-top:32px;padding-top:24px;border-top:1px solid var(--border);
+  }
+  .foot-info{
+    font-family:var(--font-body);font-size:14px;color:var(--drift);
+    letter-spacing:0.01em;
+  }
+  .foot-info strong{color:var(--ink);font-weight:500;}
+
+  .btn-primary{
+    font-family:var(--font-body);font-size:15px;font-weight:500;
+    background:var(--ink);color:var(--white);border:1px solid var(--border);
+    border-radius:var(--radius-pill);padding:10px 24px;cursor:pointer;
+    letter-spacing:0.01em;transition:all .15s ease;
+    opacity:.3;pointer-events:none;
+  }
+  .btn-primary.active{opacity:1;pointer-events:auto;}
+  .btn-primary.active:hover{background:#222;}
+  .btn-primary.active:active{transform:scale(.97);}
+
+  .compare{
+    margin-top:20px;text-align:center;
+    font-family:var(--font-mono);font-size:12px;color:var(--fog);
+    letter-spacing:0.04em;
+  }
+  .compare strong{color:var(--ink);font-weight:400;}
+
+  .no-results{
+    text-align:center;padding:40px 20px;
+    font-family:var(--font-body);font-size:15px;color:var(--fog);
+  }
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <div class="head">
+    <span class="tag">Step 0 · Identity</span>
+    <h1>What do you manage?</h1>
+    <p>Pick your business type. The app adapts its labels,
+    billing, and features to match.</p>
+  </div>
+
+  <div class="search-wrap">
+    <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+    <input class="search" type="text" placeholder="Search — try gym, tiffin, newspaper, milk..." id="searchInput">
+  </div>
+
+  <div id="catContainer"></div>
+
+  <div class="foot">
+    <span class="foot-info" id="footInfo">No selection</span>
+    <button class="btn-primary" id="footBtn">Continue →</button>
+  </div>
+
+  <div class="compare">RentOk: 16 types &nbsp;·&nbsp; Ours: <strong>62 types</strong></div>
+
+</div>
+
+<script>
+(function(){
+  const DATA = [
+    { cat:'Residential & Stay', items:[
+      {icon:'🛏️',name:'PG Rooms'},{icon:'🏨',name:'Hostel'},{icon:'🤝',name:'Co-Living'},
+      {icon:'🏢',name:'Flats'},{icon:'🏠',name:'Indep. Floors'},{icon:'🏡',name:'Villa'},
+      {icon:'🌇',name:'Penthouse'},{icon:'🔑',name:'Studio Appt.'},{icon:'🏘️',name:'RKs / Kothi'},
+      {icon:'🏖️',name:'Homestay'},{icon:'🛎️',name:'Hotel / Lodge'},{icon:'🕌',name:'Dharamshala'},
+      {icon:'🧓',name:'Old Age Home'},{icon:'🏥',name:'Rehab Center'},
+      {icon:'🏬',name:'Service Appt.'}
+    ]},
+    { cat:'Education & Coaching', items:[
+      {icon:'📚',name:'Tuition Center'},{icon:'💃',name:'Dance Class'},{icon:'🎵',name:'Music Class'},
+      {icon:'🎨',name:'Art Class'},{icon:'🗣️',name:'Language Inst.'},{icon:'👶',name:'Preschool'},
+      {icon:'💻',name:'Computer Lab'},{icon:'🚗',name:'Driving School'}
+    ]},
+    { cat:'Fitness & Wellness', items:[
+      {icon:'🏋️',name:'Gym'},{icon:'🧘',name:'Yoga / Pilates'},{icon:'🏊',name:'Swimming Pool'},
+      {icon:'🥊',name:'Martial Arts'},{icon:'⚽',name:'Sports Academy'},{icon:'💆',name:'Spa / Salon'},
+      {icon:'🦴',name:'Physiotherapy'}
+    ]},
+    { cat:'Food & Kitchen', items:[
+      {icon:'🍱',name:'Tiffin / Dabba'},{icon:'🍽️',name:'Catering'},{icon:'🧁',name:'Home Bakery'},
+      {icon:'🍛',name:'Mess / Canteen'},{icon:'🥤',name:'Juice / Tea Bar'},
+      {icon:'🥗',name:'Meal Prep'},{icon:'🎂',name:'Cake / Sweets'},
+      {icon:'🍳',name:'Cloud Kitchen'}
+    ]},
+    { cat:'Delivery & Route', items:[
+      {icon:'📰',name:'Newspaper'},{icon:'🥛',name:'Milk Delivery'},{icon:'💧',name:'Water Can'},
+      {icon:'💐',name:'Flowers'},{icon:'👔',name:'Laundry Pickup'},{icon:'🛒',name:'Grocery Sub.'},
+      {icon:'👕',name:'Dhobi / Ironing'},{icon:'🔥',name:'Gas Cylinder'},
+      {icon:'🗑️',name:'Garbage Pickup'},{icon:'👶',name:'Baby Supplies'}
+    ]},
+    { cat:'Commercial & Workspace', items:[
+      {icon:'💼',name:'Co-working'},{icon:'🏪',name:'Shops'},{icon:'🏭',name:'Warehouse'},
+      {icon:'📦',name:'Market Stalls'}
+    ]},
+    { cat:'Community & Religious', items:[
+      {icon:'🏘️',name:'Gated Community'},{icon:'🛕',name:'Temple / Church'},{icon:'🎪',name:'Community Hall'},
+      {icon:'🏌️',name:'Club / Society'}
+    ]},
+    { cat:'Vehicle & Storage', items:[
+      {icon:'🅿️',name:'Parking Lot'},{icon:'📦',name:'Self-Storage'},{icon:'⛵',name:'Boat Marina'}
+    ]},
+    { cat:'Healthcare', items:[
+      {icon:'🩺',name:'Clinic'},{icon:'🐾',name:'Pet Boarding'}
+    ]},
+    { cat:'Creative & Hobby', items:[
+      {icon:'📸',name:'Photo Studio'},{icon:'🔧',name:'Maker Space'},{icon:'🎙️',name:'Rehearsal Studio'}
+    ]},
+    { cat:'Other', items:[
+      {icon:'⚡',name:'EV Charging'},{icon:'👕',name:'Laundromat'},
+      {icon:'📖',name:'Library'},{icon:'🌱',name:'Farm / Garden'}
+    ]}
+  ];
+
+  let selected = null;
+
+  function render(filter){
+    const c = document.getElementById('catContainer');
+    c.innerHTML = '';
+    const q = (filter||'').toLowerCase().trim();
+    let totalShown = 0;
+
+    DATA.forEach(cat=>{
+      const items = q ? cat.items.filter(i=>i.name.toLowerCase().includes(q)) : cat.items;
+      if (!items.length) return;
+      totalShown += items.length;
+
+      const sec = document.createElement('div');
+      sec.className = 'cat';
+      sec.innerHTML =
+        '<div class="cat-header">'+
+          '<span class="cat-label">'+cat.cat+'</span>'+
+          '<span class="cat-count">'+items.length+'</span>'+
+        '</div>'+
+        '<div class="grid">'+
+          items.map(it=>{
+            const sel = selected===it.name?' selected':'';
+            return '<div class="card'+sel+'" data-name="'+it.name+'">'+
+              '<div class="card-icon">'+it.icon+'</div>'+
+              '<div class="card-name">'+it.name+'</div></div>';
+          }).join('')+
+        '</div>';
+      c.appendChild(sec);
+    });
+
+    if (!totalShown){
+      c.innerHTML = '<div class="no-results">No matches found. Try a different search.</div>';
+    }
+
+    c.querySelectorAll('.card').forEach(card=>{
+      card.addEventListener('click',()=>{
+        selected = selected===card.dataset.name ? null : card.dataset.name;
+        render(document.getElementById('searchInput').value);
+      });
+    });
+
+    const info = document.getElementById('footInfo');
+    const btn = document.getElementById('footBtn');
+    if (selected){
+      info.innerHTML = 'Selected: <strong>'+selected+'</strong>';
+      btn.classList.add('active');
+    } else {
+      info.textContent = 'No selection';
+      btn.classList.remove('active');
+    }
+  }
+
+  document.getElementById('searchInput').addEventListener('input',function(){
+    render(this.value);
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

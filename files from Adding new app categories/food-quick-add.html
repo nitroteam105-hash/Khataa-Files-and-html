@@ -1,0 +1,145 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Quick Add Menu</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#16161a;--mut:#62636a;--ln:#e7e7e2;--ac:#1f6f54;--sf:#e8f3ee;--wm:#f4f2ec;
+--rd:#b3261e;--rs:#fdecea;--am:#b36b00;--as:#fff4e5;--bl:#2a5db0;--bs:#e8eef9;
+--d:'Plus Jakarta Sans',system-ui,sans-serif;--b:'Inter',system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fbfbf9;color:var(--ink);font-family:var(--b);padding-bottom:96px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:480px;margin:0 auto;padding:0 16px}
+h1,h2,h3{font-family:var(--d);letter-spacing:-.01em}
+.top{position:sticky;top:0;background:#fbfbf9;z-index:9;padding:13px 0;border-bottom:1px solid var(--ln);display:flex;align-items:center;gap:11px}
+.top .bk{font-size:20px;color:var(--mut);cursor:pointer}.top h1{font-size:18px;flex:1}.top .s{font-size:12px;color:var(--mut)}
+.top .badge{font-size:11px;font-weight:700;color:var(--am);background:var(--as);padding:5px 10px;border-radius:20px}
+.intro{font-size:12.5px;color:var(--mut);padding:14px 2px 4px;line-height:1.5}
+/* batch category */
+.batchcat{background:#fff;border:1px solid var(--ln);border-radius:12px;padding:12px 13px;margin:12px 0}
+.batchcat label{font-size:12px;color:var(--mut);font-weight:600;display:block;margin-bottom:7px}
+.batchcat .row{display:flex;gap:9px;align-items:center}
+.batchcat select,.batchcat input{flex:1;padding:10px 11px;border:1px solid var(--ln);border-radius:9px;font-size:14px;font-family:var(--b);background:#fff}
+.batchcat .hint{font-size:11px;color:var(--mut);margin-top:7px}
+/* item rows */
+.rows{margin-top:6px}
+.irow{background:#fff;border:1px solid var(--ln);border-radius:12px;padding:10px 11px;margin-bottom:9px}
+.irow .main{display:flex;gap:9px;align-items:center}
+.irow .num{width:22px;font-family:var(--d);font-weight:700;font-size:12px;color:var(--mut);flex-shrink:0;text-align:center}
+.irow input.nm{flex:1;min-width:0;padding:11px;border:1px solid var(--ln);border-radius:9px;font-size:15px;font-family:var(--b)}
+.irow .pw{position:relative;width:96px;flex-shrink:0}
+.irow .pw input{width:100%;padding:11px 11px 11px 24px;border:1px solid var(--ln);border-radius:9px;font-size:15px;font-family:var(--b)}
+.irow .pw::before{content:'\20b9';position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--mut);font-size:13px}
+.irow input:focus,.batchcat select:focus,.batchcat input:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px var(--sf)}
+.irow .rm{width:34px;height:34px;border:none;background:#fbfbf9;color:var(--mut);border-radius:8px;cursor:pointer;font-size:17px;flex-shrink:0}
+.irow .rm:active{background:var(--rs);color:var(--rd)}
+.irow .expand{display:flex;align-items:center;gap:6px;margin-top:9px;padding-left:31px}
+.irow .exbtn{border:none;background:none;color:var(--ac);font-family:var(--d);font-weight:700;font-size:11.5px;cursor:pointer;padding:2px 0}
+.irow .tag{font-size:10px;font-weight:700;color:var(--bl);background:var(--bs);padding:2px 7px;border-radius:5px}
+/* expanded detail */
+.detail{margin-top:10px;padding:11px;background:#fbfbf9;border-radius:10px}
+.detail .dh{font-family:var(--d);font-weight:700;font-size:11.5px;color:var(--mut);margin-bottom:8px;text-transform:uppercase;letter-spacing:.03em}
+.vrow{display:flex;gap:7px;align-items:center;margin-bottom:7px}
+.vrow input.vn{flex:1;min-width:0;padding:8px 10px;border:1px solid var(--ln);border-radius:8px;font-size:13.5px;font-family:var(--b)}
+.vrow .vp{position:relative;width:88px;flex-shrink:0}
+.vrow .vp input{width:100%;padding:8px 8px 8px 22px;border:1px solid var(--ln);border-radius:8px;font-size:13.5px;font-family:var(--b)}
+.vrow .vp::before{content:'\20b9';position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--mut);font-size:12px}
+.vrow .rm2{width:28px;height:28px;border:none;background:#fff;color:var(--rd);border:1px solid var(--ln);border-radius:7px;cursor:pointer;font-size:14px;flex-shrink:0}
+.miniadd{border:1.5px dashed var(--ln);background:none;border-radius:8px;padding:8px;font-family:var(--d);font-weight:700;font-size:11.5px;color:var(--ac);cursor:pointer;width:100%;margin-top:2px}
+.detail .sub2{font-size:11px;color:var(--mut);margin:12px 0 6px;font-weight:600}
+.addrow{width:100%;border:1.5px dashed #bfd4ca;background:var(--sf);border-radius:11px;padding:13px;font-family:var(--d);font-weight:700;font-size:14px;color:var(--ac);cursor:pointer;margin-top:2px}
+.fab{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(transparent,#fbfbf9 20%);padding:16px;display:flex;justify-content:center}
+.fab .in{max-width:480px;width:100%}
+.fab .cnt{text-align:center;font-size:12px;color:var(--mut);margin-bottom:8px}
+.fab .cnt b{font-family:var(--d);color:var(--ink)}
+.fab button{width:100%;background:var(--ac);color:#fff;border:none;border-radius:13px;padding:15px;font-family:var(--d);font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 4px 16px rgba(31,111,84,.3)}
+.fab button:disabled{opacity:.45;box-shadow:none}
+.hidden{display:none}
+.toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:11px 18px;border-radius:22px;font-size:13px;font-weight:600;opacity:0;transition:all .3s;z-index:40;pointer-events:none}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+</style></head><body>
+<div class="top wrap"><span class="bk">←</span><div style="flex:1"><h1>Quick Add Menu</h1><div class="s">Anna's Tiffin Center</div></div><span class="badge">FOOD</span></div>
+<div class="wrap">
+  <p class="intro">Add your menu fast — type a name and price, hit add, keep going. Need sizes or extras on a dish? Tap <b>＋ variants / extras</b> on that row. Save the whole lot at the end.</p>
+
+  <div class="batchcat">
+    <label>Category for this batch <span style="font-weight:400;color:#9aa09a">— optional, applies to all rows below</span></label>
+    <div class="row">
+      <select id="batchCat" onchange="pickBatch(this.value)"></select>
+    </div>
+    <div id="newBatchWrap" class="hidden" style="margin-top:8px"><input id="newBatch" placeholder="New category, e.g. South Indian" oninput="sync()"></div>
+    <div class="hint">Adding a section at a time is quickest. You can recategorise any dish later.</div>
+  </div>
+
+  <div class="rows" id="rows"></div>
+  <button class="addrow" onclick="addRow()">＋ Add another item</button>
+</div>
+
+<div class="fab"><div class="in">
+  <div class="cnt" id="cnt"></div>
+  <button id="saveBtn" onclick="saveAll()">Save all</button>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+var CATS=['Tiffin','Snacks','Beverages','South Indian'];
+var batchCat='';
+/* each row: {name, price, expanded, variants:[], addons:[]} */
+var rows=[mkRow(),mkRow(),mkRow()];
+function mkRow(){return {name:'',price:'',expanded:false,hasVar:false,hasAddon:false,variants:[],addons:[]};}
+var $=function(i){return document.getElementById(i)};
+
+function fillBatch(){$('batchCat').innerHTML='<option value="">No category</option>'+CATS.map(function(c){return '<option '+(batchCat===c?'selected':'')+'>'+c+'</option>'}).join('')+'<option value="__new__">+ New category…</option>';}
+function pickBatch(v){if(v==='__new__'){$('newBatchWrap').classList.remove('hidden');batchCat='__new__';}else{$('newBatchWrap').classList.add('hidden');batchCat=v;}sync();}
+
+function render(){
+ $('rows').innerHTML=rows.map(function(r,i){
+  var main='<div class="main"><div class="num">'+(i+1)+'</div>'
+   +'<input class="nm" value="'+esc(r.name)+'" oninput="setRow('+i+',\'name\',this.value)" placeholder="Item name">'
+   +'<div class="pw"><input type="number" inputmode="decimal" value="'+r.price+'" oninput="setRow('+i+',\'price\',this.value)" placeholder="0"'+(r.hasVar?' disabled':'')+'></div>'
+   +'<button class="rm" onclick="rmRow('+i+')" title="Remove">\u00d7</button></div>';
+  var exp='<div class="expand"><button class="exbtn" onclick="toggleExpand('+i+')">'+(r.expanded?'\u2212 hide':'\uff0b variants / extras')+'</button>'
+   +(r.hasVar?'<span class="tag">'+r.variants.filter(function(v){return v.name}).length+' variants</span>':'')
+   +(r.hasAddon?'<span class="tag">'+r.addons.filter(function(a){return a.name}).length+' extras</span>':'')+'</div>';
+  var detail='';
+  if(r.expanded){
+   detail='<div class="detail"><div class="dh">Variants (each its own price)</div>'
+    +r.variants.map(function(v,vi){return '<div class="vrow"><input class="vn" value="'+esc(v.name)+'" oninput="setV('+i+','+vi+',\'name\',this.value)" placeholder="e.g. Masala"><div class="vp"><input type="number" inputmode="decimal" value="'+v.price+'" oninput="setV('+i+','+vi+',\'price\',this.value)" placeholder="0"></div><button class="rm2" onclick="rmV('+i+','+vi+')">\u00d7</button></div>'}).join('')
+    +'<button class="miniadd" onclick="addV('+i+')">＋ Add variant</button>'
+    +'<div class="sub2">Add-ons / extras</div>'
+    +r.addons.map(function(a,ai){return '<div class="vrow"><input class="vn" value="'+esc(a.name)+'" oninput="setA('+i+','+ai+',\'name\',this.value)" placeholder="e.g. Extra cheese"><div class="vp"><input type="number" inputmode="decimal" value="'+a.price+'" oninput="setA('+i+','+ai+',\'price\',this.value)" placeholder="0"></div><button class="rm2" onclick="rmA('+i+','+ai+')">\u00d7</button></div>'}).join('')
+    +'<button class="miniadd" onclick="addA('+i+')">＋ Add extra</button></div>';
+  }
+  return '<div class="irow">'+main+exp+detail+'</div>';
+ }).join('');
+ sync();
+}
+function esc(s){return (s||'').replace(/"/g,'&quot;');}
+function setRow(i,k,v){rows[i][k]=v;sync();}
+function rmRow(i){if(rows.length<=1){rows[0]=mkRow();}else{rows.splice(i,1);}render();}
+function addRow(){rows.push(mkRow());render();window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});}
+function toggleExpand(i){var r=rows[i];r.expanded=!r.expanded;if(r.expanded){r.hasVar=true;r.hasAddon=true;if(!r.variants.length)r.variants=[{name:'',price:''}];if(!r.addons.length)r.addons=[{name:'',price:''}];}render();}
+function setV(i,vi,k,v){rows[i].variants[vi][k]=v;if(k==='name'||k==='price')syncTags();}
+function addV(i){rows[i].variants.push({name:'',price:''});render();}
+function rmV(i,vi){rows[i].variants.splice(vi,1);if(!rows[i].variants.length)rows[i].hasVar=false;render();}
+function setA(i,ai,k,v){rows[i].addons[ai][k]=v;}
+function addA(i){rows[i].addons.push({name:'',price:''});render();}
+function rmA(i,ai){rows[i].addons.splice(ai,1);if(!rows[i].addons.length)rows[i].hasAddon=false;render();}
+function syncTags(){sync();}
+
+function filled(r){
+ if(!r.name.trim())return false;
+ if(r.hasVar&&r.variants.some(function(v){return v.name.trim()}))return r.variants.some(function(v){return v.name.trim()&&+v.price>0});
+ return +r.price>0;
+}
+function sync(){
+ var n=rows.filter(filled).length;
+ $('cnt').innerHTML=n?('<b>'+n+'</b> item'+(n>1?'s':'')+' ready to save'):'Fill at least one item to save';
+ $('saveBtn').disabled=n===0;
+}
+function saveAll(){
+ var n=rows.filter(filled).length;if(!n)return;
+ if(batchCat==='__new__'){var nc=$('newBatch').value.trim();if(nc&&CATS.indexOf(nc)<0)CATS.push(nc);}
+ toast(n+' item'+(n>1?'s':'')+' saved to menu');
+}
+var tT;function toast(m){var t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(tT);tT=setTimeout(function(){t.classList.remove('on')},1700);}
+fillBatch();render();
+</script></body></html>

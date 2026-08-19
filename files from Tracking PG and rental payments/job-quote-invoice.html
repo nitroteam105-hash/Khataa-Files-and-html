@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Job — Quote / Invoice</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fbfbf9;--ink:#16161a;--muted:#62636a;--line:#e7e7e2;--card:#fff;
+    --accent:#1f6f54;--soft:#e8f3ee;--warm:#f4f2ec;--red:#b3261e;--redsoft:#fdecea;--amber:#b36b00;--ambersoft:#fff4e5;
+    --d:'Plus Jakarta Sans',sans-serif;--b:'Inter',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:var(--b);-webkit-font-smoothing:antialiased;padding-bottom:90px;}
+  .wrap{max-width:480px;margin:0 auto;padding:0 16px;}
+  h1,h2,h3{font-family:var(--d);letter-spacing:-.01em;}
+
+  .top{position:sticky;top:0;background:var(--bg);z-index:9;padding:14px 0;border-bottom:1px solid var(--line);margin-bottom:14px;}
+  .top-in{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+  .back{font-size:20px;color:var(--muted);cursor:pointer;}.top h1{font-size:18px;}
+  /* doc type toggle */
+  .doctype{display:flex;gap:6px;background:var(--warm);border-radius:11px;padding:4px;}
+  .doctype button{flex:1;border:none;background:none;padding:11px;font-family:var(--d);font-weight:700;font-size:14px;border-radius:8px;cursor:pointer;color:var(--muted);}
+  .doctype button.on{background:var(--card);color:var(--accent);box-shadow:0 1px 3px rgba(0,0,0,.08);}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px;}
+  .card-h{font-family:var(--d);font-weight:700;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;}
+  label{display:block;font-size:12px;color:var(--muted);margin:12px 0 5px;font-weight:500;}
+  input,select,textarea{width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;font-size:15px;font-family:var(--b);background:var(--card);color:var(--ink);}
+  textarea{min-height:50px;resize:vertical;line-height:1.4;}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);}
+  input.gstin{text-transform:uppercase;font-family:var(--d);font-weight:600;letter-spacing:.5px;}
+  .row{display:flex;gap:10px;}.row>*{flex:1;}
+  .opt-note{font-size:11.5px;color:var(--muted);margin-top:5px;}
+
+  /* customer type seg */
+  .ctype{display:flex;gap:6px;margin-bottom:4px;}
+  .ctype button{flex:1;border:1px solid var(--line);background:var(--card);border-radius:9px;padding:10px;font-family:var(--d);font-weight:600;font-size:13px;color:var(--muted);cursor:pointer;}
+  .ctype button.on{border-color:var(--accent);background:var(--soft);color:var(--accent);}
+
+  /* items */
+  .item{border-bottom:1px solid #f0f0ec;padding-bottom:10px;margin-bottom:10px;}
+  .item:last-of-type{border:none;}
+  .item .l1{display:flex;gap:8px;align-items:center;margin-bottom:6px;}
+  .item .desc{flex:1;}
+  .item .del{color:var(--red);font-size:18px;cursor:pointer;background:none;border:none;padding:0 4px;}
+  .item .l2{display:flex;gap:8px;}
+  .item .qty,.item .rate{flex:1;}
+  .item .amt{flex:1;text-align:right;font-family:var(--d);font-weight:700;align-self:center;font-size:14px;}
+  .additem{width:100%;border:1px dashed #bbb;background:var(--bg);border-radius:9px;padding:10px;font-size:13.5px;cursor:pointer;color:var(--accent);font-family:var(--d);font-weight:600;}
+
+  /* photo */
+  .photo{display:flex;align-items:center;gap:12px;background:var(--card);border:1px dashed #bbb;border-radius:12px;padding:14px;cursor:pointer;}
+  .photo.done{border-style:solid;border-color:var(--accent);background:var(--soft);}
+  .photo .ic{font-size:22px;}.photo .tx{flex:1;}.photo .tx h3{font-size:14px;}.photo .tx small{color:var(--muted);font-size:12px;}
+  .photo-prev{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
+  .photo-prev .p{width:54px;height:54px;border-radius:9px;background:var(--warm);display:flex;align-items:center;justify-content:center;font-size:20px;border:1px solid var(--line);}
+
+  /* toggle */
+  .toggle{display:flex;align-items:center;justify-content:space-between;padding:10px 0;}
+  .toggle .lbl{font-size:14px;font-weight:600;font-family:var(--d);}
+  .toggle .lbl small{display:block;font-size:12px;color:var(--muted);font-weight:400;font-family:var(--b);}
+  .sw{width:46px;height:26px;border-radius:99px;background:var(--line);position:relative;cursor:pointer;transition:.15s;flex-shrink:0;}
+  .sw.on{background:var(--accent);}
+  .sw::after{content:'';position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.15s;}
+  .sw.on::after{left:23px;}
+
+  /* payment terms */
+  .terms{display:flex;gap:6px;}
+  .terms button{flex:1;border:1px solid var(--line);background:var(--card);border-radius:9px;padding:10px;font-family:var(--d);font-weight:600;font-size:12.5px;color:var(--muted);cursor:pointer;}
+  .terms button.on{border-color:var(--accent);background:var(--soft);color:var(--accent);}
+
+  .totals{background:var(--ink);color:#fff;border-radius:14px;padding:16px;margin-bottom:12px;}
+  .totals .tr{display:flex;justify-content:space-between;font-size:14px;padding:4px 0;color:#cfd0d4;}
+  .totals .tr.grand{border-top:1px solid rgba(255,255,255,.15);margin-top:6px;padding-top:10px;color:#fff;}
+  .totals .tr.grand .k{font-family:var(--d);font-weight:700;font-size:16px;align-self:flex-end;}
+  .totals .tr.grand .v{font-family:var(--d);font-weight:800;font-size:24px;}
+
+  .bar{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);padding:12px 16px;z-index:9;}
+  .bar-in{max-width:480px;margin:0 auto;display:flex;gap:10px;}
+  .btn{flex:1;font-family:var(--d);font-weight:700;font-size:15px;border:none;border-radius:11px;padding:14px;cursor:pointer;}
+  .btn.dark{background:var(--ink);color:#fff;}
+  .btn.ghost{background:var(--card);border:1px solid var(--line);color:var(--ink);flex:0 0 36%;}
+
+  /* preview */
+  .pv-mask{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:flex-end;justify-content:center;z-index:20;}
+  .pv-mask.show{display:flex;}
+  .pv{background:#fff;border-radius:18px 18px 0 0;width:100%;max-width:480px;max-height:92vh;overflow:auto;padding:22px;}
+  .doc{border:1px solid var(--line);border-radius:12px;padding:20px;}
+  .doc .dh{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+  .doc .biz{font-family:var(--d);font-weight:800;font-size:18px;}
+  .doc .bizline{font-size:11.5px;color:var(--muted);line-height:1.5;}
+  .doc .badge{font-family:var(--d);font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);text-align:right;}
+  .doc .ttl{text-align:center;font-family:var(--d);font-weight:700;font-size:13px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin:14px 0;border-top:1px dashed var(--line);border-bottom:1px dashed var(--line);padding:8px 0;}
+  .doc .to{font-size:13px;margin:6px 0;}.doc .to b{font-family:var(--d);}
+  .doc .meta{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);}
+  .doc table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px;}
+  .doc th{text-align:left;font-family:var(--d);font-size:10.5px;color:var(--muted);text-transform:uppercase;border-bottom:1px solid var(--line);padding:6px 0;}
+  .doc th.r,.doc td.r{text-align:right;}
+  .doc td{padding:6px 0;border-bottom:1px solid #f0f0ec;}
+  .doc .sumrow{display:flex;justify-content:space-between;font-size:13px;padding:3px 0;color:var(--muted);}
+  .doc .sumrow.g{font-family:var(--d);font-weight:800;font-size:17px;color:var(--ink);border-top:1px solid var(--line);margin-top:6px;padding-top:8px;}
+  .doc .dphoto{margin-top:12px;}.doc .dphoto .ph{display:inline-flex;width:60px;height:60px;border:1px solid var(--line);border-radius:8px;align-items:center;justify-content:center;font-size:24px;background:var(--warm);margin-right:6px;}
+  .doc .due{margin-top:10px;font-size:12.5px;color:var(--amber);font-weight:600;}
+  .doc .ft{text-align:center;font-size:11px;color:var(--muted);margin-top:14px;}
+  .pv-actions{display:flex;gap:10px;margin-top:16px;}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+
+<div class="top"><div class="wrap">
+  <div class="top-in"><span class="back">←</span><h1 id="title">Create quote</h1></div>
+  <div class="doctype">
+    <button class="on" id="dt-quote" onclick="setDoc('quote')">Quotation</button>
+    <button id="dt-invoice" onclick="setDoc('invoice')">Invoice</button>
+  </div>
+</div></div>
+
+<div class="wrap">
+
+  <div class="card">
+    <div class="card-h">Customer</div>
+    <div class="ctype">
+      <button class="on" id="ct-person" onclick="setCType('person')">👤 Individual</button>
+      <button id="ct-company" onclick="setCType('company')">🏢 Company (B2B)</button>
+    </div>
+    <div id="custfields"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-h">Items / work</div>
+    <div id="items"></div>
+    <button class="additem" onclick="addItem()">+ Add item</button>
+  </div>
+
+  <div class="card">
+    <div class="card-h">Design / drawing photo</div>
+    <div class="photo ${''}" id="photo" onclick="addPhoto()">
+      <span class="ic">📐</span><div class="tx"><h3 id="photoH3">Attach design / drawing</h3><small>What the customer approved — kept in your Drive</small></div>
+    </div>
+    <div class="photo-prev" id="photoPrev"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-h">Note <span style="font-weight:500;text-transform:none;letter-spacing:0">(optional — shows on the bill)</span></div>
+    <textarea id="note" oninput="setNote(this.value)" placeholder="e.g. Advance ₹5,000 received · Deliver by Friday · Colours: red & white as approved · Installation included"></textarea>
+    <div class="opt-note">Standard terms &amp; conditions are set once in Business Settings and print on every bill automatically.</div>
+  </div>
+
+  <div class="card">
+    <div class="toggle"><div class="lbl">Add GST / tax<small>Auto tax invoice for companies</small></div><div class="sw" id="taxsw" onclick="toggleTax()"></div></div>
+    <div id="taxfields" style="display:none">
+      <div class="row">
+        <div><label>Tax rate %</label><input id="taxrate" type="number" value="18" oninput="calc()"></div>
+        <div><label>Show as</label><select id="taxlabel" onchange="calc()"><option value="gst">GST</option><option value="split">CGST+SGST</option><option value="igst">IGST</option></select></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="termsCard" style="display:none">
+    <div class="card-h">Payment terms</div>
+    <div class="terms">
+      <button class="on" id="tm-now" onclick="setTerm('now')">Pay now</button>
+      <button id="tm-15" onclick="setTerm('15')">Net 15 days</button>
+      <button id="tm-30" onclick="setTerm('30')">Net 30 days</button>
+    </div>
+    <div id="dueNote" class="opt-note"></div>
+  </div>
+
+  <div class="totals" id="totals"></div>
+
+</div>
+
+<div class="bar"><div class="bar-in">
+  <button class="btn ghost" onclick="preview()">Preview</button>
+  <button class="btn dark" id="createBtn" onclick="preview()">Create quote</button>
+</div></div>
+
+<div class="pv-mask" id="pvmask"><div class="pv">
+  <div id="docout"></div>
+  <div class="pv-actions">
+    <button class="btn ghost" onclick="closePv()">Edit</button>
+    <button class="btn dark" id="pvAction" onclick="finalize()">Share</button>
+  </div>
+</div></div>
+
+<script>
+const biz={name:'Apex Signs & Fabrication',addr:'Plot 22, Industrial Area, Pune 411001',phone:'+91 99000 11222',gstin:'27ABCDE1234F1Z5'};
+let docType='quote';        // quote | invoice
+let cType='person';         // person | company
+let term='now';             // now | 15 | 30
+let taxOn=false;
+let cust={name:'Ravi Kumar',phone:'',company:'',gstin:'',contact:'',address:''};
+let items=[{d:'',qty:1,rate:0}];
+let photos=0;
+let note='';
+let docNo={quote:'QT-008',invoice:'INV-031'};
+
+const $=id=>document.getElementById(id);
+const money=n=>'₹'+(+n||0).toLocaleString('en-IN',{maximumFractionDigits:2});
+
+function setDoc(t){
+  docType=t;
+  $('dt-quote').className=t==='quote'?'on':'';
+  $('dt-invoice').className=t==='invoice'?'on':'';
+  $('title').textContent=t==='quote'?'Create quote':'Create invoice';
+  $('createBtn').textContent=t==='quote'?'Create quote':'Create invoice';
+  $('termsCard').style.display=t==='invoice'?'block':'none'; // terms only meaningful on invoice
+  calc();
+}
+function setCType(t){
+  cType=t;
+  $('ct-person').className=t==='person'?'on':'';
+  $('ct-company').className=t==='company'?'on':'';
+  renderCust();
+  // auto-enable tax for company
+  if(t==='company'&&!taxOn)toggleTax();
+  calc();
+}
+function renderCust(){
+  if(cType==='person'){
+    $('custfields').innerHTML=`
+      <label>Name</label><input value="${(cust.name||'').replace(/"/g,'&quot;')}" oninput="cust.name=this.value">
+      <label>Phone</label><input value="${(cust.phone||'').replace(/"/g,'&quot;')}" oninput="cust.phone=this.value" inputmode="numeric" placeholder="Optional">`;
+  } else {
+    $('custfields').innerHTML=`
+      <label>Company name</label><input value="${(cust.company||'').replace(/"/g,'&quot;')}" oninput="cust.company=this.value" placeholder="e.g. Acme Industries Pvt Ltd">
+      <label>Company GSTIN</label><input class="gstin" value="${(cust.gstin||'').replace(/"/g,'&quot;')}" oninput="cust.gstin=this.value.toUpperCase()" placeholder="27ABCDE...">
+      <div class="opt-note">Needed for the company to claim input tax credit (ITC).</div>
+      <div class="row">
+        <div><label>Contact person</label><input value="${(cust.contact||'').replace(/"/g,'&quot;')}" oninput="cust.contact=this.value" placeholder="Optional"></div>
+        <div><label>Phone</label><input value="${(cust.phone||'').replace(/"/g,'&quot;')}" oninput="cust.phone=this.value" inputmode="numeric"></div>
+      </div>
+      <label>Address</label><textarea oninput="cust.address=this.value" placeholder="Company address (for invoice)">${(cust.address||'')}</textarea>`;
+  }
+}
+function renderItems(){
+  $('items').innerHTML=items.map((it,i)=>`
+    <div class="item">
+      <div class="l1"><input class="desc" value="${(it.d||'').replace(/"/g,'&quot;')}" placeholder="Work / item description" oninput="upd(${i},'d',this.value)">
+        ${items.length>1?`<button class="del" onclick="delItem(${i})">×</button>`:''}</div>
+      <div class="l2">
+        <input class="qty" type="number" value="${it.qty}" placeholder="Qty" oninput="upd(${i},'qty',this.value)">
+        <input class="rate" type="number" value="${it.rate}" placeholder="Rate ₹" oninput="upd(${i},'rate',this.value)">
+        <div class="amt">${money((+it.qty||0)*(+it.rate||0))}</div>
+      </div>
+    </div>`).join('');
+}
+function upd(i,f,v){items[i][f]=(f==='d')?v:(+v||0);renderItems();calc();}
+function addItem(){items.push({d:'',qty:1,rate:0});renderItems();calc();}
+function delItem(i){items.splice(i,1);renderItems();calc();}
+
+function addPhoto(){photos++;$('photo').classList.add('done');$('photoH3').textContent=photos+' design'+(photos>1?'s':'')+' attached';
+  $('photoPrev').innerHTML=Array.from({length:photos}).map(()=>'<div class="p">📐</div>').join('');}
+function setNote(v){note=v;}
+
+function toggleTax(){taxOn=!taxOn;$('taxsw').classList.toggle('on',taxOn);$('taxfields').style.display=taxOn?'block':'none';calc();}
+function setTerm(t){term=t;['now','15','30'].forEach(x=>$('tm-'+x).className=x===t?'on':'');
+  const note=$('dueNote');
+  if(t==='now')note.textContent='Payment due on delivery.';
+  else{const due=new Date();due.setDate(due.getDate()+ +t);note.textContent='Due by '+due.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})+' ('+t+' days credit).';}
+}
+
+function compute(){
+  const sub=items.reduce((a,it)=>a+(+it.qty||0)*(+it.rate||0),0);
+  const rate=taxOn?(+$('taxrate').value||0):0;
+  const tax=taxOn?sub*rate/100:0;
+  return {sub,rate,tax,total:sub+tax};
+}
+function calc(){
+  const c=compute();
+  let h='';
+  h+=`<div class="tr"><span>Subtotal</span><span>${money(c.sub)}</span></div>`;
+  if(taxOn){
+    const lab=$('taxlabel').value;
+    if(lab==='split'){h+=`<div class="tr"><span>CGST ${c.rate/2}%</span><span>${money(c.tax/2)}</span></div><div class="tr"><span>SGST ${c.rate/2}%</span><span>${money(c.tax/2)}</span></div>`;}
+    else{h+=`<div class="tr"><span>${lab==='igst'?'IGST':'GST'} ${c.rate}%</span><span>${money(c.tax)}</span></div>`;}
+  }
+  h+=`<div class="tr grand"><span class="k">${docType==='quote'?'Quoted total':'Total'}</span><span class="v">${money(c.total)}</span></div>`;
+  $('totals').innerHTML=h;
+}
+
+function preview(){
+  const c=compute();
+  const isCompany=cType==='company';
+  const toName=isCompany?(cust.company||'Company'):(cust.name||'Customer');
+  const lab=$('taxlabel')?$('taxlabel').value:'gst';
+  const rows=items.map(it=>`<tr><td>${it.d||'—'}</td><td class="r">${it.qty}</td><td class="r">${money(it.rate)}</td><td class="r">${money((+it.qty||0)*(+it.rate||0))}</td></tr>`).join('');
+  let taxRows=`<div class="sumrow"><span>Subtotal</span><span>${money(c.sub)}</span></div>`;
+  if(taxOn){
+    if(lab==='split')taxRows+=`<div class="sumrow"><span>CGST ${c.rate/2}%</span><span>${money(c.tax/2)}</span></div><div class="sumrow"><span>SGST ${c.rate/2}%</span><span>${money(c.tax/2)}</span></div>`;
+    else taxRows+=`<div class="sumrow"><span>${lab==='igst'?'IGST':'GST'} ${c.rate}%</span><span>${money(c.tax)}</span></div>`;
+  }
+  const title = docType==='quote' ? 'Quotation / Estimate' : (taxOn?'Tax Invoice':'Invoice');
+  const no = docType==='quote'?docNo.quote:docNo.invoice;
+  let dueLine='';
+  if(docType==='invoice'&&term!=='now'){const due=new Date();due.setDate(due.getDate()+ +term);dueLine=`<div class="due">⏳ Payment due by ${due.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})} (${term}-day credit)</div>`;}
+  const doc=`<div class="doc">
+    <div class="dh">
+      <div><div class="biz">${biz.name}</div><div class="bizline">${biz.addr}</div><div class="bizline">${biz.phone}</div>${taxOn?`<div class="bizline">GSTIN: ${biz.gstin}</div>`:''}</div>
+      <div class="badge">${docType==='quote'?'Quote':'Invoice'}</div>
+    </div>
+    <div class="ttl">${title}</div>
+    <div class="meta"><span>No: ${no}</span><span>${new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}</span></div>
+    <div class="to">${docType==='quote'?'Quote for':'Bill to'}: <b>${toName}</b>${isCompany&&cust.gstin?`<br><span style="font-size:11.5px;color:var(--muted)">GSTIN: ${cust.gstin}${cust.contact?' · Attn: '+cust.contact:''}</span>`:''}${isCompany&&cust.address?`<br><span style="font-size:11.5px;color:var(--muted)">${cust.address}</span>`:''}</div>
+    <table><thead><tr><th>Work / item</th><th class="r">Qty</th><th class="r">Rate</th><th class="r">Amount</th></tr></thead><tbody>${rows}</tbody></table>
+    ${taxRows}
+    <div class="sumrow g"><span>${docType==='quote'?'Quoted total':'Total'}</span><span>${money(c.total)}</span></div>
+    ${photos>0?`<div class="dphoto"><div style="font-size:11px;color:var(--muted);margin-bottom:5px">Approved design:</div>${Array.from({length:photos}).map(()=>'<span class="ph">📐</span>').join('')}</div>`:''}
+    ${dueLine}
+    ${note.trim()?`<div style="margin-top:12px;font-size:12.5px;line-height:1.5"><b style="font-family:var(--d);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">Note</b><br>${note.replace(/</g,'&lt;').replace(/\n/g,'<br>')}</div>`:''}
+    <div class="ft">${docType==='quote'?'Valid 15 days · Generated with Khaata':'Generated with Khaata'}</div>
+  </div>`;
+  $('docout').innerHTML=doc;
+  $('pvAction').textContent = docType==='quote' ? 'Send quote' : 'Send invoice';
+  $('pvmask').classList.add('show');
+}
+function closePv(){$('pvmask').classList.remove('show');}
+function finalize(){
+  if(docType==='quote'){
+    alert('Quote sent! 📤\n\nWhen the customer approves, tap "Convert to invoice" to bill them — all details carry over.');
+  } else {
+    const c=compute();
+    const credit = term!=='now';
+    alert('Invoice created! 📤'+(credit?'\n\nAdded to receivables — '+(cType==='company'?cust.company:cust.name)+' owes '+money(c.total)+', due in '+term+' days.':'\n\nMarked paid.'));
+  }
+}
+
+setDoc('quote');setCType('person');renderItems();setTerm('now');calc();
+</script>
+</body>
+</html>
