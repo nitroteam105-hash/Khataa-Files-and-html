@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · PG / Hostel · Staff & access · v1.2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{
+--canvas:#FDFCF8;--surface:#FFFFFF;--row:#F6F6F5;--line:#E6E0D7;--ink:#171716;--muted:#6B6B69;
+--alert:#FF6B5B;--alert-solid:#C23E2E;--alert-ink:#B83A2B;--alert-tint:#FFE4DF;
+--pending:#EBC36B;--pending-ink:#6E5200;--pending-tile:#FFF0C4;
+--done-ink:#1E7A4C;--done-tint:#DDF3E6;--info:#D7E1FE;--info-ink:#2B3A75;--info-line:#C3D0F7;
+--act:#2B3A75;--act-text:#FFFFFF;--neutral-tile:#EDEDEC;--neutral-ink:#6B6B69;
+--idb-violet:#B898F4;--idb-sky:#AFD8F0;--idb-teal:#8FD3CA;--idb-sand:#E2D3BC;
+--r-btn:14px;--r-card:20px;--r-pill:999px;color-scheme:light
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+--canvas:#1B1B1A;--surface:#262625;--row:#232322;--line:#38383A;--ink:#FFFFFF;--muted:#9B9B98;
+--alert:#E8705C;--alert-solid:#E8705C;--alert-ink:#F59384;--alert-tint:#3A2420;
+--pending:#EBC36B;--pending-ink:#EBC36B;--pending-tile:#3A3122;--done-ink:#74C99A;--done-tint:#244232;
+--info:#252C42;--info-ink:#DCE4FF;--info-line:#34405E;--act:#C9D4FB;--act-text:#1A2140;
+--neutral-tile:#2A2A29;--neutral-ink:#9B9B98;
+--idb-violet:#3B2A6E;--idb-sky:#0F4A66;--idb-teal:#0E4D47;--idb-sand:#4A3B26;color-scheme:dark}}
+:root[data-theme="dark"]{
+--canvas:#1B1B1A;--surface:#262625;--row:#232322;--line:#38383A;--ink:#FFFFFF;--muted:#9B9B98;
+--alert:#E8705C;--alert-solid:#E8705C;--alert-ink:#F59384;--alert-tint:#3A2420;
+--pending:#EBC36B;--pending-ink:#EBC36B;--pending-tile:#3A3122;--done-ink:#74C99A;--done-tint:#244232;
+--info:#252C42;--info-ink:#DCE4FF;--info-line:#34405E;--act:#C9D4FB;--act-text:#1A2140;
+--neutral-tile:#2A2A29;--neutral-ink:#9B9B98;
+--idb-violet:#3B2A6E;--idb-sky:#0F4A66;--idb-teal:#0E4D47;--idb-sand:#4A3B26;color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--canvas);color:var(--ink);font-family:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif}
+button,input,select{font:inherit}button{cursor:pointer}button,input,select{font-size:11px}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--act);outline-offset:2px}
+svg.lucide{width:18px;height:18px;stroke-width:2}[hidden]{display:none!important}
+.app{max-width:520px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top)) 16px calc(26px + env(safe-area-inset-bottom))}
+.new{padding:10px 12px;border-radius:var(--r-card);background:var(--info);color:var(--info-ink);font-size:11.5px;line-height:1.45;margin-bottom:12px}
+.new strong{font-size:11px;letter-spacing:.05em;text-transform:uppercase}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:14px}.back,.theme{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);display:grid;place-items:center;padding:0}
+.title{flex:1}.title strong{display:flex;align-items:center;gap:7px;font-size:14px}.title small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+h1{font-size:26px;line-height:1.05;margin:8px 0 4px}.lead{margin:0 0 14px;color:var(--muted);font-size:12px;line-height:1.5}
+.section-head{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:18px 2px 8px}.section-head strong{font-size:12px}.section-head span{font-size:11px;color:var(--muted)}
+.card{border:1px solid var(--line);border-radius:var(--r-card);background:var(--surface);overflow:hidden}
+.staff-row{width:100%;min-height:64px;display:flex;align-items:center;gap:11px;padding:12px 13px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--ink);text-align:left}.staff-row:last-child{border-bottom:0}
+.avatar{width:40px;height:40px;border-radius:13px;background:var(--idb-violet);display:grid;place-items:center;font-size:11px;font-weight:800;flex:none}
+.staff-copy{flex:1;min-width:0}.staff-copy strong{display:block;font-size:12px}.staff-copy small{display:block;color:var(--muted);font-size:11px;margin-top:3px;line-height:1.35}
+.pill{display:inline-flex;align-items:center;min-height:26px;border-radius:999px;padding:5px 8px;font-size:11px;font-weight:800}
+.pill.owner{background:var(--done-tint);color:var(--done-ink)}.pill.pending{background:var(--pending-tile);color:var(--pending-ink)}.pill.neutral{background:var(--neutral-tile);color:var(--neutral-ink)}
+.proposed{display:inline-flex;align-items:center;min-height:24px;border:1px solid var(--line);border-radius:999px;padding:3px 7px;background:transparent;color:var(--muted);font-size:11px;font-weight:800}
+.premium{display:inline-flex;align-items:center;min-height:24px;border-radius:999px;padding:3px 7px;background:var(--neutral-tile);color:var(--neutral-ink);font-size:11px;font-weight:800}
+.add,.rowbtn{width:100%;min-height:44px;border:1px solid var(--line);border-radius:var(--r-btn);background:var(--surface);color:var(--ink);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:6px;margin-top:10px}
+.rowbtn{justify-content:space-between;padding:0 12px;margin-top:8px}
+.badge{min-width:24px;height:24px;border-radius:999px;background:var(--alert-tint);color:var(--alert-ink);display:grid;place-items:center;font-size:11px;font-weight:800}
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.role{min-height:120px;border:1px solid var(--line);border-radius:16px;background:var(--surface);padding:12px;text-align:left;color:var(--ink)}.role i{width:20px;height:20px}.role strong{display:block;font-size:11.5px;margin-top:9px}.role small{display:block;color:var(--muted);font-size:11px;line-height:1.4;margin-top:4px}
+.note{padding:11px 12px;border-radius:var(--r-btn);background:var(--info);color:var(--info-ink);font-size:11px;line-height:1.45;margin-top:10px}
+.scrim{position:fixed;inset:0;background:color-mix(in srgb,var(--ink) 26%,transparent);opacity:0;pointer-events:none;transition:.2s;z-index:50}.scrim.on{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:50%;bottom:0;transform:translate(-50%,105%);width:min(520px,100%);max-height:90vh;overflow:auto;background:var(--surface);border-radius:24px 24px 0 0;padding:10px 16px calc(18px + env(safe-area-inset-bottom));z-index:60;transition:.26s}
+.sheet.on{transform:translate(-50%,0)}.handle{width:38px;height:4px;border-radius:99px;background:var(--line);margin:0 auto 14px}
+.sheet-head{display:flex;align-items:start;justify-content:space-between;gap:12px}.sheet h2{margin:0;font-size:18px}.sheet p{margin:4px 0 12px;color:var(--muted);font-size:11px;line-height:1.45}
+.close{width:44px;height:44px;border:1px solid var(--line);border-radius:50%;background:var(--surface);color:var(--ink);display:grid;place-items:center;padding:0}
+.field{margin-bottom:12px}.field label{display:block;font-size:11px;font-weight:800;margin-bottom:6px}.input{width:100%;height:44px;border:1px solid var(--line);border-radius:var(--r-btn);background:var(--surface);color:var(--ink);padding:0 11px;font-size:12px}
+.perm{display:grid;grid-template-columns:1fr;gap:8px;padding:11px 0;border-bottom:1px solid var(--line)}.perm:last-child{border-bottom:0}.perm strong{display:block;font-size:11px}.perm small{display:block;color:var(--muted);font-size:11px;margin-top:3px;line-height:1.4}
+.segment{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:3px;border:1px solid var(--line);border-radius:11px;background:var(--row)}
+.segment button{border:0;background:transparent;color:var(--muted);border-radius:8px;min-height:44px;padding:0 7px;font-size:11px;font-weight:800}.segment button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px color-mix(in srgb,var(--ink) 8%,transparent)}
+.visibility{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:50px;padding:9px 0;border-bottom:1px solid var(--line)}.visibility:last-child{border-bottom:0}.visibility .vcopy{flex:1}.visibility .vcopy span{display:block;font-size:11px;font-weight:700}.visibility .vcopy small{display:block;color:var(--muted);font-size:11px;line-height:1.35;margin-top:3px}
+.switch{width:50px;height:44px;border:0;border-radius:999px;background:var(--neutral-tile);position:relative;padding:0;flex:none}.switch:after{content:"";position:absolute;width:22px;height:22px;border-radius:50%;background:var(--surface);top:11px;left:4px;transition:.2s;box-shadow:0 1px 2px color-mix(in srgb,var(--ink) 18%,transparent)}.switch[aria-checked="true"]{background:var(--act)}.switch[aria-checked="true"]:after{left:24px}
+.btn{width:100%;min-height:44px;border:0;border-radius:var(--r-btn);background:var(--act);color:var(--act-text);font-size:12px;font-weight:800;margin-top:12px}.btn.secondary{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.subpage{padding-top:2px}.subrow{width:100%;min-height:54px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--ink);display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;padding:8px 0}.subrow:last-child{border-bottom:0}.subrow strong{font-size:11px}.subrow small{display:block;color:var(--muted);font-size:11px;margin-top:3px;line-height:1.35}
+.warn{padding:10px 11px;border-radius:var(--r-btn);background:var(--pending-tile);color:var(--pending-ink);font-size:11px;line-height:1.4;margin-top:10px}
+.toast{position:fixed;left:50%;bottom:18px;transform:translate(-50%,20px);background:var(--ink);color:var(--canvas);padding:10px 13px;border-radius:14px;font-size:11px;font-weight:700;opacity:0;pointer-events:none;transition:.22s;z-index:80}.toast.on{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+<main class="app">
+<div class="new"><strong>New in this file</strong><br>Staff & Access v1.3 fixes role-state isolation, read-only scope, owner safety, person/invite sheets, solo-owner demo, entitlement gating, approver filtering, confirmation impact, and 44px tap targets while keeping the frozen four-role / three-state model unchanged.</div>
+
+<header class="top">
+<button class="back" type="button" data-act="back" aria-label="Back"><i data-lucide="arrow-left"></i></button>
+<div class="title"><strong>Staff & access <span id="entitlementBadge" class="premium" hidden>Premium</span></strong><small>Sunrise PG</small></div>
+<button class="theme" type="button" data-act="theme" aria-label="Toggle theme"><i data-lucide="sun-moon"></i></button>
+</header>
+
+<h1>Staff & access</h1>
+<p class="lead">Invite people, assign a role, and control what they can do separately from what they can see.</p>
+<div class="note" style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+  <span><b>Demo state:</b> Solo owner</span>
+  <button class="switch" id="soloOwnerToggle" role="switch" aria-label="Solo owner demo" aria-checked="false"></button>
+</div>
+<div id="upgradeCard" class="note" hidden>
+  Staff access isn’t included in the current tier. Upgrade to invite staff and configure roles.
+</div>
+
+
+<div class="section-head"><strong>People</strong><span>3 active · 1 invited</span></div>
+<section class="card" id="peopleCard">
+<button class="staff-row" type="button" data-staff="owner">
+<div class="avatar">SK</div><div class="staff-copy"><strong>Sanjay Kumar</strong><small>Owner · Full access · Sunrise PG</small></div><span class="pill owner">Owner</span>
+</button>
+<button class="staff-row" type="button" data-staff="manager" data-role-name="Manager">
+<div class="avatar" style="background:var(--idb-sky)">RK</div><div class="staff-copy"><strong>Ravi Kumar</strong><small>Manager · Sunrise PG + Lake View PG</small></div><span class="pill neutral">Active</span>
+</button>
+<button class="staff-row" type="button" data-staff="frontdesk" data-role-name="Caretaker / Front desk">
+<div class="avatar" style="background:var(--idb-teal)">SR</div><div class="staff-copy"><strong>Sunita Rao</strong><small>Caretaker / Front desk · Sunrise PG</small></div><span class="pill neutral">Active</span>
+</button>
+<button class="staff-row" type="button" data-staff="accounts" data-role-name="Accounts">
+<div class="avatar" style="background:var(--idb-sand)">AM</div><div class="staff-copy"><strong>Anil Menon</strong><small>Accounts · Invite sent 7 Oct</small></div><span class="pill pending">Invited</span>
+</button>
+</section>
+
+<button class="add" id="addStaffBtn" type="button" data-act="invite"><i data-lucide="user-plus"></i>Add staff</button>
+<button class="rowbtn" id="approvalsBtn" type="button" data-act="approvals"><span><i data-lucide="badge-check"></i>&nbsp; Pending approvals</span><span class="badge">3</span></button>
+<button class="rowbtn" id="activityBtn" type="button" data-act="activity"><span><i data-lucide="history"></i>&nbsp; Access activity</span><i data-lucide="chevron-right"></i></button>
+
+<section id="roleTemplatesArea">
+<div class="section-head"><strong>Role templates</strong><span>Editable</span></div>
+<div class="role-grid">
+<button class="role" type="button" data-role="Manager"><i data-lucide="shield-check"></i><strong>Manager</strong><small>Operational access with selected approvals.</small></button>
+<button class="role" type="button" data-role="Caretaker / Front desk"><i data-lucide="concierge-bell"></i><strong>Caretaker / Front desk</strong><small>Tenant work and limited collections.</small></button>
+<button class="role" type="button" data-role="Accounts"><i data-lucide="badge-indian-rupee"></i><strong>Accounts</strong><small>Money operations and reporting.</small></button>
+<button class="role" type="button" data-role="Custom role"><i data-lucide="sliders-horizontal"></i><strong>Custom role</strong><small>Start from a template and adjust access.</small></button>
+</div>
+</section>
+
+<div class="note">Access changes apply on the staff device’s next sync. <span class="proposed">Proposed</span> Entries made before that sync may be marked “Recorded under previous access”.</div>
+</main>
+
+<div class="scrim" id="scrim"></div>
+<section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" tabindex="-1">
+<div class="handle"></div>
+<div class="sheet-head">
+<div><h2 id="sheetTitle">Manager</h2><p id="sheetSub">Permissions and visibility</p></div>
+<button class="close" type="button" data-act="close" aria-label="Close Staff & access sheet"><i data-lucide="x"></i></button>
+</div>
+
+<div id="roleView">
+<div class="field"><label for="roleName">Role name</label><input class="input" id="roleName" value="Manager" readonly></div>
+<button class="rowbtn" type="button" data-act="readonly"><span><i data-lucide="eye"></i>&nbsp; Apply Read-only preset</span><i data-lucide="chevron-right"></i></button>
+<p style="font-size:11px;color:var(--muted);line-height:1.4;margin:8px 2px 0">Read-only sets all actions to <b>Not allowed</b> and keeps tenant records, balances, expenses and rooms visible. You can adjust afterward.</p>
+
+<div class="section-head"><strong>Action permissions</strong><span>Allowed · Approval · Not allowed</span></div>
+<div class="card" style="padding:0 12px">
+<div class="perm"><div><strong>Record payment</strong><small>Record money received from tenants.</small></div><div class="segment" data-perm="payment"><button aria-pressed="true" class="on">Allowed</button><button aria-pressed="false">Needs approval</button><button aria-pressed="false">Not allowed</button></div></div>
+<div class="perm"><div><strong>Add expense</strong><small>Create a business-paid or staff-paid expense.</small></div><div class="segment" data-perm="expense"><button aria-pressed="true" class="on">Allowed</button><button aria-pressed="false">Needs approval</button><button aria-pressed="false">Not allowed</button></div></div>
+<div class="perm"><div><strong>Waive / discount dues</strong><small>Adjust dues without recording a payment.</small></div><div class="segment" data-perm="waive"><button aria-pressed="false">Allowed</button><button aria-pressed="true" class="on">Needs approval</button><button aria-pressed="false">Not allowed</button></div></div>
+<div class="perm"><div><strong>Edit bill</strong><small>Subject to the bill lock where applicable.</small></div><div class="segment" data-perm="editbill"><button aria-pressed="false">Allowed</button><button aria-pressed="true" class="on">Needs approval</button><button aria-pressed="false">Not allowed</button></div></div>
+<div class="perm"><div><strong>Backdate entry</strong><small>Create an entry with an earlier effective date.</small></div><div class="segment" data-perm="backdate"><button aria-pressed="false">Allowed</button><button aria-pressed="true" class="on">Needs approval</button><button aria-pressed="false">Not allowed</button></div></div>
+<div class="perm"><div><strong>Export data</strong><small>Export business data available to this role.</small></div><div class="segment" data-perm="export"><button aria-pressed="false">Allowed</button><button aria-pressed="true" class="on">Needs approval</button><button aria-pressed="false">Not allowed</button></div></div>
+<div class="perm"><div><strong>Send tenant reminder</strong><small>Send a reminder from the tenant record.</small></div><div class="segment" data-perm="reminder"><button aria-pressed="true" class="on">Allowed</button><button aria-pressed="false">Needs approval</button><button aria-pressed="false">Not allowed</button></div></div>
+</div>
+
+<button class="rowbtn" type="button" data-act="sensitive"><span><i data-lucide="shield-alert"></i>&nbsp; Sensitive actions</span><i data-lucide="chevron-right"></i></button>
+
+<div class="section-head"><strong>Approvals</strong><span>Routing</span></div>
+<div class="card" style="padding:12px">
+<div class="field"><label for="approver">Who approves requests?</label><select class="input" id="approver"><option>Owner</option><option>Manager</option></select></div>
+<div style="display:flex;justify-content:space-between;gap:10px;align-items:center;font-size:11px"><span>Request expiry</span><span class="proposed">TBD</span></div>
+</div>
+
+<div class="section-head"><strong>Visibility</strong><span>Independent from permission</span></div>
+<div class="card" style="padding:0 12px">
+<div class="visibility"><div class="vcopy"><span>Tenant records</span></div><button class="switch" role="switch" aria-label="Tenant records visibility" aria-checked="true"></button></div>
+<div class="visibility"><div class="vcopy"><span>Tenant balances</span></div><button class="switch" role="switch" aria-label="Tenant balances visibility" aria-checked="true"></button></div>
+<div class="visibility"><div class="vcopy"><span>Expenses</span></div><button class="switch" role="switch" aria-label="Expenses visibility" aria-checked="true"></button></div>
+<div class="visibility"><div class="vcopy"><span>Rooms</span></div><button class="switch" role="switch" aria-label="Rooms visibility" aria-checked="true"></button></div>
+<div class="visibility"><div class="vcopy"><span>Tenant ID documents & phone numbers</span><small>Default OFF for non-owner roles.</small></div><button class="switch" role="switch" aria-label="Tenant ID documents and phone numbers visibility" aria-checked="false"></button></div>
+<div class="visibility"><div class="vcopy"><span>Staff cash custody</span><small>Shows physical cash currently recorded as held by staff; this does not change tenant payment status.</small></div><button class="switch" role="switch" aria-label="Staff cash custody visibility" aria-checked="true"></button></div>
+</div>
+
+<div class="section-head"><strong>Property access</strong><span>Multi-property</span></div>
+<div class="card" style="padding:0 12px">
+<div class="visibility"><div class="vcopy"><span>Sunrise PG</span></div><button class="switch" role="switch" aria-label="Sunrise PG access" aria-checked="true"></button></div>
+<div class="visibility"><div class="vcopy"><span>Lake View PG</span></div><button class="switch" role="switch" aria-label="Lake View PG access" aria-checked="false"></button></div>
+</div>
+
+<div class="section-head"><strong>Per-person exception</strong><span class="proposed">Proposed</span></div>
+<div class="note">This prototype can show a staff-specific override, but role-level permissions remain the frozen PG V1 model.</div>
+
+<div id="collectionLimits" hidden>
+<div class="section-head"><strong>Collection limits</strong><span class="proposed">Proposed</span></div>
+<div class="card" style="padding:12px">
+<div class="field"><label>Maximum cash per collection</label><input class="input" value="₹5,000"></div>
+<div class="field"><label>Maximum cash per day</label><input class="input" value="₹15,000"></div>
+<div class="visibility"><div class="vcopy"><span>Cash</span></div><button class="switch" role="switch" aria-label="Allow Cash collections" aria-checked="true"></button></div>
+<div class="visibility"><div class="vcopy"><span>UPI</span></div><button class="switch" role="switch" aria-label="Allow UPI collections" aria-checked="true"></button></div>
+</div>
+</div>
+
+<p id="saveImpact" style="font-size:11px;color:var(--muted);line-height:1.4;margin-top:12px"></p>
+<button class="btn" type="button" data-act="save">Save role</button>
+</div>
+
+<div id="sensitiveView" hidden>
+<div class="subpage">
+<button class="rowbtn" style="margin-top:0" type="button" data-act="back-role"><span><i data-lucide="arrow-left"></i>&nbsp; Permissions</span></button>
+<div class="section-head"><strong>Sensitive actions</strong><span>Same 3-state model</span></div>
+<div class="card" style="padding:0 12px">
+<div class="perm"><div><strong>End tenancy</strong><small>Move an active tenancy to Former.</small></div><div class="segment" data-sensitive><button aria-pressed="false">Allowed</button><button class="on" aria-pressed="true">Needs approval</button><button aria-pressed="false">Not allowed</button></div></div>
+<div class="perm"><div><strong>Retire room / bed</strong><small>Change future capacity lifecycle without deleting history.</small></div><div class="segment" data-sensitive><button aria-pressed="false">Allowed</button><button class="on" aria-pressed="true">Needs approval</button><button aria-pressed="false">Not allowed</button></div></div>
+<div class="perm"><div><strong>Void bill — creates a correction entry</strong><small>The original financial history remains preserved.</small></div><div class="segment" data-sensitive><button aria-pressed="false">Allowed</button><button class="on" aria-pressed="true">Needs approval</button><button aria-pressed="false">Not allowed</button></div></div>
+<div class="perm"><div><strong>Refund deposit</strong><small>Record a real money-out security refund.</small></div><div class="segment" data-sensitive><button aria-pressed="false">Allowed</button><button class="on" aria-pressed="true">Needs approval</button><button aria-pressed="false">Not allowed</button></div></div>
+<div class="perm"><div><strong>Manage staff</strong><small>Invite, suspend, deactivate or change access.</small></div><div class="segment" data-sensitive><button aria-pressed="false">Allowed</button><button class="on" aria-pressed="true">Needs approval</button><button aria-pressed="false">Not allowed</button></div></div>
+</div>
+<div class="warn">Changing a sensitive action from <b>Not allowed</b> to <b>Allowed</b> requires confirmation.</div>
+</div>
+</div>
+
+<div id="inviteView" hidden>
+<div class="field"><label for="inviteName">Name</label><input id="inviteName" class="input" placeholder="Staff name"></div>
+<div class="field"><label for="inviteContact">Phone or email</label><input id="inviteContact" class="input" placeholder="Contact"></div>
+<div class="field"><label for="inviteRole">Role</label><select id="inviteRole" class="input"><option>Manager</option><option>Caretaker / Front desk</option><option>Accounts</option></select></div>
+<div class="field"><label for="inviteProperty">Property access</label><select id="inviteProperty" class="input"><option>Sunrise PG</option><option>Sunrise PG + Lake View PG</option></select></div>
+<button class="btn" type="button" data-act="send-invite">Send invite</button>
+</div>
+
+
+<div id="personView" hidden>
+  <div class="card" style="padding:0 12px">
+    <div class="subrow"><div><strong id="personName">Ravi Kumar</strong><small id="personContact">+91 98xxxxxx21</small></div></div>
+    <div class="subrow"><div><strong>Role</strong><small id="personRoleSummary">Manager</small></div><button class="rowbtn" style="width:auto;margin:0" type="button" data-act="change-person-role">Change</button></div>
+    <div class="subrow"><div><strong>Properties</strong><small id="personProperties">Sunrise PG</small></div></div>
+    <div class="subrow"><div><strong>Last active</strong><small id="personLastActive">Today · 8:42 PM</small></div></div>
+    <div class="subrow"><div><strong>Access summary</strong><small id="personAccessSummary">Can collect payments and expenses; sensitive actions need approval.</small></div></div>
+  </div>
+  <div class="section-head"><strong>Per-person exception</strong><span class="proposed">Proposed</span></div>
+  <div class="note">This prototype can show a staff-specific override, but role-level permissions remain the frozen PG V1 model.</div>
+  <button class="rowbtn" type="button" data-act="edit-person-role"><span id="editRoleLink">Edit Manager role</span><i data-lucide="chevron-right"></i></button>
+  <button class="btn secondary" type="button" data-act="suspend-person">Suspend staff</button>
+  <button class="btn secondary" type="button" data-act="deactivate-person">Deactivate staff</button>
+</div>
+
+<div id="ownerView" hidden>
+  <div class="card" style="padding:0 12px">
+    <div class="subrow"><div><strong>Sanjay Kumar</strong><small>Owner · Full access</small></div></div>
+    <div class="subrow"><div><strong>Owner access</strong><small>Full access · can’t be removed</small></div></div>
+  </div>
+  <button class="btn secondary" type="button" data-act="transfer-owner">Transfer ownership</button>
+</div>
+
+<div id="invitedView" hidden>
+  <div class="card" style="padding:0 12px">
+    <div class="subrow"><div><strong id="invitePersonName">Anil Menon</strong><small>Invite sent 7 Oct</small></div></div>
+    <div class="subrow"><div><strong>Role</strong><small id="invitePersonRole">Accounts</small></div></div>
+  </div>
+  <button class="btn secondary" type="button" data-act="resend-invite">Resend invite</button>
+  <button class="btn secondary" type="button" data-act="change-invite-role">Change role</button>
+  <button class="btn secondary" type="button" data-act="cancel-invite">Cancel invite</button>
+</div>
+
+<div id="approvalsView" hidden>
+<div class="card" style="padding:0 12px">
+<div class="subrow"><div><strong>End tenancy · Rohan Mehta</strong><small>Requested by Sunita · expires <span class="proposed">TBD</span></small></div><span class="pill pending">Waiting</span></div>
+<div class="subrow"><div><strong>Waive ₹500 · Room 203</strong><small>Requested by Ravi · expires <span class="proposed">TBD</span></small></div><span class="pill pending">Waiting</span></div>
+<div class="subrow"><div><strong>Retire Bed B · Room 118</strong><small>Requested by Ravi · expires <span class="proposed">TBD</span></small></div><span class="pill pending">Waiting</span></div>
+</div>
+</div>
+
+<div id="activityView" hidden>
+<div class="card" style="padding:0 12px">
+<div class="subrow"><div><strong>Ravi’s role updated</strong><small>Manager · 7 Oct 2026</small></div></div>
+<div class="subrow"><div><strong>Sunita invited</strong><small>Caretaker / Front desk · 4 Oct 2026</small></div></div>
+<div class="subrow"><div><strong>Anil invite sent</strong><small>Accounts · 7 Oct 2026</small></div></div>
+</div>
+</div>
+</section>
+
+<div class="toast" id="toast">Saved</div>
+
+<script>
+// Mock entitlement registry. Both the badge and upgrade prompt read from here.
+const entitlementRegistry = {
+  currentTier: "premium",
+  features: {
+    staff_access: ["premium","pro"]
+  }
+};
+
+const people = {
+  manager:{name:"Ravi Kumar",contact:"+91 98xxxxxx21",role:"Manager",properties:"Sunrise PG + Lake View PG",lastActive:"Today · 8:42 PM"},
+  frontdesk:{name:"Sunita Rao",contact:"+91 97xxxxxx11",role:"Caretaker / Front desk",properties:"Sunrise PG",lastActive:"Today · 6:18 PM"},
+  accounts:{name:"Anil Menon",contact:"anil@example.com",role:"Accounts",properties:"Sunrise PG",lastActive:"Invite pending"}
+};
+
+const roleState = {
+  "Manager": makeDefaultRole("Manager"),
+  "Caretaker / Front desk": makeDefaultRole("Caretaker / Front desk"),
+  "Accounts": makeDefaultRole("Accounts"),
+  "Custom role": makeDefaultRole("Custom role")
+};
+
+function makeDefaultRole(name){
+  return {
+    permissions:{
+      payment:name==="Accounts"?"Allowed":"Allowed",
+      expense:name==="Caretaker / Front desk"?"Needs approval":"Allowed",
+      waive:"Needs approval",editbill:"Needs approval",backdate:"Needs approval",export:name==="Caretaker / Front desk"?"Not allowed":"Needs approval",reminder:"Allowed"
+    },
+    sensitive:{
+      end:"Needs approval",retire:"Needs approval",void:"Needs approval",refund:"Needs approval",manage:name==="Manager"?"Needs approval":"Not allowed"
+    },
+    visibility:{
+      "Tenant records visibility":true,
+      "Tenant balances visibility":true,
+      "Expenses visibility":true,
+      "Rooms visibility":true,
+      "Tenant ID documents and phone numbers visibility":false,
+      "Staff cash custody visibility":true
+    },
+    properties:{
+      "Sunrise PG access":true,
+      "Lake View PG access":name==="Manager"
+    },
+    collection:{
+      cash:true,upi:true,maxCash:"₹5,000",maxDay:"₹15,000"
+    },
+    approver:name==="Manager"?"Owner":"Owner"
+  };
+}
+
+let lastFocus=null;
+let currentRole="Manager";
+let currentPersonKey=null;
+let editingTemplate=true;
+let tempState=null;
+
+function clone(o){return JSON.parse(JSON.stringify(o))}
+function icons(){if(window.lucide&&lucide.createIcons)lucide.createIcons()}
+function hasFeature(feature){
+  const tiers=entitlementRegistry.features[feature]||[];
+  return tiers.includes(entitlementRegistry.currentTier);
+}
+function applyEntitlements(){
+  const enabled=hasFeature("staff_access");
+  entitlementBadge.hidden=!enabled;
+  upgradeCard.hidden=enabled;
+  addStaffBtn.hidden=!enabled;
+}
+function syncSoloOwner(){
+  const solo=soloOwnerToggle.getAttribute("aria-checked")==="true";
+  [...peopleCard.querySelectorAll(".staff-row")].forEach((row,i)=>row.hidden=solo && i>0);
+  roleTemplatesArea.hidden=solo;
+  approvalsBtn.hidden=solo;
+  activityBtn.hidden=solo;
+}
+function allFocusable(){
+  return [...sheet.querySelectorAll('button:not([hidden]),input:not([hidden]),select:not([hidden]),[tabindex]:not([tabindex="-1"])')].filter(el=>!el.disabled && el.offsetParent!==null);
+}
+function showView(view,title,sub){
+  [roleView,sensitiveView,inviteView,approvalsView,activityView,personView,ownerView,invitedView].forEach(v=>v.hidden=true);
+  view.hidden=false;sheetTitle.textContent=title;sheetSub.textContent=sub||"";
+  icons();
+}
+function openSheet(view,title,sub){
+  lastFocus=document.activeElement;showView(view,title,sub);
+  scrim.classList.add("on");sheet.classList.add("on");
+  setTimeout(()=>{const f=allFocusable();(f[0]||sheet).focus()},40);
+}
+function closeSheet(){scrim.classList.remove("on");sheet.classList.remove("on");setTimeout(()=>{if(lastFocus?.focus)lastFocus.focus()},120)}
+function setSegment(seg,label){
+  seg.querySelectorAll("button").forEach(b=>{const on=b.textContent.trim()===label;b.classList.toggle("on",on);b.setAttribute("aria-pressed",String(on))});
+}
+function getSegment(label){return [...document.querySelectorAll(".segment")].find(s=>s.dataset.perm===label)}
+function loadRoleState(name){
+  currentRole=name;tempState=clone(roleState[name]||makeDefaultRole(name));
+  roleName.value=name;
+  roleName.readOnly=name!=="Custom role";
+  const peopleCount=name==="Manager"?1:name==="Caretaker / Front desk"?1:name==="Accounts"?1:0;
+  saveImpact.textContent=`Saving this role affects ${peopleCount} ${peopleCount===1?"person":"people"}.`;
+  Object.entries(tempState.permissions).forEach(([k,v])=>{const seg=document.querySelector(`[data-perm="${k}"]`);if(seg)setSegment(seg,v)});
+  const sens=[...document.querySelectorAll("[data-sensitive]")];
+  const sensKeys=["end","retire","void","refund","manage"];
+  sens.forEach((seg,i)=>setSegment(seg,tempState.sensitive[sensKeys[i]]));
+  Object.entries(tempState.visibility).forEach(([label,v])=>{const sw=document.querySelector(`[aria-label="${label}"]`);if(sw)sw.setAttribute("aria-checked",String(v))});
+  Object.entries(tempState.properties).forEach(([label,v])=>{const sw=document.querySelector(`[aria-label="${label}"]`);if(sw)sw.setAttribute("aria-checked",String(v))});
+  document.querySelector('[aria-label="Allow Cash collections"]').setAttribute("aria-checked",String(tempState.collection.cash));
+  document.querySelector('[aria-label="Allow UPI collections"]').setAttribute("aria-checked",String(tempState.collection.upi));
+  collectionLimits.hidden=name!=="Caretaker / Front desk";
+  refreshApproverOptions(name,tempState.approver);
+}
+function refreshApproverOptions(role,current){
+  approver.innerHTML="";
+  ["Owner","Manager"].filter(x=>x!==role).forEach(x=>{
+    const o=document.createElement("option");o.textContent=x;o.value=x;if(x===current)o.selected=true;approver.appendChild(o);
+  });
+}
+function openRoleTemplate(name){
+  editingTemplate=true;currentPersonKey=null;loadRoleState(name);openSheet(roleView,name,"Role template · permissions and visibility");
+}
+function openPerson(key){
+  currentPersonKey=key;editingTemplate=false;
+  const p=people[key];
+  personName.textContent=p.name;personContact.textContent=p.contact;personRoleSummary.textContent=p.role;personProperties.textContent=p.properties;personLastActive.textContent=p.lastActive;
+  personAccessSummary.textContent=p.role==="Manager"?"Can collect payments and expenses; sensitive actions need approval.":p.role==="Caretaker / Front desk"?"Can handle tenant work and limited collections; some actions need approval.":"Can handle money operations and reporting within assigned visibility.";
+  editRoleLink.textContent=`Edit ${p.role} role`;
+  openSheet(personView,p.name,"Person access");
+}
+function applyReadOnly(){
+  document.querySelectorAll("#roleView [data-perm]").forEach(seg=>setSegment(seg,"Not allowed"));
+  document.querySelectorAll("#sensitiveView [data-sensitive]").forEach(seg=>setSegment(seg,"Not allowed"));
+  const labels=["Tenant records visibility","Tenant balances visibility","Expenses visibility","Rooms visibility","Tenant ID documents and phone numbers visibility","Staff cash custody visibility"];
+  labels.forEach(label=>{const sw=document.querySelector(`[aria-label="${label}"]`);if(sw)sw.setAttribute("aria-checked",["Tenant records visibility","Tenant balances visibility","Expenses visibility","Rooms visibility"].includes(label)?"true":"false")});
+  toast.textContent="Read-only preset applied";toast.classList.add("on");setTimeout(()=>toast.classList.remove("on"),1400);
+}
+function harvestRoleState(){
+  const s=clone(tempState);
+  document.querySelectorAll("#roleView [data-perm]").forEach(seg=>s.permissions[seg.dataset.perm]=seg.querySelector(".on").textContent.trim());
+  const sensKeys=["end","retire","void","refund","manage"];
+  document.querySelectorAll("#sensitiveView [data-sensitive]").forEach((seg,i)=>s.sensitive[sensKeys[i]]=seg.querySelector(".on").textContent.trim());
+  Object.keys(s.visibility).forEach(label=>{const sw=document.querySelector(`[aria-label="${label}"]`);s.visibility[label]=sw.getAttribute("aria-checked")==="true"});
+  Object.keys(s.properties).forEach(label=>{const sw=document.querySelector(`[aria-label="${label}"]`);s.properties[label]=sw.getAttribute("aria-checked")==="true"});
+  s.collection.cash=document.querySelector('[aria-label="Allow Cash collections"]').getAttribute("aria-checked")==="true";
+  s.collection.upi=document.querySelector('[aria-label="Allow UPI collections"]').getAttribute("aria-checked")==="true";
+  s.approver=approver.value;
+  return s;
+}
+function confirmSensitiveChange(seg,button){
+  const old=seg.querySelector(".on")?.textContent.trim(),next=button.textContent.trim();
+  if(old==="Not allowed"&&next==="Allowed") return window.confirm("Allow this sensitive action for this role?");
+  return true;
+}
+
+document.addEventListener("click",e=>{
+  const role=e.target.closest("[data-role]");if(role){openRoleTemplate(role.dataset.role);return}
+  const staff=e.target.closest("[data-staff]");if(staff){
+    if(staff.dataset.staff==="owner"){openSheet(ownerView,"Sanjay Kumar","Owner");return}
+    if(staff.dataset.staff==="accounts"){openSheet(invitedView,"Anil Menon","Invited staff");return}
+    openPerson(staff.dataset.staff);return
+  }
+  const segBtn=e.target.closest(".segment button");if(segBtn){
+    const seg=segBtn.parentElement;if(seg.hasAttribute("data-sensitive")&&!confirmSensitiveChange(seg,segBtn))return;
+    setSegment(seg,segBtn.textContent.trim());return
+  }
+  const sw=e.target.closest(".switch");if(sw){
+    sw.setAttribute("aria-checked",sw.getAttribute("aria-checked")==="true"?"false":"true");
+    if(sw===soloOwnerToggle)syncSoloOwner();
+    return
+  }
+  const a=e.target.closest("[data-act]");if(!a)return;
+  if(a.dataset.act==="theme"){const r=document.documentElement,c=r.getAttribute("data-theme");r.setAttribute("data-theme",c==="dark"?"light":"dark");return}
+  if(a.dataset.act==="back"){toast.textContent="Back";toast.classList.add("on");setTimeout(()=>toast.classList.remove("on"),1000);if(history.length>1)history.back();return}
+  if(a.dataset.act==="close"){closeSheet();return}
+  if(a.dataset.act==="invite"){openSheet(inviteView,"Add staff","Invite and assign access");return}
+  if(a.dataset.act==="send-invite"){toast.textContent="Invite sent";toast.classList.add("on");setTimeout(()=>toast.classList.remove("on"),1400);closeSheet();return}
+  if(a.dataset.act==="approvals"){openSheet(approvalsView,"Pending approvals","3 requests waiting");return}
+  if(a.dataset.act==="activity"){openSheet(activityView,"Access activity","Recent changes and invites");return}
+  if(a.dataset.act==="readonly"){applyReadOnly();return}
+  if(a.dataset.act==="sensitive"){showView(sensitiveView,"Sensitive actions","High-impact permissions");return}
+  if(a.dataset.act==="back-role"){showView(roleView,currentRole,"Role template · permissions and visibility");return}
+  if(a.dataset.act==="save"){
+    const peopleCount=currentRole==="Custom role"?0:1;
+    if(!window.confirm(`Save ${currentRole} role? This affects ${peopleCount} ${peopleCount===1?"person":"people"}.`))return;
+    roleState[currentRole]=harvestRoleState();
+    toast.textContent="Role saved · applies on next sync";toast.classList.add("on");setTimeout(()=>toast.classList.remove("on"),1700);closeSheet();return
+  }
+  if(a.dataset.act==="edit-person-role"){openRoleTemplate(people[currentPersonKey].role);return}
+  if(a.dataset.act==="change-person-role"){toast.textContent="Role change selector";toast.classList.add("on");setTimeout(()=>toast.classList.remove("on"),1100);return}
+  if(a.dataset.act==="suspend-person"){toast.textContent="Staff suspended";toast.classList.add("on");setTimeout(()=>toast.classList.remove("on"),1300);closeSheet();return}
+  if(a.dataset.act==="deactivate-person"){toast.textContent="Staff deactivated · history kept";toast.classList.add("on");setTimeout(()=>toast.classList.remove("on"),1500);closeSheet();return}
+  if(a.dataset.act==="transfer-owner"){if(window.confirm("Transfer ownership to another active staff member?")){toast.textContent="Ownership transfer started";toast.classList.add("on");setTimeout(()=>toast.classList.remove("on"),1500)}return}
+  if(a.dataset.act==="resend-invite"){toast.textContent="Invite resent";toast.classList.add("on");setTimeout(()=>toast.classList.remove("on"),1200);return}
+  if(a.dataset.act==="change-invite-role"){toast.textContent="Invite role selector";toast.classList.add("on");setTimeout(()=>toast.classList.remove("on"),1200);return}
+  if(a.dataset.act==="cancel-invite"){if(window.confirm("Cancel this invite?")){toast.textContent="Invite cancelled";toast.classList.add("on");setTimeout(()=>toast.classList.remove("on"),1200);closeSheet()}return}
+});
+
+scrim.addEventListener("click",closeSheet);
+document.addEventListener("keydown",e=>{
+  if(!sheet.classList.contains("on"))return;
+  if(e.key==="Escape"){e.preventDefault();closeSheet();return}
+  if(e.key==="Tab"){
+    const f=allFocusable();if(!f.length)return;
+    const first=f[0],last=f[f.length-1];
+    if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}
+    else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
+  }
+});
+
+applyEntitlements();
+syncSoloOwner();
+icons();
+</script>
+</body>
+</html>

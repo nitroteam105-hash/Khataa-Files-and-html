@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · Local SQLite + Sync Schema v1</title>
+<style>
+:root{--canvas:#FDFCF8;--surface:#FFFFFF;--line:#E6E0D7;--ink:#171716;--muted:#6B6B69;--info:#D7E1FE;--info-ink:#2B3A75;--done:#DDF3E6;--done-ink:#1E7A4C;--pending:#FFF0C4;--pending-ink:#6E5200}
+*{box-sizing:border-box}body{margin:0;background:var(--canvas);color:var(--ink);font-family:Manrope,system-ui,sans-serif}main{max-width:760px;margin:auto;padding:20px 16px 44px}h1{font-size:26px;margin:0 0 6px}h2{font-size:19px;margin:22px 0 6px}h3{font-size:13px;margin:0 0 6px}p{font-size:11.5px;line-height:1.6;color:var(--muted);margin:0}.note{padding:11px 12px;border-radius:14px;background:var(--info);color:var(--info-ink);font-size:11px;line-height:1.5;margin:12px 0}.ok{background:var(--done);color:var(--done-ink)}.warn{background:var(--pending);color:var(--pending-ink)}.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:14px;margin-top:10px}code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.flow{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;line-height:1.65;white-space:pre-wrap;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px;overflow:auto}
+</style>
+</head>
+<body><main>
+<h1>Local SQLite + Sync Schema v1</h1>
+<p>Mobile-first database proposal for Khaata PG V1. This closes the missing half of the architecture: the app operates from SQLite, then synchronizes to Supabase.</p>
+
+<div class="note ok"><b>Primary rule:</b> normal business work commits locally first. Internet or Supabase availability is not required for everyday PG operation.</div>
+<div class="note warn"><b>Status:</b> proposed implementation schema. Product invariants are frozen; exact SQLite field names, sync transport and conflict-resolution algorithm are still implementation choices.</div>
+
+<section class="card"><h3>Architecture</h3><p>
+<b>SQLite is the operational source on the phone.</b> UI/domain code writes SQLite first.
+Supabase is synchronized shared state, not a prerequisite for normal PG work.
+</p></section><section class="card"><h3>Local-only infrastructure</h3><p>
+<code>sync_outbox</code>, <code>sync_checkpoints</code>, <code>applied_remote_events</code>,
+<code>sync_conflicts</code>, <code>device_state</code>, <code>entitlement_snapshot</code>,
+<code>local_settings</code> and <code>schema_migrations</code> exist only on-device.
+</p></section><section class="card"><h3>Offline IDs</h3><p>
+All domain IDs are generated before sync. SQLite stores them as TEXT so the app can use one
+globally unique offline-safe ID format consistently across SQLite and Postgres.
+</p></section><section class="card"><h3>Atomic payment write</h3><p>
+A payment, its allocation(s), immutable receipt snapshot, optional staff cash-custody event,
+domain event and sync-outbox entries commit together in one SQLite transaction.
+The UI can show the tenant as paid immediately after the local commit.
+</p></section><section class="card"><h3>Conflict policy</h3><p>
+Financial/history-sensitive entities never use blind last-write-wins. Concurrent events are
+preserved; semantic conflicts are placed in <code>sync_conflicts</code> for explicit resolution.
+</p></section><section class="card"><h3>Schema alignment</h3><p>
+The mobile domain tables deliberately mirror the proposed Supabase/Postgres schema so mapping
+stays boring. Sync metadata remains local and is not treated as business data.
+</p></section>
+
+<h2>Runtime path</h2>
+<div class="flow">Khaata UI
+  ↓
+Domain / business logic
+  ↓
+SQLite transaction
+  ├─ domain records
+  ├─ immutable financial/history records
+  └─ sync_outbox
+        ↓
+Background sync worker
+        ↓
+Supabase / Postgres
+
+Remote change
+  ↓
+sync pull
+  ↓
+SQLite transaction
+  ├─ apply safe changes
+  ├─ preserve concurrent events
+  └─ create sync_conflicts when meaning cannot be merged safely</div>
+
+<h2>What the SQL includes</h2>
+<div class="card"><p>
+Mirrored PG domain tables; local sync metadata; WAL mode; projection views; immutability triggers;
+one-active-occupancy constraints; deterministic obligation keys; entitlement snapshot storage;
+outbox/checkpoint/conflict tables; and documented atomic transaction recipes for payments, transfers
+and security application.
+</p></div>
+
+<h2>Important consequence</h2>
+<div class="note">
+If Ravi records a ₹8,000 cash rent payment with no internet, SQLite can commit the payment,
+allocations, receipt and <b>Cash with Ravi</b> custody event immediately. The tenant is paid immediately.
+Sync can happen later; a failed handover or discrepancy must never turn that tenant back into unpaid.
+</div>
+</main></body></html>

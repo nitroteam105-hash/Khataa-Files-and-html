@@ -1,0 +1,105 @@
+{
+  "version": "1.0",
+  "status": "proposed implementation tests",
+  "cases": [
+    {
+      "id": "ACC-001",
+      "case": "Owner operates with no staff membership",
+      "expect": [
+        "allowed for own business",
+        "staff setup not required"
+      ]
+    },
+    {
+      "id": "ACC-002",
+      "case": "Allowed action",
+      "expect": [
+        "command proceeds",
+        "no approval request created"
+      ]
+    },
+    {
+      "id": "ACC-003",
+      "case": "Needs approval without authorization",
+      "expect": [
+        "approval_request created",
+        "underlying action not executed"
+      ]
+    },
+    {
+      "id": "ACC-004",
+      "case": "Approval granted",
+      "expect": [
+        "authorization created",
+        "underlying action still not executed"
+      ]
+    },
+    {
+      "id": "ACC-005",
+      "case": "Approved action executed",
+      "expect": [
+        "command mutates domain",
+        "authorization consumed in same transaction",
+        "domain event links execution"
+      ]
+    },
+    {
+      "id": "ACC-006",
+      "case": "Reuse consumed approval",
+      "expect": [
+        "rejected",
+        "no mutation"
+      ]
+    },
+    {
+      "id": "ACC-007",
+      "case": "Not allowed action",
+      "expect": [
+        "rejected",
+        "no approval request",
+        "no mutation"
+      ]
+    },
+    {
+      "id": "ACC-008",
+      "case": "Disabled staff attempts new action",
+      "expect": [
+        "rejected",
+        "historical attribution remains readable"
+      ]
+    },
+    {
+      "id": "ACC-009",
+      "case": "Missing required tenant data + allowed override",
+      "expect": [
+        "tenant may proceed",
+        "setup remains incomplete until data provided"
+      ]
+    },
+    {
+      "id": "ACC-010",
+      "case": "Missing required tenant data + needs approval",
+      "expect": [
+        "approval request created",
+        "tenant/join action waits",
+        "requirement policy itself unchanged"
+      ]
+    },
+    {
+      "id": "ACC-011",
+      "case": "Visibility hidden but action allowed",
+      "expect": [
+        "action authority can still be allowed",
+        "read projection must redact hidden data independently"
+      ]
+    },
+    {
+      "id": "ACC-012",
+      "case": "Wrong-target authorization",
+      "expect": [
+        "rejected",
+        "no mutation"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,775 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Khaata · PG / Hostel · Home · standardized with UI components v5 · v6</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <style>
+    /* === Khaata tokens v1 — copy unchanged === */
+    :root{
+      --canvas:#FDFCF8; --surface:#FFFFFF; --row:#F6F6F5; --line:#E6E0D7;
+      --ink:#171716; --muted:#6B6B69;
+      --alert:#FF6B5B; --alert-solid:#C23E2E; --alert-ink:#B83A2B; --alert-tint:#FFE4DF;
+      --pending:#EBC36B; --pending-ink:#6E5200; --pending-tile:#FFF0C4;
+      --done-ink:#1E7A4C; --done-tint:#DDF3E6;
+      --info:#D7E1FE; --info-ink:#2B3A75; --info-line:#C3D0F7;
+      --act:#2B3A75; --act-text:#FFFFFF;
+      --neutral-tile:#EDEDEC; --neutral-ink:#6B6B69;
+      --r-btn:14px; --r-card:20px; --r-pill:999px;
+      --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:24px; --sp-7:32px;
+      --dur-fast:.18s; --dur-slide:.5s; --ease-slide:cubic-bezier(.33,1,.68,1);
+      color-scheme:light;
+    }
+
+    @media (prefers-color-scheme:dark){
+      :root:not([data-theme="light"]){
+        --canvas:#1B1B1A; --surface:#262625; --row:#232322; --line:#38383a;
+        --ink:#FFFFFF; --muted:#9B9B98;
+        --alert:#E8705C; --alert-solid:#E8705C; --alert-ink:#F59384; --alert-tint:#3A2420;
+        --pending:#EBC36B; --pending-ink:#EBC36B; --pending-tile:#3A3122;
+        --done-ink:#74C99A; --done-tint:#244232;
+        --info:#252C42; --info-ink:#DCE4FF; --info-line:#34405E;
+        --act:#C9D4FB; --act-text:#1A2140;
+        --neutral-tile:#2A2A29; --neutral-ink:#9B9B98;
+        color-scheme:dark;
+      }
+    }
+    :root[data-theme="dark"]{
+      --canvas:#1B1B1A; --surface:#262625; --row:#232322; --line:#38383a;
+      --ink:#FFFFFF; --muted:#9B9B98;
+      --alert:#E8705C; --alert-solid:#E8705C; --alert-ink:#F59384; --alert-tint:#3A2420;
+      --pending:#EBC36B; --pending-ink:#EBC36B; --pending-tile:#3A3122;
+      --done-ink:#74C99A; --done-tint:#244232;
+      --info:#252C42; --info-ink:#DCE4FF; --info-line:#34405E;
+      --act:#C9D4FB; --act-text:#1A2140;
+      --neutral-tile:#2A2A29; --neutral-ink:#9B9B98;
+      color-scheme:dark;
+    }
+    /* === end Khaata tokens v1 === */
+
+    /* 2. Accepted non-semantic identity colours from Khaata UI components for build · v5.
+       These differentiate businesses/modules only; they never communicate payment or operational status. */
+    :root{
+      --idb-violet:#B898F4;   --idb-violet-ink:#171716;
+      --idb-lavender:#D3CCF2; --idb-lavender-ink:#171716;
+      --idb-blue:#8FB5F8;     --idb-blue-ink:#171716;
+      --idb-sky:#AFD8F0;      --idb-sky-ink:#171716;
+      --idb-teal:#8FD3CA;     --idb-teal-ink:#171716;
+      --idb-magenta:#E7A6D6;  --idb-magenta-ink:#171716;
+      --idb-sand:#E2D3BC;     --idb-sand-ink:#171716;
+      --biz-pink:#FBB9C2; --biz-pink-ink:#171716;
+      --biz-flambe:#D45B7A; --biz-flambe-ink:#FBFBFA;
+      --biz-crimson:#D42E57; --biz-crimson-ink:#FBFBFA;
+      --biz-fig:#3B1F3A; --biz-fig-ink:#FBFBFA;
+      --biz-inferno:#4E0000; --biz-inferno-ink:#FBFBFA;
+      --biz-pine:#0F2C24; --biz-pine-ink:#FBFBFA;
+      --biz-olive:#292E1E; --biz-olive-ink:#FBFBFA;
+      --biz-navy:#1E2A5A; --biz-navy-ink:#FBFBFA;
+    }
+    @media (prefers-color-scheme:dark){
+      :root:not([data-theme="light"]){
+        --idb-violet:#3B2A6E;   --idb-violet-ink:#FBFBFA;
+        --idb-lavender:#36305E; --idb-lavender-ink:#FBFBFA;
+        --idb-blue:#163A78;     --idb-blue-ink:#FBFBFA;
+        --idb-sky:#0F4A66;      --idb-sky-ink:#FBFBFA;
+        --idb-teal:#0E4D47;     --idb-teal-ink:#FBFBFA;
+        --idb-magenta:#5A1E4E;  --idb-magenta-ink:#FBFBFA;
+        --idb-sand:#4A3B26;     --idb-sand-ink:#FBFBFA;
+      }
+    }
+    :root[data-theme="dark"]{
+      --idb-violet:#3B2A6E;   --idb-violet-ink:#FBFBFA;
+      --idb-lavender:#36305E; --idb-lavender-ink:#FBFBFA;
+      --idb-blue:#163A78;     --idb-blue-ink:#FBFBFA;
+      --idb-sky:#0F4A66;      --idb-sky-ink:#FBFBFA;
+      --idb-teal:#0E4D47;     --idb-teal-ink:#FBFBFA;
+      --idb-magenta:#5A1E4E;  --idb-magenta-ink:#FBFBFA;
+      --idb-sand:#4A3B26;     --idb-sand-ink:#FBFBFA;
+    }
+
+    /* 2a. No new proposed tokens in this Home file. */
+
+    /* 3. Base */
+    *{box-sizing:border-box}
+    html{background:var(--canvas);color:var(--ink)}
+    body{
+      margin:0;
+      min-height:100vh;
+      background:var(--canvas);
+      color:var(--ink);
+      font-family:"Manrope",system-ui,sans-serif;
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+    }
+    button,input{font:inherit}
+    button{color:inherit}
+    button:focus-visible{outline:3px solid var(--info-line);outline-offset:2px}
+    [hidden]{display:none!important}
+    .app{max-width:520px;margin:0 auto;padding:env(safe-area-inset-top) var(--sp-4) 116px}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    .icon{width:20px;height:20px;stroke-width:2}
+
+    /* 4. Shared components */
+    .btn{
+      min-height:44px;border-radius:var(--r-btn);border:0;background:var(--act);color:var(--act-text);
+      padding:0 var(--sp-4);font-weight:800;display:inline-flex;align-items:center;justify-content:center;gap:var(--sp-2)
+    }
+    .btn.secondary{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+    .btn-primary{background:var(--act);color:var(--act-text);border-color:var(--act)}
+    .btn-ghost{background:transparent;border-color:transparent;color:var(--act)}
+    .pill{
+      min-height:28px;padding:0 10px;border-radius:var(--r-pill);display:inline-flex;align-items:center;
+      gap:6px;font-size:12px;font-weight:750;border:0;background:var(--neutral-tile);color:var(--neutral-ink);
+      white-space:nowrap
+    }
+    .pill-alert{background:var(--alert-tint);color:var(--alert-ink)}
+    .pill-pending{background:var(--pending-tile);color:var(--pending-ink)}
+    .pill-info{background:var(--info);color:var(--info-ink)}
+    .pill-done{background:var(--done-tint);color:var(--done-ink)}
+    .chip{
+      min-height:34px;padding:0 12px;border:1px solid var(--line);border-radius:var(--r-pill);
+      background:var(--surface);color:var(--ink);font-size:12px;font-weight:750
+    }
+    .card{border:1px solid var(--line);background:var(--surface);border-radius:var(--r-card)}
+    .scrim{
+      position:fixed;inset:0;z-index:30;background:var(--ink);opacity:.34;
+      border:0;padding:0
+    }
+    .sheet{
+      position:fixed;left:50%;bottom:0;z-index:40;width:min(100%,520px);max-height:82vh;
+      transform:translate(-50%,100%);transition:transform var(--dur-fast) ease;
+      background:var(--surface);border:1px solid var(--line);border-bottom:0;border-radius:24px 24px 0 0;
+      padding:10px var(--sp-4) calc(var(--sp-6) + env(safe-area-inset-bottom));overflow:auto
+    }
+    .sheet.is-open{transform:translate(-50%,0)}
+    .sheet-handle{width:40px;height:4px;border-radius:var(--r-pill);background:var(--line);margin:0 auto var(--sp-4)}
+    .sheet-head{display:flex;align-items:flex-start;gap:var(--sp-3);margin-bottom:var(--sp-4)}
+    .sheet-head-copy{flex:1}
+    .sheet-head h2{margin:0;font-size:20px;line-height:1.2;letter-spacing:-.02em}
+    .sheet-head p{margin:6px 0 0;color:var(--muted);font-size:13px;line-height:1.45}
+    .icon-btn{
+      width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--surface);
+      display:inline-grid;place-items:center;padding:0;flex:none
+    }
+    .sheet-group{margin-top:var(--sp-5)}
+    .sheet-label{margin:0 0 var(--sp-2);color:var(--muted);font-size:12px;font-weight:750;text-transform:uppercase;letter-spacing:.05em}
+    .sheet-row{display:flex;align-items:flex-start;gap:var(--sp-3);padding:13px 0;border-top:1px solid var(--line)}
+    .sheet-row:first-of-type{border-top:0}
+    .sheet-row-icon{
+      width:34px;height:34px;border-radius:11px;background:var(--row);display:grid;place-items:center;flex:none;color:var(--muted)
+    }
+    .sheet-row-icon.alert{background:var(--alert-tint);color:var(--alert-ink)}
+    .sheet-row-icon.pending{background:var(--pending-tile);color:var(--pending-ink)}
+    .sheet-row-icon.info{background:var(--info);color:var(--info-ink)}
+    .sheet-row-copy{flex:1;min-width:0}
+    .sheet-row-copy strong{display:block;font-size:14px;line-height:1.35}
+    .sheet-row-copy span{display:block;margin-top:3px;color:var(--muted);font-size:12px;line-height:1.4}
+    .sheet-row-action{margin-top:9px}
+    .sheet-row-action .btn{min-height:34px;padding:0 11px;font-size:12px}
+    .toast{
+      position:fixed;left:50%;bottom:100px;z-index:60;width:calc(min(520px,100%) - 32px);
+      transform:translate(-50%,16px);opacity:0;pointer-events:none;transition:all var(--dur-fast) ease;
+      background:var(--biz-pink);color:var(--biz-pink-ink);border-radius:var(--r-btn);padding:12px 14px;
+      display:flex;align-items:center;gap:var(--sp-3);font-size:13px;font-weight:650
+    }
+    .toast.is-on{transform:translate(-50%,0);opacity:1}
+    .toast button{margin-left:auto;border:0;background:transparent;color:inherit;font-weight:800}
+    .fab{
+      position:fixed;right:max(18px,calc((100vw - 520px)/2 + 18px));bottom:88px;z-index:35;
+      width:56px;height:56px;border-radius:50%;border:0;background:var(--act);color:var(--act-text);
+      display:grid;place-items:center;padding:0;box-shadow:0 10px 26px rgba(0,0,0,.18)
+    }
+    .fab-menu{
+      position:fixed;right:max(18px,calc((100vw - 520px)/2 + 18px));bottom:154px;z-index:35;
+      display:grid;gap:10px;opacity:0;transform:translateY(8px);pointer-events:none;transition:all var(--dur-fast) ease
+    }
+    .fab-menu.is-open{opacity:1;transform:none;pointer-events:auto}
+    .fab-action{display:flex;align-items:center;justify-content:flex-end;gap:9px}
+    .fab-action-label{
+      border:1px solid var(--line);background:var(--surface);border-radius:var(--r-pill);
+      padding:8px 11px;font-size:12px;font-weight:750
+    }
+    .fab-action-btn{
+      width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--surface);
+      display:grid;place-items:center;padding:0
+    }
+    .bbar{
+      position:fixed;left:50%;bottom:0;z-index:20;transform:translateX(-50%);
+      width:min(100%,520px);background:var(--surface);border-top:1px solid var(--line);
+      display:grid;grid-template-columns:repeat(4,1fr);padding:8px 8px calc(8px + env(safe-area-inset-bottom))
+    }
+    .bbar button{
+      min-height:50px;border:0;background:transparent;color:var(--muted);
+      display:grid;place-items:center;align-content:center;gap:4px;font-size:11px;font-weight:700
+    }
+    .bbar button[aria-current="page"]{color:var(--act)}
+    .bbar .icon{width:19px;height:19px}
+
+
+    .pghome-new{
+      margin:8px 0 2px;padding:10px 12px;border-radius:var(--r-card);
+      background:var(--info);color:var(--info-ink);font-size:11.5px;line-height:1.45
+    }
+    .pghome-new strong{font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+
+    /* 5. Screen-specific: PG Home */
+    .pghome-top{
+      display:flex;align-items:center;gap:var(--sp-3);padding:18px 0 12px
+    }
+    .pghome-mark{
+      width:42px;height:42px;border-radius:14px;background:var(--ink);color:var(--canvas);
+      display:grid;place-items:center;font-weight:800;letter-spacing:-.02em;flex:none
+    }
+    .pghome-business{
+      flex:1;min-width:0;border:0;background:transparent;text-align:left;padding:0
+    }
+    .pghome-business strong{display:block;font-size:16px;line-height:1.25}
+    .pghome-business span{display:flex;align-items:center;gap:4px;margin-top:3px;color:var(--muted);font-size:12px}
+    .pghome-business .icon{width:14px;height:14px}
+    .pghome-section{margin-top:var(--sp-6)}
+    .pghome-section-head{
+      display:flex;align-items:center;justify-content:space-between;gap:var(--sp-3);margin:0 2px 12px
+    }
+    .pghome-section-head h1,.pghome-section-head h2{margin:0;font-size:18px;line-height:1.25;letter-spacing:-.02em}
+    .pghome-section-head h1{font-size:20px}
+    .pghome-section-head span{color:var(--muted);font-size:12px;font-weight:650}
+    .pghome-deck-toggle{min-height:34px;padding:0 11px}
+
+    .pghome-deck{position:relative;min-height:280px;touch-action:pan-y}
+    .pghome-deck.is-list{height:auto!important;min-height:0;display:grid;gap:var(--sp-3)}
+    .pghome-attn-card{
+      position:absolute;left:0;right:0;height:auto;min-height:218px;padding:14px 15px;
+      transition:top var(--dur-slide) var(--ease-slide),left var(--dur-slide) var(--ease-slide),right var(--dur-slide) var(--ease-slide),transform var(--dur-slide) var(--ease-slide);
+      overflow:visible
+    }
+    .pghome-attn-card[data-slot="front"]{top:50px;right:10px;z-index:3;box-shadow:8px -4px 18px rgba(0,0,0,.08)}
+    .pghome-attn-card[data-slot="back"]{top:12px;left:6px;right:4px;z-index:2}
+    .pghome-deck.is-list .pghome-attn-card{position:relative;top:auto;left:auto;right:auto;height:auto;min-height:218px;box-shadow:none}
+    .pghome-card-head{
+      width:100%;border:0;background:transparent;padding:0;display:flex;align-items:flex-start;gap:var(--sp-3);text-align:left
+    }
+    .pghome-card-title{font-size:17px;font-weight:800;line-height:1.2}
+    .pghome-card-meta{margin-left:auto;font-size:12px;font-weight:750;color:var(--muted);white-space:nowrap}
+    .pghome-card-meta.alert{color:var(--alert-ink)}
+    .pghome-pills{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+    .pghome-preview{margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
+    .pghome-preview-row{display:flex;gap:10px;padding:6px 0}
+    .pghome-preview-icon{
+      width:28px;height:28px;border-radius:10px;display:grid;place-items:center;flex:none;margin-top:1px
+    }
+    .pghome-preview-icon.alert{background:var(--alert-tint);color:var(--alert-ink)}
+    .pghome-preview-icon.pending{background:var(--pending-tile);color:var(--pending-ink)}
+    .pghome-preview-icon.info{background:var(--info);color:var(--info-ink)}
+    .pghome-preview-icon .icon{width:15px;height:15px}
+    .pghome-preview-copy{min-width:0}
+    .pghome-preview-copy strong{display:block;font-size:13px;line-height:1.35}
+    .pghome-preview-copy span{display:block;margin-top:2px;color:var(--muted);font-size:11.5px;line-height:1.4}
+    .pghome-quick{
+      width:100%;min-height:36px;border:0;border-top:1px solid var(--line);background:transparent;
+      display:flex;align-items:center;justify-content:space-between;margin-top:8px;padding:8px 0 0;color:var(--act);font-size:12px;font-weight:800
+    }
+    .pghome-quick .icon{width:16px;height:16px}
+
+    .pghome-pulse{padding:0;overflow:hidden}
+    .pghome-pulse-grid{display:grid;grid-template-columns:1fr 1fr}
+    .pghome-metric{
+      border:0;background:transparent;text-align:left;padding:18px 16px;min-width:0
+    }
+    .pghome-metric:nth-child(even){border-left:1px solid var(--line)}
+    .pghome-metric:nth-child(n+3){border-top:1px solid var(--line)}
+    .pghome-metric span{display:block;color:var(--muted);font-size:12px;font-weight:650;line-height:1.35}
+    .pghome-metric strong{display:block;margin-top:7px;color:var(--ink);font-size:25px;line-height:1;font-weight:800;letter-spacing:-.03em}
+    .pghome-metric small{display:flex;align-items:center;gap:5px;margin-top:9px;color:var(--muted);font-size:11px;line-height:1.35}
+    .pghome-metric small .icon{width:13px;height:13px}
+    .pghome-pulse-note{padding:12px 16px;border-top:1px solid var(--line);color:var(--muted);font-size:11.5px;line-height:1.45}
+
+    .pghome-sheet-summary{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:var(--sp-3)}
+    .pghome-mini{border:1px solid var(--line);background:var(--row);border-radius:14px;padding:12px}
+    .pghome-mini span{display:block;color:var(--muted);font-size:11px}
+    .pghome-mini strong{display:block;margin-top:4px;font-size:18px}
+
+    @media(max-width:380px){
+      .pghome-attn-card{min-height:226px}
+      .pghome-deck{min-height:290px}
+      .pghome-metric{padding:16px 13px}
+      .pghome-metric strong{font-size:23px}
+    }
+    @media(prefers-reduced-motion:reduce){
+      *,*:before,*:after{scroll-behavior:auto!important;transition-duration:0s!important;animation-duration:0s!important}
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <div class="pghome-new"><strong>New in this file</strong><br>Home standardized against Khaata UI components for build · v5: borderless status pills, accepted button roles, and the non-semantic business colour mark. Frozen PG Home structure and semantics are unchanged. Quick View rows now use meaningful contextual icons instead of the previous empty-circle placeholder.</div>
+    <header class="pghome-top">
+      <div class="pghome-mark" aria-hidden="true">S</div>
+      <button class="pghome-business" data-act="business" aria-label="Switch business">
+        <strong>Sunrise PG</strong>
+        <span>PG / Hostel · Bengaluru <i class="icon" data-lucide="chevron-down" aria-hidden="true"></i></span>
+      </button>
+      <button class="icon-btn" data-act="theme" aria-label="Toggle light or dark theme">
+        <i class="icon" data-lucide="sun-moon" aria-hidden="true"></i>
+      </button>
+    </header>
+
+    <section class="pghome-section" aria-labelledby="today-title">
+      <div class="pghome-section-head">
+        <h1 id="today-title">Today</h1>
+        <button class="chip pghome-deck-toggle" data-act="toggle-deck" aria-pressed="false">
+          <i class="icon" data-lucide="layers-2" aria-hidden="true"></i>
+          <span>Show all</span>
+        </button>
+      </div>
+
+      <div class="pghome-deck" id="todayDeck">
+        <article class="card pghome-attn-card" data-card="attention" data-slot="front">
+          <button class="pghome-card-head" data-act="front-card" data-card="attention" aria-label="Bring Needs attention card to front">
+            <span class="pghome-card-title">Needs attention</span>
+            <span class="pghome-card-meta alert">2 urgent</span>
+          </button>
+          <div class="pghome-pills">
+            <span class="pill pill-alert">3 overdue</span>
+            <span class="pill pill-alert">1 conflict</span>
+            <span class="pill pill-pending">2 approvals</span>
+            <span class="pill pill-pending">2 handovers</span>
+          </div>
+          <div class="pghome-preview">
+            <div class="pghome-preview-row">
+              <span class="pghome-preview-icon alert"><i class="icon" data-lucide="circle-alert" aria-hidden="true"></i></span>
+              <span class="pghome-preview-copy"><strong>Rajesh · ₹12,000 overdue</strong><span>2 months · exceeds security by ₹2,000</span></span>
+            </div>
+            <div class="pghome-preview-row">
+              <span class="pghome-preview-icon alert"><i class="icon" data-lucide="bed-double" aria-hidden="true"></i></span>
+              <span class="pghome-preview-copy"><strong>Room 101-A conflict</strong><span>Rajesh until 5 Dec · Priya from 1 Dec</span></span>
+            </div>
+          </div>
+          <button class="pghome-quick" data-act="open-attention">
+            <span>Quick view</span><i class="icon" data-lucide="chevron-right" aria-hidden="true"></i>
+          </button>
+        </article>
+
+        <article class="card pghome-attn-card" data-card="upcoming" data-slot="back">
+          <button class="pghome-card-head" data-act="front-card" data-card="upcoming" aria-label="Bring Coming up card to front">
+            <span class="pghome-card-title">Coming up</span>
+            <span class="pghome-card-meta">Next 7 days</span>
+          </button>
+          <div class="pghome-pills">
+            <span class="pill pill-info">2 joining</span>
+            <span class="pill pill-info">1 moving out</span>
+            <span class="pill">18 rents due</span>
+          </div>
+          <div class="pghome-preview">
+            <div class="pghome-preview-row">
+              <span class="pghome-preview-icon info"><i class="icon" data-lucide="calendar-plus" aria-hidden="true"></i></span>
+              <span class="pghome-preview-copy"><strong>Priya joins tomorrow · Room 102-A</strong><span>ID proof still missing</span></span>
+            </div>
+            <div class="pghome-preview-row">
+              <span class="pghome-preview-icon info"><i class="icon" data-lucide="calendar-clock" aria-hidden="true"></i></span>
+              <span class="pghome-preview-copy"><strong>18 rents due on 5 Oct</strong><span>₹1,08,000 expected</span></span>
+            </div>
+          </div>
+          <button class="pghome-quick" data-act="open-upcoming">
+            <span>Quick view</span><i class="icon" data-lucide="chevron-right" aria-hidden="true"></i>
+          </button>
+        </article>
+      </div>
+    </section>
+
+    <section class="pghome-section" aria-labelledby="pulse-title">
+      <div class="pghome-section-head">
+        <h2 id="pulse-title">Business pulse</h2>
+        <span>October</span>
+      </div>
+      <div class="card pghome-pulse">
+        <div class="pghome-pulse-grid">
+          <button class="pghome-metric" data-act="open-collected">
+            <span>Collected</span>
+            <strong>₹3.42L</strong>
+            <small><i class="icon" data-lucide="receipt-indian-rupee" aria-hidden="true"></i>42 payments</small>
+          </button>
+          <button class="pghome-metric" data-act="open-outstanding">
+            <span>Outstanding</span>
+            <strong>₹28K</strong>
+            <small><i class="icon" data-lucide="clock-3" aria-hidden="true"></i>₹16K overdue</small>
+          </button>
+          <button class="pghome-metric" data-act="open-vacant">
+            <span>Vacant beds</span>
+            <strong>7</strong>
+            <small><i class="icon" data-lucide="bed-single" aria-hidden="true"></i>Available now</small>
+          </button>
+          <button class="pghome-metric" data-act="open-vacating">
+            <span>Becoming vacant</span>
+            <strong>4</strong>
+            <small><i class="icon" data-lucide="calendar-range" aria-hidden="true"></i>This month</small>
+          </button>
+        </div>
+        <div class="pghome-pulse-note">Money is for the current month. Occupancy is the current property state.</div>
+      </div>
+    </section>
+  </main>
+
+  <button class="scrim" id="scrim" data-act="close-overlay" aria-label="Close open menu or sheet" hidden></button>
+
+  <div class="fab-menu" id="fabMenu" aria-hidden="true">
+    <div class="fab-action"><span class="fab-action-label">Add tenant</span><button class="fab-action-btn" data-act="quick-add-tenant" aria-label="Add tenant"><i class="icon" data-lucide="user-plus" aria-hidden="true"></i></button></div>
+    <div class="fab-action"><span class="fab-action-label">Record payment</span><button class="fab-action-btn" data-act="quick-payment" aria-label="Record payment"><i class="icon" data-lucide="indian-rupee" aria-hidden="true"></i></button></div>
+    <div class="fab-action"><span class="fab-action-label">Add expense</span><button class="fab-action-btn" data-act="quick-expense" aria-label="Add expense"><i class="icon" data-lucide="receipt-text" aria-hidden="true"></i></button></div>
+    <div class="fab-action"><span class="fab-action-label">Add charge</span><button class="fab-action-btn" data-act="quick-charge" aria-label="Add charge"><i class="icon" data-lucide="badge-plus" aria-hidden="true"></i></button></div>
+  </div>
+  <button class="fab" id="fab" data-act="fab" aria-label="Open create actions" aria-expanded="false">
+    <i class="icon" data-lucide="plus" aria-hidden="true"></i>
+  </button>
+
+  <nav class="bbar" aria-label="Primary navigation">
+    <button aria-current="page" data-act="nav-home"><i class="icon" data-lucide="house" aria-hidden="true"></i><span>Home</span></button>
+    <button data-act="nav-tenants"><i class="icon" data-lucide="users" aria-hidden="true"></i><span>Tenants</span></button>
+    <button data-act="nav-collections"><i class="icon" data-lucide="wallet-cards" aria-hidden="true"></i><span>Collections</span></button>
+    <button data-act="nav-more"><i class="icon" data-lucide="menu" aria-hidden="true"></i><span>More</span></button>
+  </nav>
+
+  <section class="sheet" id="attentionSheet" role="dialog" aria-modal="true" aria-labelledby="attentionSheetTitle">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <div class="sheet-head-copy"><h2 id="attentionSheetTitle">Needs attention</h2><p>8 unresolved situations · urgent first</p></div>
+      <button class="icon-btn" data-act="close-sheet" aria-label="Close Needs attention"><i class="icon" data-lucide="x" aria-hidden="true"></i></button>
+    </div>
+    <div class="sheet-group">
+      <div class="sheet-label">Urgent</div>
+      <div class="sheet-row">
+        <span class="sheet-row-icon alert"><i class="icon" data-lucide="circle-alert" aria-hidden="true"></i></span>
+        <div class="sheet-row-copy"><strong>Rajesh · ₹12,000 overdue</strong><span>2 months · exceeds security by ₹2,000</span><div class="sheet-row-action"><button class="btn secondary" data-act="review-rajesh">Review</button></div></div>
+        <span class="pill pill-alert">18 days</span>
+      </div>
+      <div class="sheet-row">
+        <span class="sheet-row-icon alert"><i class="icon" data-lucide="bed-double" aria-hidden="true"></i></span>
+        <div class="sheet-row-copy"><strong>Room 101-A conflict</strong><span>Rajesh until 5 Dec · Priya from 1 Dec</span><div class="sheet-row-action"><button class="btn secondary" data-act="resolve-conflict">Resolve</button></div></div>
+        <span class="pill pill-alert">Conflict</span>
+      </div>
+    </div>
+    <div class="sheet-group">
+      <div class="sheet-label">Action required</div>
+      <div class="sheet-row">
+        <span class="sheet-row-icon pending"><i class="icon" data-lucide="stamp" aria-hidden="true"></i></span>
+        <div class="sheet-row-copy"><strong>2 approvals waiting</strong><span>Rent discount · Expense approval</span></div>
+        <span class="pill pill-pending">2 waiting</span>
+      </div>
+      <div class="sheet-row">
+        <span class="sheet-row-icon pending"><i class="icon" data-lucide="hand-coins" aria-hidden="true"></i></span>
+        <div class="sheet-row-copy"><strong>Cash handover needs confirmation</strong><span>Ravi → Amit · ₹8,000</span></div>
+        <span class="pill pill-pending">Today</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet" id="upcomingSheet" role="dialog" aria-modal="true" aria-labelledby="upcomingSheetTitle">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <div class="sheet-head-copy"><h2 id="upcomingSheetTitle">Coming up</h2><p>Next 7 days</p></div>
+      <button class="icon-btn" data-act="close-sheet" aria-label="Close Coming up"><i class="icon" data-lucide="x" aria-hidden="true"></i></button>
+    </div>
+    <div class="sheet-group">
+      <div class="sheet-label">Tomorrow</div>
+      <div class="sheet-row">
+        <span class="sheet-row-icon info"><i class="icon" data-lucide="calendar-plus" aria-hidden="true"></i></span>
+        <div class="sheet-row-copy"><strong>Priya joins · Room 102-A</strong><span>ID proof still missing</span></div>
+        <span class="pill pill-info">Tomorrow</span>
+      </div>
+    </div>
+    <div class="sheet-group">
+      <div class="sheet-label">5 Oct</div>
+      <div class="sheet-row">
+        <span class="sheet-row-icon info"><i class="icon" data-lucide="calendar-clock" aria-hidden="true"></i></span>
+        <div class="sheet-row-copy"><strong>18 rents due</strong><span>₹1,08,000 expected</span></div>
+        <span class="pill">5 Oct</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet" id="pulseSheet" role="dialog" aria-modal="true" aria-labelledby="pulseSheetTitle">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <div class="sheet-head-copy"><h2 id="pulseSheetTitle">Collected</h2><p id="pulseSheetSub">October</p></div>
+      <button class="icon-btn" data-act="close-sheet" aria-label="Close Business pulse detail"><i class="icon" data-lucide="x" aria-hidden="true"></i></button>
+    </div>
+    <div class="pghome-sheet-summary" id="pulseSummary"></div>
+    <div id="pulseRows"></div>
+  </section>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"><span id="toastText">Done</span><button data-act="undo" hidden>Undo</button></div>
+
+  <script>
+    const state = {
+      theme: null,
+      deckMode: "stack",
+      frontCard: "attention",
+      overlay: null,
+      fabOpen: false,
+      toastTimer: null,
+      pulse: {
+        collected: {
+          title: "Collected",
+          icon: "receipt-indian-rupee",
+          sub: "October · 42 payments",
+          summary: [["Total", "₹3.42L"], ["Most recent", "Today"]],
+          rows: [
+            ["Priya", "₹8,000", "4 Oct · UPI · Rent"],
+            ["Amit", "₹6,500", "3 Oct · Cash · Collected by Ravi"],
+            ["Neha", "₹7,500", "3 Oct · Bank transfer · Rent"]
+          ]
+        },
+        outstanding: {
+          title: "Outstanding",
+          icon: "indian-rupee",
+          sub: "₹28K total",
+          summary: [["This month", "₹12K"], ["Older dues", "₹16K"]],
+          rows: [
+            ["Rajesh", "₹12,000", "18 days overdue"],
+            ["Vikram", "₹8,000", "Due this month"],
+            ["Pooja", "₹8,000", "Due this month"]
+          ]
+        },
+        vacant: {
+          title: "Vacant beds",
+          icon: "bed-single",
+          sub: "7 available now",
+          summary: [["Available", "7"], ["Reserved", "2"]],
+          rows: [
+            ["Room 101", "Bed A", "Available now"],
+            ["Room 103", "Bed B", "Available now"],
+            ["Room 204", "Bed A", "Available now"]
+          ]
+        },
+        vacating: {
+          title: "Becoming vacant",
+          icon: "calendar-range",
+          sub: "4 this month",
+          summary: [["Next", "8 Oct"], ["This month", "4"]],
+          rows: [
+            ["Room 102", "Bed A", "8 Oct"],
+            ["Room 201", "Bed B", "14 Oct"],
+            ["Room 304", "Bed A", "21 Oct"]
+          ]
+        }
+      }
+    };
+
+    function setTheme(value){
+      state.theme = value;
+      if (value) document.documentElement.setAttribute("data-theme", value);
+      else document.documentElement.removeAttribute("data-theme");
+    }
+
+    function renderLucideIcons(){
+      if (window.lucide && typeof window.lucide.createIcons === "function") {
+        window.lucide.createIcons();
+        return;
+      }
+
+      /* Local fallback for file:// review if the pinned CDN cannot load.
+         Paths use Lucide-style currentColor strokes; data-lucide stays the source name. */
+      var icons = {
+        "chevron-down":'<path d="m6 9 6 6 6-6"/>',
+        "sun-moon":'<path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/><circle cx="12" cy="12" r="4"/><path d="M20.5 15.5A4.5 4.5 0 1 1 15.5 20a5.5 5.5 0 0 0 5-4.5Z"/>',
+        "layers-2":'<path d="m16.02 12.827 2.98 1.7-7 4-7-4 2.98-1.7"/><path d="m16.02 8.827 2.98 1.7-7 4-7-4 2.98-1.7"/><path d="m12 2.527 7 4-7 4-7-4 7-4Z"/>',
+        "circle-alert":'<circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/>',
+        "bed-double":'<path d="M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8"/><path d="M2 14h20"/><path d="M6 10V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4"/><path d="M14 10V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4"/>',
+        "chevron-right":'<path d="m9 18 6-6-6-6"/>',
+        "calendar-plus":'<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M12 14v4"/><path d="M10 16h4"/>',
+        "calendar-clock":'<path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7.5"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h5"/><circle cx="18" cy="18" r="4"/><path d="M18 16.5V18l1 1"/>',
+        "receipt-indian-rupee":'<path d="M4 2v20l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2V2l-2 2-2-2-2 2-2-2-2 2-2-2-2 2Z"/><path d="M8 13h5"/><path d="M8 9h8"/><path d="M14 17.5 8 13l6-4"/>',
+        "clock-3":'<circle cx="12" cy="12" r="10"/><path d="M12 6v6h4"/>',
+        "bed-single":'<path d="M3 7v11"/><path d="M21 18V9a2 2 0 0 0-2-2H7a4 4 0 0 0-4 4v7"/><path d="M3 13h18"/><path d="M7 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/>',
+        "calendar-range":'<rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/><path d="M17 14h-6"/><path d="M13 18H7"/><path d="M7 14h.01"/><path d="M17 18h.01"/>',
+        "plus":'<path d="M5 12h14"/><path d="M12 5v14"/>',
+        "user-plus":'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/>',
+        "indian-rupee":'<path d="M6 3h12"/><path d="M6 8h12"/><path d="m6 13 8.5 8"/><path d="M6 13h3a5 5 0 0 0 0-10"/>',
+        "receipt-text":'<path d="M4 2v20l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2V2l-2 2-2-2-2 2-2-2-2 2-2-2-2 2Z"/><path d="M8 8h8"/><path d="M8 12h8"/><path d="M8 16h5"/>',
+        "badge-plus":'<path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.78 4.78 4 4 0 0 1-6.74 0 4 4 0 0 1-4.78-4.78 4 4 0 0 1 0-6.75Z"/><path d="M12 8v8"/><path d="M8 12h8"/>',
+        "house":'<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+        "users":'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+        "wallet-cards":'<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 8h18"/><path d="M7 16h2"/><path d="M13 16h4"/>',
+        "menu":'<path d="M4 12h16"/><path d="M4 6h16"/><path d="M4 18h16"/>',
+        "x":'<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+        "stamp":'<path d="M5 22h14"/><path d="M19 13v3a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-3"/><path d="M6 13h12l-2-5H8l-2 5Z"/><path d="M9 8V4a3 3 0 0 1 6 0v4"/>',
+        "hand-coins":'<path d="M11 15h2a2 2 0 1 0 0-4H10c-.6 0-1.1.2-1.5.6L3 17"/><path d="m7 21 1.6-1.4c.4-.4 1-.6 1.5-.6H16c1.1 0 2.1-.4 2.8-1.2L22 14"/><path d="m2 16 6 6"/><circle cx="16" cy="6" r="3"/>',
+        "circle":'<circle cx="12" cy="12" r="10"/>'
+      };
+
+      document.querySelectorAll("[data-lucide]").forEach(function(node){
+        var name = node.getAttribute("data-lucide");
+        var markup = icons[name];
+        if (!markup) return;
+        var cls = node.getAttribute("class") || "";
+        var aria = node.getAttribute("aria-hidden");
+        var svg = document.createElementNS("http://www.w3.org/2000/svg","svg");
+        svg.setAttribute("viewBox","0 0 24 24");
+        svg.setAttribute("fill","none");
+        svg.setAttribute("stroke","currentColor");
+        svg.setAttribute("stroke-width","2");
+        svg.setAttribute("stroke-linecap","round");
+        svg.setAttribute("stroke-linejoin","round");
+        svg.setAttribute("class", cls);
+        if (aria) svg.setAttribute("aria-hidden", aria);
+        svg.innerHTML = markup;
+        node.replaceWith(svg);
+      });
+    }
+
+    function syncDeckHeight(){
+      var deck = document.getElementById("todayDeck");
+      if (!deck || state.deckMode === "list") {
+        if (deck) deck.style.height = "";
+        return;
+      }
+      var cards = deck.querySelectorAll(".pghome-attn-card");
+      var maxBottom = 0;
+      cards.forEach(function(card){
+        var top = card.dataset.slot === "front" ? 50 : 12;
+        var bottom = top + card.offsetHeight;
+        if (bottom > maxBottom) maxBottom = bottom;
+      });
+      deck.style.height = (maxBottom + 8) + "px";
+    }
+
+    function render(){
+      const deck = document.getElementById("todayDeck");
+      const toggle = document.querySelector('[data-act="toggle-deck"]');
+      const attention = document.querySelector('[data-card="attention"]');
+      const upcoming = document.querySelector('[data-card="upcoming"]');
+
+      deck.classList.toggle("is-list", state.deckMode === "list");
+      toggle.setAttribute("aria-pressed", state.deckMode === "list" ? "true" : "false");
+      toggle.querySelector("span").textContent = state.deckMode === "list" ? "Stack cards" : "Show all";
+
+      if (state.deckMode === "stack") {
+        attention.dataset.slot = state.frontCard === "attention" ? "front" : "back";
+        upcoming.dataset.slot = state.frontCard === "upcoming" ? "front" : "back";
+      } else {
+        attention.dataset.slot = "front";
+        upcoming.dataset.slot = "back";
+      }
+
+      const scrim = document.getElementById("scrim");
+      const fabMenu = document.getElementById("fabMenu");
+      const fab = document.getElementById("fab");
+      fabMenu.classList.toggle("is-open", state.fabOpen);
+      fabMenu.setAttribute("aria-hidden", state.fabOpen ? "false" : "true");
+      fab.setAttribute("aria-expanded", state.fabOpen ? "true" : "false");
+
+      document.querySelectorAll(".sheet").forEach(function(sheet){
+        sheet.classList.toggle("is-open", state.overlay === sheet.id);
+      });
+
+      const hasOverlay = !!state.overlay || state.fabOpen;
+      scrim.hidden = !hasOverlay;
+
+      renderLucideIcons();
+      requestAnimationFrame(syncDeckHeight);
+    }
+
+    function openSheet(id){
+      state.fabOpen = false;
+      state.overlay = id;
+      render();
+    }
+
+    function closeOverlay(){
+      state.overlay = null;
+      state.fabOpen = false;
+      render();
+    }
+
+    function showToast(message){
+      const toast = document.getElementById("toast");
+      document.getElementById("toastText").textContent = message;
+      toast.classList.add("is-on");
+      clearTimeout(state.toastTimer);
+      state.toastTimer = setTimeout(function(){ toast.classList.remove("is-on"); }, 1800);
+    }
+
+    function openPulse(key){
+      const data = state.pulse[key];
+      document.getElementById("pulseSheetTitle").textContent = data.title;
+      document.getElementById("pulseSheetSub").textContent = data.sub;
+
+      const summary = document.getElementById("pulseSummary");
+      summary.innerHTML = data.summary.map(function(item){
+        return '<div class="pghome-mini"><span>'+item[0]+'</span><strong>'+item[1]+'</strong></div>';
+      }).join("");
+
+      const rows = document.getElementById("pulseRows");
+      rows.innerHTML = '<div class="sheet-group"><div class="sheet-label">Quick view</div>' +
+        data.rows.map(function(row){
+          return '<div class="sheet-row"><span class="sheet-row-icon"><i class="icon" data-lucide="'+data.icon+'"></i></span><div class="sheet-row-copy"><strong>'+row[0]+' · '+row[1]+'</strong><span>'+row[2]+'</span></div></div>';
+        }).join("") + '</div>';
+
+      openSheet("pulseSheet");
+    }
+
+    document.addEventListener("click", function(e){
+      const b = e.target.closest("[data-act]");
+      if (!b) return;
+      const act = b.dataset.act;
+
+      if (act === "theme") {
+        const current = document.documentElement.getAttribute("data-theme");
+        if (current === "dark") setTheme("light");
+        else if (current === "light") setTheme("dark");
+        else {
+          const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+          setTheme(prefersDark ? "light" : "dark");
+        }
+      }
+
+      if (act === "toggle-deck") {
+        state.deckMode = state.deckMode === "stack" ? "list" : "stack";
+        render();
+      }
+
+      if (act === "front-card" && state.deckMode === "stack") {
+        state.frontCard = b.dataset.card;
+        render();
+      }
+
+      if (act === "open-attention") openSheet("attentionSheet");
+      if (act === "open-upcoming") openSheet("upcomingSheet");
+      if (act === "open-collected") openPulse("collected");
+      if (act === "open-outstanding") openPulse("outstanding");
+      if (act === "open-vacant") openPulse("vacant");
+      if (act === "open-vacating") openPulse("vacating");
+
+      if (act === "fab") {
+        state.overlay = null;
+        state.fabOpen = !state.fabOpen;
+        render();
+      }
+
+      if (act === "close-overlay" || act === "close-sheet") closeOverlay();
+
+      if (act === "quick-add-tenant") { closeOverlay(); showToast("Add tenant"); }
+      if (act === "quick-payment") { closeOverlay(); showToast("Record payment"); }
+      if (act === "quick-expense") { closeOverlay(); showToast("Add expense"); }
+      if (act === "quick-charge") { closeOverlay(); showToast("Add charge"); }
+
+      if (act === "review-rajesh") showToast("Opening Rajesh");
+      if (act === "resolve-conflict") showToast("Opening bed conflict");
+      if (act === "business") showToast("Business switcher");
+      if (act === "nav-home") showToast("Home");
+      if (act === "nav-tenants") showToast("Tenants");
+      if (act === "nav-collections") showToast("Collections");
+      if (act === "nav-more") showToast("More");
+    });
+
+    window.addEventListener("resize", function(){
+      requestAnimationFrame(syncDeckHeight);
+    });
+
+    render();
+  </script>
+</body>
+</html>

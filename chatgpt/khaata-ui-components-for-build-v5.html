@@ -1,0 +1,781 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Khaata · Khaata UI components for build · v5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<style>
+/* 1. === Khaata tokens v1 — copy unchanged === */
+:root{
+  --canvas:#FDFCF8; --surface:#FFFFFF; --row:#F6F6F5; --line:#E6E0D7;
+  --ink:#171716; --muted:#6B6B69;
+  --alert:#FF6B5B; --alert-solid:#C23E2E; --alert-ink:#B83A2B; --alert-tint:#FFE4DF;
+  --pending:#EBC36B; --pending-ink:#6E5200; --pending-tile:#FFF0C4;
+  --done-ink:#1E7A4C; --done-tint:#DDF3E6;
+  --info:#D7E1FE; --info-ink:#2B3A75; --info-line:#C3D0F7;
+  --act:#2B3A75; --act-text:#FFFFFF;
+  --neutral-tile:#EDEDEC; --neutral-ink:#6B6B69;
+  --r-btn:14px; --r-card:20px; --r-pill:999px;
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:24px; --sp-7:32px;
+  --dur-fast:.18s; --dur-slide:.5s; --ease-slide:cubic-bezier(.33,1,.68,1);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --canvas:#1B1B1A; --surface:#262625; --row:#232322; --line:#38383a;
+    --ink:#FFFFFF; --muted:#9B9B98;
+    --alert:#E8705C; --alert-solid:#E8705C; --alert-ink:#F59384; --alert-tint:#3A2420;
+    --pending:#EBC36B; --pending-ink:#EBC36B; --pending-tile:#3A3122;
+    --done-ink:#74C99A; --done-tint:#244232;
+    --info:#252C42; --info-ink:#DCE4FF; --info-line:#34405E;
+    --act:#C9D4FB; --act-text:#1A2140;
+    --neutral-tile:#2A2A29; --neutral-ink:#9B9B98;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --canvas:#1B1B1A; --surface:#262625; --row:#232322; --line:#38383a;
+  --ink:#FFFFFF; --muted:#9B9B98;
+  --alert:#E8705C; --alert-solid:#E8705C; --alert-ink:#F59384; --alert-tint:#3A2420;
+  --pending:#EBC36B; --pending-ink:#EBC36B; --pending-tile:#3A3122;
+  --done-ink:#74C99A; --done-tint:#244232;
+  --info:#252C42; --info-ink:#DCE4FF; --info-line:#34405E;
+  --act:#C9D4FB; --act-text:#1A2140;
+  --neutral-tile:#2A2A29; --neutral-ink:#9B9B98;
+  color-scheme:dark;
+}
+/* === end Khaata tokens v1 === */
+
+/* 2. decided: identity colours (Option B) — light tiles + black ink; dark mode deep tiles + near-white ink. Never a status meaning. */
+:root{
+  --idb-violet:#B898F4;   --idb-violet-ink:#171716;
+  --idb-lavender:#D3CCF2; --idb-lavender-ink:#171716;
+  --idb-blue:#8FB5F8;     --idb-blue-ink:#171716;
+  --idb-sky:#AFD8F0;      --idb-sky-ink:#171716;
+  --idb-teal:#8FD3CA;     --idb-teal-ink:#171716;
+  --idb-magenta:#E7A6D6;  --idb-magenta-ink:#171716;
+  --idb-sand:#E2D3BC;     --idb-sand-ink:#171716;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+  --idb-violet:#3B2A6E;   --idb-violet-ink:#FBFBFA;
+  --idb-lavender:#36305E; --idb-lavender-ink:#FBFBFA;
+  --idb-blue:#163A78;     --idb-blue-ink:#FBFBFA;
+  --idb-sky:#0F4A66;      --idb-sky-ink:#FBFBFA;
+  --idb-teal:#0E4D47;     --idb-teal-ink:#FBFBFA;
+  --idb-magenta:#5A1E4E;  --idb-magenta-ink:#FBFBFA;
+  --idb-sand:#4A3B26;     --idb-sand-ink:#FBFBFA;
+  }
+}
+:root[data-theme="dark"]{
+  --idb-violet:#3B2A6E;   --idb-violet-ink:#FBFBFA;
+  --idb-lavender:#36305E; --idb-lavender-ink:#FBFBFA;
+  --idb-blue:#163A78;     --idb-blue-ink:#FBFBFA;
+  --idb-sky:#0F4A66;      --idb-sky-ink:#FBFBFA;
+  --idb-teal:#0E4D47;     --idb-teal-ink:#FBFBFA;
+  --idb-magenta:#5A1E4E;  --idb-magenta-ink:#FBFBFA;
+  --idb-sand:#4A3B26;     --idb-sand-ink:#FBFBFA;
+}
+/* proposed: hub header — fixed deep identity tone + near-white ink, same in both themes */
+:root{
+  --idh-violet:#3B2A6E;
+  --idh-lavender:#36305E;
+  --idh-blue:#163A78;
+  --idh-sky:#0F4A66;
+  --idh-teal:#0E4D47;
+  --idh-magenta:#5A1E4E;
+  --idh-sand:#4A3B26;
+  --idh-ink:#FBFBFA;
+}
+/* decided: business colour mark — used only inside the lettered circle, same in both themes */
+:root{
+  --biz-pink:#FBB9C2; --biz-pink-ink:#171716;
+  --biz-flambe:#D45B7A; --biz-flambe-ink:#FBFBFA;
+  --biz-crimson:#D42E57; --biz-crimson-ink:#FBFBFA;
+  --biz-fig:#3B1F3A; --biz-fig-ink:#FBFBFA;
+  --biz-inferno:#4E0000; --biz-inferno-ink:#FBFBFA;
+  --biz-pine:#0F2C24; --biz-pine-ink:#FBFBFA;
+  --biz-olive:#292E1E; --biz-olive-ink:#FBFBFA;
+  --biz-navy:#1E2A5A; --biz-navy-ink:#FBFBFA;
+}
+/* proposed: launch-card tones — fixed deep surface in both themes, bright art */
+:root{
+  --deep-teal:#0E4D47; --deep-teal-ink:#E3FAF6; --deep-teal-muted:#9FD9CF;
+  --art-teal:#5EE3D0; --art-teal-2:#B9F5EC;
+  --art-violet:#9F7BFF; --art-violet-2:#DCCEFF;
+  --art-ink:#141413;
+}
+/* decided: no monospace font */
+:root{ --font-mono:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif; } /* decided: single typeface; this alias stays Manrope, never add a mono font */
+/* 3. Base */
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--canvas);color:var(--ink);font-family:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--act);outline-offset:2px}
+svg.lucide{width:18px;height:18px;flex:0 0 auto}
+p{margin:0;color:var(--muted);font-size:12.5px;line-height:1.5}
+.app{max-width:820px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top)) 16px calc(48px + env(safe-area-inset-bottom))}
+
+/* 4. Shared components */
+.btn{min-height:42px;border-radius:var(--r-btn);padding:0 16px;border:0;background:var(--act);color:var(--act-text);font-weight:800;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn.secondary{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.ibtn{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);display:grid;place-items:center;flex:0 0 auto;padding:0}
+.pill{display:inline-flex;align-items:center;gap:4px;border-radius:var(--r-pill);padding:4px 9px;font-size:11px;font-weight:800;white-space:nowrap}
+.pill.alert{background:var(--alert-tint);color:var(--alert-ink)}
+.pill.pending{background:var(--pending-tile);color:var(--pending-ink)}
+.pill.done{background:var(--done-tint);color:var(--done-ink)}
+.pill.neutral{background:var(--neutral-tile);color:var(--neutral-ink)}
+.card{border:1px solid var(--line);border-radius:var(--r-card);background:var(--surface);padding:14px;margin-bottom:12px}
+.seg{display:inline-grid;grid-auto-flow:column;gap:3px;background:var(--row);padding:3px;border-radius:var(--r-pill)}
+.seg button{border:0;background:transparent;color:var(--muted);font-size:11.5px;font-weight:800;min-height:32px;padding:0 12px;border-radius:var(--r-pill)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px color-mix(in srgb,var(--ink) 14%,transparent)}
+.toast{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));transform:translate(-50%,160%);transition:transform var(--dur-fast);z-index:50;background:var(--ink);color:var(--canvas);border-radius:var(--r-btn);padding:11px 14px;font-size:12px;font-weight:700;max-width:calc(100% - 32px)}
+.toast.on{transform:translate(-50%,0)}
+
+/* 5. Screen-specific: fanout- */
+.fanout-top{position:sticky;top:0;z-index:20;background:var(--canvas);padding:4px 0 12px;border-bottom:1px solid var(--line);display:flex;gap:12px;align-items:flex-start}
+.fanout-top .grow{flex:1;min-width:0}
+.fanout-eyebrow{font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.fanout-top h1{font-size:23px;line-height:1.12;margin:4px 0 6px}
+.fanout-new{margin-top:14px;padding:12px 14px;border-radius:var(--r-card);background:var(--info);color:var(--info-ink);font-size:12px;line-height:1.5}
+.fanout-new ul{margin:6px 0 0;padding-left:18px}.fanout-new li{margin:3px 0}
+.fanout-section{margin-top:24px}.fanout-section>h2{font-size:15px;margin:0 0 10px}
+.fanout-head{display:flex;gap:10px;align-items:flex-start}.fanout-head .grow{flex:1;min-width:0}
+.fanout-head h3{font-size:15px;margin:0 0 4px}.fanout-src{font-size:11.5px;color:var(--muted)}
+.fanout-badge{white-space:nowrap;border-radius:var(--r-pill);padding:4px 8px;font-size:10px;font-weight:800;background:var(--neutral-tile);color:var(--neutral-ink)}
+.fanout-badge.caution{background:var(--pending-tile);color:var(--pending-ink)}
+.fanout-badge.changed{background:var(--info);color:var(--info-ink)}
+.fanout-demo{margin-top:12px;border-radius:var(--r-card);background:var(--row);padding:12px}
+.fanout-demo .seg{margin-bottom:12px}
+.fanout-meta{margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fanout-meta div{background:var(--row);border-radius:var(--r-btn);padding:10px}
+.fanout-meta b{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-bottom:3px}
+.fanout-meta span{font-size:11.5px;line-height:1.4}
+.fanout-decide{display:flex;gap:7px;margin-top:12px}
+.fanout-decide button{flex:1;min-height:42px;border-radius:var(--r-btn);border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:12px;font-weight:800}
+.fanout-decide button[aria-pressed="true"]{background:var(--act);color:var(--act-text);border-color:var(--act)}
+.fanout-legend{margin-top:9px;font-size:11px;line-height:1.45;color:var(--muted)}
+
+/* palette */
+.fanout-swatches{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.fanout-sw{min-height:96px;border-radius:var(--r-card);padding:12px;display:flex;flex-direction:column;justify-content:space-between;gap:6px}
+.fanout-sw strong{font-size:13px}.fanout-sw small{font:11px/1.3 ui-monospace,SFMono-Regular,Menlo,monospace;opacity:.8}
+.fanout-sw .pill{align-self:flex-start;background:var(--surface);color:var(--ink);font-size:10px}
+.fanout-sw .pill svg{width:12px;height:12px;color:var(--alert-ink)}
+.fanout-clash{margin-top:12px;border:1px dashed var(--line);border-radius:var(--r-card);padding:10px;background:var(--surface)}
+.fanout-clash-row{display:flex;gap:9px;align-items:center;margin-top:8px}
+.fanout-clash-row .chip{flex:0 0 auto;min-width:96px;border-radius:14px;padding:10px 12px;font-weight:800;font-size:13px}
+
+/* module grid */
+.fanout-modules{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fanout-mod{min-height:170px;border:0;border-radius:var(--r-card);padding:14px;display:flex;flex-direction:column;justify-content:space-between;text-align:left;transition:transform var(--dur-fast)}
+.fanout-mod:active{transform:scale(.98)}
+.fanout-mod .top{display:flex;justify-content:space-between;align-items:flex-start;width:100%}
+.fanout-mod .num{font-size:26px;font-weight:500;font-variant-numeric:tabular-nums}
+.fanout-mod strong{display:block;font-size:21px;line-height:1.05}
+.fanout-mod small{display:block;margin-top:5px;font-size:11.5px;opacity:.8}
+.fanout-mod.compact{min-height:112px}
+.fanout-mod.compact strong{font-size:17px}
+
+/* plans */
+.fanout-plan{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:16px}
+.fanout-plan.rec-a{border:2px solid var(--act)}
+.fanout-plan.rec-cur{overflow:hidden}
+.fanout-plan.rec-cur::before{content:"";position:absolute;inset:0 0 auto;height:72px;background:linear-gradient(180deg,var(--done-tint),transparent);pointer-events:none;border-radius:var(--r-card) var(--r-card) 0 0}
+.fanout-plan>*{position:relative}
+.fanout-kicker{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+.fanout-plan.rec-cur .fanout-kicker{color:var(--done-ink)}
+.fanout-plan.rec-a .fanout-kicker{color:var(--act)}
+.fanout-plan .fanout-kicker svg{width:13px;height:13px}
+.fanout-price{font-size:30px;font-weight:800;margin:6px 0 0;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.fanout-price .per{font-size:13px;font-weight:600;color:var(--muted)}
+.fanout-sample{font-size:10.5px;color:var(--muted);margin-top:2px}
+.fanout-feats{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:6px;font-size:12.5px}
+.fanout-feats li{display:flex;gap:8px;align-items:center}
+.fanout-feats svg{width:15px;height:15px;color:var(--muted)}
+.fanout-tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
+.fanout-tiers button{min-height:40px;border-radius:var(--r-btn);border:1px solid var(--line);background:var(--surface);color:var(--ink);font-weight:800;font-size:12px}
+.fanout-tiers button[aria-pressed="true"]{border-color:var(--act);box-shadow:inset 0 0 0 1px var(--act)}
+
+/* settings group */
+.fanout-nav{border:1px solid var(--line);border-radius:var(--r-card);overflow:hidden;background:var(--surface)}
+.fanout-navrow{width:100%;border:0;background:transparent;color:var(--ink);padding:13px 14px;display:flex;gap:12px;align-items:center;text-align:left;min-height:56px}
+.fanout-navrow[aria-expanded="true"]{background:var(--row)}
+.fanout-navrow .grow{flex:1;min-width:0}.fanout-navrow small{display:block;color:var(--muted);font-size:11.5px;margin-top:1px}
+.fanout-navrow .chev{transition:transform var(--dur-fast);color:var(--muted)}
+.fanout-navrow[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.fanout-navrow + .fanout-navrow,.fanout-kids + .fanout-navrow{border-top:1px solid var(--line)}
+.fanout-kids{border-top:1px solid var(--line)}
+.fanout-kids[hidden]{display:none}
+.fanout-kid{width:100%;border:0;border-top:1px solid var(--line);background:transparent;color:var(--ink);padding:0 14px 0 30px;min-height:44px;display:flex;align-items:center;justify-content:space-between;font-size:12.5px;text-align:left}
+.fanout-kid:first-child{border-top:0}
+.fanout-kid svg{width:16px;height:16px;color:var(--muted)}
+
+/* header + menu */
+.fanout-bar{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:8px 10px;position:relative}
+.fanout-bar .grow{flex:1;min-width:0}
+.fanout-bar strong{font-size:14px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fanout-bar small{display:block;color:var(--muted);font-size:11px}
+.fanout-bar.compact{padding:4px 6px;min-height:52px}
+.fanout-bar.compact .ibtn{width:40px;height:40px;border:0;background:transparent}
+.fanout-menu{position:absolute;right:8px;top:calc(100% + 6px);z-index:5;min-width:210px;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:0 10px 30px color-mix(in srgb,var(--ink) 16%,transparent);padding:5px}
+.fanout-menu[hidden]{display:none}
+.fanout-menu button{width:100%;border:0;background:transparent;color:var(--ink);min-height:44px;padding:0 10px;border-radius:11px;display:flex;align-items:center;gap:10px;font-size:13px;text-align:left}
+.fanout-menu button:hover{background:var(--row)}
+.fanout-menu svg{width:17px;height:17px;color:var(--muted)}
+
+/* destination */
+.fanout-dests{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fanout-dest{border-radius:var(--r-card);padding:16px;min-height:118px;background:var(--surface);border:1px solid var(--line);color:var(--ink);display:flex;flex-direction:column;justify-content:space-between;text-align:left;gap:8px}
+.fanout-dest strong{display:block;font-size:17px;line-height:1.15}.fanout-dest small{display:block;margin-top:4px;color:var(--muted);font-size:11.5px;line-height:1.35}
+.fanout-dest svg{color:var(--muted)}
+
+/* display heading */
+.fanout-display{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:18px}
+.fanout-display h4{font-size:24px;line-height:1.1;letter-spacing:-.015em;margin:6px 0 8px;text-wrap:balance;max-width:16ch}
+
+/* announcement */
+.fanout-ann{display:flex;gap:10px;align-items:center;border-radius:var(--r-pill);padding:6px 6px 6px 12px;background:var(--neutral-tile);color:var(--ink);font-size:12px;min-height:44px}
+.fanout-ann>svg{width:16px;height:16px;color:var(--muted)}
+.fanout-ann span{flex:1;min-width:0}
+.fanout-ann .ibtn{width:34px;height:34px;border:0;background:transparent;color:var(--muted)}
+.fanout-ann .ibtn svg{width:16px;height:16px}
+
+
+
+
+.fanout-status{margin-top:12px;display:flex;gap:10px;align-items:flex-start;padding:11px 12px;border-radius:12px;font-size:13px;line-height:1.4}
+.fanout-status.ok{background:var(--done-tint);color:var(--done-ink)}
+.fanout-status.maybe{background:var(--neutral-tile);color:var(--neutral-ink)}
+.fanout-status svg{width:16px;height:16px;flex:none;margin-top:1px}
+.fanout-badge.ok{background:var(--done-tint);color:var(--done-ink)}
+.fanout-mark{flex:none;box-shadow:0 0 0 1px color-mix(in srgb,var(--ink) 16%,transparent);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;line-height:1}
+.fanout-notes{margin:14px 0 4px;padding:14px;border-radius:var(--r-card);background:var(--surface);border:1px solid var(--line);font-size:13.5px;line-height:1.5}
+.fanout-notes h2{font-size:16px;margin:0 0 6px}
+.fanout-notes h3{font-size:13px;margin:12px 0 4px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.fanout-notes ul{margin:0;padding-left:18px}
+.fanout-notes li{margin:3px 0}
+/* ---- v4: business colour experiment ---- */
+.fanout-bizpick{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 10px;scrollbar-width:none}
+.fanout-bizpick::-webkit-scrollbar{display:none}
+.fanout-bizchip{flex:0 0 auto;display:flex;align-items:center;gap:8px;min-height:40px;padding:0 12px 0 6px;border-radius:var(--r-pill);border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:13px;font-weight:700}
+.fanout-bizchip[aria-pressed="true"]{border:2px solid var(--ink)}
+.fanout-bizchip .dot{width:26px;height:26px;border-radius:50%;border:1px solid color-mix(in srgb,var(--ink) 15%,transparent)}
+.fanout-phone{border:1px solid var(--line);border-radius:22px;overflow:hidden;background:var(--canvas)}
+.fanout-bizhead{padding:16px 16px 18px}
+.fanout-bizhead .row1{display:flex;align-items:center;gap:8px}
+.fanout-bizhead .type{font:500 10.5px/1 var(--font-mono);letter-spacing:.1em;text-transform:uppercase;opacity:.85;flex:1}
+.fanout-bizhead .sw{min-height:32px;padding:0 10px;border-radius:var(--r-pill);border:0;background:color-mix(in srgb,currentColor 16%,transparent);color:inherit;font-size:12px;font-weight:800;display:flex;gap:6px;align-items:center}
+.fanout-bizhead h4{margin:12px 0 4px;font-size:24px;letter-spacing:-.01em}
+.fanout-bizhead .sum{font-size:13px;opacity:.9}
+.fanout-bizhead .pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.fanout-bizbody{padding:12px}
+.fanout-bizbanner{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;background:var(--alert-tint);color:var(--alert-ink);font-size:13px;font-weight:700}
+.fanout-bizlabel{margin:14px 4px 6px;font:500 11px/1 var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.fanout-bizrows{background:var(--surface);border:1px solid var(--line);border-radius:14px}
+.fanout-bizrows .r{display:flex;align-items:center;gap:10px;min-height:56px;padding:0 12px;border-bottom:1px solid var(--line)}
+.fanout-bizrows .r:last-child{border-bottom:0}
+.fanout-bizrows .r .nm{flex:1;min-width:0}
+.fanout-bizrows .r .nm b{display:block;font-size:14px}
+.fanout-bizrows .r .nm small{color:var(--muted);font-size:12px}
+.fanout-bizrows .r .amt{font-weight:700;font-variant-numeric:tabular-nums;font-size:14px}
+.fanout-bizcta{margin-top:12px;width:100%;min-height:48px;border:0;border-radius:var(--r-btn);background:var(--act);color:var(--act-text);font-weight:800;font-size:15px}
+/* ---- v4: fixed-hub colour flow (inside header keeps full identity colour) ---- */
+.fanout-hub{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fanout-hub .fanout-mod{cursor:pointer}
+.fanout-hub .fanout-mod[aria-pressed="true"]{outline:2px solid var(--ink);outline-offset:2px}
+.fanout-inside{margin-top:12px;border:1px solid var(--line);border-radius:var(--r-card);overflow:hidden;background:var(--surface)!important;color:var(--ink)!important}
+.fanout-inside-head{min-height:88px;display:flex;align-items:flex-end;gap:12px;padding:14px}
+.fanout-inside-head .ic{width:38px;height:38px;border-radius:11px;background:color-mix(in srgb,#fff 24%,transparent);display:flex;align-items:center;justify-content:center}
+.fanout-inside-head .ic svg{color:inherit}
+.fanout-inside-head .t{flex:1}
+.fanout-inside-head .t small{display:block;font:500 11px/1 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;opacity:.82}
+.fanout-inside-head .t strong{font-size:22px;letter-spacing:-.01em}
+.fanout-inside-head .back{width:34px;height:34px;border:0;border-radius:9px;background:color-mix(in srgb,#fff 18%,transparent);color:inherit;display:flex;align-items:center;justify-content:center}
+.fanout-inside-rows{padding:6px 4px 8px}
+.fanout-inside-rows .r{min-height:52px;display:flex;align-items:center;gap:12px;padding:0 12px;border-bottom:1px solid var(--line);font-size:15px}
+.fanout-inside-rows .r:last-child{border-bottom:0}
+.fanout-inside-rows .r .amt{margin-left:auto;font-weight:700;font-variant-numeric:tabular-nums}
+.fanout-inside-rows .r .mut{color:var(--muted);font-size:13px}
+.fanout-inside-rows .r svg{color:var(--muted)}
+.fanout-hint{margin-top:10px;font-size:12.5px;color:var(--muted)}
+.fanout-inside-head{color:var(--idh-ink)}
+.fanout-inside-head .t small{opacity:.85}
+.fanout-inside-head svg{color:var(--idh-ink)}
+.fanout-inside-head .ic{background:color-mix(in srgb,#fff 22%,transparent)}
+.fanout-inside-head .back{background:color-mix(in srgb,#fff 20%,transparent)}
+
+.fanout-inside.idb-violet .fanout-inside-head{background:var(--idh-violet)}
+.fanout-inside.idb-lavender .fanout-inside-head{background:var(--idh-lavender)}
+.fanout-inside.idb-blue .fanout-inside-head{background:var(--idh-blue)}
+.fanout-inside.idb-sky .fanout-inside-head{background:var(--idh-sky)}
+.fanout-inside.idb-teal .fanout-inside-head{background:var(--idh-teal)}
+.fanout-inside.idb-magenta .fanout-inside-head{background:var(--idh-magenta)}
+.fanout-inside.idb-sand .fanout-inside-head{background:var(--idh-sand)}
+
+.fanout-inside .fanout-inside-head,
+.fanout-inside .fanout-inside-head *{color:var(--idh-ink)}
+
+
+/* ---- v4: mono, Option B, launch cards, pricing, drawer ---- */
+.fanout-eyebrow,.mono{font-family:var(--font-mono)}
+.fanout-mod .num{font-family:var(--font-mono);font-weight:500}
+.idb-violet{background:var(--idb-violet);color:var(--idb-violet-ink)}
+.idb-lavender{background:var(--idb-lavender);color:var(--idb-lavender-ink)}
+.idb-blue{background:var(--idb-blue);color:var(--idb-blue-ink)}
+.idb-sky{background:var(--idb-sky);color:var(--idb-sky-ink)}
+.idb-teal{background:var(--idb-teal);color:var(--idb-teal-ink)}
+.idb-magenta{background:var(--idb-magenta);color:var(--idb-magenta-ink)}
+.idb-sand{background:var(--idb-sand);color:var(--idb-sand-ink)}
+
+.fanout-launches{display:grid;gap:12px}
+.fanout-launch{border-radius:var(--r-card);overflow:hidden;display:flex;flex-direction:column}
+.fanout-launch.deep{background:var(--deep-teal);color:var(--deep-teal-ink)}
+.fanout-launch.soft{background:var(--idb-sand);color:var(--idb-sand-ink)}
+.fanout-art{position:relative;height:150px;background:repeating-linear-gradient(180deg,transparent 0 17px,color-mix(in srgb,currentColor 14%,transparent) 17px 18px);background-size:100% 100%;background-position:0 18px;background-repeat:no-repeat}
+.fanout-art::after{content:"";position:absolute;left:0;right:0;bottom:0;height:40%;background:linear-gradient(transparent,color-mix(in srgb,currentColor 6%,transparent))}
+.fanout-stack{position:absolute;left:50%;top:22px;width:150px;height:106px;transform:translateX(-50%)}
+.fanout-stack i{position:absolute;width:120px;height:86px;border-radius:12px;border:2px solid var(--art-ink)}
+.fanout-stack i:nth-child(1){left:30px;top:0}
+.fanout-stack i:nth-child(2){left:22px;top:6px}
+.fanout-stack i:nth-child(3){left:14px;top:12px}
+.fanout-stack i:nth-child(4){left:0;top:20px;display:flex;align-items:flex-end;padding:8px;font:700 12px/1.05 var(--font-mono);color:var(--art-ink);z-index:2}
+.teal-art i{background:linear-gradient(135deg,var(--art-teal-2),var(--art-teal))}
+.violet-art i{background:linear-gradient(135deg,var(--art-violet-2),var(--art-violet))}
+.fanout-launch-body{padding:16px}
+.fanout-launch-tags{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.fanout-launch-tags .k{font:500 10.5px/1 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;opacity:.85}
+.fanout-tagchip{font:500 10.5px/1 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;padding:5px 9px;border-radius:var(--r-pill);background:color-mix(in srgb,currentColor 12%,transparent)}
+.fanout-launch h4{font:500 24px/1.12 var(--font-mono);margin:12px 0 10px;letter-spacing:-.01em}
+.fanout-plus{list-style:none;margin:0;padding:0;display:grid;gap:7px;font-size:13px}
+.fanout-plus li{display:flex;gap:9px;opacity:.92}.fanout-plus li::before{content:"+";font-family:var(--font-mono);opacity:.7}
+.fanout-opens{margin-top:16px;font:500 13px/1 var(--font-mono);letter-spacing:.1em;text-transform:uppercase;opacity:.85}
+.fanout-cd{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
+.fanout-cd b{display:block;font:500 26px/1 var(--font-mono);font-variant-numeric:tabular-nums}
+.fanout-cd small{display:block;margin-top:5px;font:400 11px/1 var(--font-mono);opacity:.7}
+.fanout-launch-act{margin-top:16px;width:100%;min-height:46px;border:0;border-top:1px solid color-mix(in srgb,currentColor 18%,transparent);background:transparent;color:inherit;display:flex;align-items:center;justify-content:space-between;font-weight:800;font-size:14px;padding:12px 0 0}
+
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+.fanout-drawer-scrim{position:fixed;inset:0;z-index:70;background:color-mix(in srgb,var(--ink) 30%,transparent);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+.fanout-drawer{position:fixed;top:0;right:0;bottom:0;z-index:71;width:min(340px,86vw);background:var(--canvas);border-left:1px solid var(--line);display:flex;flex-direction:column;padding:calc(14px + env(safe-area-inset-top)) 0 env(safe-area-inset-bottom);animation:fanoutIn var(--dur-slide) var(--ease-slide)}
+@keyframes fanoutIn{from{transform:translateX(100%)}to{transform:none}}
+.fanout-drawer-head{display:flex;gap:10px;align-items:flex-start;padding:0 16px 14px}
+.fanout-drawer-head .grow{flex:1;min-width:0}
+.fanout-drawer-head strong{font-size:17px;display:block}
+.fanout-drawer-head small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.fanout-switch{margin:0 16px 12px;min-height:50px;border:1px solid var(--line);border-radius:var(--r-btn);background:var(--surface);color:var(--ink);display:flex;align-items:center;gap:10px;padding:0 12px;font-weight:700;font-size:14px;text-align:left}
+.fanout-switch .grow{flex:1}
+.fanout-drawer-scroll{flex:1;overflow:auto;border-top:1px solid var(--line);padding:8px 10px 16px}
+.fanout-d-item{width:100%;border:0;background:transparent;color:var(--ink);min-height:48px;border-radius:12px;display:flex;align-items:center;gap:12px;padding:0 10px;font-size:15px;text-align:left}
+.fanout-d-item svg{color:var(--muted)}
+.fanout-d-item.group{font-weight:800}
+.fanout-d-item.group .chev{margin-left:auto;transition:transform var(--dur-fast);color:var(--muted)}
+.fanout-d-item.group[aria-expanded="true"]{background:var(--row)}
+.fanout-d-item.group[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.fanout-d-item.child{padding-left:22px;font-size:14px}
+.fanout-d-item.on{font-weight:800}
+.fanout-d-item.on .tick{margin-left:auto;color:var(--act)}
+.fanout-d-label{margin:16px 10px 4px;font:500 11px/1 var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.fanout-d-sep{height:1px;background:var(--line);margin:10px 10px}
+.fanout-d-soon{margin-left:auto;font:500 10.5px/1 var(--font-mono);letter-spacing:.06em;border:1px solid var(--line);padding:5px 9px;border-radius:var(--r-pill);color:var(--muted)}
+.fanout-menu-btn{display:inline-flex;align-items:center;gap:8px;min-height:42px;padding:0 14px;border-radius:var(--r-btn);border:1px solid var(--line);background:var(--surface);color:var(--ink);font-weight:800}
+
+@media (max-width:360px){.fanout-meta{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main class="app" id="app"></main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+const STORE="khaata-fanout-standardization-candidates-v3";
+const state={
+  theme:null,
+  decisions:{},
+  paletteView:"b",      // "cur" | "a" | "b"
+  mono:"jet",
+  drawerOpen:false,
+  drawerGroup:"setup",
+  launchAt:Date.now()+((12*24+21)*3600+7*60+1)*1000,
+  notified:false,
+  hubOpen:null,
+  biz:"pink",
+  recView:"a",
+  tier:"pro",
+  navOpen:"staff",
+  menuOpen:false,
+  annDismissed:false,
+  palettes:{
+    cur:[
+      {k:"coral",name:"Coral",hex:"#F57D49",clash:"Alert"},
+      {k:"orange",name:"Orange",hex:"#E7822A",clash:"Alert"},
+      {k:"purple",name:"Purple",hex:"#9E6AF0"},
+      {k:"lime",name:"Lime",hex:"#B7DD66",clash:"Done"},
+      {k:"blue",name:"Blue",hex:"#307CF6"},
+      {k:"sky",name:"Sky",hex:"#90C8EB"},
+      {k:"mint",name:"Mint",hex:"#5CC695",clash:"Done"},
+      {k:"lavender",name:"Lavender",hex:"#C0B6EA"},
+      {k:"yellow",name:"Warm yellow",hex:"#EFCE81",clash:"Caution"},
+      {k:"pink",name:"Soft pink",hex:"#F3B4AD",clash:"Alert"}
+    ],
+    a:[
+      {k:"violet",name:"Violet",hex:"#B898F4"},
+      {k:"lavender",name:"Lavender",hex:"#D3CCF2"},
+      {k:"blue",name:"Blue",hex:"#8FB5F8"},
+      {k:"sky",name:"Sky",hex:"#AFD8F0"},
+      {k:"teal",name:"Teal",hex:"#8FD3CA"},
+      {k:"magenta",name:"Magenta",hex:"#E7A6D6"},
+      {k:"sand",name:"Sand",hex:"#E2D3BC"}
+    ],
+    b:[
+      {k:"violet",name:"Violet",hex:"#B898F4",dk:"#3B2A6E"},
+      {k:"lavender",name:"Lavender",hex:"#D3CCF2",dk:"#36305E"},
+      {k:"blue",name:"Blue",hex:"#8FB5F8",dk:"#163A78"},
+      {k:"sky",name:"Sky",hex:"#AFD8F0",dk:"#0F4A66"},
+      {k:"teal",name:"Teal",hex:"#8FD3CA",dk:"#0E4D47"},
+      {k:"magenta",name:"Magenta",hex:"#E7A6D6",dk:"#5A1E4E"},
+      {k:"sand",name:"Sand",hex:"#E2D3BC",dk:"#4A3B26"}
+    ]
+  },
+  modules:[
+    {n:"01",name:"Rooms",sub:"Structure & capacity",icon:"bed-double",cur:"pink",a:"violet",b:"violet"},
+    {n:"02",name:"Collections",sub:"Rules & methods",icon:"wallet",cur:"orange",a:"teal",b:"teal"},
+    {n:"03",name:"Staff",sub:"Access & approvals",icon:"users",cur:"mint",a:"sky",b:"sky"},
+    {n:"04",name:"Backup",sub:"Device, Drive & Sync",icon:"hard-drive",cur:"lavender",a:"lavender",b:"lavender"},
+    {n:"05",name:"Business",sub:"Identity & defaults",icon:"building-2",cur:"blue",a:"blue",b:"blue"},
+    {n:"06",name:"Expenses",sub:"Categories & defaults",icon:"receipt",cur:"yellow",a:"sand",b:"sand"}
+  ],
+  tiers:{
+    free:{name:"Free",price:"₹0",per:"",line:"Everything to run your businesses on this phone.",feats:[["infinity","Unlimited businesses"],["smartphone","One device, stored on the phone"],["ban","No ads"]],cta:"Current plan"},
+    pro:{name:"Pro",price:"₹149",per:"/ month",line:"Your books on every device, backed up on their own.",feats:[["refresh-cw","Cloud sync across devices"],["cloud-upload","Automatic backup and restore"],["palette","Bill themes and branding"]],cta:"Choose Pro"},
+    premium:{name:"Premium",price:"₹299",per:"/ month",line:"For businesses with staff on the app.",feats:[["users","Staff access and approvals"],["chart-column","Advanced reports"],["headset","Priority support"]],cta:"Choose Premium"}
+  },
+  nav:[
+    {k:"staff",title:"Staff & access",sub:"Roles, approvals and visibility",icon:"users",kids:["Roles & permissions","Approval rules","Cash custody"]},
+    {k:"rooms",title:"Rooms & beds",sub:"Capacity and structure",icon:"bed-double",kids:["Floors & rooms","Bed types","Room charges"]},
+    {k:"rent",title:"Rent rules",sub:"Due dates, grace and late fees",icon:"calendar-clock",kids:["Due date","Grace period","Late fee"]}
+  ]
+};
+try{state.decisions=JSON.parse(localStorage.getItem(STORE)||"{}")||{};}catch(e){}
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function ico(n){return '<i data-lucide="'+n+'" aria-hidden="true"></i>';}
+
+const STATUS={
+  "Editorial / identity palette":"ok","Color-block module grid":"ok","Fixed hub + colour flow":"ok","Business colour mark":"ok",
+  "Recommended plan card":"ok","Pricing hierarchy":"ok","Launch card with countdown":"ok",
+  "Expandable settings group":"maybe","Compact menu trigger":"maybe","Compact top header":"maybe","Side drawer menu":"maybe",
+  "Two-column destination cards":"maybe","Compact color-block destination cards":"maybe","Display heading treatment":"maybe","Announcement pill":"maybe"
+};
+function decide(name){
+  const st=STATUS[name]||"maybe";
+  return st==="ok"?'<div class="fanout-status ok">'+ico("circle-check")+'<span><b>Approved.</b> Build with this as shown.</span></div>'
+   :'<div class="fanout-status maybe">'+ico("circle-dashed")+'<span><b>Use if needed.</b> Decide when the page that needs it is built.</span></div>';
+}
+function seg(group,val,opts){
+  return '<div class="seg" role="group">'+opts.map(([k,l])=>'<button type="button" data-act="seg" data-group="'+group+'" data-val="'+k+'" aria-pressed="'+(val===k)+'">'+l+'</button>').join("")+'</div>';
+}
+function head(title,src,badge,cls){const st=STATUS[title];if(st){badge=st==="ok"?"Approved":"Use if needed";cls=st==="ok"?"ok":"";}return '<div class="fanout-head"><div class="grow"><h3>'+title+'</h3><div class="fanout-src">'+src+'</div></div><span class="fanout-badge '+(cls||"")+'">'+badge+'</span></div>';}
+function meta(a,b,la,lb){if(b==="Not standardized yet")return '<div class="fanout-meta" style="grid-template-columns:1fr"><div><b>'+(la||"Possible Khaata use")+'</b><span>'+a+'</span></div></div>';return '<div class="fanout-meta"><div><b>'+(la||"Possible Khaata use")+'</b><span>'+a+'</span></div><div><b>'+(lb||"Status")+'</b><span>'+b+'</span></div></div>';}
+
+function paletteCard(){
+  const v="b", list=state.palettes[v];
+  const sw=list.map(c=>{
+    const style="";
+    const cls=v==="a"?"id-"+c.k:(v==="b"?"idb-"+c.k:"");
+    return '<div class="fanout-sw '+cls+'" style="'+style+'"><strong>'+c.name+'</strong>'+
+      (c.clash?'<span class="pill">'+ico("triangle-alert")+'Reads as '+c.clash+'</span>':'')+
+      '<small>'+c.hex+(v==="a"?' · dark pair':'')+(v==="b"?' · dark '+c.dk:'')+'</small></div>';
+  }).join("");
+  const clashA='class="chip idb-violet"';
+  const chip=v==="cur"?'<span class="chip" '+clashA+'>Rooms</span>':'<span '+clashA+'>Rooms</span>';
+  return '<article class="card">'+head("Editorial / identity palette","From: FANOUT colour language","Changed","changed")+
+  '<p style="margin-top:8px">Colours for business types, modules and categories, used to tell things apart. They never mean overdue, paid, waiting or done.</p>'+
+  '<div class="fanout-demo">'+
+  '<div class="fanout-swatches">'+sw+'</div>'+
+  '<div class="fanout-clash"><div class="fanout-eyebrow">Next to a status</div><div class="fanout-clash-row">'+chip+'<span class="pill alert">'+ico("circle-alert")+'₹8,500 overdue</span></div>'+
+  '<div class="fanout-legend">'+(v==="b"?'Light tiles with black text; in dark mode the tiles turn deep and rich with near-white text. Seven colours, none of them a status hue. Switch the theme to check both.':v==="cur"?'Coral, orange, pink and warm yellow sit on the Alert and Caution hues, so a module card can read as a warning. Mint and lime sit on Done. None of them has a dark-mode value.':'Option A keeps the hues Khaata hasn\u2019t given a meaning: violet, lavender, blue, sky, teal, magenta and sand. Each is a tile + ink pair with its own dark values, like our other colours. Switch the theme to check.')+'</div></div>'+
+  '</div>'+meta("Business-type modules, setup hubs, category cards, destination surfaces.","Decided: Option B, tokens <code>--idb-*</code>")+decide("Editorial / identity palette")+'</article>';
+}
+
+function moduleCard(){
+  const v="b";
+  const mods=state.modules.map(m=>{
+    const c=m[v];
+    const attr='';
+    return '<button type="button" class="fanout-mod '+(v==="a"?"id-"+c:(v==="b"?"idb-"+c:""))+'" '+attr+' data-act="go" data-to="'+esc(m.name)+'">'+
+      '<span class="top">'+ico(m.icon)+'<span class="num">'+m.n+'</span></span><span><strong>'+m.name+'</strong><small>'+m.sub+'</small></span></button>';
+  }).join("");
+  return '<article class="card">'+head("Color-block module grid","Original FANOUT reference name retained","Changed","changed")+
+  '<p style="margin-top:8px">Large two-column destination cards whose colour tells modules apart, not their status. Follows the palette choice above.</p>'+
+  '<div class="fanout-demo"><div class="fanout-modules">'+mods+'</div>'+
+  '<div class="fanout-legend">Each card is a real button with an icon, so it reads without colour too.</div></div>'+
+  meta("More, setup and onboarding hubs, future business-type launch screens.","Operational lists and status cards keep Khaata\u2019s meaning colours.",null,"Guardrail")+decide("Color-block module grid")+'</article>';
+}
+
+function planCard(tierKey,mode){
+  const t=state.tiers[tierKey];
+  const rec=mode?(mode==="cur"?"rec-cur":"rec-a"):"";
+  return '<div class="fanout-plan '+rec+'">'+
+    (mode?'<div class="fanout-kicker">'+ico(mode==="cur"?"sparkles":"thumbs-up")+'Recommended</div>':'<div class="fanout-eyebrow">Khaata '+t.name+'</div>')+
+    (mode?'<div class="fanout-eyebrow" style="margin-top:6px">Khaata '+t.name+'</div>':'')+
+    '<div class="fanout-price">'+t.price+' <span class="per">'+t.per+'</span></div>'+
+    '<div class="fanout-sample">Sample price — reference only</div>'+
+    '<p style="margin-top:8px">'+t.line+'</p>'+
+    '<ul class="fanout-feats">'+t.feats.map(f=>'<li>'+ico(f[0])+esc(f[1])+'</li>').join("")+'</ul>'+
+    '<button type="button" class="btn '+(tierKey==="free"?"secondary":"")+'" style="margin-top:14px;width:100%" data-act="plan" data-tier="'+tierKey+'">'+t.cta+'</button></div>';
+}
+function recCard(){
+  return '<article class="card">'+head("Recommended plan card","From: Recommended pricing card","Changed","changed")+
+  '<p style="margin-top:8px">Premium is the recommended plan and carries a green wash with a \u201cRecommended\u201d kicker. Free and Pro stay plain, with no ring.</p>'+
+  '<div class="fanout-demo">'+planCard("premium","cur")+
+  '<div class="fanout-legend">Green is safe here because the plans screen shows no dues or status pills. Do not use yellow: it is the Caution colour.</div></div>'+
+  meta("Plan choice and upgrade screens.","Not standardized yet")+decide("Recommended plan card")+'</article>';
+}
+function hierCard(){
+  return '<article class="card">'+head("Pricing hierarchy","From: Pricing card hierarchy","Changed","changed")+
+  '<p style="margin-top:8px">Eyebrow, then price, then period, then one-line promise, then features, then action.</p>'+
+  '<div class="fanout-demo"><div class="fanout-tiers" role="group" aria-label="Choose tier">'+
+  ["free","pro","premium"].map(k=>'<button type="button" data-act="tier" data-tier="'+k+'" aria-pressed="'+(state.tier===k)+'">'+state.tiers[k].name+'</button>').join("")+
+  '</div>'+planCard(state.tier,state.tier==="premium"?"cur":null)+'</div>'+
+  meta("Plans and entitlement summaries.","Not standardized yet")+decide("Pricing hierarchy")+'</article>';
+}
+
+function navCard(){
+  const rows=state.nav.map(n=>{
+    const open=state.navOpen===n.k;
+    return '<button type="button" class="fanout-navrow" data-act="nav" data-k="'+n.k+'" aria-expanded="'+open+'" aria-controls="kids-'+n.k+'">'+ico(n.icon)+'<span class="grow"><strong>'+n.title+'</strong><small>'+n.sub+'</small></span><span class="chev">'+ico("chevron-down")+'</span></button>'+
+      '<div class="fanout-kids" id="kids-'+n.k+'"'+(open?'':' hidden')+'>'+n.kids.map(c=>'<button type="button" class="fanout-kid" data-act="go" data-to="'+esc(c)+'">'+esc(c)+ico("chevron-right")+'</button>').join("")+'</div>';
+  }).join("");
+  return '<article class="card">'+head("Expandable settings group","From: Expandable navigation group","Changed","changed")+
+  '<p style="margin-top:8px">A parent row opens in place and its children appear below. One group open at a time. The open row gets a quiet neutral surface, not the notice colour.</p>'+
+  '<div class="fanout-demo"><div class="fanout-nav">'+rows+'</div></div>'+meta("More / Settings","Not standardized yet")+decide("Expandable settings group")+'</article>';
+}
+function menuCard(){
+  return '<article class="card">'+head("Compact menu trigger","From: Compact menu trigger","Changed","changed")+
+  '<p style="margin-top:8px">A small round control that opens an overflow menu. Tap outside or press Escape to close.</p>'+
+  '<div class="fanout-demo"><div class="fanout-bar"><div class="grow"><strong>Sunrise PG</strong><small>Settings</small></div>'+
+  '<button type="button" class="ibtn" data-act="menu" aria-label="More options" aria-haspopup="menu" aria-expanded="'+state.menuOpen+'">'+ico("ellipsis-vertical")+'</button>'+
+  '<div class="fanout-menu" role="menu"'+(state.menuOpen?'':' hidden')+'>'+
+  [["repeat","Switch business"],["share-2","Share business card"],["download","Export for CA"],["archive","Archive business"]].map(m=>'<button type="button" role="menuitem" data-act="go" data-to="'+m[1]+'">'+ico(m[0])+m[1]+'</button>').join("")+
+  '</div></div><div style="height:'+(state.menuOpen?180:0)+'px"></div></div>'+meta("More / Settings and future wide layouts.","Not standardized yet")+decide("Compact menu trigger")+'</article>';
+}
+function headerCard(){
+  return '<article class="card">'+head("Compact top header","From: Compact top header","Changed","changed")+
+  '<p style="margin-top:8px">A shorter header for dense configuration screens.</p>'+
+  '<div class="fanout-demo"><div class="fanout-bar compact"><button type="button" class="ibtn" data-act="go" data-to="Back to More" aria-label="Back">'+ico("arrow-left")+'</button>'+
+  '<div class="grow"><strong>Operating configuration</strong><small>Sunrise PG</small></div><button type="button" class="ibtn" data-act="go" data-to="More options" aria-label="More options">'+ico("ellipsis-vertical")+'</button></div></div>'+
+  meta("Settings, plans, setup.","Not standardized yet")+decide("Compact top header")+'</article>';
+}
+function destCard(){
+  return '<article class="card">'+head("Two-column destination cards","From: Two-column destination layout","Candidate")+
+  '<p style="margin-top:8px">Large quiet destination cards on the surface colour.</p>'+
+  '<div class="fanout-demo"><div class="fanout-dests">'+
+  '<button type="button" class="fanout-dest" data-act="go" data-to="Rooms & beds">'+ico("bed-double")+'<span><strong>Rooms &amp; beds</strong><small>Capacity, availability and structure</small></span></button>'+
+  '<button type="button" class="fanout-dest" data-act="go" data-to="Staff & access">'+ico("users")+'<span><strong>Staff &amp; access</strong><small>Roles, approvals and visibility</small></span></button>'+
+  '</div></div>'+meta("Setup and configuration hubs.","Not standardized yet")+decide("Two-column destination cards")+'</article>';
+}
+function compactColourCard(){
+  return '<article class="card">'+head("Compact color-block destination cards","Derived variant of the Color-block module grid","Changed","changed")+
+  '<p style="margin-top:8px">The shorter colour-block card. Now uses identity colours, not Caution yellow and Notice periwinkle.</p>'+
+  '<div class="fanout-demo"><div class="fanout-modules">'+
+  '<button type="button" class="fanout-mod compact idb-violet" data-act="go" data-to="Rooms">'+ico("bed-double")+'<span><strong>Rooms</strong><small>Setup &amp; capacity</small></span></button>'+
+  '<button type="button" class="fanout-mod compact idb-sky" data-act="go" data-to="Staff">'+ico("users")+'<span><strong>Staff</strong><small>Access &amp; approvals</small></span></button>'+
+  '</div></div>'+meta("Optional variant for setup and More hubs.","Not standardized yet")+decide("Compact color-block destination cards")+'</article>';
+}
+function displayCard(){
+  return '<article class="card">'+head("Display heading treatment","From: Large display typography","Changed","changed")+
+  '<p style="margin-top:8px">A larger heading for onboarding, setup hubs and empty states. Reduced to 24px so it stays within three lines on a phone.</p>'+
+  '<div class="fanout-demo"><div class="fanout-display"><div class="fanout-eyebrow">Set up Sunrise PG</div><h4>Everything ready before the first tenant joins.</h4><p>Rooms, rent rules and staff access in one place.</p></div></div>'+
+  meta("Onboarding, setup and empty states only.","Not standardized yet")+decide("Display heading treatment")+'</article>';
+}
+function annCard(){
+  const body=state.annDismissed?'<button type="button" class="btn secondary" data-act="ann-reset">'+ico("rotate-ccw")+'Show the strip again</button>':
+    '<div class="fanout-ann">'+ico("megaphone")+'<span>New: scheduled Google Drive backup is being explored</span><button type="button" class="ibtn" data-act="ann-x" aria-label="Dismiss announcement">'+ico("x")+'</button></div>';
+  return '<article class="card">'+head("Announcement pill","From: Announcement pill","Changed","changed")+
+  '<p style="margin-top:8px">A small strip for rare product notices. Dismissable.</p>'+
+  '<div class="fanout-demo">'+body+'</div>'+meta("Product notices or setup guidance.","Not standardized yet")+decide("Announcement pill")+'</article>';
+}
+
+function cdParts(){
+  let ms=Math.max(0,state.launchAt-Date.now());const t=Math.floor(ms/1000);
+  return [Math.floor(t/86400),Math.floor(t%86400/3600),Math.floor(t%3600/60),t%60].map(n=>String(n).padStart(2,"0"));
+}
+function tick(){const p=cdParts();document.querySelectorAll("[data-cd]").forEach(el=>{el.textContent=p[+el.dataset.cd];});}
+function launchCard(){
+  const p=cdParts();
+  const deep='<div class="fanout-launch deep"><div class="fanout-art" aria-hidden="true"><div class="fanout-stack teal-art"><i></i><i></i><i></i><i>gym &amp;<br>coaching</i></div></div>'+
+   '<div class="fanout-launch-body"><div class="fanout-launch-tags"><span class="k">Business type</span><span class="fanout-tagchip">Launching</span></div>'+
+   '<h4>Gym &amp; coaching</h4><ul class="fanout-plus"><li>Memberships that renew on their own</li><li>Attendance with one tap</li><li>Dues reminders before the month ends</li></ul>'+
+   '<div class="fanout-opens">Opens in</div><div class="fanout-cd" role="timer" aria-label="Time until launch">'+
+   ["days","hours","min","sec"].map((l,i)=>'<div><b data-cd="'+i+'">'+p[i]+'</b><small>'+l+'</small></div>').join("")+'</div>'+
+   '<button type="button" class="fanout-launch-act" data-act="go" data-to="Gym & coaching preview">See what is inside'+ico("arrow-right")+'</button></div></div>';
+  const soft='<div class="fanout-launch soft"><div class="fanout-art" aria-hidden="true"><div class="fanout-stack violet-art"><i></i><i></i><i></i><i>lending<br>&amp; chit</i></div></div>'+
+   '<div class="fanout-launch-body"><div class="fanout-launch-tags"><span class="k">Money tools</span><span class="fanout-tagchip">Soon</span></div>'+
+   '<h4>Lending &amp; chit</h4><ul class="fanout-plus"><li>Interest worked out for you</li><li>Borrower confirms every entry</li><li>No compounding surprises</li></ul>'+
+   '<button type="button" class="fanout-launch-act" data-act="notify" aria-pressed="'+state.notified+'">'+(state.notified?'We\u2019ll tell you when it opens'+ico("check"):'Notify me'+ico("bell"))+'</button></div></div>';
+  return '<article class="card">'+head("Launch card with countdown","From: FANOUT course cards","New")+
+  '<p style="margin-top:8px">For new business types or features: a stacked-card illustration, a type label, a status chip, three plain promises, and a countdown when there is a date. \u201cSoon\u201d cards have no countdown and offer Notify me instead.</p>'+
+  '<div class="fanout-demo"><div class="fanout-launches">'+deep+soft+'</div>'+
+  '<div class="fanout-legend">Default is the \u201cSoon\u201d card with Notify me. Show the countdown only when a release date is locked. The deep card keeps its deep tone in both themes.</div></div>'+
+  meta("Business-type launches, new features in More, onboarding \u201cwhat\u2019s coming\u201d.","Proposed: <code>--deep-*</code> and <code>--art-*</code> tones")+decide("Launch card with countdown")+'</article>';
+}
+function drawerCard(){
+  return '<article class="card">'+head("Side drawer menu","From: FANOUT menu drawer","New")+
+  '<p style="margin-top:8px">A drawer from the right with the business on top, a switch-business row, main places, expandable groups, and a labelled list of businesses.</p>'+
+  '<div class="fanout-demo"><div class="fanout-bar"><div class="grow"><strong>Sunrise PG</strong><small>Home</small></div>'+
+  '<button type="button" class="fanout-menu-btn" id="drawerBtn" data-act="drawer" aria-haspopup="dialog" aria-expanded="'+state.drawerOpen+'">'+ico("menu")+'Menu</button></div>'+
+  '<div class="fanout-legend">Tap Menu. Close with \u00d7, the dimmed area, or Escape.</div></div>'+
+  meta("A fuller More, especially for owners with several businesses.","Overlaps the bottom bar and More; needs a decision on which one leads.")+decide("Side drawer menu")+'</article>';
+}
+function drawerHTML(){
+  if(!state.drawerOpen)return "";
+  const grp=(k,label,icon,kids)=>{const open=state.drawerGroup===k;
+    return '<button type="button" class="fanout-d-item group" data-act="dgroup" data-k="'+k+'" aria-expanded="'+open+'">'+ico(icon)+label+'<span class="chev">'+ico("chevron-down")+'</span></button>'+
+    (open?kids.map(c=>'<button type="button" class="fanout-d-item child" data-act="go" data-to="'+esc(c[1])+'">'+ico(c[0])+esc(c[1])+'</button>').join(""):"");};
+  return '<div class="fanout-drawer-scrim" data-act="drawer-close"></div>'+
+  '<aside class="fanout-drawer" role="dialog" aria-modal="true" aria-label="Menu">'+
+  '<div class="fanout-drawer-head"><div class="grow"><strong>Sunrise PG</strong><small>PG / hostel · Pro plan</small></div><button type="button" class="ibtn" data-act="drawer-close" aria-label="Close menu">'+ico("x")+'</button></div>'+
+  '<button type="button" class="fanout-switch" data-act="go" data-to="Switch business">'+ico("repeat")+'<span class="grow">Switch business</span>'+ico("arrow-right")+'</button>'+
+  '<div class="fanout-drawer-scroll">'+
+  [["house","Home"],["users","Tenants"],["wallet","Collections"],["receipt","Expenses"]].map(i=>'<button type="button" class="fanout-d-item" data-act="go" data-to="'+i[1]+'">'+ico(i[0])+i[1]+'</button>').join("")+
+  grp("setup","Setup","settings-2",[["bed-double","Rooms & beds"],["calendar-clock","Rent rules"],["shield-check","Staff & access"]])+
+  grp("data","Data & backup","hard-drive",[["cloud-upload","Back up now"],["history","Restore"],["file-down","Export for CA"]])+
+  '<div class="fanout-d-sep"></div><div class="fanout-d-label">My businesses</div>'+
+  '<button type="button" class="fanout-d-item on" data-act="go" data-to="Sunrise PG">'+'<span class="fanout-mark" style="width:30px;height:30px;font-size:13px;background:var(--biz-pine);color:var(--biz-pine-ink)">S</span>'+'Sunrise PG<span class="tick">'+ico("check")+'</span></button>'+
+  '<button type="button" class="fanout-d-item" data-act="go" data-to="Sharma Dairy">'+'<span class="fanout-mark" style="width:30px;height:30px;font-size:13px;background:var(--biz-olive);color:var(--biz-olive-ink)">S</span>'+'Sharma Dairy</button>'+
+  '<button type="button" class="fanout-d-item" data-act="go" data-to="Gym & coaching">'+ico("dumbbell")+'Gym &amp; coaching<span class="fanout-d-soon">Soon</span></button>'+
+  '<button type="button" class="fanout-d-item" data-act="go" data-to="Add business">'+ico("plus")+'Add business</button>'+
+  '</div></aside>';
+}
+
+function bizCard(){
+  const L=[{k:"pink",l:"S",name:"Scoops & Co",type:"Ice cream parlour"},{k:"fig",l:"F",name:"Fig & Flour",type:"Bakery caf\u00e9"},
+           {k:"crimson",l:"F",name:"Fresh Squeeze",type:"Juice bar"},{k:"pine",l:"S",name:"Sunrise PG",type:"PG / hostel"},
+           {k:"olive",l:"S",name:"Sharma Dairy",type:"Dairy delivery"},{k:"navy",l:"I",name:"Iron Temple",type:"Gym"}];
+  const m=(x,sz)=>'<span class="fanout-mark" style="width:'+sz+'px;height:'+sz+'px;font-size:'+Math.round(sz/2.3)+'px;background:var(--biz-'+x.k+');color:var(--biz-'+x.k+'-ink)" aria-hidden="true">'+x.l+'</span>';
+  const b=L.find(x=>x.k===state.biz)||L[0];
+  const picks=L.map(x=>'<button type="button" class="fanout-bizchip" data-act="biz" data-k="'+x.k+'" aria-pressed="'+(x.k===b.k)+'">'+m(x,26)+esc(x.name)+'</button>').join("");
+  const list=L.slice(0,4).map(x=>'<div class="r">'+m(x,32)+'<div class="nm"><b>'+esc(x.name)+'</b><small>'+esc(x.type)+'</small></div>'+(x.k===b.k?ico("check"):'')+'</div>').join("");
+  return '<article class="card">'+head("Business colour mark","From: Pinterest colour references","New")+
+  '<p style="margin-top:8px">Each business gets one colour, shown only as a circle with its first letter beside the business name. Headers and screens stay neutral, so status pills keep their meaning.</p>'+
+  '<div class="fanout-demo"><div class="fanout-bizlabel" style="margin-top:0">Business switcher</div><div class="fanout-bizpick" role="group" aria-label="Business">'+picks+'</div>'+
+  '<div class="fanout-bizlabel">Top of Home</div><div class="fanout-bizrows"><div class="r">'+m(b,38)+'<div class="nm"><b style="font-size:16px">'+esc(b.name)+'</b><small>'+esc(b.type)+'</small></div>'+ico("chevron-down")+'</div>'+
+  '<div class="r" style="gap:6px;min-height:46px"><span class="pill alert">'+ico("circle-alert")+'3 overdue</span><span class="pill pending">'+ico("circle-dashed")+'1 part paid</span></div></div>'+
+  '<div class="fanout-bizlabel">Drawer \u00b7 My businesses</div><div class="fanout-bizrows">'+list+'</div>'+
+  '<div class="fanout-legend">Always a letter inside: a plain coloured dot looks like an unread badge. Same circle everywhere the business is named. Colour comes from a short curated list set up per business type, and the owner can change it.</div></div>'+
+  meta("Business switcher, drawer \u201cMy businesses\u201d, top of Home; later the default bill theme (Pro).","Never fill a header or hero with the business colour.",null,"Guardrail")+decide("Business colour mark")+'</article>';
+}
+
+function hubCard(){
+  const fixed=[
+    {k:"collections",name:"Collections",sub:"Money coming in",c:"sand",icon:"wallet",
+       rows:[["receipt-text","October rent",null,"₹1,42,000"],["clock","3 pending","this week",""],["check-check","Settled","42 this month",""]]},
+    {k:"expenses",name:"Expenses",sub:"Money going out",c:"magenta",icon:"receipt",
+       rows:[["zap","Electricity","paid","₹8,400"],["wrench","Repairs","2 bills","₹3,150"],["plus","Add expense","",""]]},
+    {k:"staff",name:"Staff",sub:"People & access",c:"violet",icon:"users",
+       rows:[["user","Ramesh","Can edit",""],["user","Sunita","View only",""],["shield-check","Access & permissions","",""]]},
+    {k:"business",name:"Business",sub:"This business",c:"blue",icon:"building-2",
+       rows:[["pencil","Name & details","",""],["image","Logo & bill theme","",""],["id-card","GST & CA export","",""]]},
+    {k:"backup",name:"Backup",sub:"Data & restore",c:"teal",icon:"hard-drive",
+       rows:[["cloud-upload","Back up now","2 min ago",""],["history","Restore","",""],["file-down","Export","",""]]},
+    {k:"settings",name:"Settings",sub:"App preferences",c:"lavender",icon:"settings-2",
+       rows:[["palette","Appearance","",""],["bell","Reminders","",""],["globe","Language","English"]]}
+  ];
+  const cls="idb";
+  const grid=fixed.map(f=>'<button type="button" class="fanout-mod '+cls+'-'+f.c+(state.hubOpen===f.k?'" aria-pressed="true"':'"')+
+    ' data-act="hub" data-k="'+f.k+'"><span class="top">'+ico(f.icon)+'</span><span><strong>'+f.name+'</strong><small>'+f.sub+'</small></span></button>').join("");
+  let inside="";
+  if(state.hubOpen){
+    const f=fixed.find(x=>x.k===state.hubOpen);
+    const rows=f.rows.map(r=>'<div class="r">'+ico(r[0])+'<span>'+r[1]+(r[2]?' <span class="mut">· '+r[2]+'</span>':'')+'</span>'+(r[3]?'<span class="amt">'+r[3]+'</span>':'')+'</div>').join("");
+    inside='<div class="fanout-inside idb-'+f.c+'">'+
+      '<div class="fanout-inside-head idb-'+f.c+'"><button type="button" class="back" data-act="hub-back" aria-label="Back to hub">'+ico("arrow-left")+'</button>'+
+      '<div class="ic">'+ico(f.icon)+'</div><div class="t"><small>You are in</small><strong>'+f.name+'</strong></div></div>'+
+      '<div class="fanout-inside-rows">'+rows+'</div></div>'+
+      '<p class="fanout-hint">The header keeps '+f.name+'\u2019s full identity colour with near-white text. Rows below stay neutral Khaata rows.</p>';
+  } else {
+    inside='<p class="fanout-hint">Tap a block to go inside. The inside header carries that block\u2019s full colour, so you always know where you are.</p>';
+  }
+  return '<article class="card">'+head("Fixed hub + colour flow","New \u00b7 built separately","New")+
+    '<p style="margin-top:8px">The constant, cross-vertical destinations \u2014 Collections, Expenses, Staff, Business, Backup, Settings \u2014 as colour blocks. Each keeps one fixed colour so owners learn it once. Tapping a block opens it, and the inside header carries that same full colour.</p>'+
+    '<div class="fanout-demo"><div class="fanout-hub">'+grid+'</div>'+inside+
+    '<div class="fanout-legend">Only fixed destinations live here. Vertical-specific screens (Rooms, Routes) come from the engine and are not in this grid. Colours are from the identity set, never a status hue.</div></div>'+
+    meta("The business hub \u2014 the screens every business has, whatever the vertical.","Operational and status screens keep Khaata\u2019s meaning colours; identity colour is for place, not state.",null,"Guardrail")+decide("Fixed hub + colour flow")+'</article>';
+}
+
+function render(){
+    $("#app").innerHTML=
+  '<header class="fanout-top"><div class="grow"><div class="fanout-eyebrow">Khaata visual standardization</div><h1>Khaata UI components for build</h1><p>Reviewed FANOUT components as Khaata working models. Approved ones are ready to build; \u201cUse if needed\u201d ones are decided when their page is built.</p></div>'+
+  '<button type="button" class="ibtn" data-act="theme" aria-label="Switch to '+(isDark()?"light":"dark")+' theme">'+ico(isDark()?"sun":"moon")+'</button></header>'+
+  '<div class="fanout-notes"><h2>Build notes for GPT</h2>'+
+  '<p>Use this file together with \u201cKhaata \u2014 Design brief for GPT\u201d. Copy the CSS tokens exactly. Build only what is marked Approved; use \u201cUse if needed\u201d parts only where a page needs them.</p>'+
+  '<h3>Decided</h3><ul>'+
+  '<li><b>Identity colours = Option B</b> (<code>--idb-*</code>): black text on light tiles, near-white text on dark tiles. Identity colour is for place, never for status.</li>'+
+  '<li><b>Colour-block module grid and fixed hub:</b> Collections, Expenses, Staff, Business, Backup and Settings each keep one fixed colour. Opening one shows its full deep colour in the header with white text (<code>--idh-*</code>); rows inside stay neutral. Vertical screens (Rooms, Routes) are not in this grid.</li>'+
+  '<li><b>Business colour mark:</b> a circle with the business\u2019s first letter, beside the business name only (switcher, drawer list, top of Home). Never colour a whole header or hero.</li>'+
+  '<li><b>Plans:</b> Free / Pro / Premium switcher as shown. Premium is Recommended with the green wash; Free and Pro are plain cards. Prices are samples.</li>'+
+  '<li><b>Launch card:</b> \u201cSoon\u201d + Notify me by default; countdown only when a release date is locked.</li>'+
+  '<li><b>One typeface:</b> Manrope everywhere, tabular figures for numbers. No monospace font.</li></ul>'+
+  '<h3>Not used \u2014 do not build</h3><ul>'+
+  '<li>GPT\u2019s original 10-colour palette and identity Option A.</li><li>Navy ring on the recommended plan; yellow \u201crecommended\u201d.</li>'+
+  '<li>Pricing with strike-through, \u201c% off\u201d and \u201cBest value\u201d badge.</li><li>Monospace accent font.</li><li>Business colour filling the header or hero.</li></ul>'+
+  '<h3>Decide when the page is built</h3><ul><li>More / Settings navigation vs the side drawer (replace More, or sit alongside the bottom bar).</li>'+
+  '<li>Compact menu trigger, compact top header, two-column destination cards, compact colour cards, display heading, announcement pill.</li></ul></div>'+
+
+  '<section class="fanout-section"><h2>Identity colour</h2>'+paletteCard()+moduleCard()+'</section>'+
+  '<section class="fanout-section"><h2>Plans &amp; recommendation</h2>'+recCard()+hierCard()+'</section>'+
+  '<section class="fanout-section"><h2>More / Settings navigation</h2>'+navCard()+menuCard()+headerCard()+'</section>'+
+  '<section class="fanout-section"><h2>Destination hubs</h2>'+destCard()+compactColourCard()+displayCard()+'</section>'+
+  '<section class="fanout-section"><h2>Fixed hub &amp; colour flow</h2>'+hubCard()+'</section>'+
+  '<section class="fanout-section"><h2>Business colour</h2>'+bizCard()+'</section>'+
+  '<section class="fanout-section"><h2>Launches</h2>'+launchCard()+'</section>'+
+  '<section class="fanout-section"><h2>Menu</h2>'+drawerCard()+'</section>'+
+  '<section class="fanout-section"><h2>Informational emphasis</h2>'+annCard()+'</section>'+drawerHTML();
+  document.body.style.overflow=state.drawerOpen?"hidden":"";
+  if(window.lucide)lucide.createIcons();
+}
+
+function isDark(){
+  if(state.theme)return state.theme==="dark";
+  return !!(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches);
+}
+let toastT=null;
+function toast(t){const el=$("#toast");el.textContent=t;el.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove("on"),2200);}
+
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-act]");
+  if(state.menuOpen&&!(b&&(b.dataset.act==="menu"||b.closest(".fanout-menu")))){state.menuOpen=false;render();if(!b)return;}
+  if(!b)return;
+  const a=b.dataset.act;
+  if(a==="decide"){const n=b.dataset.name,v=b.dataset.val;if(state.decisions[n]===v)delete state.decisions[n];else state.decisions[n]=v;try{localStorage.setItem(STORE,JSON.stringify(state.decisions));}catch(_){}render();}
+  else if(a==="seg"){state[b.dataset.group]=b.dataset.val;render();}
+  else if(a==="tier"){state.tier=b.dataset.tier;render();}
+  else if(a==="nav"){state.navOpen=state.navOpen===b.dataset.k?null:b.dataset.k;render();}
+  else if(a==="menu"){state.menuOpen=!state.menuOpen;render();if(state.menuOpen){const f=document.querySelector(".fanout-menu button");if(f)f.focus();}}
+  else if(a==="go"){state.menuOpen=false;state.drawerOpen=false;render();toast("Would open: "+b.dataset.to);}
+  else if(a==="plan"){toast(b.dataset.tier==="free"?"You\u2019re on Free":"Would start "+state.tiers[b.dataset.tier].name+" checkout");}
+  else if(a==="drawer"){state.drawerOpen=true;render();const f=document.querySelector(".fanout-drawer .ibtn");if(f)f.focus();}
+  else if(a==="drawer-close"){state.drawerOpen=false;render();const m=document.getElementById("drawerBtn");if(m)m.focus();}
+  else if(a==="dgroup"){state.drawerGroup=state.drawerGroup===b.dataset.k?null:b.dataset.k;render();const g=document.querySelector('.fanout-d-item.group[data-k="'+b.dataset.k+'"]');if(g)g.focus();}
+  else if(a==="biz"){state.biz=b.dataset.k;render();const c=document.querySelector('.fanout-bizchip[data-k="'+b.dataset.k+'"]');if(c){c.focus();c.scrollIntoView({block:"nearest",inline:"center"});}}
+  else if(a==="hub"){state.hubOpen=b.dataset.k;render();}
+  else if(a==="hub-back"){state.hubOpen=null;render();}
+  else if(a==="notify"){state.notified=!state.notified;render();toast(state.notified?"We’ll tell you when Lending & chit opens":"Notification turned off");}
+  else if(a==="ann-x"){state.annDismissed=true;render();}
+  else if(a==="ann-reset"){state.annDismissed=false;render();}
+  else if(a==="theme"){state.theme=isDark()?"light":"dark";document.documentElement.dataset.theme=state.theme;render();}
+});
+document.addEventListener("keydown",e=>{if(e.key!=="Escape")return;if(state.drawerOpen){state.drawerOpen=false;render();const m=document.getElementById("drawerBtn");if(m)m.focus();}else if(state.menuOpen){state.menuOpen=false;render();}});
+setInterval(tick,1000);
+if(window.matchMedia)matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{if(!state.theme)render();});
+render();
+</script>
+</body>
+</html>

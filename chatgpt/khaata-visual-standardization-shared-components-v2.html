@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Khaata · Visual Standardization · Shared Components · v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<style>
+/* === Khaata tokens v1 — copy unchanged === */
+:root{
+  --canvas:#FDFCF8; --surface:#FFFFFF; --row:#F6F6F5; --line:#E6E0D7;
+  --ink:#171716; --muted:#6B6B69;
+  --alert:#FF6B5B; --alert-solid:#C23E2E; --alert-ink:#B83A2B; --alert-tint:#FFE4DF;
+  --pending:#EBC36B; --pending-ink:#6E5200; --pending-tile:#FFF0C4;
+  --done-ink:#1E7A4C; --done-tint:#DDF3E6;
+  --info:#D7E1FE; --info-ink:#2B3A75; --info-line:#C3D0F7;
+  --act:#2B3A75; --act-text:#FFFFFF;
+  --neutral-tile:#EDEDEC; --neutral-ink:#6B6B69;
+  --r-btn:14px; --r-card:20px; --r-pill:999px;
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:24px; --sp-7:32px;
+  --dur-fast:.18s; --dur-slide:.5s; --ease-slide:cubic-bezier(.33,1,.68,1);
+  color-scheme:light;
+}
+
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --canvas:#1B1B1A; --surface:#262625; --row:#232322; --line:#38383a;
+    --ink:#FFFFFF; --muted:#9B9B98;
+    --alert:#E8705C; --alert-solid:#E8705C; --alert-ink:#F59384; --alert-tint:#3A2420;
+    --pending:#EBC36B; --pending-ink:#EBC36B; --pending-tile:#3A3122;
+    --done-ink:#74C99A; --done-tint:#244232;
+    --info:#252C42; --info-ink:#DCE4FF; --info-line:#34405E;
+    --act:#C9D4FB; --act-text:#1A2140;
+    --neutral-tile:#2A2A29; --neutral-ink:#9B9B98;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --canvas:#1B1B1A; --surface:#262625; --row:#232322; --line:#38383a;
+  --ink:#FFFFFF; --muted:#9B9B98;
+  --alert:#E8705C; --alert-solid:#E8705C; --alert-ink:#F59384; --alert-tint:#3A2420;
+  --pending:#EBC36B; --pending-ink:#EBC36B; --pending-tile:#3A3122;
+  --done-ink:#74C99A; --done-tint:#244232;
+  --info:#252C42; --info-ink:#DCE4FF; --info-line:#34405E;
+  --act:#C9D4FB; --act-text:#1A2140;
+  --neutral-tile:#2A2A29; --neutral-ink:#9B9B98;
+  color-scheme:dark;
+}
+/* === end Khaata tokens v1 === */
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{background:var(--canvas);color:var(--ink)}
+body{margin:0;background:var(--canvas);color:var(--ink);font-family:"Manrope",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit}
+button{color:inherit}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--info-line);outline-offset:2px}
+.app{max-width:520px;margin:0 auto;padding:env(safe-area-inset-top) var(--sp-4) 100px}
+.icon{width:20px;height:20px;stroke-width:2}
+.page-top{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-3);padding:18px 0 12px}
+.eyebrow{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{margin:4px 0 0;font-size:26px;line-height:1.12;letter-spacing:-.03em}
+h2{margin:0;font-size:18px;line-height:1.25;letter-spacing:-.02em}
+h3{margin:0;font-size:15px;line-height:1.3}
+p{margin:0;color:var(--muted);font-size:13px;line-height:1.5}
+.icon-btn{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;padding:0}
+.tabs{display:flex;gap:8px;overflow:auto;padding:2px 0 4px;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}
+.tab{min-height:36px;padding:0 12px;border-radius:var(--r-pill);border:1px solid var(--line);background:var(--surface);font-size:12px;font-weight:750;white-space:nowrap}
+.tab.is-active{background:var(--act);color:var(--act-text);border-color:var(--act)}
+[data-screen]{display:none}[data-screen].is-visible{display:block}
+.section{margin-top:var(--sp-7)}
+.section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:0 2px 12px}.section-head small{color:var(--muted);font-size:11px}
+.card{border:1px solid var(--line);background:var(--surface);border-radius:var(--r-card)}.card-pad{padding:var(--sp-4)}.demo-stack{display:grid;gap:var(--sp-3)}
+.rule{padding-top:14px;margin-top:14px;border-top:1px dashed var(--line)}.rule strong{font-size:13px}.rule span{display:block;margin-top:4px;color:var(--muted);font-size:12px;line-height:1.45}
+
+.btn{min-height:44px;padding:0 var(--sp-4);border-radius:var(--r-btn);border:0;background:var(--surface);font-weight:750;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform var(--dur-fast),opacity var(--dur-fast)}
+.btn:active{transform:scale(.97)}.btn-primary{background:var(--act);color:var(--act-text)}.btn-secondary{background:var(--surface);color:var(--ink);border:1px solid var(--line)}.btn-ghost{background:transparent;color:var(--act)}.btn-danger{background:var(--alert-tint);color:var(--alert-ink)}.btn-disabled{background:var(--neutral-tile);color:var(--muted);cursor:not-allowed}
+.spinner{width:16px;height:16px;border-radius:50%;border:2px solid var(--info-line);border-top-color:var(--act-text);animation:spin .7s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+.state-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.state-cell{display:grid;gap:7px}.state-label{text-align:center;font-size:11px;color:var(--muted);font-weight:650}
+
+.pill{min-height:28px;padding:0 10px;border-radius:var(--r-pill);border:0;display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:750;white-space:nowrap}
+.pill-alert{background:var(--alert-tint);color:var(--alert-ink)}.pill-pending{background:var(--pending-tile);color:var(--pending-ink)}.pill-done{background:var(--done-tint);color:var(--done-ink)}.pill-info{background:var(--info);color:var(--info-ink)}.pill-neutral{background:var(--neutral-tile);color:var(--neutral-ink)}
+.pill-row{display:flex;gap:8px;flex-wrap:wrap}
+.tile{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;flex:none;border:0}.tile-alert{background:var(--alert-tint);color:var(--alert-ink)}.tile-pending{background:var(--pending-tile);color:var(--pending-ink)}.tile-done{background:var(--done-tint);color:var(--done-ink)}.tile-info{background:var(--info);color:var(--info-ink)}.tile-neutral{background:var(--neutral-tile);color:var(--neutral-ink)}
+.badge{min-width:22px;height:22px;padding:0 7px;border-radius:var(--r-pill);display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800}.badge-plain{background:var(--act);color:var(--act-text)}.badge-wait{background:var(--pending-tile);color:var(--pending-ink)}.badge-urgent{background:var(--alert-solid);color:var(--act-text)}
+.badge-demo{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}.badge-item{display:grid;gap:6px;justify-items:start}.badge-item span:last-child{font-size:11px;color:var(--muted)}
+
+.select-grid{display:flex;gap:14px;flex-wrap:wrap}
+.select-chip{position:relative;min-height:44px;padding:0 16px;border-radius:var(--r-pill);font-size:13px;font-weight:750;background:var(--surface);color:var(--ink);border:2px solid var(--ink)}
+.select-chip.chosen{background:var(--info);color:var(--info-ink);border-color:var(--info-ink)}.select-chip.confirmed{background:var(--info);color:var(--info-ink);border-color:transparent}.select-chip.locked{background:var(--act);color:var(--act-text);border-color:transparent}
+.select-chip .tick{position:absolute;top:-7px;right:-7px;width:20px;height:20px;border-radius:50%;background:var(--done-ink);color:var(--surface);display:grid;place-items:center;opacity:0;transform:scale(.5);transition:all var(--dur-fast)}
+.select-chip.confirmed .tick,.select-chip.locked .tick{opacity:1;transform:scale(1)}.select-chip .tick svg{width:13px;height:13px;stroke-width:3}
+.select-hint{margin-top:10px;font-size:11.5px;color:var(--muted)}
+
+.field{display:grid;gap:7px}.field label{font-size:12px;font-weight:750}.input,.select{width:100%;min-height:46px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:0 13px}.help{font-size:11px;color:var(--muted)}
+.choice{width:100%;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:14px;display:grid;grid-template-columns:18px 1fr;align-items:start;gap:12px}
+.choice.is-selected{border-color:var(--info-line);background:var(--info)}.radio{width:18px;height:18px;border-radius:50%;border:2px solid var(--line);margin-top:2px}.choice.is-selected .radio{border:5px solid var(--info-ink)}
+.choice-copy{min-width:0}.choice-copy strong{display:block;font-size:13px}.choice-copy span{display:block;color:var(--muted);font-size:12px;margin-top:3px;line-height:1.4}
+.progress-wrap{display:grid;gap:8px}.progress-meta{display:flex;justify-content:space-between;gap:12px;font-size:12px;font-weight:750}.progress{height:7px;border-radius:var(--r-pill);background:var(--neutral-tile);overflow:hidden}.progress span{display:block;height:100%;width:60%;background:var(--act)}
+
+.toggle-demo{display:flex;gap:18px;align-items:center}.switch{width:46px;height:27px;border-radius:var(--r-pill);background:var(--line);position:relative;border:0;padding:0}.switch .knob{width:21px;height:21px;border-radius:50%;background:var(--surface);position:absolute;top:3px;left:3px;transition:transform var(--dur-fast)}.switch[aria-checked="true"]{background:var(--act)}.switch[aria-checked="true"] .knob{transform:translateX(19px)}
+
+.fab-demo-shell{position:relative;min-height:330px;border:1px solid var(--line);border-radius:var(--r-card);background:var(--row);overflow:hidden}.fab-demo-scrim{position:absolute;inset:0;background:var(--ink);opacity:.26}
+.fab-menu-demo{position:absolute;right:16px;bottom:88px;display:grid;gap:10px}.fab-item{display:flex;align-items:center;justify-content:flex-end;gap:9px}.fab-label{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-pill);padding:8px 11px;font-size:12px;font-weight:750}.fab-mini{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);display:grid;place-items:center;padding:0}.fab{position:absolute;right:16px;bottom:18px;width:56px;height:56px;border-radius:50%;border:0;background:var(--act);color:var(--act-text);display:grid;place-items:center;padding:0}.fab .icon{width:23px;height:23px}
+
+.dotgrid{display:flex;gap:10px;flex-wrap:wrap}.dot{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;border:0}.dot-done{background:var(--done-tint);color:var(--done-ink)}.dot-late{background:var(--pending-tile);color:var(--pending-ink)}.dot-part{background:linear-gradient(90deg,var(--pending) 0 50%,var(--pending-tile) 50% 100%);color:var(--pending-ink)}.dot-unpaid{background:var(--alert-tint);color:var(--alert-ink)}.dot-empty{background:var(--row);border:1px dashed var(--line);color:var(--muted)}.dot-label{font-size:11px;color:var(--muted);min-height:18px;margin-top:10px}
+
+.icon-controls{display:flex;gap:10px;flex-wrap:wrap}.stepper{display:flex;align-items:center;border:1px solid var(--line);border-radius:var(--r-btn);overflow:hidden;background:var(--surface)}.stepper button{width:36px;height:36px;border:0;background:transparent;font-weight:800}.stepper span{min-width:48px;text-align:center;font-size:12px;color:var(--muted)}
+.icon-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}.icon-swatch{display:grid;gap:6px;justify-items:center;padding:12px 6px;border-radius:12px;background:var(--row)}.icon-swatch span{font-size:10px;color:var(--muted)}
+
+.sheet-demo{border:1px solid var(--line);background:var(--surface);border-radius:24px 24px var(--r-card) var(--r-card);padding:10px 16px 16px}.sheet-handle{width:40px;height:4px;border-radius:var(--r-pill);background:var(--line);margin:0 auto 14px}.sheet-action{width:100%;min-height:44px;border:0;border-top:1px solid var(--line);background:transparent;text-align:left;font-size:13px;font-weight:750}.sheet-action:first-of-type{border-top:0}
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,16px);opacity:0;pointer-events:none;width:calc(min(520px,100%) - 32px);background:var(--ink);color:var(--canvas);border-radius:var(--r-btn);padding:12px 14px;display:flex;align-items:center;gap:12px;transition:all var(--dur-fast);z-index:50;font-size:12px;font-weight:700}.toast.is-on{opacity:1;transform:translate(-50%,0);pointer-events:auto}.toast button{margin-left:auto;border:0;background:transparent;color:var(--pending);font-weight:800;padding:2px 4px}
+
+@media(max-width:390px){
+  .pill-row.responsive{gap:6px}
+  .pill-row.responsive .pill{min-height:24px;padding:0 7px;font-size:10.5px}
+  .fab-label{font-size:11px;padding:7px 9px}
+  .fab-mini{width:40px;height:40px}
+}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{transition-duration:0s!important;animation-duration:0s!important}}
+</style>
+</head>
+<body>
+<main class="app">
+  <div class="page-top">
+    <div><div class="eyebrow">Khaata visual standardization</div><h1>Shared components</h1></div>
+    <button class="icon-btn" data-act="theme" aria-label="Toggle light or dark theme"><i class="icon" data-lucide="sun-moon" aria-hidden="true"></i></button>
+  </div>
+
+  <div class="tabs" aria-label="Catalogue sections">
+    <button class="tab is-active" data-act="tab" data-tab="actions">Actions</button>
+    <button class="tab" data-act="tab" data-tab="selection">Selection</button>
+    <button class="tab" data-act="tab" data-tab="status">Status</button>
+    <button class="tab" data-act="tab" data-tab="forms">Forms</button>
+    <button class="tab" data-act="tab" data-tab="togglebadges">Toggles & badges</button>
+    <button class="tab" data-act="tab" data-tab="patterns">Patterns</button>
+    <button class="tab" data-act="tab" data-tab="icons">Icons</button>
+    <button class="tab" data-act="tab" data-tab="overlays">Overlays</button>
+  </div>
+
+  <section class="section is-visible" data-screen="actions">
+    <div class="section-head"><div><h2>Buttons</h2><p>Full interaction states, using the existing Khaata button rules.</p></div><small>Standard</small></div>
+    <div class="card card-pad">
+      <div class="state-grid">
+        <div class="state-cell"><button class="btn btn-primary" data-act="demo-toast" data-message="Saved">Save</button><div class="state-label">Default</div></div>
+        <div class="state-cell"><button class="btn btn-primary" data-act="loading"><span class="spinner" hidden></span><span>Save</span></button><div class="state-label">Tap for loading</div></div>
+        <div class="state-cell"><button class="btn btn-disabled" disabled>Save</button><div class="state-label">Disabled</div></div>
+        <div class="state-cell"><button class="btn btn-secondary" data-act="demo-toast" data-message="Edit">Edit</button><div class="state-label">Secondary</div></div>
+      </div>
+    </div>
+    <div class="section-head" style="margin-top:24px"><div><h2>Exploded FAB</h2><p>Main FAB remains navy; revealed actions use surface circles.</p></div><small>Corrected</small></div>
+    <div class="fab-demo-shell">
+      <div class="fab-demo-scrim" aria-hidden="true"></div>
+      <div class="fab-menu-demo">
+        <div class="fab-item"><span class="fab-label">Add tenant</span><button class="fab-mini" aria-label="Add tenant"><i class="icon" data-lucide="user-plus"></i></button></div>
+        <div class="fab-item"><span class="fab-label">Record payment</span><button class="fab-mini" aria-label="Record payment"><i class="icon" data-lucide="indian-rupee"></i></button></div>
+        <div class="fab-item"><span class="fab-label">Add expense</span><button class="fab-mini" aria-label="Add expense"><i class="icon" data-lucide="receipt-text"></i></button></div>
+        <div class="fab-item"><span class="fab-label">Add charge</span><button class="fab-mini" aria-label="Add charge"><i class="icon" data-lucide="badge-plus"></i></button></div>
+      </div>
+      <button class="fab" aria-label="Open create actions"><i class="icon" data-lucide="plus"></i></button>
+    </div>
+  </section>
+
+  <section class="section" data-screen="selection">
+    <div class="section-head"><div><h2>Selection & locking</h2><p>Tap a chip repeatedly to cycle the full lifecycle.</p></div><small>Locked rule</small></div>
+    <div class="card card-pad">
+      <div class="select-grid">
+        <button class="select-chip" data-act="cycle-chip" data-state="unselected">Monday<span class="tick"><i data-lucide="check"></i></span></button>
+        <button class="select-chip chosen" data-act="cycle-chip" data-state="chosen">Tuesday<span class="tick"><i data-lucide="check"></i></span></button>
+        <button class="select-chip confirmed" data-act="cycle-chip" data-state="confirmed">Wednesday<span class="tick"><i data-lucide="check"></i></span></button>
+        <button class="select-chip locked" data-act="cycle-chip" data-state="locked">Thursday<span class="tick"><i data-lucide="check"></i></span></button>
+      </div>
+      <div class="select-hint">Unselected → Chosen → Confirmed → Locked → reset.</div>
+    </div>
+  </section>
+
+  <section class="section" data-screen="status">
+    <div class="section-head"><div><h2>Status pills & icon tiles</h2><p>Semantic tint + semantic ink, without outer borders.</p></div><small>Corrected</small></div>
+    <div class="card card-pad demo-stack">
+      <h3>Status pills</h3>
+      <div class="pill-row responsive">
+        <span class="pill pill-alert">3 overdue</span>
+        <span class="pill pill-alert">1 conflict</span>
+        <span class="pill pill-pending">2 approvals</span>
+        <span class="pill pill-pending">2 handovers</span>
+      </div>
+      <div class="pill-row">
+        <span class="pill pill-info">Joining tomorrow</span>
+        <span class="pill pill-neutral">Due soon</span>
+        <span class="pill pill-done">Paid</span>
+      </div>
+    </div>
+    <div class="card card-pad" style="margin-top:12px">
+      <h3>Icon tiles</h3>
+      <div class="pill-row" style="margin-top:12px">
+        <span class="tile tile-alert"><i class="icon" data-lucide="circle-alert"></i></span>
+        <span class="tile tile-pending"><i class="icon" data-lucide="stamp"></i></span>
+        <span class="tile tile-info"><i class="icon" data-lucide="calendar-plus"></i></span>
+        <span class="tile tile-done"><i class="icon" data-lucide="check-circle-2"></i></span>
+        <span class="tile tile-neutral"><i class="icon" data-lucide="clock-3"></i></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" data-screen="forms">
+    <div class="section-head"><div><h2>Forms</h2><p>Choice indicators align with the internal content grid.</p></div><small>Corrected</small></div>
+    <div class="card card-pad demo-stack">
+      <div class="field"><label for="tenantName">Tenant name</label><input class="input" id="tenantName" value="Rohan Mehta"><div class="help">Use the name the owner recognizes.</div></div>
+      <div class="field"><label for="roomSelect">Room</label><select class="select" id="roomSelect"><option>Room 203</option><option>Room 204</option></select></div>
+    </div>
+    <div class="card card-pad demo-stack" style="margin-top:12px">
+      <button class="choice" data-act="choice" aria-pressed="false"><span class="radio" aria-hidden="true"></span><span class="choice-copy"><strong>Set up rooms now</strong><span>Create property capacity before adding tenants.</span></span></button>
+      <button class="choice is-selected" data-act="choice" aria-pressed="true"><span class="radio" aria-hidden="true"></span><span class="choice-copy"><strong>Add rooms as I add tenants</strong><span>Create capacity during onboarding when needed.</span></span></button>
+    </div>
+    <div class="card card-pad" style="margin-top:12px"><div class="progress-wrap"><div class="progress-meta"><span>Step 3 of 5</span><span>Money</span></div><div class="progress"><span></span></div></div></div>
+  </section>
+
+  <section class="section" data-screen="togglebadges">
+    <div class="section-head"><div><h2>Toggles & badges</h2><p>Toggle on uses action navy; count badges keep distinct meanings.</p></div><small>Added</small></div>
+    <div class="card card-pad"><h3>Toggle switch</h3><div class="toggle-demo" style="margin-top:12px"><button class="switch" role="switch" aria-checked="false" data-act="toggle-switch" aria-label="Example setting off"><span class="knob"></span></button><button class="switch" role="switch" aria-checked="true" data-act="toggle-switch" aria-label="Example setting on"><span class="knob"></span></button></div></div>
+    <div class="card card-pad" style="margin-top:12px"><h3>Count badges — three meanings</h3><div class="badge-demo" style="margin-top:14px"><div class="badge-item"><span class="badge badge-plain">12</span><span>Plain count</span></div><div class="badge-item"><span class="badge badge-wait">3</span><span>Waiting, no rush</span></div><div class="badge-item"><span class="badge badge-urgent">10</span><span>Needs you now</span></div></div></div>
+  </section>
+
+  <section class="section" data-screen="patterns">
+    <div class="section-head"><div><h2>Payment history dot grid</h2><p>One dot per billing period; tap for the verbal state.</p></div><small>Added</small></div>
+    <div class="card card-pad">
+      <div class="dotgrid">
+        <button class="dot dot-done" data-act="dot" data-label="April · Paid on time" aria-label="April, paid on time"><i class="icon" data-lucide="check"></i></button>
+        <button class="dot dot-late" data-act="dot" data-label="May · Paid late" aria-label="May, paid late"><i class="icon" data-lucide="clock-3"></i></button>
+        <button class="dot dot-part" data-act="dot" data-label="June · Part paid" aria-label="June, part paid"></button>
+        <button class="dot dot-done" data-act="dot" data-label="July · Paid on time" aria-label="July, paid on time"><i class="icon" data-lucide="check"></i></button>
+        <button class="dot dot-unpaid" data-act="dot" data-label="August · Unpaid" aria-label="August, unpaid"><i class="icon" data-lucide="x"></i></button>
+        <button class="dot dot-empty" data-act="dot" data-label="September · No bill yet" aria-label="September, no bill yet"></button>
+      </div>
+      <div class="dot-label" id="dotLabel">Tap a dot to read its month and state.</div>
+    </div>
+  </section>
+
+  <section class="section" data-screen="icons">
+    <div class="section-head"><div><h2>Lucide icon package</h2><p>One icon library, one stroke system, one size system.</p></div><small>Added</small></div>
+    <div class="card card-pad">
+      <div class="icon-controls">
+        <div><div class="state-label">Stroke weight</div><div class="stepper"><button data-act="stroke-down" aria-label="Reduce icon stroke">−</button><span id="strokeVal">2.0</span><button data-act="stroke-up" aria-label="Increase icon stroke">+</button></div></div>
+        <div><div class="state-label">Icon size</div><div class="stepper"><button data-act="size-down" aria-label="Reduce icon size">−</button><span id="sizeVal">20px</span><button data-act="size-up" aria-label="Increase icon size">+</button></div></div>
+      </div>
+      <div class="icon-grid">
+        <div class="icon-swatch"><i class="icon" data-lucide="house"></i><span>house</span></div><div class="icon-swatch"><i class="icon" data-lucide="users"></i><span>users</span></div><div class="icon-swatch"><i class="icon" data-lucide="wallet-cards"></i><span>wallet</span></div><div class="icon-swatch"><i class="icon" data-lucide="bed-single"></i><span>bed</span></div>
+        <div class="icon-swatch"><i class="icon" data-lucide="receipt-text"></i><span>receipt</span></div><div class="icon-swatch"><i class="icon" data-lucide="hand-coins"></i><span>cash</span></div><div class="icon-swatch"><i class="icon" data-lucide="circle-alert"></i><span>alert</span></div><div class="icon-swatch"><i class="icon" data-lucide="calendar-plus"></i><span>calendar</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" data-screen="overlays">
+    <div class="section-head"><div><h2>Sheets & Undo feedback</h2><p>Forward action commits immediately; toast offers a short recovery path.</p></div><small>Added</small></div>
+    <div class="sheet-demo"><div class="sheet-handle"></div><h2>October rent</h2><p style="margin-top:6px">Rohan Mehta · ₹8,500 outstanding</p><div style="margin-top:12px"><button class="sheet-action" data-act="commit-action" data-message="Payment recorded">Record payment</button><button class="sheet-action" data-act="commit-action" data-message="Promise recorded">Record promise</button></div></div>
+    <div class="card card-pad" style="margin-top:12px"><button class="btn btn-primary" data-act="commit-action" data-message="Tenant checked in">Try action + Undo</button></div>
+  </section>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"><span id="toastText">Done</span><button data-act="undo">Undo</button></div>
+
+<script>
+const state={tab:"actions",toastTimer:null,lastAction:null,iconStroke:2,iconSize:20};
+
+function renderIcons(){
+  if(window.lucide&&typeof window.lucide.createIcons==="function"){window.lucide.createIcons();}
+  document.querySelectorAll(".icon").forEach(function(i){i.style.width=state.iconSize+"px";i.style.height=state.iconSize+"px";i.style.strokeWidth=state.iconStroke;});
+  document.getElementById("strokeVal").textContent=state.iconStroke.toFixed(1);
+  document.getElementById("sizeVal").textContent=state.iconSize+"px";
+}
+function render(){
+  document.querySelectorAll("[data-screen]").forEach(function(section){section.classList.toggle("is-visible",section.dataset.screen===state.tab);});
+  document.querySelectorAll('[data-act="tab"]').forEach(function(tab){tab.classList.toggle("is-active",tab.dataset.tab===state.tab);});
+  renderIcons();
+}
+function showToast(message){
+  const toast=document.getElementById("toast");document.getElementById("toastText").textContent=message;toast.classList.add("is-on");
+  clearTimeout(state.toastTimer);state.toastTimer=setTimeout(function(){toast.classList.remove("is-on");state.lastAction=null;},5000);
+}
+function cycleChip(b){
+  const order=["unselected","chosen","confirmed","locked"],cur=b.dataset.state||"unselected",next=order[(order.indexOf(cur)+1)%order.length];
+  b.dataset.state=next;b.classList.remove("chosen","confirmed","locked");if(next!=="unselected")b.classList.add(next);renderIcons();
+}
+document.addEventListener("click",function(e){
+  const b=e.target.closest("[data-act]");if(!b)return;const act=b.dataset.act;
+  if(act==="tab"){state.tab=b.dataset.tab;render();window.scrollTo({top:0,behavior:"smooth"});}
+  if(act==="theme"){const cur=document.documentElement.getAttribute("data-theme");if(cur==="dark")document.documentElement.setAttribute("data-theme","light");else if(cur==="light")document.documentElement.setAttribute("data-theme","dark");else{const dark=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;document.documentElement.setAttribute("data-theme",dark?"light":"dark");}render();}
+  if(act==="loading"){const spinner=b.querySelector(".spinner"),label=b.querySelector("span:last-child");spinner.hidden=false;label.textContent="Saving";b.disabled=true;setTimeout(function(){spinner.hidden=true;label.textContent="Save";b.disabled=false;showToast("Saved");},1100);}
+  if(act==="demo-toast")showToast(b.dataset.message||"Done");
+  if(act==="cycle-chip")cycleChip(b);
+  if(act==="choice"){document.querySelectorAll('[data-act="choice"]').forEach(function(c){const selected=c===b;c.classList.toggle("is-selected",selected);c.setAttribute("aria-pressed",selected?"true":"false");});}
+  if(act==="toggle-switch"){const on=b.getAttribute("aria-checked")==="true";b.setAttribute("aria-checked",on?"false":"true");}
+  if(act==="dot")document.getElementById("dotLabel").textContent=b.dataset.label;
+  if(act==="stroke-down"){state.iconStroke=Math.max(1.5,state.iconStroke-.25);renderIcons();}
+  if(act==="stroke-up"){state.iconStroke=Math.min(3,state.iconStroke+.25);renderIcons();}
+  if(act==="size-down"){state.iconSize=Math.max(16,state.iconSize-2);renderIcons();}
+  if(act==="size-up"){state.iconSize=Math.min(26,state.iconSize+2);renderIcons();}
+  if(act==="commit-action"){state.lastAction=b.dataset.message||"Action";showToast(state.lastAction);}
+  if(act==="undo"){if(state.lastAction){document.getElementById("toastText").textContent="Undone";state.lastAction=null;clearTimeout(state.toastTimer);state.toastTimer=setTimeout(function(){document.getElementById("toast").classList.remove("is-on");},1200);}}
+});
+render();
+</script>
+</body>
+</html>

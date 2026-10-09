@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · Owner Journey Edge & Exception Pass v1.3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{
+--canvas:#FDFCF8;--surface:#FFFFFF;--row:#F6F6F5;--line:#E6E0D7;--ink:#171716;--muted:#6B6B69;
+--alert:#FF6B5B;--alert-solid:#C23E2E;--alert-ink:#B83A2B;--alert-tint:#FFE4DF;
+--pending:#EBC36B;--pending-ink:#6E5200;--pending-tile:#FFF0C4;
+--done-ink:#1E7A4C;--done-tint:#DDF3E6;--info:#D7E1FE;--info-ink:#2B3A75;--info-line:#C3D0F7;
+--act:#2B3A75;--act-text:#FFFFFF;--neutral-tile:#EDEDEC;--neutral-ink:#6B6B69;
+--biz-pine:#0F2C24;--biz-pine-ink:#FBFBFA;
+--r-card:20px;--r-btn:14px;--r-pill:999px;--scrim:rgba(0,0,0,.34);color-scheme:light
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+--canvas:#1B1B1A;--surface:#262625;--row:#232322;--line:#38383A;--ink:#FFFFFF;--muted:#9B9B98;
+--alert:#E8705C;--alert-solid:#E8705C;--alert-ink:#F59384;--alert-tint:#3A2420;
+--pending:#EBC36B;--pending-ink:#EBC36B;--pending-tile:#3A3122;--done-ink:#74C99A;--done-tint:#244232;
+--info:#252C42;--info-ink:#DCE4FF;--info-line:#34405E;--act:#C9D4FB;--act-text:#1A2140;
+--neutral-tile:#2A2A29;--neutral-ink:#9B9B98;--scrim:rgba(0,0,0,.6);color-scheme:dark}}
+:root[data-theme="dark"]{
+--canvas:#1B1B1A;--surface:#262625;--row:#232322;--line:#38383A;--ink:#FFFFFF;--muted:#9B9B98;
+--alert:#E8705C;--alert-solid:#E8705C;--alert-ink:#F59384;--alert-tint:#3A2420;
+--pending:#EBC36B;--pending-ink:#EBC36B;--pending-tile:#3A3122;--done-ink:#74C99A;--done-tint:#244232;
+--info:#252C42;--info-ink:#DCE4FF;--info-line:#34405E;--act:#C9D4FB;--act-text:#1A2140;
+--neutral-tile:#2A2A29;--neutral-ink:#9B9B98;--scrim:rgba(0,0,0,.6);color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--canvas);color:var(--ink);font-family:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif}
+button,input,select{font:inherit;color:inherit}button{cursor:pointer}:focus-visible{outline:2px solid var(--act);outline-offset:2px}[hidden]{display:none!important}
+svg.lucide{width:18px;height:18px;flex:none}
+.app{max-width:520px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top)) 16px 96px}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:10px}.top .grow{flex:1}.top strong{display:block;font-size:16px}.top small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.ibtn{width:44px;height:44px;border:1px solid var(--line);background:var(--surface);border-radius:12px;display:grid;place-items:center;padding:0}
+.mark{width:40px;height:40px;border-radius:50%;background:var(--biz-pine);color:var(--biz-pine-ink);display:grid;place-items:center;font-weight:800;flex:none}
+h1{font-size:27px;line-height:1.08;margin:14px 0 5px}.lead{font-size:12px;color:var(--muted);line-height:1.5;margin:0 0 16px}
+.note{border-radius:14px;padding:11px 12px;font-size:11px;line-height:1.45;background:var(--info);color:var(--info-ink);margin:12px 0}.note.ok{background:var(--done-tint);color:var(--done-ink)}.note.warn{background:var(--pending-tile);color:var(--pending-ink)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:14px;margin-top:10px}
+.field{margin-top:12px}.field:first-child{margin-top:0}.field label{display:block;font-size:11px;font-weight:800;margin-bottom:6px}.input{width:100%;min-height:46px;border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:10px 12px}
+.progress{height:5px;background:var(--neutral-tile);border-radius:999px;overflow:hidden}.progress span{display:block;height:100%;background:var(--act);transition:width .2s}.step{font-size:10px;font-weight:800;color:var(--muted);margin-top:7px}
+.actions{display:grid;grid-template-columns:auto 1fr;gap:8px;margin-top:14px}.btn{min-height:44px;border:1px solid var(--line);background:var(--surface);border-radius:var(--r-btn);padding:0 14px;font-weight:800;font-size:11px}.btn.primary{background:var(--act);color:var(--act-text);border-color:var(--act)}.btn.wide{width:100%;margin-top:12px}
+.choice{width:100%;min-height:64px;border:1px solid var(--line);background:var(--surface);border-radius:16px;text-align:left;padding:11px 12px;margin-top:8px;display:flex;align-items:center;gap:10px}.choice.on{background:var(--info);border-color:var(--info-line);color:var(--info-ink)}.choice strong{display:block;font-size:12px}.choice small{display:block;font-size:10.5px;color:var(--muted);margin-top:3px}.choice.on small{color:inherit;opacity:.82}
+.row{width:100%;min-height:58px;border:0;border-bottom:1px solid var(--line);background:transparent;display:flex;align-items:center;gap:12px;text-align:left;padding:10px 0}.row:last-child{border-bottom:0}.grow{flex:1;min-width:0}.row strong{display:block;font-size:12px}.row small{display:block;color:var(--muted);font-size:10.5px;margin-top:3px}.tile{width:40px;height:40px;border-radius:13px;background:var(--neutral-tile);display:grid;place-items:center;flex:none}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:11px}.kv:last-child{border-bottom:0}.kv span{color:var(--muted)}.kv b{text-align:right}
+.grp{font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:20px 4px 8px}
+.switch{width:46px;height:27px;border:0;border-radius:999px;background:var(--neutral-tile);padding:3px;display:flex;justify-content:flex-start}.switch span{width:21px;height:21px;border-radius:50%;background:var(--surface)}.switch[aria-checked="true"]{background:var(--act);justify-content:flex-end}
+.nav{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(520px,100%);height:72px;background:var(--surface);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);z-index:20}.nav button{border:0;background:transparent;color:var(--muted);font-size:10px;font-weight:700;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}.nav button.on{color:var(--act)}
+.fab{position:fixed;right:16px;bottom:58px;width:54px;height:54px;border-radius:50%;border:0;background:var(--act);color:var(--act-text);z-index:25}
+.scrim{position:fixed;inset:0;background:var(--scrim);z-index:30;opacity:0;pointer-events:none}.scrim.on{opacity:1;pointer-events:auto}.sheet{position:fixed;left:50%;bottom:0;transform:translate(-50%,105%);width:min(520px,100%);max-height:88vh;overflow:auto;background:var(--surface);border-radius:24px 24px 0 0;padding:10px 16px calc(18px + env(safe-area-inset-bottom));z-index:31;transition:.22s}.sheet.on{transform:translate(-50%,0)}.handle{width:38px;height:4px;border-radius:99px;background:var(--line);margin:0 auto 12px}.sheet h2{font-size:18px;margin:0}.sheet p{font-size:11px;color:var(--muted);margin:4px 0 12px}
+</style>
+</head>
+<body>
+<main class="app" id="app"></main>
+
+<nav class="nav" id="nav" hidden>
+<button data-nav="home"><i data-lucide="house"></i>Home</button>
+<button data-nav="tenants"><i data-lucide="users"></i>Tenants</button>
+<button data-nav="collections"><i data-lucide="wallet"></i>Collections</button>
+<button data-nav="more"><i data-lucide="menu"></i>More</button>
+</nav>
+<button class="fab" id="fab" hidden aria-label="Quick actions"><i data-lucide="plus"></i></button>
+
+<div class="scrim" id="scrim"></div>
+<section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+<div class="handle"></div>
+<h2 id="sheetTitle"></h2><p id="sheetSub"></p><div id="sheetBody"></div>
+</section>
+
+<script>
+(function(){
+"use strict";
+
+var S={
+ phase:"business", step:0, history:[],
+ business:{name:"Sunrise PG",type:"PG / Hostel",location:"Bengaluru",currency:"INR"},
+ property:{path:null,method:"manual",floors:2,rooms:50,beds:200,tenantName:"Rohan Mehta",room:"203",bed:"A"},
+ config:{timing:"prepaid",dueDay:"5",grace:"3",reqPhone:true,reqId:false,electricity:false,food:false,parking:false,staff:"owner",backup:"device"},
+ appView:"home", lastFocus:null
+};
+
+var app=document.getElementById("app"),nav=document.getElementById("nav"),fab=document.getElementById("fab");
+var scrim=document.getElementById("scrim"),sheet=document.getElementById("sheet"),sheetTitle=document.getElementById("sheetTitle"),sheetSub=document.getElementById("sheetSub"),sheetBody=document.getElementById("sheetBody");
+
+function icons(){if(window.lucide&&lucide.createIcons)lucide.createIcons()}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function save(){try{localStorage.setItem("khaata_owner_v12",JSON.stringify(S))}catch(_){}}
+function load(){try{var x=localStorage.getItem("khaata_owner_v12");if(x){var p=JSON.parse(x);if(p&&p.business&&p.config)S=p}}catch(_){}}
+function reset(){try{localStorage.removeItem("khaata_owner_v12")}catch(_){} location.reload()}
+function top(title,sub,back){
+ return '<header class="top">'+(back?'<button class="ibtn" data-act="back" aria-label="Back"><i data-lucide="arrow-left"></i></button>':'<span class="mark">'+esc(S.business.name.charAt(0).toUpperCase())+'</span>')+'<div class="grow"><strong>'+esc(title)+'</strong><small>'+esc(sub||"")+'</small></div><button class="ibtn" data-act="theme" aria-label="Toggle theme"><i data-lucide="sun-moon"></i></button></header>';
+}
+function chrome(current,total){
+ return '<div class="progress"><span style="width:'+Math.round(current/total*100)+'%"></span></div><div class="step">Step '+current+' of '+total+'</div>';
+}
+function action(backLabel,nextLabel){
+ return '<div class="actions">'+(backLabel?'<button class="btn" data-act="back">'+backLabel+'</button>':'<span></span>')+'<button class="btn primary" data-act="next">'+nextLabel+'</button></div>';
+}
+function choice(key,val,title,sub){
+ var on=(key.indexOf(".")>0?getPath(key):S[key])===val;
+ return '<button class="choice '+(on?'on':'')+'" data-set="'+key+':'+val+'"><span class="tile">'+(on?'<i data-lucide="check"></i>':'')+'</span><span class="grow"><strong>'+title+'</strong><small>'+sub+'</small></span></button>';
+}
+function getPath(path){
+ var a=path.split("."),v=S;for(var i=0;i<a.length;i++)v=v[a[i]];return v;
+}
+function setPath(path,val){
+ var a=path.split("."),v=S;for(var i=0;i<a.length-1;i++)v=v[a[i]];v[a[a.length-1]]=val;
+}
+function boolRow(key,title,sub){
+ var v=getPath(key);
+ return '<div class="row"><span class="grow"><strong>'+title+'</strong><small>'+sub+'</small></span><button class="switch" role="switch" aria-checked="'+v+'" data-toggle="'+key+'"><span></span></button></div>';
+}
+function businessPhase(){
+ var h=top("Create business","Shared Khaata setup",S.step>0)+chrome(S.step+1,5);
+ if(S.step===0)h+='<h1>Name your business</h1><p class="lead">Create the shared business shell first.</p><section class="card"><div class="field"><label for="bizName">Business name</label><input class="input" id="bizName" value="'+esc(S.business.name)+'"></div></section>'+action(null,"Continue");
+ if(S.step===1)h+='<h1>Business type</h1><p class="lead">Choose the operating vertical.</p><section class="card"><div class="field"><label for="bizType">Business type</label><select class="input" id="bizType"><option>PG / Hostel</option><option>Bakery / café</option><option>Juice bar</option><option>Dairy delivery</option><option>Gym</option><option>Ice cream parlour</option></select></div></section>'+action("Back","Continue");
+ if(S.step===2)h+='<h1>Location</h1><p class="lead">Where this business operates.</p><section class="card"><div class="field"><label for="bizLocation">Location</label><input class="input" id="bizLocation" value="'+esc(S.business.location)+'"></div></section>'+action("Back","Continue");
+ if(S.step===3)h+='<h1>Operational currency</h1><p class="lead">Currency belongs to the business and is chosen explicitly.</p><section class="card"><div class="field"><label for="bizCurrency">Currency</label><select class="input" id="bizCurrency"><option>INR</option><option>USD</option><option>GBP</option><option>EUR</option></select></div></section><div class="note">Location does not silently choose currency.</div>'+action("Back","Review");
+ if(S.step===4)h+='<h1>Review business</h1><p class="lead">The business shell is created before PG-specific capacity and operating setup.</p><section class="card"><div class="kv"><span>Name</span><b>'+esc(S.business.name)+'</b></div><div class="kv"><span>Type</span><b>'+esc(S.business.type)+'</b></div><div class="kv"><span>Location</span><b>'+esc(S.business.location)+'</b></div><div class="kv"><span>Currency</span><b>'+esc(S.business.currency)+'</b></div></section>'+action("Back","Create business");
+ return h;
+}
+function propertyPhase(){
+ var h=top(S.business.name,"PG / Hostel · "+S.business.location,true);
+ if(S.step===0){
+   h+=chrome(1,4)+'<h1>Set up property capacity</h1><p class="lead">Choose whether to configure rooms now or create them progressively during tenant onboarding.</p>'+
+   choice("property.path","now","Set up rooms now","Create property capacity before tenant onboarding.")+
+   choice("property.path","progressive","Add rooms as I add tenants","Create real room/bed records inline during tenant onboarding.")+
+   action("Back","Continue");
+ }
+ if(S.step===1&&S.property.path==="now"){
+   h+=chrome(2,4)+'<h1>How do you want to add capacity?</h1><p class="lead">Manual, bulk generation, or spreadsheet import all create the same underlying hierarchy.</p>'+
+   choice("property.method","manual","Manual","Add rooms and beds directly.")+
+   choice("property.method","bulk","Bulk generate","Generate repeated room/bed structures, then preview.")+
+   choice("property.method","sheet","Import XLSX / CSV","Preview, validate, show errors/duplicates, then confirm.")+
+   '<div class="note">Choosing a spreadsheet never commits immediately. XLSX is the primary template; CSV is also supported.</div>'+action("Back","Review capacity");
+ }
+ if(S.step===2&&S.property.path==="now"){
+   h+=chrome(3,4)+'<h1>Review capacity</h1><p class="lead">Confirm the operational structure before tenant assignment.</p><section class="card"><div class="kv"><span>Floors</span><b>'+S.property.floors+'</b></div><div class="kv"><span>Rooms</span><b>'+S.property.rooms+'</b></div><div class="kv"><span>Total beds</span><b>'+S.property.beds+'</b></div><div class="kv"><span>Occupied</span><b>0</b></div><div class="kv"><span>Vacant</span><b>'+S.property.beds+'</b></div></section>'+action("Back","Confirm capacity");
+ }
+ if(S.step===3&&S.property.path==="now"){
+   h+=chrome(4,4)+'<h1>Property setup complete</h1><p class="lead">Rooms and beds are ready. Commercial terms remain part of each tenancy.</p><div class="note ok"><b>Capacity setup complete.</b><br>Continue with PG operating configuration.</div>'+action("Back","Continue setup");
+ }
+ if(S.step===1&&S.property.path==="progressive"){
+   h+=chrome(2,3)+'<h1>Add your first tenant</h1><p class="lead">Progressive setup starts with the tenant. Room creation happens inside Room / Bed assignment.</p><section class="card"><div class="field"><label for="tenantName">Tenant</label><input class="input" id="tenantName" value="'+esc(S.property.tenantName)+'"></div><div class="field"><label>Joining date</label><input class="input" type="date" value="2026-10-10"></div></section>'+action("Back","Room / Bed");
+ }
+ if(S.step===2&&S.property.path==="progressive"){
+   h+=chrome(3,3)+'<h1>Assign room / bed</h1><p class="lead">Create a real room and bed record before the tenancy assignment.</p><section class="card"><div class="field"><label for="roomNo">Room</label><input class="input" id="roomNo" value="'+esc(S.property.room)+'"></div><div class="field"><label>Capacity</label><select class="input"><option>2 beds</option><option>3 beds</option><option>4 beds</option></select></div><div class="field"><label for="bedLabel">Assign tenant to bed</label><input class="input" id="bedLabel" value="'+esc(S.property.bed)+'"></div></section><div class="note">Underneath, Khaata creates the room and bed/capacity records first, then assigns the tenancy.</div>'+action("Back","Create & assign");
+ }
+ return h;
+}
+function configPhase(){
+ var h=top(S.business.name,"Operating configuration",true)+chrome(S.step+1,7);
+ if(S.step===0)h+='<h1>Billing settings</h1><p class="lead">Configure monthly billing defaults. Individual tenancy terms can still differ.</p>'+
+ choice("config.timing","prepaid","Monthly · prepaid","Monthly obligation is due in advance.")+
+ choice("config.timing","postpaid","Monthly · postpaid","Monthly obligation is due after the billing period.")+
+ '<section class="card"><div class="field"><label for="dueDay">Default due day</label><input class="input" id="dueDay" inputmode="numeric" value="'+esc(S.config.dueDay)+'"></div><div class="field"><label for="grace">Grace days</label><input class="input" id="grace" inputmode="numeric" value="'+esc(S.config.grace)+'"></div></section>'+action("Back","Continue");
+ if(S.step===1)h+='<h1>Tenant requirements</h1><p class="lead">Choose what should be collected during onboarding. Authority for exceptions belongs in Staff & Access.</p><section class="card">'+
+ boolRow("config.reqPhone","Phone number","Required for tenant basics.")+
+ boolRow("config.reqId","Identity document","May be collected after tenant creation.")+
+ '</section>'+action("Back","Continue");
+ if(S.step===2)h+='<h1>Expenses</h1><p class="lead">Expense setup is optional and starts ready with defaults.</p><div class="note ok"><b>Ready with defaults.</b><br>Utilities · Repairs · Supplies · Staff · Food / Mess · Rent / Lease · Other.</div><section class="card"><div class="kv"><span>Payment source</span><b>Business or staff-paid</b></div><div class="kv"><span>Receipt proof</span><b>Optional</b></div><div class="kv"><span>Approval</span><b>Role-based</b></div></section>'+action("Back","Continue");
+ if(S.step===3)h+='<h1>Optional capabilities</h1><p class="lead">Keep features hidden unless this PG uses them.</p><section class="card">'+
+ boolRow("config.electricity","Electricity","Separate or allowance-based charging.")+
+ boolRow("config.food","Food / mess","Included or fixed recurring.")+
+ boolRow("config.parking","Parking","Included, recurring, or ad-hoc charges; no slot inventory in V1.")+
+ '</section>'+action("Back","Continue");
+ if(S.step===4)h+='<h1>Staff & access</h1><p class="lead">Permissions control actions separately from visibility.</p>'+
+ choice("config.staff","owner","Owner only","Invite people later.")+
+ choice("config.staff","team","Set up staff now","Manager, Caretaker / Front desk, or Accounts.")+
+ (S.config.staff==="team"?'<div class="note">Role templates are editable. Actions use Allowed · Needs approval · Not allowed. Visibility is separate.</div>':'')+action("Back","Continue");
+ if(S.step===5)h+='<h1>Backup & sync</h1><p class="lead">Core work remains local-first. Backup and sync are separate capabilities.</p>'+
+ choice("config.backup","device","On this device only","Data stays on this device unless you create or export a backup.")+
+ choice("config.backup","drive","Google Drive backup","Automatic/manual Drive backup with restore.")+
+ choice("config.backup","sync","Khaata Sync (Pro)","Local data plus server sync when online; core work remains available offline.")+
+ action("Back","Review setup");
+ if(S.step===6)h+='<h1>Review setup</h1><p class="lead">These choices will carry into the operating workspace.</p><section class="card">'+
+ '<div class="kv"><span>Business</span><b>'+esc(S.business.name)+'</b></div>'+
+ '<div class="kv"><span>Location</span><b>'+esc(S.business.location)+'</b></div>'+
+ '<div class="kv"><span>Currency</span><b>'+esc(S.business.currency)+'</b></div>'+
+ '<div class="kv"><span>Billing</span><b>Monthly · '+esc(S.config.timing)+'</b></div>'+
+ '<div class="kv"><span>Requirements</span><b>'+(S.config.reqId?'ID required':'Basic only')+'</b></div>'+
+ '<div class="kv"><span>Electricity</span><b>'+(S.config.electricity?'Enabled':'Off')+'</b></div>'+
+ '<div class="kv"><span>Food / mess</span><b>'+(S.config.food?'Enabled':'Off')+'</b></div>'+
+ '<div class="kv"><span>Parking</span><b>'+(S.config.parking?'Enabled':'Off')+'</b></div>'+
+ '<div class="kv"><span>Staff</span><b>'+(S.config.staff==="owner"?'Owner only':'Team configured')+'</b></div>'+
+ '<div class="kv"><span>Data</span><b>'+({device:"On this device only",drive:"Google Drive backup",sync:"Khaata Sync (Pro)"})[S.config.backup]+'</b></div>'+
+ '</section>'+action("Back","Start operating");
+ return h;
+}
+function homePhase(){
+ nav.hidden=false;fab.hidden=false;
+ var h=top(S.business.name,"PG / Hostel · "+S.business.location,false);
+ if(S.appView==="home"){
+   h+='<h1>Home</h1><p class="lead">Your newly configured business is ready to operate.</p><div class="note ok"><b>Setup carried forward.</b><br>'+esc(S.business.currency)+' · '+esc(S.config.timing)+' billing · '+({device:"On this device only",drive:"Google Drive backup",sync:"Khaata Sync (Pro)"})[S.config.backup]+'</div>'+
+   '<div class="grp">Needs attention</div><section class="card"><div class="row"><span class="tile"><i data-lucide="circle-alert"></i></span><span class="grow"><strong>3 collections need follow-up</strong><small>Review outstanding obligations</small></span></div></section>'+
+   '<div class="grp">Coming up</div><section class="card"><div class="row"><span class="tile"><i data-lucide="calendar-days"></i></span><span class="grow"><strong>'+(S.property.path==="progressive"?esc(S.property.tenantName):'First tenant onboarding')+'</strong><small>'+(S.property.path==="progressive"?'Room '+esc(S.property.room)+' · Bed '+esc(S.property.bed):'Capacity is ready')+'</small></span></div></section>';
+ }
+ if(S.appView==="tenants"){
+   h+='<h1>Tenants</h1><p class="lead">Tenancy records for '+esc(S.business.name)+'.</p><section class="card">'+
+   (S.property.path==="progressive"?'<div class="row"><span class="tile"><i data-lucide="user"></i></span><span class="grow"><strong>'+esc(S.property.tenantName)+'</strong><small>Upcoming · Room '+esc(S.property.room)+' · Bed '+esc(S.property.bed)+'</small></span></div>':'<div class="note">No tenant has been added yet. Property capacity is ready for onboarding.</div>')+
+   '</section>';
+ }
+ if(S.appView==="collections"){
+   h+='<h1>Collections</h1><p class="lead">Money coming in · '+esc(S.business.currency)+'.</p><section class="card"><div class="row"><span class="tile"><i data-lucide="receipt-text"></i></span><span class="grow"><strong>Current month</strong><small>Monthly · '+esc(S.config.timing)+' · due day '+esc(S.config.dueDay)+'</small></span></div></section>';
+ }
+ if(S.appView==="more"){
+   h+='<h1>More</h1><p class="lead">Configuration and secondary operating tools.</p>'+
+   '<div class="grp">Setup & access</div><section class="card"><div class="row"><span class="grow"><strong>Billing settings</strong><small>Monthly · '+esc(S.config.timing)+' · due day '+esc(S.config.dueDay)+'</small></span></div><div class="row"><span class="grow"><strong>Tenant requirements</strong><small>Phone '+(S.config.reqPhone?'required':'optional')+' · ID '+(S.config.reqId?'required':'not required')+'</small></span></div><div class="row"><span class="grow"><strong>Staff & access</strong><small>'+(S.config.staff==="owner"?'Owner only':'Team configured')+'</small></span></div></section>'+
+   '<div class="grp">Features & data</div><section class="card"><div class="row"><span class="grow"><strong>Optional features</strong><small>Electricity '+(S.config.electricity?'on':'off')+' · Food '+(S.config.food?'on':'off')+' · Parking '+(S.config.parking?'on':'off')+'</small></span></div><div class="row"><span class="grow"><strong>Backup & Sync</strong><small>'+({device:"On this device only",drive:"Google Drive backup",sync:"Khaata Sync (Pro)"})[S.config.backup]+'</small></span></div><div class="row"><span class="grow"><strong>Business settings</strong><small>'+esc(S.business.name)+' · '+esc(S.business.currency)+'</small></span></div></section>'+
+   '<div class="grp">Review</div><section class="card"><button class="row" data-act="edge-review"><span class="tile"><i data-lucide="shield-alert"></i></span><span class="grow"><strong>Edge & exception review</strong><small>Frozen PG V1 exception rules in one place</small></span><i data-lucide="chevron-right"></i></button></section>'+
+   '<button class="btn wide" data-act="restart">Restart prototype</button>';
+ }
+ return h;
+}
+function render(){
+ nav.hidden=S.phase!=="app";fab.hidden=S.phase!=="app";
+ var h=S.phase==="business"?businessPhase():S.phase==="property"?propertyPhase():S.phase==="config"?configPhase():homePhase();
+ app.innerHTML=h;
+ if(S.phase==="business"){
+   var t=document.getElementById("bizType");if(t)t.value=S.business.type;
+   var c=document.getElementById("bizCurrency");if(c)c.value=S.business.currency;
+ }
+ nav.querySelectorAll("button").forEach(function(b){b.classList.toggle("on",b.dataset.nav===S.appView)});
+ icons();save();window.scrollTo(0,0);
+}
+function capture(){
+ var el;
+ if((el=document.getElementById("bizName")))S.business.name=el.value.trim()||"Untitled business";
+ if((el=document.getElementById("bizType")))S.business.type=el.value;
+ if((el=document.getElementById("bizLocation")))S.business.location=el.value.trim();
+ if((el=document.getElementById("bizCurrency")))S.business.currency=el.value;
+ if((el=document.getElementById("tenantName")))S.property.tenantName=el.value.trim()||S.property.tenantName;
+ if((el=document.getElementById("roomNo")))S.property.room=el.value.trim()||S.property.room;
+ if((el=document.getElementById("bedLabel")))S.property.bed=el.value.trim()||S.property.bed;
+ if((el=document.getElementById("dueDay")))S.config.dueDay=el.value||S.config.dueDay;
+ if((el=document.getElementById("grace")))S.config.grace=el.value||S.config.grace;
+}
+function next(){
+ capture();
+ if(S.phase==="business"){
+   if(S.step<4)S.step++;
+   else{
+     if(S.business.type!=="PG / Hostel"){openSheet("Vertical handoff","Shared business created",'<div class="note">This stateful build continues through the PG / Hostel vertical only. Other business types hand off to their own vertical setup.</div>');return}
+     S.phase="property";S.step=0;
+   }
+ }else if(S.phase==="property"){
+   if(S.step===0){if(!S.property.path){S.property.path="now"}S.step=1}
+   else if(S.property.path==="now"){
+     if(S.step<3)S.step++;else{S.phase="config";S.step=0}
+   }else{
+     if(S.step<2)S.step++;else{S.phase="config";S.step=0}
+   }
+ }else if(S.phase==="config"){
+   if(S.step<6)S.step++;else{S.phase="app";S.appView="home";S.step=0}
+ }
+ render();
+}
+function back(){
+ capture();
+ if(S.phase==="business"){if(S.step>0)S.step--}
+ else if(S.phase==="property"){if(S.step>0)S.step--;else{S.phase="business";S.step=4}}
+ else if(S.phase==="config"){if(S.step>0)S.step--;else{S.phase="property";S.step=S.property.path==="now"?3:2}}
+ else if(S.phase==="app"){S.appView="home"}
+ render();
+}
+
+function edgeIndex(){
+ return '<div class="note"><b>PG V1 edge & exception pass.</b><br>These cases preserve history and avoid silent automation.</div>'+
+ '<section class="card">'+
+ '<button class="row" data-edge="upcoming"><span class="tile"><i data-lucide="calendar-clock"></i></span><span class="grow"><strong>Upcoming tenant overdue</strong><small>No automatic activation or bed release</small></span><i data-lucide="chevron-right"></i></button>'+
+ '<button class="row" data-edge="correction"><span class="tile"><i data-lucide="rotate-ccw"></i></span><span class="grow"><strong>Payment correction / reversal</strong><small>Original financial event remains</small></span><i data-lucide="chevron-right"></i></button>'+
+ '<button class="row" data-edge="security"><span class="tile"><i data-lucide="shield-check"></i></span><span class="grow"><strong>Security & refund</strong><small>Never silently applied to dues</small></span><i data-lucide="chevron-right"></i></button>'+
+ '<button class="row" data-edge="charge"><span class="tile"><i data-lucide="receipt-text"></i></span><span class="grow"><strong>Charge resolution</strong><small>Keep due · waive · write off · dispute</small></span><i data-lucide="chevron-right"></i></button>'+
+ '<button class="row" data-edge="bed"><span class="tile"><i data-lucide="bed-double"></i></span><span class="grow"><strong>Bed conflict</strong><small>No automatic reassignment</small></span><i data-lucide="chevron-right"></i></button>'+
+ '<button class="row" data-edge="capacity"><span class="tile"><i data-lucide="archive"></i></span><span class="grow"><strong>Capacity lifecycle</strong><small>Available · unavailable · retired</small></span><i data-lucide="chevron-right"></i></button>'+
+ '<button class="row" data-edge="approval"><span class="tile"><i data-lucide="badge-check"></i></span><span class="grow"><strong>Approval request</strong><small>Approval ≠ execution</small></span><i data-lucide="chevron-right"></i></button>'+
+ '<button class="row" data-edge="former"><span class="tile"><i data-lucide="user-minus"></i></span><span class="grow"><strong>Former tenant follow-up</strong><small>Former does not mean settled</small></span><i data-lucide="chevron-right"></i></button>'+
+ '<button class="row" data-edge="backdated"><span class="tile"><i data-lucide="history"></i></span><span class="grow"><strong>Backdated accounting</strong><small>Opening balances are explicit</small></span><i data-lucide="chevron-right"></i></button>'+
+ '<button class="row" data-edge="cash"><span class="tile"><i data-lucide="hand-coins"></i></span><span class="grow"><strong>Cash discrepancy</strong><small>Tenant payment remains settled</small></span><i data-lucide="chevron-right"></i></button>'+
+ '</section>';
+}
+function edgeSheet(k){
+ var m={
+ upcoming:["Upcoming tenant","Joining overdue",'<div class="note warn"><b>Still Upcoming.</b><br>A missed joining date does not automatically activate the tenancy, cancel it, or release the bed.</div><button class="btn wide">Confirm joined</button><button class="btn wide">Change joining date</button><button class="btn wide">Change room / bed</button><button class="btn wide">Cancel before joining</button>'],
+ correction:["Payment correction / reversal","Immutable financial history",'<div class="kv"><span>Original receipt</span><b>Preserved</b></div><div class="kv"><span>Correction</span><b>New event</b></div><div class="note">Reverse full payment, correct allocation, or record chargeback without rewriting the original receipt.</div>'],
+ security:["Security & refund","Explicit actions only",'<div class="kv"><span>Outstanding dues</span><b>₹3,500</b></div><div class="kv"><span>Security actually held</span><b>₹10,000</b></div><div class="note warn"><b>Do not auto-apply.</b><br>Security is separate from rent and charge balances.</div><button class="btn wide">Apply security to dues</button><button class="btn primary wide">Record security refund</button><button class="btn wide">Keep refund pending</button>'],
+ charge:["Charge resolution","Financial record stays visible",'<div class="note">Waiver, write-off and dispute are not payments.</div><button class="btn wide">Keep due</button><button class="btn wide">Waive / discount</button><button class="btn wide">Write off</button><button class="btn wide">Mark disputed</button>'],
+ bed:["Bed conflict","Preserve both legitimate commitments",'<div class="note warn"><b>Conflict detected.</b><br>Khaata does not automatically reassign either tenant.</div><button class="btn wide">Change upcoming room / bed</button><button class="btn wide">Change joining date</button><button class="btn wide">Review current planned move-out</button><button class="btn wide">Cancel upcoming booking</button>'],
+ capacity:["Capacity lifecycle","History-preserving state",'<div class="kv"><span>Bed A</span><b>Available</b></div><div class="note">Past occupancy and commitments stay preserved. Retire/archive semantics replace hard-delete when history exists.</div><button class="btn wide">Temporarily unavailable</button><button class="btn wide">Retire</button>'],
+ approval:["Approval request","Authority before action",'<div class="note"><b>Request ≠ execution.</b><br>A staff member can request approval without already having permission to perform the action. Approval grants authority; the action still happens explicitly.</div><button class="btn primary wide">Approve request</button><button class="btn wide">Decline</button>'],
+ former:["Former tenant follow-up","Occupancy ended; finance may remain",'<div class="kv"><span>Outstanding</span><b>₹2,000</b></div><div class="kv"><span>Refund pending</span><b>₹4,000</b></div><div class="note warn">Former does not imply financially settled.</div><button class="btn wide">Record payment</button><button class="btn wide">Resolve refund</button><button class="btn wide">View statement</button><button class="btn wide">Write off</button>'],
+ backdated:["Backdated accounting","Choose accounting start",'<div class="note warn">This tenancy existed before Khaata accounting began.</div><div class="kv"><span>Path A</span><b>Bring existing history</b></div><div class="kv"><span>Path B</span><b>Start accounting from date</b></div><div class="kv"><span>Opening outstanding</span><b>₹12,000</b></div><div class="kv"><span>Security actually held</span><b>₹10,000</b></div><div class="kv"><span>Tenant credit</span><b>₹0</b></div><div class="note">Opening figures are labeled opening balances; Khaata does not fabricate old payments or charges.</div>'],
+ cash:["Cash discrepancy","Custody is separate from tenant settlement",'<div class="kv"><span>Expected cash</span><b>₹18,400</b></div><div class="kv"><span>Actual handover</span><b>₹17,900</b></div><div class="kv"><span>Difference</span><b>₹500</b></div><div class="note warn"><b>Tenant payment remains settled.</b><br>The discrepancy belongs to cash custody/accountability, not to the tenant balance.</div>']
+ };
+ return m[k]||["Edge review","PG V1",'<div class="note">No edge definition found.</div>'];
+}
+
+function openSheet(t,s,b){S.lastFocus=document.activeElement;sheetTitle.textContent=t;sheetSub.textContent=s||"";sheetBody.innerHTML=b;scrim.classList.add("on");sheet.classList.add("on");icons()}
+function closeSheet(){scrim.classList.remove("on");sheet.classList.remove("on");if(S.lastFocus&&S.lastFocus.focus)S.lastFocus.focus()}
+
+document.addEventListener("click",function(e){
+ var set=e.target.closest("[data-set]");if(set){capture();var a=set.dataset.set.split(":");setPath(a[0],a.slice(1).join(":"));render();return}
+ var tog=e.target.closest("[data-toggle]");if(tog){setPath(tog.dataset.toggle,!getPath(tog.dataset.toggle));render();return}
+ var n=e.target.closest("[data-nav]");if(n){S.appView=n.dataset.nav;render();return}
+ var a=e.target.closest("[data-act]");if(!a)return;
+ if(a.dataset.act==="next"){next();return}
+ if(a.dataset.act==="back"){back();return}
+ if(a.dataset.act==="theme"){var r=document.documentElement;r.dataset.theme=r.dataset.theme==="dark"?"light":"dark";return}
+ if(a.dataset.act==="restart"){reset();return}
+ if(a.dataset.act==="edge-review"){openSheet("Edge & exception review","Frozen PG V1 exception rules",edgeIndex());return}
+});
+document.addEventListener("click",function(e){
+ var ed=e.target.closest("[data-edge]");
+ if(!ed)return;
+ var x=edgeSheet(ed.dataset.edge);
+ openSheet(x[0],x[1],x[2]);
+});
+fab.addEventListener("click",function(){openSheet("Quick actions","Global PG actions",'<button class="btn wide">Add tenant</button><button class="btn wide">Record payment</button><button class="btn wide">Add expense</button><button class="btn wide">Add charge</button>')});
+scrim.addEventListener("click",closeSheet);
+document.addEventListener("keydown",function(e){if(e.key==="Escape")closeSheet()});
+
+load();render();
+})();
+</script>
+</body>
+</html>

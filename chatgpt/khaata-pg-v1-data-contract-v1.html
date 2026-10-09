@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · PG V1 Data & Event Contract v1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{
+--canvas:#FDFCF8;--surface:#FFFFFF;--row:#F6F6F5;--line:#E6E0D7;--ink:#171716;--muted:#6B6B69;
+--alert:#FF6B5B;--alert-solid:#C23E2E;--alert-ink:#B83A2B;--alert-tint:#FFE4DF;
+--pending:#EBC36B;--pending-ink:#6E5200;--pending-tile:#FFF0C4;
+--done-ink:#1E7A4C;--done-tint:#DDF3E6;--info:#D7E1FE;--info-ink:#2B3A75;--info-line:#C3D0F7;
+--act:#2B3A75;--act-text:#FFFFFF;--neutral-tile:#EDEDEC;--neutral-ink:#6B6B69;
+--r-card:20px;--r-btn:14px;--r-pill:999px;color-scheme:light
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+--canvas:#1B1B1A;--surface:#262625;--row:#232322;--line:#38383A;--ink:#FFFFFF;--muted:#9B9B98;
+--alert:#E8705C;--alert-solid:#E8705C;--alert-ink:#F59384;--alert-tint:#3A2420;
+--pending:#EBC36B;--pending-ink:#EBC36B;--pending-tile:#3A3122;--done-ink:#74C99A;--done-tint:#244232;
+--info:#252C42;--info-ink:#DCE4FF;--info-line:#34405E;--act:#C9D4FB;--act-text:#1A2140;
+--neutral-tile:#2A2A29;--neutral-ink:#9B9B98;color-scheme:dark}}
+:root[data-theme="dark"]{
+--canvas:#1B1B1A;--surface:#262625;--row:#232322;--line:#38383A;--ink:#FFFFFF;--muted:#9B9B98;
+--alert:#E8705C;--alert-solid:#E8705C;--alert-ink:#F59384;--alert-tint:#3A2420;
+--pending:#EBC36B;--pending-ink:#EBC36B;--pending-tile:#3A3122;--done-ink:#74C99A;--done-tint:#244232;
+--info:#252C42;--info-ink:#DCE4FF;--info-line:#34405E;--act:#C9D4FB;--act-text:#1A2140;
+--neutral-tile:#2A2A29;--neutral-ink:#9B9B98;color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--canvas);color:var(--ink);font-family:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif}
+button{font:inherit;color:inherit;cursor:pointer}:focus-visible{outline:2px solid var(--act);outline-offset:2px}
+svg.lucide{width:18px;height:18px}
+.app{max-width:820px;margin:auto;padding:calc(14px + env(safe-area-inset-top)) 16px calc(44px + env(safe-area-inset-bottom))}
+.top{display:flex;gap:12px;align-items:flex-start;margin-bottom:16px}.top .grow{flex:1}.top h1{font-size:25px;margin:0 0 5px}.top p{font-size:11px;color:var(--muted);line-height:1.5;margin:0}
+.ibtn{width:44px;height:44px;border:1px solid var(--line);background:var(--surface);border-radius:12px;display:grid;place-items:center}
+.note{padding:11px 12px;border-radius:14px;background:var(--info);color:var(--info-ink);font-size:11px;line-height:1.5;margin:12px 0}.note.ok{background:var(--done-tint);color:var(--done-ink)}.note.warn{background:var(--pending-tile);color:var(--pending-ink)}
+.tabs{display:flex;gap:8px;overflow:auto;padding:2px 0 8px;position:sticky;top:0;background:var(--canvas);z-index:4}.tab{min-height:40px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:0 12px;font-size:10.5px;font-weight:800;white-space:nowrap}.tab.on{background:var(--info);border-color:var(--info-line);color:var(--info-ink)}
+.section{display:none}.section.on{display:block}.section h2{font-size:20px;margin:18px 0 4px}.section>p{font-size:12px;color:var(--muted);line-height:1.55;margin:0 0 14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:14px;margin-top:10px}.grp{font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:20px 4px 8px}
+.row{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--line)}.row:last-child{border-bottom:0}.tile{width:40px;height:40px;border-radius:13px;background:var(--neutral-tile);display:grid;place-items:center;flex:none}.grow{flex:1}.row strong{display:block;font-size:12px}.row small{display:block;font-size:10.5px;line-height:1.5;color:var(--muted);margin-top:3px}
+table{width:100%;border-collapse:collapse;font-size:10.5px}th,td{text-align:left;vertical-align:top;padding:9px 8px;border-bottom:1px solid var(--line);line-height:1.45}th{color:var(--muted)}tr:last-child td{border-bottom:0}
+.code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10.5px;background:var(--row);border:1px solid var(--line);border-radius:12px;padding:10px;white-space:pre-wrap;overflow:auto;line-height:1.5}
+.badge{display:inline-flex;min-height:24px;align-items:center;padding:0 8px;border-radius:999px;font-size:9.5px;font-weight:800;background:var(--neutral-tile);color:var(--neutral-ink)}.badge.ok{background:var(--done-tint);color:var(--done-ink)}.badge.warn{background:var(--pending-tile);color:var(--pending-ink)}
+.check{display:grid;grid-template-columns:20px 1fr;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:11px;line-height:1.45}.check:last-child{border-bottom:0}.check i{color:var(--done-ink)}
+.wide{display:block;overflow:auto}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<main class="app">
+<header class="top">
+<div class="grow"><h1>PG V1 Data & Event Contract</h1><p>Source-backed invariants translated into an implementation model. Proposed storage shapes are explicitly marked so they are not mistaken for frozen product decisions.</p></div>
+<button class="ibtn" id="themeBtn" aria-label="Toggle theme"><i data-lucide="sun-moon"></i></button>
+</header>
+
+<div class="note ok"><b>What is frozen:</b> product semantics, lifecycle boundaries, money invariants, history preservation and offline/sync constraints.</div>
+<div class="note warn"><b>What is proposed here:</b> table/entity names, field names, event envelopes and relationship shapes. These are implementation scaffolding, not source-of-truth product decisions.</div>
+
+<div class="tabs">
+<button class="tab on" data-tab="entities">Entities</button>
+<button class="tab" data-tab="relations">Relationships</button>
+<button class="tab" data-tab="events">Event contracts</button>
+<button class="tab" data-tab="finance">Finance model</button>
+<button class="tab" data-tab="sync">IDs & sync</button>
+<button class="tab" data-tab="rules">Hard invariants</button>
+<button class="tab" data-tab="open">Open implementation choices</button>
+</div>
+
+<section class="section on" id="entities">
+<h2>Proposed canonical entities</h2><p>Names below are chosen for implementation clarity. The distinctions they encode are source-backed; the exact storage shape is proposed.</p>
+<div class="card wide"><table>
+<tr><th>Entity</th><th>Purpose</th><th>Key source-backed distinction</th></tr>
+<tr><td><b>business</b></td><td>Shared business identity, operating currency and vertical type.</td><td>One base operational currency per business.</td></tr>
+<tr><td><b>property_node</b></td><td>Building/block, floor, room or bed/capacity node.</td><td>Capacity history must survive retirement; no hard-delete when history exists.</td></tr>
+<tr><td><b>party</b></td><td>Person or organization identity.</td><td>Occupant, responsible party, payer and deposit owner/source cannot be silently collapsed.</td></tr>
+<tr><td><b>tenancy</b></td><td>Commercial agreement/lifecycle.</td><td>Upcoming, Active, Planned move-out, Moved out and Cancelled before joining are distinct.</td></tr>
+<tr><td><b>tenancy_role_assignment</b></td><td>Effective-dated party role for occupant/responsible party/payer/deposit owner.</td><td>Role changes preserve historical responsibility.</td></tr>
+<tr><td><b>occupancy_assignment</b></td><td>Tenancy ↔ bed/capacity assignment over time.</td><td>Room transfer appends a new assignment; old occupancy remains.</td></tr>
+<tr><td><b>rent_term</b></td><td>Effective-dated rent agreement values.</td><td>Room transfer does not automatically rewrite rent.</td></tr>
+<tr><td><b>obligation</b></td><td>Rent or other amount due for a period/event.</td><td>Monthly obligations are deterministic and old dues remain distinct.</td></tr>
+<tr><td><b>payment</b></td><td>Real incoming money event.</td><td>Immutable event history; wrong payments are corrected/reversed with new events.</td></tr>
+<tr><td><b>payment_allocation</b></td><td>Many-to-many mapping between payments and obligations.</td><td>One payment ↔ many obligations; one obligation ↔ many payments.</td></tr>
+<tr><td><b>receipt_snapshot</b></td><td>Immutable receipt content tied to payment.</td><td>Receipt is a snapshot, not a live mutable view.</td></tr>
+<tr><td><b>charge</b></td><td>Recurring, variable or one-time tenant charge.</td><td>Charge is distinct from rent, payment and deposit.</td></tr>
+<tr><td><b>financial_adjustment</b></td><td>Waiver, discount, write-off, correction or similar non-payment adjustment.</td><td>Adjustment is not payment; dispute must not erase underlying charge.</td></tr>
+<tr><td><b>security_account</b></td><td>Agreed, held and ownership context for security/deposit.</td><td>Agreed, paid, held and source/owner are distinct.</td></tr>
+<tr><td><b>security_event</b></td><td>Deposit payment, apply-to-dues, refund or correction.</td><td>Security never auto-settles arrears.</td></tr>
+<tr><td><b>payment_promise</b></td><td>Promise amount/date/history.</td><td>No ledger effect; prior promises remain history.</td></tr>
+<tr><td><b>expense</b></td><td>Business-paid or staff-paid expense.</td><td>Staff-paid means reimbursement accountability, not business cash already spent.</td></tr>
+<tr><td><b>cash_custody_event</b></td><td>Cash acquired/transferred/adjusted between staff/owner custody.</td><td>Tenant settlement and physical cash custody are separate.</td></tr>
+<tr><td><b>approval_request</b></td><td>Escalation for an action needing approval.</td><td>Approval request and action execution are separate events.</td></tr>
+<tr><td><b>staff_access</b></td><td>Person ↔ business access, role, visibility and permissions snapshot/history.</td><td>Visibility and action permission are independent.</td></tr>
+</table></div>
+</section>
+
+<section class="section" id="relations">
+<h2>Relationship map</h2><p>The goal is to avoid accidental “one record does everything” designs.</p>
+<div class="code">business
+ ├─ property_node*
+ │   └─ occupancy_assignment*
+ ├─ tenancy*
+ │   ├─ tenancy_role_assignment*
+ │   ├─ rent_term*
+ │   ├─ occupancy_assignment*
+ │   ├─ obligation*
+ │   │   └─ payment_allocation*
+ │   ├─ charge*
+ │   ├─ financial_adjustment*
+ │   ├─ payment_promise*
+ │   └─ security_account
+ │       └─ security_event*
+ ├─ payment*
+ │   ├─ payment_allocation*
+ │   └─ receipt_snapshot
+ ├─ expense*
+ ├─ cash_custody_event*
+ ├─ approval_request*
+ └─ staff_access*</div>
+<div class="card">
+<div class="check"><i data-lucide="check-circle"></i><span>Do not store “current room” as the only occupancy truth. Derive it from active occupancy assignment.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>Do not store “balance” as the only financial truth. Derive it from obligations, allocations, adjustments, security applications and credits.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>Do not store “deposit” as one number. Preserve agreed amount, actual deposit events, actually held amount and ownership/source.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>Do not store staff cash as a tenant receivable. Custody is downstream of a valid payment.</span></div>
+</div>
+</section>
+
+<section class="section" id="events">
+<h2>Proposed event contract</h2><p>Every history-sensitive action should be representable as an append-only event or versioned record.</p>
+<div class="code">{
+  "event_id": "globally-unique-offline-safe-id",
+  "business_id": "...",
+  "entity_type": "payment | tenancy | occupancy | security | cash_custody | ...",
+  "entity_id": "...",
+  "event_type": "payment_recorded | payment_reversed | occupancy_started | ...",
+  "occurred_at": "business-local effective timestamp",
+  "recorded_at": "device/server write timestamp",
+  "recorded_by": "user/account id",
+  "device_id": "originating device id",
+  "causation_id": "optional prior event id",
+  "correlation_id": "optional workflow id",
+  "payload": { "...": "event-specific fields" }
+}</div>
+<div class="grp">Required workflow events</div>
+<div class="card wide"><table>
+<tr><th>Workflow</th><th>Suggested event sequence</th></tr>
+<tr><td>Confirm joined</td><td><code>tenancy_join_confirmed</code> → <code>occupancy_started</code></td></tr>
+<tr><td>Room transfer</td><td><code>occupancy_ended</code> → <code>occupancy_started</code>; rent change only via separate <code>rent_term_changed</code></td></tr>
+<tr><td>Plan move-out</td><td><code>moveout_planned</code>; later change/cancel/extend events; no tenancy end yet</td></tr>
+<tr><td>Record payment</td><td><code>payment_recorded</code> → one or more <code>payment_allocated</code> → immutable receipt snapshot</td></tr>
+<tr><td>Correct payment</td><td><code>payment_reversed</code> or correction event referencing original; never mutate original</td></tr>
+<tr><td>Apply security</td><td><code>security_applied_to_dues</code> only after explicit user action</td></tr>
+<tr><td>Cash handover</td><td><code>custody_received</code> → <code>cash_handover_recorded</code> → optional <code>cash_discrepancy_recorded</code></td></tr>
+<tr><td>Approval</td><td><code>approval_requested</code> → <code>approval_granted/declined</code> → separate action execution event</td></tr>
+</table></div>
+</section>
+
+<section class="section" id="finance">
+<h2>Finance model</h2><p>Source-backed accounting behavior translated into implementation checks.</p>
+<div class="card">
+<div class="row"><span class="tile"><i data-lucide="calendar-range"></i></span><div class="grow"><strong>Obligation generator</strong><small>Monthly, deterministic, calendar-period based, offline-capable, idempotent.</small></div><span class="badge ok">Required</span></div>
+<div class="row"><span class="tile"><i data-lucide="split"></i></span><div class="grow"><strong>Allocation engine</strong><small>Partial payments, multi-obligation allocation and excess credit must be first-class.</small></div></div>
+<div class="row"><span class="tile"><i data-lucide="history"></i></span><div class="grow"><strong>Opening balances</strong><small>Backdated starts must be explicitly labeled opening figures; do not fabricate historical payments/charges.</small></div></div>
+<div class="row"><span class="tile"><i data-lucide="shield"></i></span><div class="grow"><strong>Security ledger</strong><small>Keep actual held amount separate from agreed amount; explicit application/refund events only.</small></div></div>
+<div class="row"><span class="tile"><i data-lucide="receipt-text"></i></span><div class="grow"><strong>Statement projection</strong><small>Statement is a projection over obligations and ledger events; security stays separate.</small></div></div>
+</div>
+<div class="grp">Derived values</div>
+<div class="code">obligation_outstanding =
+  obligation_amount
+  - allocated_payments
+  - applicable_waivers
+  - writeoffs
+  - explicit_security_applications
+  ± corrections
+
+tenant_credit =
+  unapplied_payment_amount
+
+security_held =
+  deposit_payments
+  - security_refunds
+  - explicit_security_applications
+  ± security_corrections
+
+cash_with_staff =
+  cash_collections_received
+  + custody_transfers_in
+  - custody_transfers_out
+  - approved_discrepancy_adjustments</div>
+</section>
+
+<section class="section" id="sync">
+<h2>IDs, offline and sync</h2><p>The product explicitly requires offline-safe identity and conflict preservation. Exact protocol remains implementation work.</p>
+<div class="card">
+<div class="check"><i data-lucide="check-circle"></i><span>Every syncable record/event gets a globally unique ID generated offline.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>Legitimate concurrent events are preserved; conflicts are surfaced rather than silently overwritten.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>Core operational writes must succeed locally without live server availability.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>Permission to act and ability to view already-cached data offline are separate concerns.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>Entitlement state may be cached as a last-verified snapshot; feature code checks entitlement keys, not tier names.</span></div>
+</div>
+<div class="note">Implementation suggestion: use immutable event IDs plus per-record version metadata rather than “last write wins” for financially or operationally meaningful records.</div>
+</section>
+
+<section class="section" id="rules">
+<h2>Hard invariants</h2><p>Violating one of these should fail tests, not merely show a warning.</p>
+<div class="card">
+<div class="check"><i data-lucide="check-circle"></i><span>An Upcoming tenancy cannot become Active without explicit Confirm joined.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>A past joining date cannot auto-cancel or release the bed.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>Room transfer cannot overwrite prior occupancy history.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>Room transfer cannot silently change rent.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>End tenancy cannot erase financial follow-up or pending refund.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>Posted payment/receipt history cannot be edited in place.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>Security cannot automatically settle arrears.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>Write-off, waiver, discount and dispute cannot be represented as payment.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>Cash discrepancy cannot reopen a tenant obligation that was validly paid.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>Approval cannot be treated as proof that the approved action executed.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>Historical staff attribution must survive staff deactivation/removal.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>Capacity with history cannot be hard-deleted.</span></div>
+</div>
+</section>
+
+<section class="section" id="open">
+<h2>Open implementation choices</h2><p>The source does not freeze these details. They should be decided deliberately before production schema lock.</p>
+<div class="card wide"><table>
+<tr><th>Choice</th><th>Source support</th><th>Recommendation</th></tr>
+<tr><td>SQL table names and exact columns</td><td>Not frozen</td><td>Use the entity boundaries in this document, but treat names as implementation-level.</td></tr>
+<tr><td>Event sourcing vs hybrid relational model</td><td>History semantics are frozen; architecture is not</td><td>Hybrid relational + append-only event/audit records is likely simpler for V1.</td></tr>
+<tr><td>UUID version / ULID / other offline ID</td><td>Only “globally unique offline-safe IDs” is frozen</td><td>Choose one scheme consistently across local and server stores.</td></tr>
+<tr><td>Conflict resolution algorithm</td><td>Conflicts must be explicit; exact protocol deferred</td><td>Never default financial history to blind last-write-wins.</td></tr>
+<tr><td>Accounting projection caching</td><td>Derived balances/statements required; cache strategy not frozen</td><td>Keep source events authoritative; cache projections for performance.</td></tr>
+<tr><td>Tax schema</td><td>Tax exists at charge level; exact jurisdictional fields unresolved</td><td>Do not overfit India-specific fields into the core schema yet.</td></tr>
+<tr><td>Scheduled Google Drive backup</td><td>Conflicting revision history exists</td><td>Treat manual Drive backup/restore as active baseline; keep scheduling separately configurable until explicitly confirmed.</td></tr>
+</table></div>
+<div class="note warn"><b>Next engineering artifact after this:</b> a concrete SQL/Supabase schema proposal can now be produced from these contracts, with migrations and constraints marked “proposed” until approved.</div>
+</section>
+</main>
+<script>
+(function(){
+"use strict";
+var tabs=Array.from(document.querySelectorAll(".tab"));
+var sections=Array.from(document.querySelectorAll(".section"));
+function icons(){if(window.lucide&&lucide.createIcons)lucide.createIcons()}
+function show(id){
+ tabs.forEach(function(b){b.classList.toggle("on",b.dataset.tab===id);b.setAttribute("aria-selected",String(b.dataset.tab===id))});
+ sections.forEach(function(s){s.classList.toggle("on",s.id===id)});
+ window.scrollTo(0,0);
+}
+tabs.forEach(function(b){b.addEventListener("click",function(){show(b.dataset.tab)})});
+document.getElementById("themeBtn").addEventListener("click",function(){
+ var r=document.documentElement;r.dataset.theme=r.dataset.theme==="dark"?"light":"dark";
+ try{localStorage.setItem("khaata_theme",r.dataset.theme)}catch(_){}
+});
+try{var t=localStorage.getItem("khaata_theme");if(t)document.documentElement.dataset.theme=t}catch(_){}
+icons();
+})();
+</script>
+</body>
+</html>

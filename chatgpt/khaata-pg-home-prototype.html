@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · Sunrise PG Home</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --canvas:#F7F7F4; --canvas-alt:#FFFFFF; --surface:#FFFFFF; --row:#F2F2EF; --line:#E4E4DF;
+  --ink:#20201F; --muted:#747470;
+  --alert:#FF6B5B; --alert-solid:#C23E2E; --alert-ink:#B83A2B; --alert-tint:#FFE4DF;
+  --pending-tile:#FFF0C4; --pending-ink:#6E5200; --pending:#EBC36B;
+  --done-tint:#DDF3E6; --done-ink:#1E7A4C;
+  --info:#D7E1FE; --info-ink:#2B3A75; --info-line:#C3D0F7;
+  --act:#2B3A75; --act-text:#FFFFFF;
+  --neutral-tile:#EDEDEC; --neutral-ink:#6B6B69;
+  --scrim:rgba(0,0,0,.28);
+  --r-btn:14px; --r-card:20px; --r-pill:999px;
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:24px; --sp-7:32px;
+  --dur-fast:.18s;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --canvas:#1B1B1A; --canvas-alt:#111110; --surface:#262625; --row:#232322; --line:#38383A;
+    --ink:#FFFFFF; --muted:#9B9B98;
+    --alert:#E8705C; --alert-solid:#E8705C; --alert-ink:#F59384; --alert-tint:#3A2420;
+    --pending-tile:#3A3122; --pending-ink:#EBC36B; --pending:#EBC36B;
+    --done-tint:#244232; --done-ink:#74C99A;
+    --info:#252C42; --info-ink:#DCE4FF; --info-line:#34405E;
+    --act:#C9D4FB; --act-text:#1A2140;
+    --neutral-tile:#2A2A29; --neutral-ink:#9B9B98;
+    --scrim:rgba(0,0,0,.46);
+  }
+}
+:root[data-theme="dark"]{
+  --canvas:#1B1B1A; --canvas-alt:#111110; --surface:#262625; --row:#232322; --line:#38383A;
+  --ink:#FFFFFF; --muted:#9B9B98;
+  --alert:#E8705C; --alert-solid:#E8705C; --alert-ink:#F59384; --alert-tint:#3A2420;
+  --pending-tile:#3A3122; --pending-ink:#EBC36B; --pending:#EBC36B;
+  --done-tint:#244232; --done-ink:#74C99A;
+  --info:#252C42; --info-ink:#DCE4FF; --info-line:#34405E;
+  --act:#C9D4FB; --act-text:#1A2140;
+  --neutral-tile:#2A2A29; --neutral-ink:#9B9B98;
+  --scrim:rgba(0,0,0,.46);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--canvas);color:var(--ink);font-family:'Manrope',system-ui,sans-serif}
+button{font:inherit}
+button:focus-visible{outline:2px solid var(--act);outline-offset:2px}
+.app{max-width:430px;margin:0 auto;min-height:100vh;padding:var(--sp-4) var(--sp-4) 104px}
+.bizhead{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:var(--r-card);background:var(--surface);border:1px solid var(--line);cursor:pointer}
+.bizhead .tile{width:36px;height:36px;border-radius:11px;background:var(--act);color:var(--act-text);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex-shrink:0}
+.bizhead .meta{flex:1;min-width:0}.bizhead .name{font-weight:700;font-size:14.5px;line-height:1.25}.bizhead .sub{font-size:11.5px;color:var(--muted)}
+.chev{font-size:13px;color:var(--muted)}
+.headline{padding:var(--sp-6) 2px var(--sp-3)}
+.headline h1{margin:0;font-size:24px;line-height:1.15;font-weight:700;letter-spacing:-.4px}
+.headline p{margin:6px 0 0;color:var(--muted);font-size:13px;font-weight:500}
+.section{margin-top:var(--sp-5)}
+.sectop{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-3);margin:0 2px var(--sp-2)}
+.sectop h2{margin:0;font-size:19px;font-weight:700;letter-spacing:-.2px}
+.linkbtn{border:0;background:transparent;color:var(--act);font-size:12px;font-weight:700;padding:6px 0;cursor:pointer}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);overflow:hidden}
+.attn{width:100%;display:flex;gap:var(--sp-3);align-items:flex-start;text-align:left;border:0;border-bottom:1px solid var(--line);background:var(--surface);color:var(--ink);padding:14px;cursor:pointer}
+.attn:last-child{border-bottom:0}.attn:active,.uprow:active,.pulsecell:active{background:var(--row)}
+.mark{width:9px;height:9px;border-radius:50%;margin-top:6px;flex:0 0 auto;background:var(--alert-solid)}
+.mark.pending{background:var(--pending)}.mark.info{background:var(--info-ink)}
+.copy{flex:1;min-width:0}.title{font-size:14px;font-weight:700;line-height:1.35}.sub{font-size:12px;color:var(--muted);font-weight:500;line-height:1.45;margin-top:3px}
+.actword{font-size:11.5px;font-weight:700;color:var(--act);padding-top:2px;white-space:nowrap}
+.uprow{width:100%;display:grid;grid-template-columns:62px 1fr auto;gap:var(--sp-3);align-items:start;text-align:left;border:0;border-bottom:1px solid var(--line);background:var(--surface);color:var(--ink);padding:13px 14px;cursor:pointer}
+.uprow:last-child{border-bottom:0}.when{font-size:11.5px;color:var(--muted);font-weight:700}.arrow{color:var(--muted);font-size:14px}
+.pulse{display:grid;grid-template-columns:1fr 1fr;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);overflow:hidden}
+.pulsecell{border:0;background:var(--surface);color:var(--ink);text-align:left;padding:16px;cursor:pointer;min-height:86px}
+.pulsecell:nth-child(odd){border-right:1px solid var(--line)}.pulsecell:nth-child(-n+2){border-bottom:1px solid var(--line)}
+.num{font-size:22px;font-weight:800;letter-spacing:-.5px;line-height:1.1}.lbl{font-size:11.5px;color:var(--muted);font-weight:600;margin-top:5px}
+.note{margin:var(--sp-3) 2px 0;color:var(--muted);font-size:11px;line-height:1.45}
+.bbar{position:fixed;left:50%;transform:translateX(-50%);bottom:max(10px,env(safe-area-inset-bottom));width:min(calc(100% - 20px),410px);height:62px;border-radius:18px;background:var(--surface);border:1px solid var(--line);display:flex;align-items:center;justify-content:space-around;padding:0 8px;z-index:10}
+.navtab{width:64px;border:0;background:transparent;color:var(--muted);font-size:10.5px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
+.navtab.on{color:var(--act)}.navic{font-size:16px;line-height:1}
+.navspace{width:56px}
+.fab{position:fixed;left:50%;bottom:50px;transform:translateX(-50%);width:52px;height:52px;border-radius:50%;background:var(--act);color:var(--act-text);border:0;font-size:26px;font-weight:400;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:13;box-shadow:0 6px 16px var(--scrim)}
+.fab:active{transform:translateX(-50%) scale(.94)}
+.scrim{position:fixed;inset:0;background:var(--scrim);opacity:0;pointer-events:none;transition:opacity var(--dur-fast);z-index:11}
+.scrim.on{opacity:1;pointer-events:auto}
+.menu{position:fixed;left:50%;bottom:112px;transform:translateX(-50%) translateY(8px);width:210px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:6px;z-index:12;opacity:0;pointer-events:none;transition:opacity var(--dur-fast),transform var(--dur-fast)}
+.menu.on{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.menu button{display:block;width:100%;text-align:left;background:transparent;border:0;padding:11px 10px;color:var(--ink);font-size:13px;font-weight:600;border-radius:10px;cursor:pointer}
+.menu button:active{background:var(--row)}
+.toast{position:fixed;left:50%;bottom:126px;transform:translateX(-50%) translateY(8px);width:min(calc(100% - 32px),390px);background:var(--ink);color:var(--canvas);padding:11px 14px;border-radius:var(--r-btn);font-size:12px;font-weight:700;opacity:0;pointer-events:none;transition:opacity var(--dur-fast),transform var(--dur-fast);z-index:20}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.details{margin-top:var(--sp-6);border-top:1px solid var(--line);padding-top:var(--sp-3)}
+.details summary{font-size:11px;color:var(--muted);cursor:pointer}
+.controls{display:flex;gap:var(--sp-2);flex-wrap:wrap;padding-top:var(--sp-2)}
+.controls button{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:var(--r-btn);padding:8px 10px;font-size:11px;font-weight:700;cursor:pointer}
+.caught{padding:18px 14px}.caught .title{font-size:14px}.caught .sub{margin-top:4px}
+@media(min-width:700px){.app{padding-top:var(--sp-6)}}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <button class="bizhead" data-act="business" aria-label="Switch business">
+    <span class="tile">S</span>
+    <span class="meta"><span class="name">Sunrise PG</span><span class="sub">PG / Hostel · Bengaluru</span></span>
+    <span class="chev">⌄</span>
+  </button>
+
+  <div class="headline">
+    <h1>Good evening</h1>
+    <p id="dateLine">Sunday, 4 October</p>
+  </div>
+
+  <section class="section">
+    <div class="sectop"><h2>Needs attention</h2><button class="linkbtn" data-act="all-attention">See all</button></div>
+    <div class="card" id="attention"></div>
+  </section>
+
+  <section class="section">
+    <div class="sectop"><h2>Coming up</h2></div>
+    <div class="card" id="upcoming"></div>
+  </section>
+
+  <section class="section">
+    <div class="sectop"><h2>October</h2></div>
+    <div class="pulse">
+      <button class="pulsecell" data-act="collections"><div class="num">₹3.42L</div><div class="lbl">Collected</div></button>
+      <button class="pulsecell" data-act="collections"><div class="num">₹48K</div><div class="lbl">Outstanding</div></button>
+      <button class="pulsecell" data-act="rooms"><div class="num">43 / 50</div><div class="lbl">Beds occupied</div></button>
+      <button class="pulsecell" data-act="rooms"><div class="num">3</div><div class="lbl">Upcoming</div></button>
+    </div>
+    <div class="note">Money is for October. Occupancy is the current bed position.</div>
+  </section>
+
+  <details class="details">
+    <summary>Prototype controls</summary>
+    <div class="controls">
+      <button data-act="toggle-caught">Toggle caught up</button>
+      <button data-act="theme">Toggle theme</button>
+      <button data-act="reset">Reset</button>
+    </div>
+  </details>
+</div>
+
+<div class="scrim" id="scrim" data-act="close-menu"></div>
+<div class="menu" id="createMenu">
+  <button data-act="quick" data-label="Add tenant">Add tenant</button>
+  <button data-act="quick" data-label="Record payment">Record payment</button>
+  <button data-act="quick" data-label="Add expense">Add expense</button>
+</div>
+<button class="fab" data-act="create" aria-label="Create">+</button>
+
+<nav class="bbar" aria-label="Primary">
+  <button class="navtab on" data-act="nav" data-label="Home"><span class="navic">⌂</span><span>Home</span></button>
+  <button class="navtab" data-act="nav" data-label="Tenants"><span class="navic">♙</span><span>Tenants</span></button>
+  <span class="navspace"></span>
+  <button class="navtab" data-act="nav" data-label="Collections"><span class="navic">₹</span><span>Collections</span></button>
+  <button class="navtab" data-act="nav" data-label="More"><span class="navic">•••</span><span>More</span></button>
+</nav>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+
+var KEY = "khaata_pg_home_v1";
+var S;
+
+function $(id){ return document.getElementById(id); }
+function esc(v){ return String(v).replace(/[&<>"']/g,function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]; }); }
+
+function defaults(){
+  return {
+    caught:false,
+    theme:"",
+    attention:[
+      {kind:"alert",title:"Rajesh · ₹12,000 overdue",sub:"2 months · Exceeds security by ₹2,000",act:"Review"},
+      {kind:"alert",title:"Room 101-A has a conflict",sub:"Rajesh until 5 Dec · Priya from 1 Dec",act:"Resolve"},
+      {kind:"pending",title:"2 approvals waiting",sub:"Rent discount · Expense",act:"Review"},
+      {kind:"info",title:"Cash handover needs confirmation",sub:"Ravi → Amit · ₹8,000",act:"Confirm"}
+    ],
+    upcoming:[
+      {when:"Tomorrow",title:"Priya joins",sub:"Room 102-A"},
+      {when:"5 Oct",title:"18 rents due",sub:"₹1,08,000 expected"},
+      {when:"8 Oct",title:"Amit moves out",sub:"Room 203-B becomes available"}
+    ]
+  };
+}
+function load(){ try{ var r=localStorage.getItem(KEY); if(r) return JSON.parse(r); }catch(e){} return defaults(); }
+function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} }
+
+function attnHtml(x){
+  return '<button class="attn" data-act="attention" data-title="'+esc(x.title)+'">'+
+    '<span class="mark '+esc(x.kind)+'"></span>'+
+    '<span class="copy"><span class="title">'+esc(x.title)+'</span><span class="sub">'+esc(x.sub)+'</span></span>'+
+    '<span class="actword">'+esc(x.act)+'</span></button>';
+}
+function upHtml(x){
+  return '<button class="uprow" data-act="upcoming" data-title="'+esc(x.title)+'">'+
+    '<span class="when">'+esc(x.when)+'</span>'+
+    '<span class="copy"><span class="title">'+esc(x.title)+'</span><span class="sub">'+esc(x.sub)+'</span></span>'+
+    '<span class="arrow">›</span></button>';
+}
+function render(){
+  var i, h="";
+  document.documentElement.setAttribute("data-theme",S.theme || "");
+  if(S.caught){
+    $("attention").innerHTML='<div class="caught"><div class="title">You’re caught up</div><div class="sub">Nothing needs your attention right now.</div></div>';
+  }else{
+    for(i=0;i<S.attention.length;i++) h+=attnHtml(S.attention[i]);
+    $("attention").innerHTML=h;
+  }
+  h="";
+  for(i=0;i<S.upcoming.length;i++) h+=upHtml(S.upcoming[i]);
+  $("upcoming").innerHTML=h;
+}
+function menu(open){
+  $("scrim").className=open?"scrim on":"scrim";
+  $("createMenu").className=open?"menu on":"menu";
+}
+function toast(msg){
+  var t=$("toast");
+  t.textContent=msg;
+  t.className="toast on";
+  setTimeout(function(){ t.className="toast"; },1800);
+}
+
+S=load();
+render();
+
+document.addEventListener("click",function(ev){
+  var b=ev.target.closest("[data-act]");
+  var act;
+  if(!b) return;
+  act=b.getAttribute("data-act");
+  if(act==="create"){ menu($("createMenu").className.indexOf("on")<0); return; }
+  if(act==="close-menu"){ menu(false); return; }
+  if(act==="quick"){ menu(false); toast(b.getAttribute("data-label")+" flow"); return; }
+  if(act==="attention" || act==="upcoming"){ toast(b.getAttribute("data-title")); return; }
+  if(act==="all-attention"){ toast("Attention queue"); return; }
+  if(act==="collections"){ toast("Open Collections"); return; }
+  if(act==="rooms"){ toast("Open Rooms & beds"); return; }
+  if(act==="business"){ toast("Business switcher"); return; }
+  if(act==="nav"){ toast("Open "+b.getAttribute("data-label")); return; }
+  if(act==="toggle-caught"){ S.caught=!S.caught; save(); render(); return; }
+  if(act==="theme"){ S.theme=S.theme==="dark"?"light":"dark"; save(); render(); return; }
+  if(act==="reset"){ S=defaults(); save(); render(); toast("Reset"); return; }
+});
+document.addEventListener("input",function(){});
+document.addEventListener("change",function(){});
+}());
+</script>
+</body>
+</html>

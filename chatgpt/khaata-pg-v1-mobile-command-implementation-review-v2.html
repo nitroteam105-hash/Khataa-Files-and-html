@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · Mobile Command Implementation Skeleton v2</title>
+<style>
+:root{--canvas:#FDFCF8;--surface:#FFFFFF;--line:#E6E0D7;--ink:#171716;--muted:#6B6B69;--info:#D7E1FE;--info-ink:#2B3A75;--done:#DDF3E6;--done-ink:#1E7A4C;--pending:#FFF0C4;--pending-ink:#6E5200}
+*{box-sizing:border-box}body{margin:0;background:var(--canvas);color:var(--ink);font-family:Manrope,system-ui,sans-serif}main{max-width:880px;margin:auto;padding:20px 16px 44px}h1{font-size:26px;margin:0 0 6px}h2{font-size:19px;margin:22px 0 6px}p{font-size:11.5px;line-height:1.6;color:var(--muted);margin:0}.note{padding:11px 12px;border-radius:14px;background:var(--info);color:var(--info-ink);font-size:11px;line-height:1.5;margin:12px 0}.ok{background:var(--done);color:var(--done-ink)}.warn{background:var(--pending);color:var(--pending-ink)}.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:14px;margin-top:10px;overflow:auto}table{width:100%;border-collapse:collapse;font-size:10.5px}th,td{text-align:left;vertical-align:top;padding:9px 8px;border-bottom:1px solid var(--line);line-height:1.45}th{color:var(--muted)}tr:last-child td{border-bottom:0}code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.flow{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10.5px;line-height:1.65;white-space:pre-wrap;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px}
+</style></head><body><main>
+<h1>Mobile Command Implementation Skeleton v2</h1>
+<p>This pass fills in the next major set of PG commands behind the mobile service boundary.</p>
+
+<div class="note ok"><b>New concrete handlers:</b> Add upcoming tenant, deterministic monthly obligations, payment reversal, add charge, add expense, cash handover/discrepancy, plan move-out, end tenancy and security refund.</div>
+<div class="note warn"><b>Still proposed engineering:</b> exact repository library, SQL driver and background-job framework remain open. The handlers are written against small interfaces so the domain rules do not depend on the mobile framework.</div>
+
+<h2>Coverage</h2>
+<div class="card"><table><tr><th>Command</th><th>Status</th><th>Invariant</th></tr><tr><td><code>addUpcomingTenant</code></td><td>Concrete</td><td>Upcoming tenancy + role separation + planned bed + rent term</td></tr><tr><td><code>ensureMonthlyObligations</code></td><td>Concrete</td><td>Offline deterministic/idempotent rent obligation generation</td></tr><tr><td><code>reversePayment</code></td><td>Concrete</td><td>Original payment preserved; reversal appends negative allocation effects</td></tr><tr><td><code>addCharge</code></td><td>Concrete</td><td>Charge and obligation remain separate from payment</td></tr><tr><td><code>addExpense</code></td><td>Concrete</td><td>Business-paid vs staff-paid reimbursement semantics</td></tr><tr><td><code>handoverCash</code></td><td>Concrete</td><td>Expected vs actual; discrepancy never changes tenant settlement</td></tr><tr><td><code>planMoveOut</code></td><td>Concrete</td><td>Planning does not end tenancy</td></tr><tr><td><code>endTenancy</code></td><td>Concrete</td><td>Occupancy ends; finance/refunds/history survive</td></tr><tr><td><code>refundSecurity</code></td><td>Concrete</td><td>Explicit refund bounded by security actually held</td></tr><tr><td><code>recordPayment / confirmJoined / transferRoom / applySecurity / recordPromise</code></td><td>From v1</td><td>Retained as prior concrete handlers</td></tr></table></div>
+
+<h2>Monthly obligation generation</h2>
+<div class="flow">active / planned-move-out tenancy
+  ↓
+effective rent term
+  ↓
+for each monthly calendar period
+  ↓
+deterministic key:
+rent:&lt;tenancyId&gt;:&lt;periodStart&gt;
+  ↓
+already exists?
+  ├─ yes → skip
+  └─ no → create obligation + event + outbox
+
+running the generator twice produces no duplicate rent obligation</div>
+
+<h2>End tenancy behavior</h2>
+<div class="flow">End tenancy
+  ↓
+end active occupancy assignment
+  ↓
+set tenancy → moved_out
+  ↓
+append tenancy_ended event
+  ↓
+queue sync
+  ↓
+DO NOT delete:
+  obligations
+  payments
+  receipts
+  security
+  pending refund
+  statement history</div>
+
+<h2>Cash handover behavior</h2>
+<div class="flow">expected cash vs actual cash
+  ↓
+record explicit handover
+  ↓
+difference?
+  ├─ no → done
+  └─ yes → append discrepancy event
+
+No tenant payment row is changed.</div>
+
+<h2>Test matrix</h2>
+<div class="note">The v2 JSON test matrix adds idempotent monthly billing, role separation, duplicate reversal prevention, staff reimbursement, cash discrepancy, move-out lifecycle, and post-move-out security refund cases.</div>
+</main></body></html>

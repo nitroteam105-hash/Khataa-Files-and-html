@@ -1,0 +1,735 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Khaata · shadcn Component Explorer · v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<style>
+/* === Khaata tokens v1 — copy unchanged === */
+:root{
+  --canvas:#FDFCF8; --surface:#FFFFFF; --row:#F6F6F5; --line:#E6E0D7;
+  --ink:#171716; --muted:#6B6B69;
+  --alert:#FF6B5B; --alert-solid:#C23E2E; --alert-ink:#B83A2B; --alert-tint:#FFE4DF;
+  --pending:#EBC36B; --pending-ink:#6E5200; --pending-tile:#FFF0C4;
+  --done-ink:#1E7A4C; --done-tint:#DDF3E6;
+  --info:#D7E1FE; --info-ink:#2B3A75; --info-line:#C3D0F7;
+  --act:#2B3A75; --act-text:#FFFFFF;
+  --neutral-tile:#EDEDEC; --neutral-ink:#6B6B69;
+  --r-btn:14px; --r-card:20px; --r-pill:999px;
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:24px; --sp-7:32px;
+  --dur-fast:.18s; --dur-slide:.5s; --ease-slide:cubic-bezier(.33,1,.68,1);
+  color-scheme:light;
+}
+
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --canvas:#1B1B1A; --surface:#262625; --row:#232322; --line:#38383a;
+    --ink:#FFFFFF; --muted:#9B9B98;
+    --alert:#E8705C; --alert-solid:#E8705C; --alert-ink:#F59384; --alert-tint:#3A2420;
+    --pending:#EBC36B; --pending-ink:#EBC36B; --pending-tile:#3A3122;
+    --done-ink:#74C99A; --done-tint:#244232;
+    --info:#252C42; --info-ink:#DCE4FF; --info-line:#34405E;
+    --act:#C9D4FB; --act-text:#1A2140;
+    --neutral-tile:#2A2A29; --neutral-ink:#9B9B98;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --canvas:#1B1B1A; --surface:#262625; --row:#232322; --line:#38383a;
+  --ink:#FFFFFF; --muted:#9B9B98;
+  --alert:#E8705C; --alert-solid:#E8705C; --alert-ink:#F59384; --alert-tint:#3A2420;
+  --pending:#EBC36B; --pending-ink:#EBC36B; --pending-tile:#3A3122;
+  --done-ink:#74C99A; --done-tint:#244232;
+  --info:#252C42; --info-ink:#DCE4FF; --info-line:#34405E;
+  --act:#C9D4FB; --act-text:#1A2140;
+  --neutral-tile:#2A2A29; --neutral-ink:#9B9B98;
+  color-scheme:dark;
+}
+/* === end Khaata tokens v1 === */
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--canvas);color:var(--ink);font-family:'Manrope',system-ui,sans-serif}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.app{max-width:620px;margin:0 auto;padding:calc(14px + env(safe-area-inset-top)) 16px calc(40px + env(safe-area-inset-bottom))}
+.top{position:sticky;top:0;z-index:20;background:var(--canvas);padding:4px 0 12px;border-bottom:1px solid var(--line)}
+.topline{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.eyebrow{font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+h1{font-size:22px;line-height:1.15;margin:3px 0 4px}h2{font-size:15px;margin:22px 0 8px}p{font-size:12.5px;line-height:1.5;color:var(--muted);margin:0}
+.icon-btn{width:42px;height:42px;border:1px solid var(--line);border-radius:var(--r-btn);background:var(--surface);color:var(--ink);display:grid;place-items:center;flex:0 0 auto}
+.icon-btn svg{width:18px;height:18px}
+.search-wrap{margin-top:12px;position:relative}.search-wrap>svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--muted)}
+#search{width:100%;height:46px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:var(--r-btn);padding:0 14px 0 42px;font-size:16px;outline:0}
+#search:focus{border-color:var(--act)}
+.summary{display:flex;gap:8px;overflow-x:auto;padding:10px 0 2px;scrollbar-width:none}.summary::-webkit-scrollbar{display:none}
+.summary span{white-space:nowrap;border-radius:var(--r-pill);padding:6px 10px;background:var(--row);font-size:11px;font-weight:700;color:var(--muted)}
+.note{margin-top:14px;padding:12px 13px;border-radius:var(--r-card);background:var(--info);color:var(--info-ink);font-size:12px;line-height:1.45}
+.catalog-section h2{display:flex;align-items:center;justify-content:space-between}
+.cmp-list{border-top:1px solid var(--line)}
+.cmp-row{width:100%;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--ink);display:grid;grid-template-columns:minmax(0,1fr) auto 18px;align-items:center;gap:10px;padding:13px 2px;text-align:left}
+.cmp-row[hidden]{display:none}.cmp-main{min-width:0}.cmp-main strong{display:block;font-size:13.5px}.cmp-main span{display:block;margin-top:2px;font-size:11.5px;line-height:1.4;color:var(--muted)}
+.cmp-row>svg{width:18px;height:18px;color:var(--muted)}
+.fit{font-size:10px;font-weight:800;border-radius:var(--r-pill);padding:4px 8px;white-space:nowrap}
+.fit-strong-fit{background:var(--done-tint);color:var(--done-ink)}.fit-maybe{background:var(--pending-tile);color:var(--pending-ink)}.fit-probably-skip{background:var(--neutral-tile);color:var(--neutral-ink)}
+.empty-filter{display:none;padding:28px 8px;text-align:center;color:var(--muted);font-size:13px}.empty-filter.show{display:block}
+.scrim{position:fixed;inset:0;background:color-mix(in srgb,var(--ink) 28%,transparent);opacity:0;pointer-events:none;transition:opacity var(--dur-fast);z-index:40}.scrim.on{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:50%;bottom:0;transform:translate(-50%,105%);width:min(620px,100%);max-height:88%;overflow:auto;background:var(--surface);border-radius:24px 24px 0 0;padding:10px 16px calc(20px + env(safe-area-inset-bottom));z-index:41;transition:transform var(--dur-slide) var(--ease-slide)}.sheet.on{transform:translate(-50%,0)}
+.handle{width:38px;height:4px;border-radius:var(--r-pill);background:var(--line);margin:0 auto 12px}.sheet-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.sheet h3{font-size:19px;margin:2px 0 4px}.source-tag{display:inline-flex;margin-top:8px;font-size:10.5px;font-weight:800;border-radius:var(--r-pill);background:var(--info);color:var(--info-ink);padding:5px 8px}
+.demo{margin-top:16px;padding:14px;border:1px solid var(--line);border-radius:var(--r-card);background:var(--canvas);min-height:120px}
+.demo-title{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px}
+.review-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}.review-bar button{min-height:42px;border-radius:var(--r-btn);font-size:11.5px;font-weight:800}
+.keep{border:0;background:var(--act);color:var(--act-text)}.maybe{border:1px solid var(--line);background:var(--surface);color:var(--ink)}.skip{border:0;background:var(--neutral-tile);color:var(--neutral-ink)}
+.selected-state{margin-top:8px;font-size:11.5px;color:var(--muted);text-align:center}
+.kbtn{min-height:42px;border-radius:var(--r-btn);padding:0 14px;border:0;background:var(--act);color:var(--act-text);font-weight:800}.kbtn.secondary{background:var(--surface);color:var(--ink);border:1px solid var(--line)}.kbtn.danger{background:var(--alert-tint);color:var(--alert-ink)}.kbtn.ghost{background:transparent;color:var(--act)}.kbtn:disabled{background:var(--neutral-tile);color:var(--muted)}
+.stack{display:grid;gap:9px}.row{display:flex;align-items:center;gap:10px;min-height:44px}.grow{flex:1;min-width:0}.muted{color:var(--muted);font-size:11.5px}.pill{display:inline-flex;align-items:center;border-radius:var(--r-pill);padding:5px 9px;font-size:11px;font-weight:800}.pill.alert{background:var(--alert-tint);color:var(--alert-ink)}.pill.pending{background:var(--pending-tile);color:var(--pending-ink)}.pill.done{background:var(--done-tint);color:var(--done-ink)}.pill.info{background:var(--info);color:var(--info-ink)}.pill.neutral{background:var(--neutral-tile);color:var(--neutral-ink)}
+.tile{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;flex:0 0 auto}.tile.info{background:var(--info);color:var(--info-ink)}.tile.alert{background:var(--alert-tint);color:var(--alert-ink)}.tile.pending{background:var(--pending-tile);color:var(--pending-ink)}.tile.neutral{background:var(--neutral-tile);color:var(--neutral-ink)}.tile svg{width:18px;height:18px}
+.field{display:grid;gap:6px}.field label{font-size:12px;font-weight:800}.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:var(--r-btn);padding:11px 12px;font-size:16px;outline:0}.field textarea{min-height:92px;resize:vertical}
+.choice{display:flex;align-items:center;gap:10px;min-height:44px}.choice input{width:18px;height:18px;accent-color:var(--act)}
+.switch{width:46px;height:27px;border:0;border-radius:var(--r-pill);background:var(--line);position:relative}.switch::after{content:"";position:absolute;width:21px;height:21px;border-radius:50%;background:var(--surface);top:3px;left:3px;transition:transform var(--dur-fast)}.switch.on{background:var(--act)}.switch.on::after{transform:translateX(19px)}
+.acc-item{border-bottom:1px solid var(--line)}.acc-btn{width:100%;border:0;background:transparent;color:var(--ink);min-height:46px;display:flex;align-items:center;justify-content:space-between;text-align:left;font-weight:800}.acc-content{display:none;padding:0 0 12px;color:var(--muted);font-size:12px;line-height:1.45}.acc-item.open .acc-content{display:block}
+.menu{border:1px solid var(--line);background:var(--surface);border-radius:var(--r-card);overflow:hidden}.menu button{width:100%;min-height:42px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--ink);text-align:left;padding:0 12px;display:flex;align-items:center;gap:9px}.menu button:last-child{border-bottom:0}.menu button.danger{color:var(--alert-ink)}
+.context-target{border:1px solid var(--line);border-radius:var(--r-card);padding:15px;background:var(--surface);touch-action:pan-y}.context-target strong{display:block}.context-menu{display:none;margin-top:8px}.context-menu.open{display:block}
+.progress-track{height:8px;background:var(--neutral-tile);border-radius:var(--r-pill);overflow:hidden}.progress-fill{height:100%;width:62%;background:var(--act)}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:var(--row);padding:4px;border-radius:var(--r-pill)}.tabs button{border:0;background:transparent;min-height:38px;border-radius:var(--r-pill);color:var(--muted);font-weight:800}.tabs button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px color-mix(in srgb,var(--ink) 14%,transparent)}
+.toast-demo{display:flex;align-items:center;gap:10px;background:var(--ink);color:var(--canvas);border-radius:var(--r-btn);padding:11px 13px;font-size:12px}.toast-demo button{margin-left:auto;border:0;background:transparent;color:var(--pending);font-weight:800}
+.spinner{width:20px;height:20px;border:3px solid var(--neutral-tile);border-top-color:var(--act);border-radius:50%;animation:spin .75s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+.skeleton{height:14px;border-radius:8px;background:var(--neutral-tile)}.skeleton.w70{width:70%}.skeleton.w45{width:45%}
+.table{width:100%;border-collapse:collapse;font-size:11.5px}.table th,.table td{padding:9px 6px;border-bottom:1px solid var(--line);text-align:left}.table th{color:var(--muted);font-weight:800}
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.day{aspect-ratio:1;border:0;border-radius:10px;background:transparent;color:var(--ink);font-weight:700}.day.sel{background:var(--act);color:var(--act-text)}.day.muted{color:var(--muted)}
+.carousel{display:flex;overflow-x:auto;gap:8px;scroll-snap-type:x mandatory;scrollbar-width:none}.carousel::-webkit-scrollbar{display:none}.car{flex:0 0 78%;scroll-snap-align:start;border:1px solid var(--line);border-radius:var(--r-card);padding:14px;background:var(--surface)}
+.tooltip-wrap{position:relative;display:inline-block}.tooltip{display:none;position:absolute;left:0;top:calc(100% + 5px);z-index:2;background:var(--ink);color:var(--canvas);border-radius:10px;padding:6px 8px;font-size:10.5px;white-space:nowrap}.tooltip-wrap:focus-within .tooltip{display:block}
+@media (hover:hover) and (pointer:fine){.tooltip-wrap:hover .tooltip{display:block}}
+/* --- v2 additions --- */
+.topbtns{display:flex;gap:8px}
+.summary span.on{background:var(--act);color:var(--act-text)}
+.summary button{white-space:nowrap;border:0;border-radius:var(--r-pill);padding:6px 10px;background:var(--row);font-size:11px;font-weight:700;color:var(--muted);min-height:30px}
+.summary button.on{background:var(--act);color:var(--act-text)}
+.cmp-tags{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.tag-khaata{font-size:10px;font-weight:800;border-radius:var(--r-pill);padding:3px 7px;background:var(--info);color:var(--info-ink);white-space:nowrap}
+.tag-work{font-size:10px;font-weight:800;border-radius:var(--r-pill);padding:3px 7px;border:1px solid var(--line);color:var(--ink);white-space:nowrap;display:inline-flex;align-items:center;gap:4px}
+.tag-work svg{width:11px;height:11px}
+.dec{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:800;margin-top:4px}
+.dec svg{width:12px;height:12px}
+.dec-Keep{color:var(--act)}.dec-Maybe{color:var(--pending-ink)}.dec-Skip{color:var(--muted)}
+.cmp-row.is-Skip .cmp-main strong{color:var(--muted);text-decoration:line-through}
+.sheet-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.sheet-tags .source-tag{margin-top:0}
+.khaata-note{margin-top:10px;font-size:11.5px;line-height:1.45;color:var(--info-ink);background:var(--info);border-radius:var(--r-btn);padding:9px 11px}
+.review-bar button[aria-pressed="true"]{outline:2px solid var(--act);outline-offset:2px}
+.review-foot{display:flex;align-items:center;justify-content:space-between;margin-top:8px;gap:8px}
+.linkbtn{border:0;background:transparent;color:var(--act);font-weight:800;font-size:12px;min-height:36px;display:inline-flex;align-items:center;gap:4px;padding:0 4px}
+.linkbtn svg{width:15px;height:15px}
+.export-text{width:100%;min-height:260px;border:1px solid var(--line);border-radius:var(--r-btn);background:var(--canvas);color:var(--ink);font:12px/1.5 ui-monospace,Menlo,monospace;padding:10px;resize:vertical}
+.toast-live{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translate(-50%,140%);z-index:60;transition:transform var(--dur-fast);width:min(380px,calc(100% - 32px))}
+.toast-live.on{transform:translate(-50%,0)}
+/* working models */
+.combo-list{max-height:200px;overflow:auto}
+.combo-list button.add{color:var(--act);font-weight:800}
+.combo-list button[aria-selected="true"]{background:var(--row);font-weight:800}
+.combo-picked{margin-top:8px;font-size:12px}
+.money{display:flex;align-items:center;border:1px solid var(--line);border-radius:var(--r-btn);background:var(--surface);overflow:hidden}
+.money:focus-within{border-color:var(--act)}
+.money span{padding:0 4px 0 13px;font-weight:800;font-size:18px;color:var(--muted)}
+.money input{flex:1;min-width:0;border:0;background:transparent;color:var(--ink);font-size:22px;font-weight:800;padding:12px 12px 12px 4px;outline:0;font-variant-numeric:tabular-nums}
+.money input::placeholder{color:var(--line)}
+.paise{font-weight:300}
+.otp{display:grid;grid-template-columns:repeat(6,1fr);gap:7px}
+.otp input{width:100%;min-width:0;text-align:center;border:1px solid var(--line);border-radius:12px;padding:12px 0;background:var(--surface);color:var(--ink);font-size:20px;font-weight:800;outline:0}
+.otp input:focus{border-color:var(--act)}
+.otp.bad input{border-color:var(--alert-solid)}
+.err{color:var(--alert-ink);font-size:11.5px;font-weight:700}
+.empty-wrap{text-align:center;padding:14px 6px}
+.toast-demo .count{font-size:11px;opacity:.65;margin-left:6px;font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="top">
+    <div class="topline">
+      <div>
+        <div class="eyebrow">Separate exploration catalogue</div>
+        <h1>shadcn → Khaata explorer</h1>
+        <p>Every component from shadcn's current “All Components” list, presented as a Khaata-styled candidate. Tap any row to try it and mark Keep / Maybe / Skip. Choices are saved on this device; export them when done.</p>
+      </div>
+      <div class="topbtns"><button class="icon-btn" id="exportBtn" type="button" aria-label="Export my choices"><i data-lucide="clipboard-list"></i></button><button class="icon-btn" id="themeBtn" type="button" aria-label="Toggle theme"><i data-lucide="moon"></i></button></div>
+    </div>
+    <div class="search-wrap"><i data-lucide="search"></i><input id="search" type="search" placeholder="Search components…" aria-label="Search components"></div>
+    <div class="summary" id="filters" role="group" aria-label="Filter by review"></div>
+  </header>
+
+  <div class="note">This file does not replace the Khaata component catalogue. It is a sandbox for comparing proven component patterns before we decide what belongs in Khaata.</div>
+  <section class="catalog-section" data-category="Layout & structure">
+      <h2>Layout & structure</h2>
+      <div class="cmp-list"><button class="cmp-row" type="button" data-component="Accordion" data-search="accordion expand only the details the owner needs, such as optional tenant information.">
+          <span class="cmp-main"><strong>Accordion</strong><span>Expand only the details the owner needs, such as optional tenant information.</span></span>
+          <span class="fit fit-maybe">Maybe</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Aspect Ratio" data-search="aspect ratio keeps uploaded photos, documents or proof previews consistently shaped.">
+          <span class="cmp-main"><strong>Aspect Ratio</strong><span>Keeps uploaded photos, documents or proof previews consistently shaped.</span></span>
+          <span class="fit fit-maybe">Maybe</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Card" data-search="card grouped content with a clear information boundary.">
+          <span class="cmp-main"><strong>Card</strong><span>Grouped content with a clear information boundary.</span></span>
+          <span class="fit fit-strong-fit">Strong fit</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Carousel" data-search="carousel swipe through peer items when only one or two should lead at a time.">
+          <span class="cmp-main"><strong>Carousel</strong><span>Swipe through peer items when only one or two should lead at a time.</span></span>
+          <span class="fit fit-maybe">Maybe</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Collapsible" data-search="collapsible reveal secondary information without leaving the page.">
+          <span class="cmp-main"><strong>Collapsible</strong><span>Reveal secondary information without leaving the page.</span></span>
+          <span class="fit fit-strong-fit">Strong fit</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Item" data-search="item reusable row with leading content, body and trailing metadata/action.">
+          <span class="cmp-main"><strong>Item</strong><span>Reusable row with leading content, body and trailing metadata/action.</span></span>
+          <span class="fit fit-strong-fit">Strong fit</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Resizable" data-search="resizable user-adjustable panels; primarily desktop.">
+          <span class="cmp-main"><strong>Resizable</strong><span>User-adjustable panels; primarily desktop.</span></span>
+          <span class="fit fit-probably-skip">Probably skip</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Scroll Area" data-search="scroll area constrained scrolling inside a component when needed.">
+          <span class="cmp-main"><strong>Scroll Area</strong><span>Constrained scrolling inside a component when needed.</span></span>
+          <span class="fit fit-probably-skip">Probably skip</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Separator" data-search="separator quiet divider between related records or sections.">
+          <span class="cmp-main"><strong>Separator</strong><span>Quiet divider between related records or sections.</span></span>
+          <span class="fit fit-strong-fit">Strong fit</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Sidebar" data-search="sidebar persistent navigation on wider screens; not the mobile primary pattern.">
+          <span class="cmp-main"><strong>Sidebar</strong><span>Persistent navigation on wider screens; not the mobile primary pattern.</span></span>
+          <span class="fit fit-probably-skip">Probably skip</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button></div>
+    </section><section class="catalog-section" data-category="Actions & menus">
+      <h2>Actions & menus</h2>
+      <div class="cmp-list"><button class="cmp-row" type="button" data-component="Button" data-search="button primary, secondary, destructive, compact and full-width action patterns.">
+          <span class="cmp-main"><strong>Button</strong><span>Primary, secondary, destructive, compact and full-width action patterns.</span></span>
+          <span class="fit fit-strong-fit">Strong fit</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Button Group" data-search="button group related actions placed together without making each one feel unrelated.">
+          <span class="cmp-main"><strong>Button Group</strong><span>Related actions placed together without making each one feel unrelated.</span></span>
+          <span class="fit fit-maybe">Maybe</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Command" data-search="command fast searchable action launcher; more useful on desktop than mobile.">
+          <span class="cmp-main"><strong>Command</strong><span>Fast searchable action launcher; more useful on desktop than mobile.</span></span>
+          <span class="fit fit-probably-skip">Probably skip</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Context Menu" data-search="context menu long-press secondary actions such as copy, open, or share.">
+          <span class="cmp-main"><strong>Context Menu</strong><span>Long-press secondary actions such as Copy, Open, or Share.</span></span>
+          <span class="fit fit-strong-fit">Strong fit</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Dropdown Menu" data-search="dropdown menu compact menu opened from an explicit more button.">
+          <span class="cmp-main"><strong>Dropdown Menu</strong><span>Compact menu opened from an explicit More button.</span></span>
+          <span class="fit fit-strong-fit">Strong fit</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Menubar" data-search="menubar desktop-style persistent menu; unlikely for mobile khaata.">
+          <span class="cmp-main"><strong>Menubar</strong><span>Desktop-style persistent menu; unlikely for mobile Khaata.</span></span>
+          <span class="fit fit-probably-skip">Probably skip</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Navigation Menu" data-search="navigation menu structured top/section navigation; more useful on wider layouts.">
+          <span class="cmp-main"><strong>Navigation Menu</strong><span>Structured top/section navigation; more useful on wider layouts.</span></span>
+          <span class="fit fit-probably-skip">Probably skip</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Popover" data-search="popover small anchored panel for lightweight choices or details.">
+          <span class="cmp-main"><strong>Popover</strong><span>Small anchored panel for lightweight choices or details.</span></span>
+          <span class="fit fit-strong-fit">Strong fit</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Toggle" data-search="toggle one pressable on/off control.">
+          <span class="cmp-main"><strong>Toggle</strong><span>One pressable on/off control.</span></span>
+          <span class="fit fit-strong-fit">Strong fit</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Toggle Group" data-search="toggle group choose one or several compact modes from a small set.">
+          <span class="cmp-main"><strong>Toggle Group</strong><span>Choose one or several compact modes from a small set.</span></span>
+          <span class="fit fit-strong-fit">Strong fit</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Tooltip" data-search="tooltip short explanatory label for unfamiliar icons, mostly hover/focus on desktop.">
+          <span class="cmp-main"><strong>Tooltip</strong><span>Short explanatory label for unfamiliar icons, mostly hover/focus on desktop.</span></span>
+          <span class="fit fit-probably-skip">Probably skip</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button></div>
+    </section><section class="catalog-section" data-category="Forms & selection">
+      <h2>Forms & selection</h2>
+      <div class="cmp-list"><button class="cmp-row" type="button" data-component="Attachment" data-search="attachment add and preview proof, id, bill images or documents.">
+          <span class="cmp-main"><strong>Attachment</strong><span>Add and preview proof, ID, bill images or documents.</span></span>
+          <span class="fit fit-strong-fit">Strong fit</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Calendar" data-search="calendar date-focused browsing for joining, rent due dates or move-outs.">
+          <span class="cmp-main"><strong>Calendar</strong><span>Date-focused browsing for joining, rent due dates or move-outs.</span></span>
+          <span class="fit fit-strong-fit">Strong fit</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Checkbox" data-search="checkbox select independent options where more than one may apply.">
+          <span class="cmp-main"><strong>Checkbox</strong><span>Select independent options where more than one may apply.</span></span>
+          <span class="fit fit-strong-fit">Strong fit</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Combobox" data-search="combobox search and choose from a long list, such as rooms or tenants.">
+          <span class="cmp-main"><strong>Combobox</strong><span>Search and choose from a long list, such as rooms or tenants.</span></span>
+          <span class="fit fit-strong-fit">Strong fit</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Date Picker" data-search="date picker choose a single date or range in a focused flow.">
+          <span class="cmp-main"><strong>Date Picker</strong><span>Choose a single date or range in a focused flow.</span></span>
+          <span class="fit fit-strong-fit">Strong fit</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Field" data-search="field label, control, help text and validation as one consistent form unit.">
+          <span class="cmp-main"><strong>Field</strong><span>Label, control, help text and validation as one consistent form unit.</span></span>
+          <span class="fit fit-strong-fit">Strong fit</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Input" data-search="input single-line text, number or phone entry.">
+          <span class="cmp-main"><strong>Input</strong><span>Single-line text, number or phone entry.</span></span>
+          <span class="fit fit-strong-fit">Strong fit</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Input Group" data-search="input group input with a prefix, suffix or inline action.">
+          <span class="cmp-main"><strong>Input Group</strong><span>Input with a prefix, suffix or inline action.</span></span>
+          <span class="fit fit-strong-fit">Strong fit</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Input OTP" data-search="input otp segmented one-time-code entry.">
+          <span class="cmp-main"><strong>Input OTP</strong><span>Segmented one-time-code entry.</span></span>
+          <span class="fit fit-strong-fit">Strong fit</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Label" data-search="label consistent form label treatment.">
+          <span class="cmp-main"><strong>Label</strong><span>Consistent form label treatment.</span></span>
+          <span class="fit fit-strong-fit">Strong fit</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Native Select" data-search="native select platform-native option picker.">
+          <span class="cmp-main"><strong>Native Select</strong><span>Platform-native option picker.</span></span>
+          <span class="fit fit-strong-fit">Strong fit</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Questionnaire" data-search="questionnaire a sequence of questions with clear answer controls.">
+          <span class="cmp-main"><strong>Questionnaire</strong><span>A sequence of questions with clear answer controls.</span></span>
+          <span class="fit fit-maybe">Maybe</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Radio Group" data-search="radio group choose exactly one option from a small set.">
+          <span class="cmp-main"><strong>Radio Group</strong><span>Choose exactly one option from a small set.</span></span>
+          <span class="fit fit-strong-fit">Strong fit</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Select" data-search="select styled single-choice dropdown.">
+          <span class="cmp-main"><strong>Select</strong><span>Styled single-choice dropdown.</span></span>
+          <span class="fit fit-strong-fit">Strong fit</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Slider" data-search="slider choose a value along a range when exact typing is not required.">
+          <span class="cmp-main"><strong>Slider</strong><span>Choose a value along a range when exact typing is not required.</span></span>
+          <span class="fit fit-maybe">Maybe</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Switch" data-search="switch immediate on/off setting.">
+          <span class="cmp-main"><strong>Switch</strong><span>Immediate on/off setting.</span></span>
+          <span class="fit fit-strong-fit">Strong fit</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Textarea" data-search="textarea multi-line notes.">
+          <span class="cmp-main"><strong>Textarea</strong><span>Multi-line notes.</span></span>
+          <span class="fit fit-strong-fit">Strong fit</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button></div>
+    </section><section class="catalog-section" data-category="Feedback & overlays">
+      <h2>Feedback & overlays</h2>
+      <div class="cmp-list"><button class="cmp-row" type="button" data-component="Alert" data-search="alert inline message for something the user should notice without blocking the flow.">
+          <span class="cmp-main"><strong>Alert</strong><span>Inline message for something the user should notice without blocking the flow.</span></span>
+          <span class="fit fit-maybe">Maybe</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Alert Dialog" data-search="alert dialog blocking confirmation reserved for irreversible or externally visible actions.">
+          <span class="cmp-main"><strong>Alert Dialog</strong><span>Blocking confirmation reserved for irreversible or externally visible actions.</span></span>
+          <span class="fit fit-maybe">Maybe</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Dialog" data-search="dialog centered modal for short focused decisions.">
+          <span class="cmp-main"><strong>Dialog</strong><span>Centered modal for short focused decisions.</span></span>
+          <span class="fit fit-strong-fit">Strong fit</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Drawer" data-search="drawer mobile panel that slides from an edge; useful for filters or secondary tools.">
+          <span class="cmp-main"><strong>Drawer</strong><span>Mobile panel that slides from an edge; useful for filters or secondary tools.</span></span>
+          <span class="fit fit-strong-fit">Strong fit</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Empty" data-search="empty clear zero-state with explanation and one useful next action.">
+          <span class="cmp-main"><strong>Empty</strong><span>Clear zero-state with explanation and one useful next action.</span></span>
+          <span class="fit fit-strong-fit">Strong fit</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Progress" data-search="progress shows completion through a multi-step flow.">
+          <span class="cmp-main"><strong>Progress</strong><span>Shows completion through a multi-step flow.</span></span>
+          <span class="fit fit-strong-fit">Strong fit</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Sheet" data-search="sheet edge-attached overlay; strong fit for mobile khaata details and actions.">
+          <span class="cmp-main"><strong>Sheet</strong><span>Edge-attached overlay; strong fit for mobile Khaata details and actions.</span></span>
+          <span class="fit fit-strong-fit">Strong fit</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Skeleton" data-search="skeleton temporary loading placeholder that preserves layout.">
+          <span class="cmp-main"><strong>Skeleton</strong><span>Temporary loading placeholder that preserves layout.</span></span>
+          <span class="fit fit-strong-fit">Strong fit</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Spinner" data-search="spinner indicates an action is still processing.">
+          <span class="cmp-main"><strong>Spinner</strong><span>Indicates an action is still processing.</span></span>
+          <span class="fit fit-strong-fit">Strong fit</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Hover Card" data-search="hover card desktop hover preview; generally not a mobile-first khaata pattern.">
+          <span class="cmp-main"><strong>Hover Card</strong><span>Desktop hover preview; generally not a mobile-first Khaata pattern.</span></span>
+          <span class="fit fit-probably-skip">Probably skip</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Toast" data-search="toast temporary confirmation/undo feedback.">
+          <span class="cmp-main"><strong>Toast</strong><span>Temporary confirmation/undo feedback.</span></span>
+          <span class="fit fit-strong-fit">Strong fit</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button></div>
+    </section><section class="catalog-section" data-category="Data & navigation">
+      <h2>Data & navigation</h2>
+      <div class="cmp-list"><button class="cmp-row" type="button" data-component="Badge" data-search="badge small count or status count attached to navigation or records.">
+          <span class="cmp-main"><strong>Badge</strong><span>Small count or status count attached to navigation or records.</span></span>
+          <span class="fit fit-strong-fit">Strong fit</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Breadcrumb" data-search="breadcrumb shows hierarchy such as property → floor → room, mainly useful on larger screens.">
+          <span class="cmp-main"><strong>Breadcrumb</strong><span>Shows hierarchy such as Property → Floor → Room, mainly useful on larger screens.</span></span>
+          <span class="fit fit-probably-skip">Probably skip</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Chart" data-search="chart visual summary of numeric trends; use sparingly in khaata.">
+          <span class="cmp-main"><strong>Chart</strong><span>Visual summary of numeric trends; use sparingly in Khaata.</span></span>
+          <span class="fit fit-strong-fit">Strong fit</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Data Table" data-search="data table dense multi-column records, primarily useful on wider screens.">
+          <span class="cmp-main"><strong>Data Table</strong><span>Dense multi-column records, primarily useful on wider screens.</span></span>
+          <span class="fit fit-maybe">Maybe</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Pagination" data-search="pagination move through large result sets page by page.">
+          <span class="cmp-main"><strong>Pagination</strong><span>Move through large result sets page by page.</span></span>
+          <span class="fit fit-maybe">Maybe</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Table" data-search="table structured rows and columns for comparable data.">
+          <span class="cmp-main"><strong>Table</strong><span>Structured rows and columns for comparable data.</span></span>
+          <span class="fit fit-maybe">Maybe</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Kbd" data-search="kbd keyboard shortcut hint; desktop-only utility.">
+          <span class="cmp-main"><strong>Kbd</strong><span>Keyboard shortcut hint; desktop-only utility.</span></span>
+          <span class="fit fit-probably-skip">Probably skip</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Tabs" data-search="tabs switch between peer views without navigating away.">
+          <span class="cmp-main"><strong>Tabs</strong><span>Switch between peer views without navigating away.</span></span>
+          <span class="fit fit-strong-fit">Strong fit</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button></div>
+    </section><section class="catalog-section" data-category="Identity & communication">
+      <h2>Identity & communication</h2>
+      <div class="cmp-list"><button class="cmp-row" type="button" data-component="Avatar" data-search="avatar initials or photo identity for a tenant or staff member.">
+          <span class="cmp-main"><strong>Avatar</strong><span>Initials or photo identity for a tenant or staff member.</span></span>
+          <span class="fit fit-strong-fit">Strong fit</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Bubble" data-search="bubble compact conversational or activity-style message.">
+          <span class="cmp-main"><strong>Bubble</strong><span>Compact conversational or activity-style message.</span></span>
+          <span class="fit fit-maybe">Maybe</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Marker" data-search="marker small visual marker attached to a point or state.">
+          <span class="cmp-main"><strong>Marker</strong><span>Small visual marker attached to a point or state.</span></span>
+          <span class="fit fit-maybe">Maybe</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Message" data-search="message structured message block for notes or system communication.">
+          <span class="cmp-main"><strong>Message</strong><span>Structured message block for notes or system communication.</span></span>
+          <span class="fit fit-maybe">Maybe</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Message Scroller" data-search="message scroller keeps latest messages visible while allowing history browsing.">
+          <span class="cmp-main"><strong>Message Scroller</strong><span>Keeps latest messages visible while allowing history browsing.</span></span>
+          <span class="fit fit-maybe">Maybe</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Typography" data-search="typography reusable text hierarchy and emphasis rules.">
+          <span class="cmp-main"><strong>Typography</strong><span>Reusable text hierarchy and emphasis rules.</span></span>
+          <span class="fit fit-maybe">Maybe</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button><button class="cmp-row" type="button" data-component="Direction" data-search="direction right-to-left / left-to-right layout support.">
+          <span class="cmp-main"><strong>Direction</strong><span>Right-to-left / left-to-right layout support.</span></span>
+          <span class="fit fit-probably-skip">Probably skip</span>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button></div>
+    </section>
+  <div id="emptyFilter" class="empty-filter">No matching components.</div>
+</main>
+
+<div class="scrim" id="scrim" aria-hidden="true"></div>
+<section class="sheet" id="detailSheet" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+  <div class="handle"></div>
+  <div class="sheet-head">
+    <div><div class="eyebrow">Khaata adaptation</div><h3 id="detailTitle">Component</h3><p id="detailDesc"></p><div class="sheet-tags" id="sheetTags"></div><div id="khaataNote"></div></div>
+    <button class="icon-btn" id="closeSheet" type="button" aria-label="Close component"><i data-lucide="x"></i></button>
+  </div>
+  <div class="demo" id="demoArea"></div>
+  <div class="review-bar">
+    <button class="keep" type="button" data-review="Keep">Keep</button>
+    <button class="maybe" type="button" data-review="Maybe">Maybe</button>
+    <button class="skip" type="button" data-review="Skip">Skip</button>
+  </div>
+  <div class="review-foot"><span class="selected-state" id="selectedState" style="margin:0">Not reviewed yet</span><button class="linkbtn" id="nextBtn" type="button">Next to review <i data-lucide="arrow-right"></i></button></div>
+</section>
+<section class="sheet" id="exportSheet" role="dialog" aria-modal="true" aria-labelledby="exportTitle">
+  <div class="handle"></div>
+  <div class="sheet-head">
+    <div><div class="eyebrow">Your choices</div><h3 id="exportTitle">Export</h3><p>Copy this and paste it to Claude or into Notion.</p></div>
+    <button class="icon-btn" id="closeExport" type="button" aria-label="Close export"><i data-lucide="x"></i></button>
+  </div>
+  <textarea class="export-text" id="exportText" readonly aria-label="Exported choices"></textarea>
+  <div class="row" style="margin-top:10px"><button class="kbtn grow" id="copyBtn" type="button">Copy</button><button class="kbtn danger" id="resetBtn" type="button">Clear all</button></div>
+</section>
+<div class="toast-live" id="toastLive" role="status" aria-live="polite"></div>
+
+<script>
+const ROOT=document.documentElement;
+const descriptions={"Accordion": "Expand only the details the owner needs, such as optional tenant information.", "Alert": "Inline message for something the user should notice without blocking the flow.", "Alert Dialog": "Blocking confirmation reserved for irreversible or externally visible actions.", "Aspect Ratio": "Keeps uploaded photos, documents or proof previews consistently shaped.", "Attachment": "Add and preview proof, ID, bill images or documents.", "Avatar": "Initials or photo identity for a tenant or staff member.", "Badge": "Small count or status count attached to navigation or records.", "Breadcrumb": "Shows hierarchy such as Property \u2192 Floor \u2192 Room, mainly useful on larger screens.", "Bubble": "Compact conversational or activity-style message.", "Button": "Primary, secondary, destructive, compact and full-width action patterns.", "Button Group": "Related actions placed together without making each one feel unrelated.", "Calendar": "Date-focused browsing for joining, rent due dates or move-outs.", "Card": "Grouped content with a clear information boundary.", "Carousel": "Swipe through peer items when only one or two should lead at a time.", "Chart": "Visual summary of numeric trends; use sparingly in Khaata.", "Checkbox": "Select independent options where more than one may apply.", "Collapsible": "Reveal secondary information without leaving the page.", "Combobox": "Search and choose from a long list, such as rooms or tenants.", "Command": "Fast searchable action launcher; more useful on desktop than mobile.", "Context Menu": "Long-press secondary actions such as Copy, Open, or Share.", "Data Table": "Dense multi-column records, primarily useful on wider screens.", "Date Picker": "Choose a single date or range in a focused flow.", "Dialog": "Centered modal for short focused decisions.", "Direction": "Right-to-left / left-to-right layout support.", "Drawer": "Mobile panel that slides from an edge; useful for filters or secondary tools.", "Dropdown Menu": "Compact menu opened from an explicit More button.", "Empty": "Clear zero-state with explanation and one useful next action.", "Field": "Label, control, help text and validation as one consistent form unit.", "Hover Card": "Desktop hover preview; generally not a mobile-first Khaata pattern.", "Input": "Single-line text, number or phone entry.", "Input Group": "Input with a prefix, suffix or inline action.", "Input OTP": "Segmented one-time-code entry.", "Item": "Reusable row with leading content, body and trailing metadata/action.", "Kbd": "Keyboard shortcut hint; desktop-only utility.", "Label": "Consistent form label treatment.", "Marker": "Small visual marker attached to a point or state.", "Menubar": "Desktop-style persistent menu; unlikely for mobile Khaata.", "Message": "Structured message block for notes or system communication.", "Message Scroller": "Keeps latest messages visible while allowing history browsing.", "Native Select": "Platform-native option picker.", "Navigation Menu": "Structured top/section navigation; more useful on wider layouts.", "Pagination": "Move through large result sets page by page.", "Popover": "Small anchored panel for lightweight choices or details.", "Progress": "Shows completion through a multi-step flow.", "Questionnaire": "A sequence of questions with clear answer controls.", "Radio Group": "Choose exactly one option from a small set.", "Resizable": "User-adjustable panels; primarily desktop.", "Scroll Area": "Constrained scrolling inside a component when needed.", "Select": "Styled single-choice dropdown.", "Separator": "Quiet divider between related records or sections.", "Sheet": "Edge-attached overlay; strong fit for mobile Khaata details and actions.", "Sidebar": "Persistent navigation on wider screens; not the mobile primary pattern.", "Skeleton": "Temporary loading placeholder that preserves layout.", "Slider": "Choose a value along a range when exact typing is not required.", "Spinner": "Indicates an action is still processing.", "Switch": "Immediate on/off setting.", "Table": "Structured rows and columns for comparable data.", "Tabs": "Switch between peer views without navigating away.", "Textarea": "Multi-line notes.", "Toast": "Temporary confirmation/undo feedback.", "Toggle": "One pressable on/off control.", "Toggle Group": "Choose one or several compact modes from a small set.", "Tooltip": "Short explanatory label for unfamiliar icons, mostly hover/focus on desktop.", "Typography": "Reusable text hierarchy and emphasis rules."};
+const STORE="khaata-shadcn-explorer-v2";
+let decisions={};
+try{decisions=JSON.parse(localStorage.getItem(STORE)||"{}")||{};}catch(e){decisions={};}
+function saveDecisions(){try{localStorage.setItem(STORE,JSON.stringify(decisions));}catch(e){}}
+let filter="all";
+const IN_KHAATA={
+  "Button":"UI-82 buttons · UI-92 round icon buttons",
+  "Toggle Group":"UI-76–80 chip lifecycle",
+  "Toast":"UI-98 Undo toast · SB-85 about six seconds",
+  "Carousel":"UI-91 sideways peek row",
+  "Slider":"UI-71 slider stops (device test open)",
+  "Typography":"UI-51 Manrope, Light only for paise",
+  "Badge":"UI-53 colour meanings · UI-61 loudness order",
+  "Item":"UI-97 visit row",
+  "Sheet":"Bottom sheet is in the catalogue",
+  "Chart":"Target chart already built (two versions)"
+};
+const WORKING=new Set(["Combobox","Input Group","Input OTP","Empty","Select","Toast"]);
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+let current="";
+const $=s=>document.querySelector(s);
+const $$=s=>Array.from(document.querySelectorAll(s));
+
+function icons(){if(window.lucide)lucide.createIcons();}
+function setTheme(mode){ROOT.dataset.theme=mode;icons();}
+function toggleTheme(){setTheme(ROOT.dataset.theme==="dark"?"light":"dark");}
+(function initTheme(){const dark=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;setTheme(dark?"dark":"light");})();
+
+function openSheet(name){
+  current=name;
+  $("#detailTitle").textContent=name;
+  $("#detailDesc").textContent=descriptions[name]||"Khaata-styled component candidate.";
+  $("#demoArea").innerHTML=demoFor(name);
+  $("#sheetTags").innerHTML='<span class="source-tag">Inspired by shadcn/ui</span>'+(WORKING.has(name)?'<span class="tag-work"><i data-lucide="play"></i>Working model</span>':'');
+  $("#khaataNote").innerHTML=IN_KHAATA[name]?'<div class="khaata-note"><strong>Already in Khaata:</strong> '+esc(IN_KHAATA[name])+'. Compare with the catalogue before keeping this version.</div>':'';
+  syncReview();
+  $("#scrim").classList.add("on");$("#detailSheet").classList.add("on");
+  bindDemo(name);icons();
+}
+function closeSheet(){$("#detailSheet").classList.remove("on");if(!$("#exportSheet").classList.contains("on"))$("#scrim").classList.remove("on");clearDemoTimers();}
+
+function demoFor(name){
+  const d={
+    "Accordion":`<div class="demo-title">Accordion</div><div class="acc-item open"><button class="acc-btn" type="button">Rent setup <i data-lucide="chevron-up"></i></button><div class="acc-content">Monthly rent ₹8,500 · Due on 5th · Grace 2 days.</div></div><div class="acc-item"><button class="acc-btn" type="button">Security deposit <i data-lucide="chevron-down"></i></button><div class="acc-content">Held ₹10,000.</div></div>`,
+    "Alert":`<div class="demo-title">Alert</div><div class="row"><span class="tile pending"><i data-lucide="circle-alert"></i></span><div class="grow"><strong>Approval waiting</strong><div class="muted">One staff request needs your review.</div></div></div>`,
+    "Alert Dialog":`<div class="demo-title">Alert dialog</div><strong>End tenancy?</strong><p style="margin-top:5px">This changes the tenant lifecycle and should be deliberate.</p><div class="row" style="margin-top:12px"><button class="kbtn secondary" type="button">Cancel</button><button class="kbtn danger" type="button">End tenancy</button></div>`,
+    "Aspect Ratio":`<div class="demo-title">Aspect ratio</div><div style="aspect-ratio:16/9;border-radius:var(--r-card);background:var(--neutral-tile);display:grid;place-items:center;color:var(--neutral-ink)"><span>Proof image · 16:9</span></div>`,
+    "Attachment":`<div class="demo-title">Attachment</div><div class="row"><span class="tile info"><i data-lucide="paperclip"></i></span><div class="grow"><strong>Rent-agreement.pdf</strong><div class="muted">1.8 MB · Added today</div></div><button class="kbtn ghost" type="button">Remove</button></div>`,
+    "Avatar":`<div class="demo-title">Avatar</div><div class="row"><span class="tile info" style="border-radius:50%;font-weight:800">RK</span><div><strong>Rajesh Kumar</strong><div class="muted">Room 204</div></div></div>`,
+    "Badge":`<div class="demo-title">Badge</div><div class="row"><span class="pill info">7</span><span class="pill pending">3 waiting</span><span class="pill alert">2 need you</span></div>`,
+    "Breadcrumb":`<div class="demo-title">Breadcrumb</div><div class="row" style="gap:5px;font-size:12px;color:var(--muted)"><span>Sunrise PG</span><i data-lucide="chevron-right"></i><span>Floor 2</span><i data-lucide="chevron-right"></i><strong style="color:var(--ink)">Room 204</strong></div>`,
+    "Bubble":`<div class="demo-title">Bubble</div><div style="max-width:82%;padding:10px 12px;border-radius:16px;background:var(--info);color:var(--info-ink);font-size:12px">Tenant said: “I’ll pay on Friday.”</div>`,
+    "Button":`<div class="demo-title">Button variants</div><div class="stack"><button class="kbtn" type="button">Continue</button><div class="row"><button class="kbtn secondary" type="button">Save later</button><button class="kbtn ghost" type="button">View statement</button></div><button class="kbtn danger" type="button">End tenancy</button><button class="kbtn" type="button" disabled>Continue</button></div>`,
+    "Button Group":`<div class="demo-title">Button group</div><div style="display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:var(--r-btn);overflow:hidden"><button class="kbtn ghost" style="border-radius:0" type="button">Cash</button><button class="kbtn ghost" style="border-radius:0;border-left:1px solid var(--line)" type="button">UPI</button><button class="kbtn ghost" style="border-radius:0;border-left:1px solid var(--line)" type="button">Bank</button></div>`,
+    "Calendar":`<div class="demo-title">Calendar</div><div class="calendar">${Array.from({length:28},(_,i)=>`<button class="day ${i===11?'sel':''}" type="button">${i+1}</button>`).join("")}</div>`,
+    "Card":`<div class="demo-title">Card</div><div style="border:1px solid var(--line);border-radius:var(--r-card);padding:14px;background:var(--surface)"><strong>Rohan Mehta</strong><div class="muted">Room 202 · Active</div><div class="row" style="margin-top:8px"><span class="pill alert">₹8,500 overdue</span></div></div>`,
+    "Carousel":`<div class="demo-title">Carousel</div><div class="carousel"><div class="car"><strong>Needs attention</strong><p style="margin-top:4px">3 overdue · 1 conflict</p></div><div class="car"><strong>Coming up</strong><p style="margin-top:4px">2 joinings · 1 move-out</p></div></div>`,
+    "Chart":`<div class="demo-title">Chart</div><div style="height:110px;display:flex;align-items:flex-end;gap:8px">${[38,65,52,82,70].map((h,i)=>`<div style="flex:1;height:${h}%;background:var(--info);border-radius:8px 8px 3px 3px" aria-label="Month ${i+1}"></div>`).join("")}</div><div class="muted" style="margin-top:7px">Illustrative only — charts remain optional in Khaata.</div>`,
+    "Checkbox":`<div class="demo-title">Checkbox</div><label class="choice"><input type="checkbox" checked> Send receipt to tenant</label><label class="choice"><input type="checkbox"> Add note to statement</label>`,
+    "Collapsible":`<div class="demo-title">Collapsible</div><button class="kbtn secondary" type="button" data-toggle="collapsible">Show deposit details</button><div id="collapsibleBody" hidden style="margin-top:10px"><div class="row"><span class="muted grow">Agreed</span><strong>₹10,000</strong></div><div class="row"><span class="muted grow">Held</span><strong>₹7,000</strong></div></div>`,
+    "Combobox":`<div class="demo-title">Combobox · pick or add, and remember</div><div class="field"><label for="comboInput">Expense category</label><input id="comboInput" placeholder="Search or type a new one…" autocomplete="off" role="combobox" aria-expanded="true" aria-controls="comboList" aria-autocomplete="list"><div id="comboList" class="menu combo-list" role="listbox"></div></div><div class="combo-picked" id="comboPicked"></div>`,
+    "Command":`<div class="demo-title">Command</div><div class="field"><input placeholder="Type an action…"></div><div class="menu" style="margin-top:8px"><button type="button"><i data-lucide="user-plus"></i>Add tenant</button><button type="button"><i data-lucide="indian-rupee"></i>Record payment</button><button type="button"><i data-lucide="receipt"></i>Add expense</button></div>`,
+    "Context Menu":`<div class="demo-title">Long press context menu</div><div class="context-target" id="contextTarget"><strong>Rajesh Kumar</strong><div class="muted">Room 204 · Long press this row</div></div><div class="context-menu menu" id="contextMenu"><button type="button"><i data-lucide="copy"></i>Copy name</button><button type="button"><i data-lucide="copy"></i>Copy room</button><button type="button"><i data-lucide="external-link"></i>Open tenant</button></div>`,
+    "Data Table":`<div class="demo-title">Data table</div><table class="table"><thead><tr><th>Tenant</th><th>Room</th><th>Due</th></tr></thead><tbody><tr><td>Rajesh</td><td>204</td><td>₹0</td></tr><tr><td>Rohan</td><td>202</td><td>₹8,500</td></tr></tbody></table>`,
+    "Date Picker":`<div class="demo-title">Date picker</div><div class="field"><label>Joining date</label><input type="date" value="2026-10-12"></div>`,
+    "Dialog":`<div class="demo-title">Dialog</div><div style="border:1px solid var(--line);border-radius:var(--r-card);padding:14px;background:var(--surface)"><strong>Add charge</strong><p style="margin-top:4px">Electricity · October</p><div class="field" style="margin-top:10px"><input value="650" inputmode="numeric"></div><button class="kbtn" style="margin-top:10px;width:100%" type="button">Continue</button></div>`,
+    "Direction":`<div class="demo-title">Direction</div><div class="row"><button class="kbtn secondary" type="button" data-dir="ltr">LTR</button><button class="kbtn secondary" type="button" data-dir="rtl">RTL</button></div><div id="dirSample" style="margin-top:10px;padding:10px;background:var(--row);border-radius:var(--r-btn)">Room 204 · Rajesh Kumar</div>`,
+    "Drawer":`<div class="demo-title">Drawer</div><button class="kbtn secondary" type="button" data-toggle="drawerDemo">Open filters</button><div id="drawerDemo" hidden style="margin-top:10px;border-left:4px solid var(--info-line);padding:10px;background:var(--surface)"><strong>Filter tenants</strong><div class="choice"><input type="checkbox" checked> Active</div><div class="choice"><input type="checkbox"> Upcoming</div></div>`,
+    "Dropdown Menu":`<div class="demo-title">Dropdown menu</div><button class="kbtn secondary" type="button" data-toggle="dropdownDemo">More</button><div id="dropdownDemo" class="menu" hidden style="margin-top:8px"><button type="button">View statement</button><button type="button">Move room</button><button type="button" class="danger">End tenancy</button></div>`,
+    "Empty":`<div class="demo-title">Empty state · first run</div><div id="emptyBox"></div>`,
+    "Field":`<div class="demo-title">Field</div><div class="field"><label>Monthly rent</label><input value="8500" inputmode="numeric"><div class="muted">Amount charged every billing period.</div></div>`,
+    "Hover Card":`<div class="demo-title">Hover card</div><p>Desktop-oriented. Focus the name to preview.</p><div class="tooltip-wrap" style="margin-top:10px"><button class="kbtn secondary" type="button">Rajesh Kumar</button><div class="tooltip">Room 204 · Active · ₹0 due</div></div>`,
+    "Input":`<div class="demo-title">Input</div><div class="field"><label>Tenant name</label><input value="Rajesh Kumar"></div>`,
+    "Input Group":`<div class="demo-title">Money field · ₹ with Indian grouping</div><div class="field"><label for="moneyInput">Amount received</label><div class="money"><span>₹</span><input id="moneyInput" inputmode="decimal" autocomplete="off" placeholder="0" aria-describedby="moneyOut"></div><div class="muted" id="moneyOut">Type an amount — try 342000.5</div></div>`,
+    "Input OTP":`<div class="demo-title">Phone OTP · login</div><p style="margin-bottom:10px">Code sent to +91 98765 43210. Demo code is <strong>482913</strong>.</p><div class="otp" id="otp">${[0,1,2,3,4,5].map(i=>`<input aria-label="Digit ${i+1}" inputmode="numeric" autocomplete="${i===0?'one-time-code':'off'}" maxlength="1">`).join("")}</div><div id="otpMsg" style="min-height:18px;margin-top:8px" aria-live="polite"></div><div class="row"><button class="kbtn grow" id="otpVerify" type="button" disabled>Verify</button><button class="kbtn ghost" id="otpResend" type="button" disabled>Resend in 30s</button></div>`,
+    "Item":`<div class="demo-title">Item</div><div class="row" style="border-bottom:1px solid var(--line);padding-bottom:10px"><span class="tile pending"><i data-lucide="user-round-check"></i></span><div class="grow"><strong>Rajesh Kumar</strong><div class="muted">Room 204 · ID pending</div></div><span class="pill pending">Review</span></div>`,
+    "Kbd":`<div class="demo-title">Keyboard hint</div><div class="row"><span>Quick search</span><span style="margin-left:auto;border:1px solid var(--line);border-radius:7px;padding:3px 7px;background:var(--row);font-size:11px;font-weight:800">Ctrl K</span></div>`,
+    "Label":`<div class="demo-title">Label</div><div class="field"><label>Phone number</label><input value="98765 43210" inputmode="tel"></div>`,
+    "Marker":`<div class="demo-title">Marker</div><div class="row"><span style="width:10px;height:10px;border-radius:50%;background:var(--alert-solid)"></span><span>Needs attention</span><span style="width:10px;height:10px;border-radius:50%;background:var(--pending)"></span><span>Waiting</span></div>`,
+    "Menubar":`<div class="demo-title">Menubar</div><div class="row"><button class="kbtn ghost" type="button">Tenant</button><button class="kbtn ghost" type="button">Payment</button><button class="kbtn ghost" type="button">More</button></div><div class="muted">Primarily desktop; explicit mobile actions are clearer.</div>`,
+    "Message":`<div class="demo-title">Message</div><div style="padding:11px 12px;border-left:3px solid var(--info-line);background:var(--info);color:var(--info-ink);border-radius:10px"><strong>Payment note</strong><div style="font-size:12px;margin-top:3px">Received by Ravi at 7:40 PM.</div></div>`,
+    "Message Scroller":`<div class="demo-title">Message scroller</div><div style="max-height:135px;overflow:auto;border:1px solid var(--line);border-radius:var(--r-card);padding:10px"><div class="stack"><div class="muted">5 Oct · Promise recorded</div><div>“Will pay on 10 Oct.”</div><div class="muted">6 Oct · Reminder sent</div><div>Tenant viewed reminder.</div><div class="muted">Today · No payment yet</div></div></div>`,
+    "Native Select":`<div class="demo-title">Native select</div><div class="field"><label>Payment method</label><select><option>UPI</option><option>Cash</option><option>Bank transfer</option></select></div>`,
+    "Navigation Menu":`<div class="demo-title">Navigation menu</div><div class="row"><button class="kbtn ghost" type="button">Home</button><button class="kbtn ghost" type="button">Tenants</button><button class="kbtn ghost" type="button">Collections</button></div><div class="muted">Better suited to wider layouts; Khaata mobile keeps bottom navigation.</div>`,
+    "Pagination":`<div class="demo-title">Pagination</div><div class="row" style="justify-content:center"><button class="kbtn secondary" type="button">Previous</button><span class="pill neutral">2 / 8</span><button class="kbtn secondary" type="button">Next</button></div>`,
+    "Popover":`<div class="demo-title">Popover</div><button class="kbtn secondary" type="button" data-toggle="popoverDemo">View breakdown</button><div id="popoverDemo" hidden style="margin-top:8px;border:1px solid var(--line);border-radius:var(--r-card);padding:11px;background:var(--surface)"><div class="row"><span class="muted grow">Rent</span><strong>₹8,500</strong></div><div class="row"><span class="muted grow">Electricity</span><strong>₹650</strong></div></div>`,
+    "Progress":`<div class="demo-title">Progress</div><strong>Tenant setup · 3 of 5</strong><div class="progress-track" style="margin-top:10px"><div class="progress-fill"></div></div>`,
+    "Questionnaire":`<div class="demo-title">Questionnaire</div><strong>How will rent be charged?</strong><label class="choice"><input type="radio" name="q" checked> Prepaid</label><label class="choice"><input type="radio" name="q"> Postpaid</label><button class="kbtn" style="margin-top:8px;width:100%" type="button">Continue</button>`,
+    "Radio Group":`<div class="demo-title">Radio group</div><label class="choice"><input type="radio" name="room" checked> Set up rooms now</label><label class="choice"><input type="radio" name="room"> Add rooms as I add tenants</label>`,
+    "Resizable":`<div class="demo-title">Resizable</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px"><div style="border:1px solid var(--line);border-radius:var(--r-card);padding:12px">List</div><div style="border:1px solid var(--line);border-radius:var(--r-card);padding:12px">Detail</div></div><div class="muted" style="margin-top:7px">Desktop-first pattern.</div>`,
+    "Scroll Area":`<div class="demo-title">Scroll area</div><div style="max-height:120px;overflow:auto;border:1px solid var(--line);border-radius:var(--r-card);padding:8px">${Array.from({length:8},(_,i)=>`<div class="row" style="border-bottom:1px solid var(--line)">Room ${201+i}</div>`).join("")}</div>`,
+    "Select":`<div class="demo-title">Select</div><div class="field"><label>Room</label><button class="kbtn secondary" type="button" id="selectBtn" aria-haspopup="listbox" aria-expanded="false" style="width:100%;display:flex;align-items:center;justify-content:space-between">Room 204 <i data-lucide="chevron-down"></i></button><div id="selectDemo" class="menu" role="listbox" hidden style="margin-top:8px"><button type="button" role="option">Room 201</button><button type="button" role="option">Room 204</button><button type="button" role="option">Room 205</button></div></div>`,
+    "Separator":`<div class="demo-title">Separator</div><div>Current room · 204</div><div style="height:1px;background:var(--line);margin:12px 0"></div><div>Joining date · 12 Oct 2026</div>`,
+    "Sheet":`<div class="demo-title">Sheet</div><div style="border:1px solid var(--line);border-radius:22px 22px 0 0;padding:10px 14px;background:var(--surface)"><div class="handle"></div><strong>Rent · October 2026</strong><p style="margin-top:4px">Rohan Mehta · ₹8,500 outstanding</p><div class="menu" style="margin-top:10px"><button type="button">Record payment <i data-lucide="chevron-right" style="margin-left:auto"></i></button><button type="button">Record promise <i data-lucide="chevron-right" style="margin-left:auto"></i></button></div></div>`,
+    "Sidebar":`<div class="demo-title">Sidebar</div><div style="display:grid;grid-template-columns:100px 1fr;gap:8px"><div class="menu"><button type="button">Home</button><button type="button">Tenants</button><button type="button">More</button></div><div style="padding:10px;background:var(--row);border-radius:var(--r-card)">Desktop content</div></div>`,
+    "Skeleton":`<div class="demo-title">Skeleton</div><div class="stack"><div class="skeleton w45"></div><div class="skeleton"></div><div class="skeleton w70"></div></div>`,
+    "Slider":`<div class="demo-title">Slider</div><div class="field"><label>Grace period · <span id="sliderVal">2 days</span></label><input id="rangeDemo" type="range" min="0" max="7" value="2"></div>`,
+    "Spinner":`<div class="demo-title">Spinner</div><div class="row"><div class="spinner"></div><span>Processing payment…</span></div>`,
+    "Switch":`<div class="demo-title">Switch</div><div class="row"><div class="grow"><strong>Record promise</strong><div class="muted">Allow promise-to-pay entries</div></div><button class="switch on" type="button" role="switch" aria-checked="true" aria-label="Toggle record promise"></button></div>`,
+    "Table":`<div class="demo-title">Table</div><table class="table"><thead><tr><th>Month</th><th>Rent</th><th>Status</th></tr></thead><tbody><tr><td>Sep</td><td>₹8,500</td><td>Paid</td></tr><tr><td>Oct</td><td>₹8,500</td><td>Overdue</td></tr></tbody></table>`,
+    "Tabs":`<div class="demo-title">Tabs</div><div class="tabs"><button class="on" type="button">Active</button><button type="button">Upcoming</button><button type="button">Former</button></div><div id="tabsBody" style="margin-top:10px" class="muted">Showing active tenants.</div>`,
+    "Textarea":`<div class="demo-title">Textarea</div><div class="field"><label>Note</label><textarea>Tenant requested a two-day extension.</textarea></div>`,
+    "Toast":`<div class="demo-title">Toast · Undo for about six seconds (SB-85)</div><button class="kbtn" type="button" id="toastFire" style="width:100%">Record ₹8,500 from Rohan</button><div class="muted" id="toastLog" style="margin-top:10px">Collected today: ₹0</div>`,
+    "Toggle":`<div class="demo-title">Toggle</div><button class="kbtn secondary" type="button" data-toggle-state="single"><i data-lucide="filter"></i> Overdue only</button>`,
+    "Toggle Group":`<div class="demo-title">Toggle group</div><div class="tabs"><button class="on" type="button">All</button><button type="button">Due</button><button type="button">Paid</button></div>`,
+    "Tooltip":`<div class="demo-title">Tooltip</div><div class="tooltip-wrap"><button class="icon-btn" type="button" aria-label="Information"><i data-lucide="info"></i></button><div class="tooltip">Security held is kept separate from dues.</div></div><div class="muted" style="margin-top:8px">Hover/focus is desktop-oriented; mobile should not depend on this.</div>`,
+    "Typography":`<div class="demo-title">Typography</div><div style="font-size:24px;font-weight:800">₹3,42,000</div><div style="font-size:18px;font-weight:700;margin-top:6px">Business Pulse</div><div style="font-size:14px;font-weight:600;margin-top:6px">Rohan Mehta</div><div class="muted" style="margin-top:5px">Room 202 · Active tenant</div>`
+  };
+  return d[name]||`<div class="demo-title">${name}</div><div class="row"><span class="tile neutral"><i data-lucide="blocks"></i></span><div><strong>${name}</strong><div class="muted">Candidate pattern from the shadcn component inventory. This is a Khaata-styled placeholder for review.</div></div></div>`;
+}
+
+function bindDemo(name){
+  $$("#demoArea .acc-btn").forEach(b=>b.addEventListener("click",()=>{const item=b.closest(".acc-item");item.classList.toggle("open");const i=b.querySelector("svg, [data-lucide]");if(i)i.setAttribute("data-lucide",item.classList.contains("open")?"chevron-up":"chevron-down");icons();}));
+  $$("#demoArea [data-toggle]").forEach(b=>b.addEventListener("click",()=>{const el=document.getElementById(b.dataset.toggle);if(el)el.hidden=!el.hidden;}));
+  const sw=$("#demoArea .switch");if(sw)sw.addEventListener("click",()=>{sw.classList.toggle("on");sw.setAttribute("aria-checked",sw.classList.contains("on")?"true":"false");});
+  const range=$("#rangeDemo");if(range)range.addEventListener("input",()=>{$("#sliderVal").textContent=range.value+" days";});
+  const dir=$("#dirSample");$$("#demoArea [data-dir]").forEach(b=>b.addEventListener("click",()=>{if(dir)dir.dir=b.dataset.dir;}));
+  const target=$("#contextTarget"),menu=$("#contextMenu");if(target&&menu){
+    let timer=null;
+    const cancel=()=>{if(timer)clearTimeout(timer);timer=null;};
+    target.addEventListener("pointerdown",e=>{cancel();timer=setTimeout(()=>{menu.classList.add("open");icons();},550);});
+    target.addEventListener("pointerup",cancel);target.addEventListener("pointercancel",cancel);target.addEventListener("pointerleave",cancel);
+    target.addEventListener("contextmenu",e=>{e.preventDefault();menu.classList.add("open");});
+  }
+  $$("#demoArea .tabs button").forEach((b,i,arr)=>b.addEventListener("click",()=>{arr.forEach(x=>x.classList.remove("on"));b.classList.add("on");if($("#tabsBody"))$("#tabsBody").textContent="Showing "+b.textContent.toLowerCase()+" tenants.";}));
+  bindWorking(name);
+  const tog=$("#demoArea [data-toggle-state]");if(tog)tog.addEventListener("click",()=>tog.classList.toggle("keep"));
+}
+
+$$(".cmp-row").forEach(b=>b.addEventListener("click",()=>openSheet(b.dataset.component)));
+$("#closeSheet").addEventListener("click",closeSheet);$("#scrim").addEventListener("click",()=>{closeExport();closeSheet();});$("#themeBtn").addEventListener("click",toggleTheme);
+function syncReview(){const d=decisions[current];$("#selectedState").textContent=d?("Marked "+d+" · tap again to clear"):"Not reviewed yet";$$("[data-review]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.review===d?"true":"false"));}
+$$("[data-review]").forEach(b=>b.addEventListener("click",()=>{if(!current)return;const v=b.dataset.review;if(decisions[current]===v)delete decisions[current];else decisions[current]=v;saveDecisions();syncReview();renderRows();}));
+function nextUnreviewed(){const rows=$$(".cmp-row").map(r=>r.dataset.component);const start=rows.indexOf(current);for(let i=1;i<=rows.length;i++){const n=rows[(start+i)%rows.length];if(!decisions[n])return n;}return null;}
+$("#nextBtn").addEventListener("click",()=>{const n=nextUnreviewed();if(n){closeSheet();setTimeout(()=>openSheet(n),180);}else{$("#selectedState").textContent="All reviewed — export from the top bar";}});
+function renderRows(){
+  const counts={Keep:0,Maybe:0,Skip:0};let total=0;
+  $$(".cmp-row").forEach(row=>{
+    total++;const n=row.dataset.component,d=decisions[n];if(d)counts[d]++;
+    row.classList.remove("is-Keep","is-Maybe","is-Skip");if(d)row.classList.add("is-"+d);
+    const fit=row.querySelector(".fit");let tags=row.querySelector(".cmp-tags");
+    if(!tags){tags=document.createElement("span");tags.className="cmp-tags";fit.replaceWith(tags);tags.appendChild(fit);}
+    tags.querySelectorAll(".tag-khaata,.tag-work").forEach(x=>x.remove());
+    if(IN_KHAATA[n]){const t=document.createElement("span");t.className="tag-khaata";t.textContent="In Khaata";tags.appendChild(t);}
+    else if(WORKING.has(n)){const t=document.createElement("span");t.className="tag-work";t.innerHTML='<i data-lucide="play"></i>Working';tags.appendChild(t);}
+    const main=row.querySelector(".cmp-main");let dec=main.querySelector(".dec");if(dec)dec.remove();
+    if(d){dec=document.createElement("span");dec.className="dec dec-"+d;dec.innerHTML='<i data-lucide="'+({Keep:"check",Maybe:"circle-help",Skip:"x"})[d]+'"></i>'+({Keep:"Kept",Maybe:"Maybe",Skip:"Skipped"})[d];main.appendChild(dec);}
+  });
+  const left=total-counts.Keep-counts.Maybe-counts.Skip;
+  const opts=[["all",total+" components"],["todo",left+" to review"],["Keep",counts.Keep+" kept"],["Maybe",counts.Maybe+" maybe"],["Skip",counts.Skip+" skipped"]];
+  $("#filters").innerHTML=opts.map(([k,l])=>'<button type="button" data-filter="'+k+'" aria-pressed="'+(filter===k)+'" class="'+(filter===k?"on":"")+'">'+l+'</button>').join("");
+  applyFilter();icons();
+}
+function applyFilter(){
+  const q=($("#search").value||"").trim().toLowerCase();let shown=0;
+  $$(".cmp-row").forEach(row=>{const d=decisions[row.dataset.component];
+    const okF=filter==="all"||(filter==="todo"?!d:d===filter);
+    const ok=okF&&(!q||row.dataset.search.includes(q));row.hidden=!ok;if(ok)shown++;});
+  $$(".catalog-section").forEach(sec=>{sec.hidden=!sec.querySelector(".cmp-row:not([hidden])");});
+  $("#emptyFilter").classList.toggle("show",shown===0);
+}
+$("#filters").addEventListener("click",e=>{const b=e.target.closest("[data-filter]");if(!b)return;filter=b.dataset.filter;renderRows();});
+function exportText(){
+  const out=["Khaata · shadcn explorer — review ("+new Date().toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"})+")",""];
+  [["Keep","KEEP"],["Maybe","MAYBE"],["Skip","SKIP"]].forEach(([k,h])=>{
+    const names=$$(".cmp-row").map(r=>r.dataset.component).filter(n=>decisions[n]===k);
+    out.push(h+" ("+names.length+")");names.forEach(n=>out.push("- "+n+(IN_KHAATA[n]?"  [already in Khaata: "+IN_KHAATA[n]+"]":"")));out.push("");});
+  const todo=$$(".cmp-row").map(r=>r.dataset.component).filter(n=>!decisions[n]);
+  out.push("NOT REVIEWED ("+todo.length+")");if(todo.length)out.push(todo.join(", "));
+  return out.join("\n");
+}
+function openExport(){$("#exportText").value=exportText();$("#scrim").classList.add("on");$("#exportSheet").classList.add("on");}
+function closeExport(){$("#exportSheet").classList.remove("on");if(!$("#detailSheet").classList.contains("on"))$("#scrim").classList.remove("on");}
+$("#exportBtn").addEventListener("click",openExport);$("#closeExport").addEventListener("click",closeExport);
+$("#copyBtn").addEventListener("click",async()=>{const t=$("#exportText");let ok=false;try{await navigator.clipboard.writeText(t.value);ok=true;}catch(e){try{t.select();ok=document.execCommand("copy");}catch(_){}}$("#copyBtn").textContent=ok?"Copied":"Select the text and copy";setTimeout(()=>{$("#copyBtn").textContent="Copy";},1800);});
+let resetArmed=false;
+$("#resetBtn").addEventListener("click",()=>{if(!resetArmed){resetArmed=true;$("#resetBtn").textContent="Tap again to clear";setTimeout(()=>{resetArmed=false;$("#resetBtn").textContent="Clear all";},3000);return;}decisions={};saveDecisions();resetArmed=false;$("#resetBtn").textContent="Clear all";$("#exportText").value=exportText();renderRows();});
+$("#search").addEventListener("input",applyFilter);
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeExport();closeSheet();}});
+/* ---------- working models ---------- */
+const demoState={categories:["Rent","Electricity","Water","Groceries","Staff salary","Repairs","Internet"],picked:"",collected:0,tenants:[]};
+let demoTimers=[];
+function clearDemoTimers(){demoTimers.forEach(t=>{clearTimeout(t);clearInterval(t);});demoTimers=[];}
+function inr(n){return Math.round(n).toLocaleString("en-IN");}
+function bindWorking(name){
+  clearDemoTimers();
+  if(name==="Combobox"){
+    const inp=$("#comboInput"),list=$("#comboList"),out=$("#comboPicked");
+    const draw=()=>{const q=inp.value.trim(),ql=q.toLowerCase();
+      const hits=demoState.categories.filter(c=>c.toLowerCase().includes(ql));
+      const exact=demoState.categories.some(c=>c.toLowerCase()===ql);
+      let h=hits.map(c=>'<button type="button" role="option" data-pick="'+esc(c)+'" aria-selected="'+(c===demoState.picked)+'">'+esc(c)+'</button>').join("");
+      if(q&&!exact)h+='<button type="button" class="add" data-add="'+esc(q)+'"><i data-lucide="plus"></i>Add “'+esc(q)+'”</button>';
+      if(!h)h='<button type="button" disabled>Type to add a new category</button>';
+      list.innerHTML=h;out.innerHTML=demoState.picked?'Picked: <strong>'+esc(demoState.picked)+'</strong> · '+demoState.categories.length+' remembered':'';icons();};
+    inp.addEventListener("input",draw);
+    list.addEventListener("click",e=>{const p=e.target.closest("[data-pick]"),a=e.target.closest("[data-add]");
+      if(a){const v=a.dataset.add.trim();demoState.categories.unshift(v);demoState.picked=v;inp.value="";draw();showToast("Added “"+v+"” — it will be offered next time");}
+      else if(p){demoState.picked=p.dataset.pick;inp.value="";draw();}});
+    draw();
+  }
+  if(name==="Input Group"){
+    const inp=$("#moneyInput"),out=$("#moneyOut");
+    inp.addEventListener("input",()=>{
+      let raw=inp.value.replace(/[^0-9.]/g,"");const parts=raw.split(".");
+      let whole=parts[0].replace(/^0+(?=\d)/,"").slice(0,9),dec=parts.length>1?parts.slice(1).join("").slice(0,2):null;
+      inp.value=(whole?Number(whole).toLocaleString("en-IN"):(dec!==null?"0":""))+(dec!==null?"."+dec:"");
+      inp.setSelectionRange(inp.value.length,inp.value.length);
+      if(!whole&&!dec){out.textContent="Type an amount — try 342000.5";return;}
+      const paise=Number(whole||0)*100+Number((dec||"").padEnd(2,"0")||0);
+      out.innerHTML='Shows as <strong>₹'+inr(Math.floor(paise/100))+'<span class="paise">.'+String(paise%100).padStart(2,"0")+'</span></strong> · saves <strong>'+paise+'</strong> paise';
+    });
+  }
+  if(name==="Input OTP"){
+    const boxes=$$("#otp input"),verify=$("#otpVerify"),msg=$("#otpMsg"),resend=$("#otpResend");
+    const code=()=>boxes.map(b=>b.value).join("");
+    const update=()=>{verify.disabled=code().length!==6;$("#otp").classList.remove("bad");msg.innerHTML="";};
+    const fill=(digits,from)=>{digits.split("").forEach((d,i)=>{if(boxes[from+i])boxes[from+i].value=d;});const nx=Math.min(from+digits.length,5);boxes[nx].focus();update();};
+    boxes.forEach((b,i)=>{
+      b.addEventListener("input",()=>{const d=b.value.replace(/\D/g,"");b.value="";if(d)fill(d.slice(0,6-i),i);else update();});
+      b.addEventListener("keydown",e=>{if(e.key==="Backspace"&&!b.value&&i>0){boxes[i-1].value="";boxes[i-1].focus();update();e.preventDefault();}
+        if(e.key==="ArrowLeft"&&i>0)boxes[i-1].focus();if(e.key==="ArrowRight"&&i<5)boxes[i+1].focus();if(e.key==="Enter"&&!verify.disabled)verify.click();});
+      b.addEventListener("paste",e=>{const d=(e.clipboardData||window.clipboardData).getData("text").replace(/\D/g,"").slice(0,6);if(d){e.preventDefault();fill(d,0);}});
+    });
+    verify.addEventListener("click",()=>{if(code()==="482913"){msg.innerHTML='<span class="pill done">Verified</span>';boxes.forEach(b=>b.disabled=true);verify.disabled=true;}
+      else{$("#otp").classList.add("bad");msg.innerHTML='<span class="err">That code doesn’t match. Check the SMS and try again.</span>';}});
+    let left=30;const tick=setInterval(()=>{left--;if(left<=0){clearInterval(tick);resend.disabled=false;resend.textContent="Resend code";}else resend.textContent="Resend in "+left+"s";},1000);demoTimers.push(tick);
+    resend.addEventListener("click",()=>{showToast("New code sent");resend.disabled=true;left=30;resend.textContent="Resend in 30s";const t=setInterval(()=>{left--;if(left<=0){clearInterval(t);resend.disabled=false;resend.textContent="Resend code";}else resend.textContent="Resend in "+left+"s";},1000);demoTimers.push(t);});
+  }
+  if(name==="Empty"){
+    const box=$("#emptyBox");
+    const draw=()=>{
+      if(!demoState.tenants.length){box.innerHTML='<div class="empty-wrap"><span class="tile neutral" style="margin:auto"><i data-lucide="users"></i></span><strong style="display:block;margin-top:9px">No tenants yet</strong><p style="margin-top:4px">Add your first tenant to start tracking rent and dues.</p><button class="kbtn" style="margin-top:12px" type="button" data-empty="add">Add tenant</button></div>';}
+      else{box.innerHTML=demoState.tenants.map(t=>'<div class="row" style="border-bottom:1px solid var(--line)"><span class="tile info" style="border-radius:50%;font-weight:800;font-size:12px">'+esc(t.split(" ").map(w=>w[0]).join(""))+'</span><div class="grow"><strong>'+esc(t)+'</strong><div class="muted">Added just now</div></div></div>').join("")+'<div class="row" style="margin-top:6px"><button class="kbtn secondary" type="button" data-empty="add">Add another</button><button class="kbtn ghost" type="button" data-empty="clear">Back to empty</button></div>';}
+      icons();};
+    box.addEventListener("click",e=>{const b=e.target.closest("[data-empty]");if(!b)return;
+      if(b.dataset.empty==="add"){const pool=["Rohan Mehta","Priya Sharma","Kiran Rao","Amit Verma"];demoState.tenants.push(pool[demoState.tenants.length%pool.length]);}
+      else demoState.tenants=[];draw();});
+    draw();
+  }
+  if(name==="Select"){
+    const btn=$("#selectBtn"),menu=$("#selectDemo");
+    btn.addEventListener("click",()=>{menu.hidden=!menu.hidden;btn.setAttribute("aria-expanded",String(!menu.hidden));});
+    menu.addEventListener("click",e=>{const o=e.target.closest("[role=option]");if(!o)return;btn.innerHTML=esc(o.textContent)+' <i data-lucide="chevron-down"></i>';menu.hidden=true;btn.setAttribute("aria-expanded","false");icons();});
+  }
+  if(name==="Toast"){
+    const log=()=>{$("#toastLog").textContent="Collected today: ₹"+inr(demoState.collected);};log();
+    $("#toastFire").addEventListener("click",()=>{demoState.collected+=8500;log();
+      showToast("₹8,500 recorded from Rohan",()=>{demoState.collected-=8500;log();showToast("Undone — nothing recorded");});});
+  }
+}
+let toastTimer=null,toastTick=null;
+function showToast(text,undo){
+  const el=$("#toastLive");clearTimeout(toastTimer);clearInterval(toastTick);
+  let left=6;
+  el.innerHTML='<div class="toast-demo"><span>'+esc(text)+'</span>'+(undo?'<span class="count" id="toastCount">6s</span><button type="button" id="toastUndo">Undo</button>':'')+'</div>';
+  el.classList.add("on");
+  if(undo){$("#toastUndo").addEventListener("click",()=>{clearTimeout(toastTimer);clearInterval(toastTick);el.classList.remove("on");undo();});
+    toastTick=setInterval(()=>{left--;const c=$("#toastCount");if(c)c.textContent=left+"s";},1000);}
+  toastTimer=setTimeout(()=>{clearInterval(toastTick);el.classList.remove("on");},undo?6000:2500);
+}
+renderRows();
+icons();
+</script>
+</body>
+</html>

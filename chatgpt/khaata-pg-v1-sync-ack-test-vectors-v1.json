@@ -1,0 +1,106 @@
+{
+  "version": "1.0",
+  "status": "proposed correction tests",
+  "cases": [
+    {
+      "id": "ACK-001",
+      "case": "payment ACK",
+      "expect": [
+        "sync_outbox acknowledged",
+        "sync_entity_state synced",
+        "payment_events row not updated"
+      ]
+    },
+    {
+      "id": "ACK-002",
+      "case": "receipt ACK",
+      "expect": [
+        "receipt_snapshots row remains byte-for-byte unchanged",
+        "ACK stored externally"
+      ]
+    },
+    {
+      "id": "ACK-003",
+      "case": "allocation ACK",
+      "expect": [
+        "payment_allocations row remains unchanged",
+        "server version lives in sync_entity_state"
+      ]
+    },
+    {
+      "id": "ACK-004",
+      "case": "duplicate ACK",
+      "expect": [
+        "idempotent",
+        "one sync_ack_receipts row",
+        "no domain mutation"
+      ]
+    },
+    {
+      "id": "ACK-005",
+      "case": "transient push failure",
+      "expect": [
+        "outbox failed with retry",
+        "entity_state error",
+        "business truth unchanged"
+      ]
+    },
+    {
+      "id": "ACK-006",
+      "case": "semantic conflict",
+      "expect": [
+        "outbox blocked",
+        "entity_state conflict",
+        "sync_conflicts preserves snapshots"
+      ]
+    },
+    {
+      "id": "ACK-007",
+      "case": "remote immutable event",
+      "expect": [
+        "append once",
+        "applied_remote_events dedupes",
+        "entity_state gets server version"
+      ]
+    },
+    {
+      "id": "ACK-008",
+      "case": "UPDATE payment_allocation",
+      "expect": [
+        "SQLite trigger rejects mutation"
+      ]
+    },
+    {
+      "id": "ACK-009",
+      "case": "UPDATE financial_adjustment",
+      "expect": [
+        "SQLite trigger rejects mutation"
+      ]
+    },
+    {
+      "id": "ACK-010",
+      "case": "mutable tenancy business update",
+      "expect": [
+        "domain UPDATE allowed for lifecycle change",
+        "sync bookkeeping still external"
+      ]
+    },
+    {
+      "id": "ACK-011",
+      "case": "new command writes payment",
+      "expect": [
+        "domain row has no dependency on sync_status",
+        "outbox + sync_entity_state created atomically"
+      ]
+    },
+    {
+      "id": "ACK-012",
+      "case": "monthly obligation across rent-term change",
+      "expect": [
+        "one obligation per tenancy/month",
+        "effective term chosen",
+        "no automatic proration invented"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · Sunrise PG · Home V4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FDFCF8;--surface:#FFFFFF;--soft:#F5F4EF;--soft2:#EFEEE9;--ink:#222222;--muted:#77746F;--line:#E7E3DB;
+  --navy:#2B3A75;--navy-ink:#fff;
+  --alert:#C23E2E;--alert-tint:#FFE4DF;--alert-ink:#B83A2B;
+  --pending:#FFF0C4;--pending-ink:#6E5200;
+  --done:#3DB37A;--done-tint:#DDF3E6;--done-ink:#1E7A4C;
+  --info:#D7E1FE;--info-ink:#2B3A75;
+  --scrim:rgba(0,0,0,.36);
+  --r:24px;--rb:14px;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#1B1B1A;--surface:#262625;--soft:#232322;--soft2:#2C2C2B;--ink:#FFFFFF;--muted:#A9A6A0;--line:#38383A;
+    --navy:#C9D4FB;--navy-ink:#1A2140;
+    --alert:#E8705C;--alert-tint:#3A2420;--alert-ink:#F59384;
+    --pending:#3A3122;--pending-ink:#EBC36B;
+    --done:#56B884;--done-tint:#244232;--done-ink:#74C99A;
+    --info:#252C42;--info-ink:#DCE4FF;
+    --scrim:rgba(0,0,0,.58);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1B1B1A;--surface:#262625;--soft:#232322;--soft2:#2C2C2B;--ink:#FFFFFF;--muted:#A9A6A0;--line:#38383A;
+  --navy:#C9D4FB;--navy-ink:#1A2140;
+  --alert:#E8705C;--alert-tint:#3A2420;--alert-ink:#F59384;
+  --pending:#3A3122;--pending-ink:#EBC36B;
+  --done:#56B884;--done-tint:#244232;--done-ink:#74C99A;
+  --info:#252C42;--info-ink:#DCE4FF;
+  --scrim:rgba(0,0,0,.58);
+}
+*,*:before,*:after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Manrope',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
+.app{max-width:520px;margin:0 auto;padding:0 16px 112px}
+.top{display:flex;align-items:center;gap:12px;padding:18px 0 10px}
+.logo{width:42px;height:42px;border-radius:14px;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-weight:800}
+.biz{flex:1;border:0;background:none;padding:0;text-align:left}
+.biz b{display:block;font-size:16px;font-weight:800}
+.biz span{display:block;font-size:12.5px;color:var(--muted);margin-top:2px}
+.iconbtn{width:38px;height:38px;border:1px solid var(--line);background:var(--surface);border-radius:12px;display:grid;place-items:center}
+.headline{padding:8px 0 2px}
+.headline h1{margin:0;font-size:23px;line-height:1.2;letter-spacing:-.02em}
+.headline p{margin:5px 0 0;color:var(--muted);font-size:13px}
+.sec{margin-top:24px}
+.sectitle{display:flex;align-items:center;justify-content:space-between;margin:0 2px 10px}
+.sectitle h2{margin:0;font-size:17px;font-weight:800}
+.sectitle .hint{font-size:12px;color:var(--muted);font-weight:600}
+.summary{
+  width:100%;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:var(--r);
+  padding:16px;display:block;
+}
+.sumtop{display:flex;align-items:flex-start;gap:12px}
+.tile{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;flex:none;font-weight:800}
+.tile.bad{background:var(--alert-tint);color:var(--alert-ink)}
+.tile.wait{background:var(--pending);color:var(--pending-ink)}
+.tile.info{background:var(--info);color:var(--info-ink)}
+.sumcopy{flex:1;min-width:0}
+.sumcopy strong{display:block;font-size:16px;line-height:1.3}
+.sumcopy p{margin:4px 0 0;color:var(--muted);font-size:12.5px;line-height:1.45}
+.count{font-size:12px;font-weight:800;color:var(--navy);padding-top:2px;white-space:nowrap}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
+.chip{font-size:11.5px;font-weight:700;padding:5px 9px;border-radius:999px;background:var(--soft2);color:var(--muted)}
+.chip.bad{background:var(--alert-tint);color:var(--alert-ink)}
+.chip.wait{background:var(--pending);color:var(--pending-ink)}
+.chip.info{background:var(--info);color:var(--info-ink)}
+.chip.done{background:var(--done-tint);color:var(--done-ink)}
+.preview{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+.prevrow{display:flex;gap:10px;align-items:flex-start;padding:8px 0}
+.prevrow:first-child{padding-top:0}.prevrow:last-child{padding-bottom:0}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--alert);margin-top:8px;flex:none}
+.dot.pending{background:var(--pending-ink)}.dot.info{background:var(--info-ink)}
+.prevrow b{display:block;font-size:13.5px}.prevrow span{display:block;font-size:11.5px;color:var(--muted);margin-top:2px;line-height:1.4}
+.viewline{display:flex;align-items:center;justify-content:space-between;margin-top:12px;color:var(--navy);font-size:12.5px;font-weight:800}
+.pulse{border:1px solid var(--line);background:var(--surface);border-radius:var(--r);padding:16px}
+.moneytop{display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
+.moneytop .lhs span,.moneytop .rhs span{display:block;font-size:11.5px;color:var(--muted);font-weight:600}
+.moneytop strong{display:block;font-size:24px;letter-spacing:-.03em;margin-top:2px}
+.moneytop .rhs{text-align:right}.moneytop .rhs strong{font-size:20px}
+.progresswrap{margin-top:14px}
+.progressmeta{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted)}
+.progressmeta b{color:var(--ink)}
+.progress{height:8px;border-radius:999px;background:var(--soft2);overflow:hidden;margin-top:7px}
+.progress span{display:block;height:100%;width:92.4%;background:var(--done);border-radius:inherit}
+.grid{display:grid;grid-template-columns:1fr 1fr;margin-top:16px;border-top:1px solid var(--line)}
+.metric{border:0;background:none;text-align:left;padding:14px 0 0}
+.metric:nth-child(even){padding-left:16px;border-left:1px solid var(--line)}
+.metric strong{display:block;font-size:20px;letter-spacing:-.02em}
+.metric span{display:block;font-size:11.5px;color:var(--muted);margin-top:3px;font-weight:600}
+.navbar{
+  position:fixed;left:50%;bottom:max(0px,env(safe-area-inset-bottom,0px));transform:translateX(-50%);
+  width:min(100%,520px);height:72px;background:var(--bg);border-top:1px solid var(--line);
+  display:flex;align-items:center;justify-content:space-around;z-index:8
+}
+.navitem{width:72px;border:0;background:none;color:var(--muted);font-size:10.5px;font-weight:700;display:grid;place-items:center;gap:3px}
+.navitem .ic{font-size:17px}.navitem.on{color:var(--ink)}
+.fab{
+  position:fixed;right:max(18px,calc((100vw - 520px)/2 + 18px));bottom:84px;width:54px;height:54px;border-radius:50%;
+  border:0;background:var(--navy);color:var(--navy-ink);font-size:28px;z-index:11;box-shadow:0 8px 18px var(--scrim)
+}
+.quickmenu{
+  position:fixed;right:max(18px,calc((100vw - 520px)/2 + 18px));bottom:148px;z-index:11;
+  display:grid;gap:10px;opacity:0;pointer-events:none;transform:translateY(8px);transition:.18s
+}
+.quickmenu.on{opacity:1;pointer-events:auto;transform:none}
+.qa{display:flex;align-items:center;justify-content:flex-end;gap:10px}
+.qa span{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 12px;font-size:12.5px;font-weight:700}
+.qa i{width:42px;height:42px;border-radius:50%;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;font-style:normal;font-weight:800}
+.scrim{position:fixed;inset:0;background:var(--scrim);z-index:9;display:none}.scrim.on{display:block}
+.sheet{
+  position:fixed;left:50%;bottom:0;transform:translateX(-50%) translateY(100%);width:min(100%,520px);max-height:78vh;
+  background:var(--surface);border-radius:24px 24px 0 0;z-index:12;padding:10px 18px calc(22px + env(safe-area-inset-bottom));
+  transition:transform .22s ease;overflow:auto;border:1px solid var(--line);border-bottom:0
+}
+.sheet.on{transform:translateX(-50%) translateY(0)}
+.handle{width:40px;height:4px;background:var(--line);border-radius:999px;margin:0 auto 14px}
+.sheethead{display:flex;align-items:flex-start;gap:12px}
+.sheethead h3{margin:0;font-size:18px}.sheethead p{margin:4px 0 0;font-size:12.5px;color:var(--muted)}
+.sheethead .close{margin-left:auto;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--soft)}
+.group{margin-top:18px}.group h4{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 8px}
+.item{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)}
+.item:last-child{border-bottom:0}.item .grow{flex:1}.item b{display:block;font-size:13.5px}.item small{display:block;font-size:11.5px;color:var(--muted);margin-top:3px}
+.item .pill{font-size:10.5px;font-weight:800;padding:4px 8px;border-radius:999px;background:var(--soft2);color:var(--muted)}
+.item .pill.bad{background:var(--alert-tint);color:var(--alert-ink)}
+.item .pill.wait{background:var(--pending);color:var(--pending-ink)}
+.item .pill.info{background:var(--info);color:var(--info-ink)}
+.item .pill.done{background:var(--done-tint);color:var(--done-ink)}
+.inlineacts{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.inlineacts button{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:6px 9px;font-size:11.5px;font-weight:700}
+.proto{margin-top:22px;border-top:1px dashed var(--line);padding-top:10px}
+.proto button{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:7px 10px;font-size:11px}
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="top">
+    <div class="logo">S</div>
+    <button class="biz" data-act="business"><b>Sunrise PG</b><span>PG / Hostel · Bengaluru ▾</span></button>
+    <button class="iconbtn" data-act="more">•••</button>
+  </header>
+
+  <section class="headline">
+    <h1>What needs your attention today?</h1>
+    <p>4 October · Sunrise PG</p>
+  </section>
+
+  <section class="sec">
+    <div class="sectitle"><h2>Needs attention</h2><span class="hint">8 pending</span></div>
+    <button class="summary" data-act="open-attn">
+      <div class="sumtop">
+        <div class="tile bad">8</div>
+        <div class="sumcopy">
+          <strong>8 items need attention</strong>
+          <p>Collections, approvals, occupancy and cash handovers.</p>
+        </div>
+        <div class="count">Quick view ›</div>
+      </div>
+      <div class="chips">
+        <span class="chip bad">3 overdue</span><span class="chip wait">2 approvals</span><span class="chip bad">1 conflict</span><span class="chip wait">2 handovers</span>
+      </div>
+      <div class="preview">
+        <div class="prevrow"><span class="dot"></span><div><b>Rajesh · ₹12,000 overdue</b><span>2 months · exceeds security by ₹2,000</span></div></div>
+        <div class="prevrow"><span class="dot pending"></span><div><b>Room 101-A conflict</b><span>Rajesh until 5 Dec · Priya from 1 Dec</span></div></div>
+      </div>
+      <div class="viewline"><span>Review all pending items</span><span>›</span></div>
+    </button>
+  </section>
+
+  <section class="sec">
+    <div class="sectitle"><h2>Coming up</h2><span class="hint">Next 7 days</span></div>
+    <button class="summary" data-act="open-upcoming">
+      <div class="sumtop">
+        <div class="tile info">6</div>
+        <div class="sumcopy">
+          <strong>6 upcoming events</strong>
+          <p>2 joins, 1 move-out and 18 rents due.</p>
+        </div>
+        <div class="count">Quick view ›</div>
+      </div>
+      <div class="preview">
+        <div class="prevrow"><span class="dot pending"></span><div><b>Priya joins tomorrow · Room 102-A</b><span>ID proof still missing</span></div></div>
+        <div class="prevrow"><span class="dot info"></span><div><b>18 rents due on 5 Oct</b><span>₹1,08,000 expected</span></div></div>
+      </div>
+      <div class="viewline"><span>View upcoming schedule</span><span>›</span></div>
+    </button>
+  </section>
+
+  <section class="sec">
+    <div class="sectitle"><h2>Business pulse</h2><span class="hint">October</span></div>
+    <div class="pulse">
+      <div class="moneytop">
+        <div class="lhs"><span>Collected</span><strong>₹3.42L</strong></div>
+        <div class="rhs"><span>Outstanding</span><strong>₹28K</strong></div>
+      </div>
+      <div class="progresswrap">
+        <div class="progressmeta"><span><b>92%</b> collected</span><span>₹3.70L collectible</span></div>
+        <div class="progress"><span></span></div>
+      </div>
+      <div class="grid">
+        <button class="metric" data-act="rooms"><strong>43 / 50</strong><span>Beds occupied</span></button>
+        <button class="metric" data-act="rooms"><strong>3</strong><span>Upcoming</span></button>
+      </div>
+    </div>
+  </section>
+
+  <div class="proto"><button data-act="theme">Toggle theme</button></div>
+</main>
+
+<div class="scrim" id="scrim" data-act="close-all"></div>
+
+<div class="quickmenu" id="quickmenu">
+  <div class="qa"><span>Add tenant</span><i data-act="qa">＋</i></div>
+  <div class="qa"><span>Record payment</span><i data-act="qa">₹</i></div>
+  <div class="qa"><span>Add expense</span><i data-act="qa">−</i></div>
+  <div class="qa"><span>Add charge</span><i data-act="qa">＋₹</i></div>
+</div>
+<button class="fab" data-act="fab">+</button>
+
+<nav class="navbar">
+  <button class="navitem on"><span class="ic">⌂</span><span>Home</span></button>
+  <button class="navitem"><span class="ic">♙</span><span>Tenants</span></button>
+  <button class="navitem"><span class="ic">₹</span><span>Collections</span></button>
+  <button class="navitem"><span class="ic">•••</span><span>More</span></button>
+</nav>
+
+<section class="sheet" id="attnSheet">
+  <div class="handle"></div>
+  <div class="sheethead"><div><h3>Needs attention</h3><p>8 unresolved situations</p></div><button class="close" data-act="close-sheet">×</button></div>
+  <div class="group"><h4>Urgent</h4>
+    <div class="item"><span class="dot"></span><div class="grow"><b>Rajesh · ₹12,000 overdue</b><small>2 months · exceeds security by ₹2,000</small><div class="inlineacts"><button>Review</button><button>Record payment</button></div></div><span class="pill bad">18 days</span></div>
+    <div class="item"><span class="dot"></span><div class="grow"><b>Room 101-A conflict</b><small>Rajesh until 5 Dec · Priya from 1 Dec</small><div class="inlineacts"><button>Resolve</button></div></div><span class="pill bad">Conflict</span></div>
+  </div>
+  <div class="group"><h4>Action required</h4>
+    <div class="item"><span class="dot pending"></span><div class="grow"><b>2 approvals waiting</b><small>Rent discount · Expense</small><div class="inlineacts"><button>Review</button></div></div><span class="pill wait">2</span></div>
+    <div class="item"><span class="dot pending"></span><div class="grow"><b>Cash handover needs confirmation</b><small>Ravi → Amit · ₹8,000</small><div class="inlineacts"><button>Confirm</button></div></div><span class="pill wait">Today</span></div>
+  </div>
+</section>
+
+<section class="sheet" id="upcomingSheet">
+  <div class="handle"></div>
+  <div class="sheethead"><div><h3>Coming up</h3><p>Next 7 days</p></div><button class="close" data-act="close-sheet">×</button></div>
+  <div class="group"><h4>Tomorrow</h4>
+    <div class="item"><span class="dot info"></span><div class="grow"><b>Priya joins · Room 102-A</b><small>ID proof still missing</small><div class="inlineacts"><button>Open tenant</button></div></div><span class="pill wait">Tomorrow</span></div>
+  </div>
+  <div class="group"><h4>5 Oct</h4>
+    <div class="item"><span class="dot info"></span><div class="grow"><b>18 rents due</b><small>₹1,08,000 expected</small><div class="inlineacts"><button>View collections</button></div></div><span class="pill info">5 Oct</span></div>
+  </div>
+  <div class="group"><h4>8 Oct</h4>
+    <div class="item"><span class="dot info"></span><div class="grow"><b>Amit moves out · Room 203-B</b><small>Bed becomes available</small><div class="inlineacts"><button>Open tenancy</button></div></div><span class="pill info">8 Oct</span></div>
+  </div>
+</section>
+
+<script>
+(function(){
+  var theme="";
+  function $(id){return document.getElementById(id);}
+  function closeAll(){
+    $("scrim").className="scrim";
+    $("quickmenu").className="quickmenu";
+    $("attnSheet").className="sheet";
+    $("upcomingSheet").className="sheet";
+  }
+  function openSheet(id){
+    closeAll();
+    $("scrim").className="scrim on";
+    $(id).className="sheet on";
+  }
+  document.addEventListener("click",function(e){
+    var b=e.target.closest("[data-act]"); if(!b)return;
+    var a=b.getAttribute("data-act");
+    if(a==="fab"){
+      var on=$("quickmenu").className.indexOf("on")>-1;
+      closeAll();
+      if(!on){$("scrim").className="scrim on";$("quickmenu").className="quickmenu on";}
+    }else if(a==="open-attn"){openSheet("attnSheet");
+    }else if(a==="open-upcoming"){openSheet("upcomingSheet");
+    }else if(a==="close-all"||a==="close-sheet"){closeAll();
+    }else if(a==="qa"){closeAll();
+    }else if(a==="theme"){
+      theme=theme==="dark"?"light":"dark";
+      document.documentElement.setAttribute("data-theme",theme);
+    }
+  });
+  document.addEventListener("input",function(){});
+  document.addEventListener("change",function(){});
+}());
+</script>
+</body>
+</html>

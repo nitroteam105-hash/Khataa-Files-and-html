@@ -1,0 +1,208 @@
+{
+  "version": "2.0",
+  "status": "proposed implementation tests",
+  "commands": [
+    {
+      "command": "addUpcomingTenant",
+      "cases": [
+        {
+          "name": "valid upcoming tenant",
+          "expect": [
+            "tenancy upcoming",
+            "planned occupancy",
+            "rent term",
+            "roles preserved",
+            "outbox queued"
+          ]
+        },
+        {
+          "name": "same bed already planned",
+          "expect": [
+            "BED_CONFLICT",
+            "full rollback"
+          ]
+        },
+        {
+          "name": "distinct payer/responsible/deposit owner",
+          "expect": [
+            "separate role assignments",
+            "no silent identity collapse"
+          ]
+        }
+      ]
+    },
+    {
+      "command": "ensureMonthlyObligations",
+      "cases": [
+        {
+          "name": "first generation",
+          "expect": [
+            "one obligation per eligible tenancy/period",
+            "deterministic key created"
+          ]
+        },
+        {
+          "name": "second generation same period",
+          "expect": [
+            "no duplicate obligation",
+            "alreadyPresent increments"
+          ]
+        },
+        {
+          "name": "due day 31 in February",
+          "expect": [
+            "due date clamped to last day of month"
+          ]
+        },
+        {
+          "name": "old dues",
+          "expect": [
+            "prior obligation rows remain distinct"
+          ]
+        }
+      ]
+    },
+    {
+      "command": "reversePayment",
+      "cases": [
+        {
+          "name": "full reversal",
+          "expect": [
+            "original payment preserved",
+            "new reversal payment",
+            "negative allocation effects",
+            "receipt preserved"
+          ]
+        },
+        {
+          "name": "already reversed",
+          "expect": [
+            "rejected",
+            "no duplicate reversal"
+          ]
+        }
+      ]
+    },
+    {
+      "command": "addCharge",
+      "cases": [
+        {
+          "name": "one-time charge",
+          "expect": [
+            "charge inserted",
+            "separate obligation inserted",
+            "tax context retained"
+          ]
+        },
+        {
+          "name": "charge is not payment",
+          "expect": [
+            "no payment event created"
+          ]
+        }
+      ]
+    },
+    {
+      "command": "addExpense",
+      "cases": [
+        {
+          "name": "business-paid",
+          "expect": [
+            "reimbursement_state not_applicable"
+          ]
+        },
+        {
+          "name": "staff-paid",
+          "expect": [
+            "paidByPartyId required",
+            "reimbursement_state owed"
+          ]
+        }
+      ]
+    },
+    {
+      "command": "handoverCash",
+      "cases": [
+        {
+          "name": "exact handover",
+          "expect": [
+            "handover event only"
+          ]
+        },
+        {
+          "name": "short handover",
+          "expect": [
+            "handover event",
+            "discrepancy event",
+            "tenant payments unchanged"
+          ]
+        },
+        {
+          "name": "excess handover",
+          "expect": [
+            "handover event",
+            "discrepancy event",
+            "tenant payments unchanged"
+          ]
+        }
+      ]
+    },
+    {
+      "command": "planMoveOut",
+      "cases": [
+        {
+          "name": "active tenancy",
+          "expect": [
+            "state planned_move_out",
+            "tenancy not ended"
+          ]
+        },
+        {
+          "name": "former tenancy",
+          "expect": [
+            "rejected"
+          ]
+        }
+      ]
+    },
+    {
+      "command": "endTenancy",
+      "cases": [
+        {
+          "name": "active tenancy",
+          "expect": [
+            "occupancy ended",
+            "tenancy moved_out",
+            "financial history preserved"
+          ]
+        },
+        {
+          "name": "pending security refund after end",
+          "expect": [
+            "allowed by model",
+            "tenancy remains moved_out"
+          ]
+        }
+      ]
+    },
+    {
+      "command": "refundSecurity",
+      "cases": [
+        {
+          "name": "refund within held",
+          "expect": [
+            "refund event appended",
+            "held projection decreases"
+          ]
+        },
+        {
+          "name": "refund above held",
+          "expect": [
+            "rejected",
+            "no mutation"
+          ]
+        }
+      ]
+    }
+  ]
+}

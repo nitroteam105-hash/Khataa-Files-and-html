@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata — Add Tenant V1</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+ --canvas:#FDFCF8;--surface:#FFF;--row:#F6F6F5;--line:#E6E0D7;--ink:#171716;--muted:#6B6B69;
+ --act:#2B3A75;--actText:#FFF;--info:#E8EDFF;--infoInk:#2B3A75;--warn:#F5E6B8;--warnInk:#745B12;
+ --danger:#B83A2B;--dangerTint:#FFE4DF;--good:#1E7A4C;--goodTint:#DDF3E6;
+ --card:20px;--button:14px;--pill:999px;color-scheme:light
+}
+[data-theme=dark]{
+ color-scheme:dark;--canvas:#1B1B1A;--surface:#262625;--row:#232322;--line:#3A3A38;--ink:#FFF;--muted:#9B9B98;
+ --act:#C9D4FB;--actText:#1A2140;--info:#252C42;--infoInk:#DCE4FF;--warn:#3B3421;--warnInk:#E5C96E;
+ --danger:#F59384;--dangerTint:#3A2420;--good:#74C99A;--goodTint:#244232
+}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--canvas);color:var(--ink);font-family:Manrope,system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,select{font:inherit}.app{max-width:520px;margin:auto;padding:18px 16px 112px}
+.top{display:grid;grid-template-columns:40px 1fr 40px;align-items:center;margin-bottom:24px}
+.round{width:38px;height:38px;border:1px solid var(--line);border-radius:50%;background:var(--surface);color:var(--ink);font-size:18px}
+.top-title{text-align:center;font-size:13px;font-weight:800}
+.intro{margin-bottom:20px}.intro h1{font-size:27px;line-height:1.15;letter-spacing:-.03em;margin:0 0 6px}.intro p{font-size:12px;line-height:1.5;color:var(--muted);margin:0}
+.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:25px}.stepbar{height:4px;border-radius:5px;background:var(--line)}.stepbar.done,.stepbar.on{background:var(--act)}
+.stepmeta{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.stepmeta b{font-size:12px}.stepmeta span{font-size:11px;color:var(--muted)}
+.panel{display:none}.panel.on{display:block}.field{margin-bottom:17px}.field label{display:block;font-size:11px;font-weight:700;color:var(--muted);margin:0 2px 7px}
+.control{width:100%;height:49px;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--ink);padding:0 14px;font-size:14px;outline:none}
+.control:focus{border-color:var(--act)}.hint{font-size:10px;color:var(--muted);margin:6px 2px 0;line-height:1.45}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.choice{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.choice button{min-height:52px;text-align:left;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--ink);padding:10px 12px}
+.choice button.on{border-color:var(--act);background:var(--info);color:var(--infoInk)}.choice b{font-size:12px;display:block}.choice small{font-size:10px;color:var(--muted)}
+.section-title{font-size:14px;margin:24px 2px 11px}.notice{border-radius:14px;background:var(--row);padding:12px 13px;font-size:11px;line-height:1.5;color:var(--muted);margin-bottom:17px}
+.checks{border:1px solid var(--line);border-radius:var(--card);overflow:hidden;background:var(--surface)}
+.check{min-height:58px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line)}.check:last-child{border:0}
+.check b{display:block;font-size:13px}.check small{display:block;font-size:10px;color:var(--muted);margin-top:3px}.toggle{width:22px;height:22px;border:1px solid var(--line);border-radius:7px;background:var(--surface);color:transparent;font-weight:800}.toggle.on{background:var(--act);border-color:var(--act);color:var(--actText)}
+.review{border:1px solid var(--line);border-radius:var(--card);overflow:hidden;background:var(--surface);margin-bottom:14px}
+.rrow{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:18px}.rrow:last-child{border:0}.rrow span{font-size:11px;color:var(--muted)}.rrow b{font-size:12px;text-align:right}
+.status{display:inline-block;padding:5px 8px;border-radius:var(--pill);font-size:10px;font-weight:800;background:var(--warn);color:var(--warnInk)}
+.footer{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);background:var(--canvas);border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom));display:grid;grid-template-columns:1fr 1.7fr;gap:10px}
+.btn{height:48px;border-radius:var(--button);font-size:13px;font-weight:800;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.btn.primary{background:var(--act);border-color:var(--act);color:var(--actText)}.btn:disabled{opacity:.45}
+.sheetback{display:none;position:fixed;inset:0;background:rgba(0,0,0,.28);z-index:9}.sheetback.on{display:block}
+.sheet{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);background:var(--surface);border-radius:24px 24px 0 0;padding:10px 18px 28px}.handle{width:38px;height:4px;background:var(--line);border-radius:4px;margin:0 auto 18px}
+.sheet h2{font-size:19px;margin:0 0 6px}.sheet p{font-size:12px;line-height:1.55;color:var(--muted);margin:0 0 18px}.sheet .btn{width:100%}
+</style>
+</head>
+<body>
+<main class="app">
+<header class="top">
+ <button class="round" type="button" data-act="close" aria-label="Close">×</button>
+ <div class="top-title">Add tenant</div>
+ <button class="round" type="button" data-act="theme" aria-label="Theme">◐</button>
+</header>
+<div class="intro"><h1 id="heading">Basics</h1><p id="subheading">Start with the person and their joining date.</p></div>
+<div class="steps" id="steps"></div>
+<div class="stepmeta"><b id="stepname">Basics</b><span id="stepcount">1 of 5</span></div>
+
+<section class="panel on" data-step="0">
+ <div class="field"><label>Tenant name</label><input class="control" data-key="name" value="Aarav Sharma" placeholder="Full name"></div>
+ <div class="field"><label>Phone number</label><input class="control" data-key="phone" value="98765 12345" inputmode="tel" placeholder="Phone number"></div>
+ <div class="field"><label>Agreed joining date</label><input class="control" data-key="joining" type="date" value="2026-10-08"><p class="hint">This date starts the tenancy timeline. It can be changed later with history preserved.</p></div>
+</section>
+
+<section class="panel" data-step="1">
+ <div class="field"><label>Room</label><select class="control" data-key="room"><option>Room 101</option><option selected>Room 204</option><option>Room 302</option></select></div>
+ <div class="field"><label>Bed</label><div class="choice"><button type="button" class="on" data-choice="bed" data-value="Bed A"><b>Bed A</b><small>Vacant</small></button><button type="button" data-choice="bed" data-value="Bed B"><b>Bed B</b><small>Vacant</small></button></div></div>
+ <div class="notice">Only available beds are shown. Assigning a bed records occupancy from the agreed joining date.</div>
+</section>
+
+<section class="panel" data-step="2">
+ <div class="field"><label>Monthly rent</label><input class="control" data-key="rent" value="8500" inputmode="numeric"></div>
+ <div class="grid2">
+  <div class="field"><label>Rent due day</label><select class="control" data-key="due"><option>1st</option><option selected>5th</option><option>10th</option><option>15th</option></select></div>
+  <div class="field"><label>Security agreed</label><input class="control" data-key="security" value="10000" inputmode="numeric"></div>
+ </div>
+ <div class="field"><label>Security received now</label><input class="control" data-key="securityPaid" value="0" inputmode="numeric"><p class="hint">Record only money actually received. The agreed security and amount held remain separate.</p></div>
+</section>
+
+<section class="panel" data-step="3">
+ <div class="notice">Requirements can be completed later. Missing required items will mark the tenant as <b>Setup incomplete</b>, but will not block saving.</div>
+ <div class="checks">
+  <div class="check"><div><b>Government ID</b><small>Required</small></div><button class="toggle on" type="button" data-check="id">✓</button></div>
+  <div class="check"><div><b>Emergency contact</b><small>Required</small></div><button class="toggle" type="button" data-check="emergency">✓</button></div>
+  <div class="check"><div><b>Photo</b><small>Optional</small></div><button class="toggle" type="button" data-check="photo">✓</button></div>
+ </div>
+</section>
+
+<section class="panel" data-step="4">
+ <div class="review">
+  <div class="rrow"><span>Tenant</span><b id="rvName"></b></div>
+  <div class="rrow"><span>Joining</span><b id="rvJoining"></b></div>
+  <div class="rrow"><span>Room / bed</span><b id="rvRoom"></b></div>
+  <div class="rrow"><span>Monthly rent</span><b id="rvRent"></b></div>
+  <div class="rrow"><span>Due day</span><b id="rvDue"></b></div>
+  <div class="rrow"><span>Security agreed</span><b id="rvSecurity"></b></div>
+  <div class="rrow"><span>Security received</span><b id="rvSecurityPaid"></b></div>
+  <div class="rrow"><span>Requirements</span><b><span class="status" id="rvStatus">Setup incomplete</span></b></div>
+ </div>
+ <div class="notice" id="reviewNote">Emergency contact is still required. You can save now and complete it from the tenant record.</div>
+</section>
+</main>
+
+<footer class="footer">
+ <button class="btn" id="backBtn" type="button" data-act="back">Cancel</button>
+ <button class="btn primary" id="nextBtn" type="button" data-act="next">Continue</button>
+</footer>
+
+<div class="sheetback" id="sheetback">
+ <div class="sheet"><div class="handle"></div><h2>Tenant saved</h2><p id="savedText"></p><button class="btn primary" type="button" data-act="done">Open tenant</button></div>
+</div>
+
+<script>
+(function(){
+ var S={step:0,theme:"light",name:"Aarav Sharma",phone:"98765 12345",joining:"2026-10-08",room:"Room 204",bed:"Bed A",rent:"8500",due:"5th",security:"10000",securityPaid:"0",checks:{id:true,emergency:false,photo:false}};
+ var names=["Basics","Room / Bed","Money","Requirements","Review"];
+ var subs=["Start with the person and their joining date.","Choose where this tenant will stay.","Set the agreed rent and security.","Add the details your property requires.","Check the tenancy before saving."];
+ function save(){try{localStorage.setItem("khaata-add-tenant-v1",JSON.stringify(S));}catch(e){}}
+ function load(){try{var x=JSON.parse(localStorage.getItem("khaata-add-tenant-v1")||"null");if(x)S=x;}catch(e){}}
+ function money(v){var n=parseInt(v,10)||0;return "₹"+n.toLocaleString("en-IN")}
+ function render(){
+  document.documentElement.setAttribute("data-theme",S.theme);
+  var ps=document.querySelectorAll(".panel"),i;for(i=0;i<ps.length;i++)ps[i].className="panel"+(i===S.step?" on":"");
+  document.getElementById("heading").textContent=names[S.step];document.getElementById("subheading").textContent=subs[S.step];
+  document.getElementById("stepname").textContent=names[S.step];document.getElementById("stepcount").textContent=(S.step+1)+" of 5";
+  var bars="";for(i=0;i<5;i++)bars+='<div class="stepbar '+(i<S.step?"done":i===S.step?"on":"")+'"></div>';document.getElementById("steps").innerHTML=bars;
+  document.getElementById("backBtn").textContent=S.step===0?"Cancel":"Back";document.getElementById("nextBtn").textContent=S.step===4?"Save tenant":"Continue";
+  var bs=document.querySelectorAll("[data-choice=bed]");for(i=0;i<bs.length;i++)bs[i].className=bs[i].getAttribute("data-value")===S.bed?"on":"";
+  var cs=document.querySelectorAll("[data-check]");for(i=0;i<cs.length;i++)cs[i].className="toggle"+(S.checks[cs[i].getAttribute("data-check")]?" on":"");
+  if(S.step===4){
+   document.getElementById("rvName").textContent=S.name+" · "+S.phone;
+   document.getElementById("rvJoining").textContent=S.joining;
+   document.getElementById("rvRoom").textContent=S.room+" · "+S.bed;
+   document.getElementById("rvRent").textContent=money(S.rent);
+   document.getElementById("rvDue").textContent=S.due;
+   document.getElementById("rvSecurity").textContent=money(S.security);
+   document.getElementById("rvSecurityPaid").textContent=money(S.securityPaid);
+   var complete=S.checks.id&&S.checks.emergency;
+   document.getElementById("rvStatus").textContent=complete?"Ready":"Setup incomplete";
+   document.getElementById("rvStatus").style.background=complete?"var(--goodTint)":"var(--warn)";
+   document.getElementById("rvStatus").style.color=complete?"var(--good)":"var(--warnInk)";
+   document.getElementById("reviewNote").textContent=complete?"All required tenant details are complete.":"Required details are still missing. You can save now and complete them from the tenant record.";
+  }
+ }
+ function mutate(){save();render()}
+ load();render();
+ document.addEventListener("input",function(e){var k=e.target.getAttribute("data-key");if(k){S[k]=e.target.value;save()}});
+ document.addEventListener("change",function(e){var k=e.target.getAttribute("data-key");if(k){S[k]=e.target.value;mutate()}});
+ document.addEventListener("click",function(e){
+  var a=e.target.closest("[data-act],[data-choice],[data-check]");if(!a)return;
+  if(a.hasAttribute("data-choice")){S.bed=a.getAttribute("data-value");mutate();return}
+  if(a.hasAttribute("data-check")){var c=a.getAttribute("data-check");S.checks[c]=!S.checks[c];mutate();return}
+  var act=a.getAttribute("data-act");
+  if(act==="theme"){S.theme=S.theme==="dark"?"light":"dark";mutate()}
+  else if(act==="next"){if(S.step<4){S.step++;mutate();window.scrollTo(0,0)}else{save();document.getElementById("savedText").textContent=S.name+" has been added to "+S.room+" · "+S.bed+(S.checks.id&&S.checks.emergency?".":" with setup still incomplete.");document.getElementById("sheetback").className="sheetback on"}}
+  else if(act==="back"){if(S.step>0){S.step--;mutate();window.scrollTo(0,0)}else history.back()}
+  else if(act==="close")history.back();
+  else if(act==="done")document.getElementById("sheetback").className="sheetback";
+ });
+})();
+</script>
+</body>
+</html>

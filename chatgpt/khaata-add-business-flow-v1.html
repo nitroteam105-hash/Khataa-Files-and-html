@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · Add business · v1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{
+--canvas:#FDFCF8;--surface:#FFFFFF;--row:#F6F6F5;--line:#E6E0D7;--ink:#171716;--muted:#6B6B69;
+--alert:#FF6B5B;--alert-solid:#C23E2E;--alert-ink:#B83A2B;--alert-tint:#FFE4DF;
+--pending:#EBC36B;--pending-ink:#6E5200;--pending-tile:#FFF0C4;
+--done-ink:#1E7A4C;--done-tint:#DDF3E6;--info:#D7E1FE;--info-ink:#2B3A75;--info-line:#C3D0F7;
+--act:#2B3A75;--act-text:#FFFFFF;--neutral-tile:#EDEDEC;--neutral-ink:#6B6B69;
+--biz-pine:#0F2C24;--biz-pine-ink:#FBFBFA;--biz-fig:#3B1F3A;--biz-fig-ink:#FBFBFA;--biz-crimson:#D42E57;--biz-crimson-ink:#FBFBFA;--biz-olive:#292E1E;--biz-olive-ink:#FBFBFA;--biz-navy:#1E2A5A;--biz-navy-ink:#FBFBFA;--biz-pink:#FBB9C2;--biz-pink-ink:#171716;
+--r-btn:14px;--r-card:20px;--r-pill:999px;color-scheme:light
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+--canvas:#1B1B1A;--surface:#262625;--row:#232322;--line:#38383A;--ink:#FFFFFF;--muted:#9B9B98;
+--alert:#E8705C;--alert-solid:#E8705C;--alert-ink:#F59384;--alert-tint:#3A2420;
+--pending:#EBC36B;--pending-ink:#EBC36B;--pending-tile:#3A3122;--done-ink:#74C99A;--done-tint:#244232;
+--info:#252C42;--info-ink:#DCE4FF;--info-line:#34405E;--act:#C9D4FB;--act-text:#1A2140;--neutral-tile:#2A2A29;--neutral-ink:#9B9B98;color-scheme:dark}}
+:root[data-theme="dark"]{
+--canvas:#1B1B1A;--surface:#262625;--row:#232322;--line:#38383A;--ink:#FFFFFF;--muted:#9B9B98;
+--alert:#E8705C;--alert-solid:#E8705C;--alert-ink:#F59384;--alert-tint:#3A2420;
+--pending:#EBC36B;--pending-ink:#EBC36B;--pending-tile:#3A3122;--done-ink:#74C99A;--done-tint:#244232;
+--info:#252C42;--info-ink:#DCE4FF;--info-line:#34405E;--act:#C9D4FB;--act-text:#1A2140;--neutral-tile:#2A2A29;--neutral-ink:#9B9B98;color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--canvas);color:var(--ink);font-family:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif}
+button,input,select{font:inherit;color:inherit}button{cursor:pointer}:focus-visible{outline:2px solid var(--act);outline-offset:2px}
+svg.lucide{width:18px;height:18px}[hidden]{display:none!important}
+.app{max-width:520px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top)) 16px calc(32px + env(safe-area-inset-bottom))}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:8px}.ibtn{width:44px;height:44px;border:1px solid var(--line);background:var(--surface);border-radius:12px;display:grid;place-items:center;padding:0}.title{flex:1}.title strong{display:block;font-size:16px}.title small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.progress{height:5px;border-radius:99px;background:var(--neutral-tile);overflow:hidden;margin:10px 0 18px}.progress i{display:block;height:100%;background:var(--act);border-radius:99px;transition:width .25s}
+h1{font-size:26px;line-height:1.08;margin:10px 0 5px}.lead{font-size:12px;color:var(--muted);line-height:1.5;margin:0 0 16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:14px;margin-top:10px}
+.field{margin-top:14px}.field:first-child{margin-top:0}.field label{display:block;font-size:11.5px;font-weight:800;margin-bottom:6px}.input{width:100%;min-height:46px;border:1px solid var(--line);background:var(--canvas);border-radius:12px;padding:10px 12px;font-size:13px}
+.types{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}.type{min-height:92px;border:1.5px solid var(--line);background:var(--surface);border-radius:16px;padding:12px;text-align:left;display:flex;flex-direction:column;justify-content:space-between}.type[aria-pressed="true"]{background:var(--info);border-color:var(--info-ink);color:var(--info-ink);box-shadow:inset 0 0 0 1px var(--info-ink)}.type strong{font-size:12px}.type small{font-size:10.5px;color:var(--muted)}.type[aria-pressed="true"] small{color:var(--info-ink);opacity:.8}
+.mark{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:800}.pine{background:var(--biz-pine);color:var(--biz-pine-ink)}.fig{background:var(--biz-fig);color:var(--biz-fig-ink)}.crimson{background:var(--biz-crimson);color:var(--biz-crimson-ink)}.olive{background:var(--biz-olive);color:var(--biz-olive-ink)}.navy{background:var(--biz-navy);color:var(--biz-navy-ink)}.pink{background:var(--biz-pink);color:var(--biz-pink-ink)}
+.note{border-radius:14px;padding:11px 12px;font-size:11px;line-height:1.45;background:var(--row);color:var(--muted);margin-top:12px}.note.info{background:var(--info);color:var(--info-ink)}.note.ok{background:var(--done-tint);color:var(--done-ink)}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:11px}.kv:last-child{border-bottom:0}.kv span{color:var(--muted)}.kv b{text-align:right}
+.actions{display:flex;gap:8px;margin-top:18px}.btn{min-height:44px;border:1px solid var(--line);background:var(--surface);border-radius:var(--r-btn);padding:0 14px;font-size:11px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;gap:6px}.btn.primary{background:var(--act);color:var(--act-text);border-color:var(--act);flex:1}.btn:disabled{opacity:.4;cursor:not-allowed}
+.success{padding-top:24px;text-align:center}.success .bigmark{width:68px;height:68px;border-radius:50%;display:grid;place-items:center;margin:0 auto 14px;font-size:26px;font-weight:800}.success h2{font-size:22px;margin:0}.success p{font-size:12px;color:var(--muted);line-height:1.5}
+</style>
+</head>
+<body>
+<main class="app">
+<header class="top">
+<button class="ibtn" id="back" aria-label="Back"><i data-lucide="arrow-left"></i></button>
+<div class="title"><strong>Add business</strong><small id="stepLabel">Step 1 of 5</small></div>
+<button class="ibtn" id="theme" aria-label="Toggle theme"><i data-lucide="sun-moon"></i></button>
+</header>
+<div class="progress"><i id="fill"></i></div>
+<section id="screen"></section>
+</main>
+
+<script>
+(function(){
+"use strict";
+var S={step:0,history:[],name:"",type:"",location:"",currency:"",color:"pine"};
+var TYPES=[
+{id:"pg",name:"PG / Hostel",sub:"Rooms, tenants and collections",color:"pine",mark:"P"},
+{id:"cafe",name:"Bakery / café",sub:"Sales and daily operations",color:"fig",mark:"B"},
+{id:"juice",name:"Juice bar",sub:"Counter sales",color:"crimson",mark:"J"},
+{id:"dairy",name:"Dairy delivery",sub:"Recurring delivery",color:"olive",mark:"D"},
+{id:"gym",name:"Gym",sub:"Members and subscriptions",color:"navy",mark:"G"},
+{id:"ice",name:"Ice cream parlour",sub:"Retail sales",color:"pink",mark:"I"}
+];
+function I(n){return '<i data-lucide="'+n+'"></i>'}
+function icons(){if(window.lucide&&lucide.createIcons)lucide.createIcons()}
+function t(){return TYPES.find(function(x){return x.id===S.type})}
+function setStep(n){S.history.push(S.step);S.step=n;render()}
+function prev(){if(S.history.length){S.step=S.history.pop();render()}else alert("Back to business switcher")}
+function typeCards(){return '<div class="types">'+TYPES.map(function(x){return '<button class="type" data-type="'+x.id+'" aria-pressed="'+(S.type===x.id)+'"><span class="mark '+x.color+'">'+x.mark+'</span><span><strong>'+x.name+'</strong><small>'+x.sub+'</small></span></button>'}).join("")+'</div>'}
+function render(){
+ stepLabel.textContent="Step "+Math.min(S.step+1,5)+" of 5";
+ fill.style.width=((Math.min(S.step+1,5)/5)*100)+"%";
+ back.hidden=S.step===5;
+ var h="";
+ if(S.step===0){
+  h='<h1>Name your business</h1><p class="lead">Create the business shell first. Vertical-specific setup comes after this.</p><div class="card"><div class="field"><label>Business name</label><input id="nameInput" class="input" placeholder="e.g. Sunrise PG" value="'+S.name+'"></div></div><div class="actions"><button class="btn primary" data-next="1" '+(!S.name.trim()?'disabled':'')+'>Continue</button></div>';
+ }
+ if(S.step===1){
+  h='<h1>What kind of business is it?</h1><p class="lead">Choose the business type so Khaata can open the right vertical workspace.</p>'+typeCards()+'<div class="actions"><button class="btn primary" data-next="2" '+(!S.type?'disabled':'')+'>Continue</button></div>';
+ }
+ if(S.step===2){
+  h='<h1>Where does it operate?</h1><p class="lead">Location belongs to the business, but it does not silently decide currency.</p><div class="card"><div class="field"><label>Location</label><input id="locationInput" class="input" placeholder="City, state / region" value="'+S.location+'"></div></div><div class="actions"><button class="btn primary" data-next="3" '+(!S.location.trim()?'disabled':'')+'>Continue</button></div>';
+ }
+ if(S.step===3){
+  h='<h1>Choose operational currency</h1><p class="lead">Currency is explicit and belongs to this business.</p><div class="card"><div class="field"><label>Operational currency</label><select id="currencyInput" class="input"><option value="">Choose currency</option><option value="INR" '+(S.currency==="INR"?"selected":"")+'>INR · Indian Rupee</option><option value="USD" '+(S.currency==="USD"?"selected":"")+'>USD · US Dollar</option><option value="GBP" '+(S.currency==="GBP"?"selected":"")+'>GBP · Pound Sterling</option><option value="EUR" '+(S.currency==="EUR"?"selected":"")+'>EUR · Euro</option></select></div></div><div class="note info">Khaata does not infer currency from location. For PG V1, one operational/base currency is used across rent, security, charges, expenses, collections and statements.</div><div class="actions"><button class="btn primary" data-next="4" '+(!S.currency?'disabled':'')+'>Review</button></div>';
+ }
+ if(S.step===4){
+  var ty=t();
+  h='<h1>Review business</h1><p class="lead">Check the business shell before creating it.</p><div class="card"><div class="kv"><span>Name</span><b>'+S.name+'</b></div><div class="kv"><span>Business type</span><b>'+ty.name+'</b></div><div class="kv"><span>Location</span><b>'+S.location+'</b></div><div class="kv"><span>Operational currency</span><b>'+S.currency+'</b></div></div><div class="note">Creating the business does not create tenants, rooms, prices or other vertical-specific records yet.</div><div class="actions"><button class="btn primary" data-create>Create business</button></div>';
+ }
+ if(S.step===5){
+  var ty2=t();
+  h='<div class="success"><div class="bigmark '+ty2.color+'">'+ty2.mark+'</div><h2>'+S.name+' created</h2><p>The business shell is ready.</p><div class="card" style="text-align:left"><div class="kv"><span>Type</span><b>'+ty2.name+'</b></div><div class="kv"><span>Location</span><b>'+S.location+'</b></div><div class="kv"><span>Currency</span><b>'+S.currency+'</b></div></div>';
+  if(S.type==="pg") h+='<div class="note ok"><b>Next: PG / Hostel setup.</b><br>Choose whether to set up rooms now or add rooms progressively while onboarding tenants.</div><button class="btn primary" style="width:100%;margin-top:12px" data-pg>Continue to PG setup</button>';
+  else h+='<div class="note ok"><b>Next: '+ty2.name+' setup.</b><br>The shared business shell is complete; the selected vertical can now continue with its own setup flow.</div><button class="btn primary" style="width:100%;margin-top:12px" data-vertical>Continue to business setup</button>';
+  h+='</div>';
+ }
+ screen.innerHTML=h;bindInputs();icons()
+}
+function bindInputs(){
+ var n=document.getElementById("nameInput");if(n)n.addEventListener("input",function(){S.name=n.value;render()});
+ var l=document.getElementById("locationInput");if(l)l.addEventListener("input",function(){S.location=l.value;render()});
+ var c=document.getElementById("currencyInput");if(c)c.addEventListener("change",function(){S.currency=c.value;render()});
+}
+document.addEventListener("click",function(e){
+ var ty=e.target.closest("[data-type]");if(ty){S.type=ty.dataset.type;S.color=t().color;render();return}
+ var nx=e.target.closest("[data-next]");if(nx&&!nx.disabled){setStep(Number(nx.dataset.next));return}
+ if(e.target.closest("[data-create]")){S.history.push(S.step);S.step=5;render();return}
+ if(e.target.closest("[data-pg]")){alert("Opens PG / Hostel setup: Set up rooms now or Add rooms as I add tenants.");return}
+ if(e.target.closest("[data-vertical]")){alert("Opens the selected vertical setup.");return}
+});
+back.addEventListener("click",prev);
+theme.addEventListener("click",function(){var r=document.documentElement;r.dataset.theme=r.dataset.theme==="dark"?"light":"dark"});
+render();
+})();
+</script>
+</body>
+</html>

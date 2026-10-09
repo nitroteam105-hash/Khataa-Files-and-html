@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · Supabase Typed Domain RPCs v1</title>
+<style>
+:root{--canvas:#FDFCF8;--surface:#FFFFFF;--line:#E6E0D7;--ink:#171716;--muted:#6B6B69;--info:#D7E1FE;--info-ink:#2B3A75;--done:#DDF3E6;--done-ink:#1E7A4C;--pending:#FFF0C4;--pending-ink:#6E5200;--alert:#FFE4DF;--alert-ink:#B83A2B}
+*{box-sizing:border-box}body{margin:0;background:var(--canvas);color:var(--ink);font-family:Manrope,system-ui,sans-serif}main{max-width:900px;margin:auto;padding:20px 16px 44px}h1{font-size:26px;margin:0 0 6px}h2{font-size:19px;margin:22px 0 6px}p{font-size:11.5px;line-height:1.6;color:var(--muted);margin:0}.note{padding:11px 12px;border-radius:14px;background:var(--info);color:var(--info-ink);font-size:11px;line-height:1.5;margin:12px 0}.ok{background:var(--done);color:var(--done-ink)}.warn{background:var(--pending);color:var(--pending-ink)}.alert{background:var(--alert);color:var(--alert-ink)}.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:14px;margin-top:10px;overflow:auto}table{width:100%;border-collapse:collapse;font-size:11px}th,td{text-align:left;vertical-align:top;padding:9px 8px;border-bottom:1px solid var(--line);line-height:1.45}th{color:var(--muted)}tr:last-child td{border-bottom:0}code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.flow{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;line-height:1.65;white-space:pre-wrap;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px}
+</style></head><body><main>
+<h1>Supabase Typed Domain RPCs v1</h1>
+<p>The generic server sync envelope now has concrete typed handlers for the highest-risk PG operations.</p>
+
+<div class="note ok"><b>Server validation now mirrors the local domain layer:</b> each RPC accepts client-generated offline IDs, re-checks permission and business invariants, writes one atomic server transaction, and records an idempotent sync result.</div>
+<div class="note alert"><b>Still not applied to Supabase.</b> This is a proposed migration and should be reviewed against the actual project schema before execution.</div>
+
+<h2>Typed operations</h2>
+<div class="card"><table><tr><th>RPC</th><th>Atomic server effect</th><th>Invariant</th></tr><tr><td>Record payment</td><td>Payment + allocations + receipt + optional cash custody</td><td>Tenant settlement becomes real; cash custody remains separate</td></tr><tr><td>Reverse payment</td><td>Append reversal + negative allocation effects</td><td>Original payment and receipt remain</td></tr><tr><td>Room transfer</td><td>End old occupancy + start new occupancy</td><td>No implicit rent change</td></tr><tr><td>Apply security</td><td>Explicit security event against obligation</td><td>Never automatic</td></tr><tr><td>Refund security</td><td>Explicit money-out security event</td><td>May remain relevant after move-out</td></tr><tr><td>Cash handover</td><td>Record actual handover + optional discrepancy</td><td>Never reopens tenant payment</td></tr><tr><td>End tenancy</td><td>Move tenancy to Former + end active occupancy</td><td>Financial follow-up survives</td></tr></table></div>
+
+<h2>Payment path</h2>
+<div class="flow">offline SQLite payment
+  ↓
+outbox reconnects
+  ↓
+pg_record_payment(...)
+  ↓
+same operation_id already accepted?
+  ├─ yes → return prior ACK
+  └─ no
+       ↓
+       business + action authorization
+       ↓
+       validate tenancy + allocations
+       ↓
+       payment_event
+       + payment_allocations
+       + immutable receipt_snapshot
+       + optional cash custody
+       + domain_event
+       ↓
+       consume one-use approval if applicable
+       ↓
+       store sync ACK</div>
+
+<h2>Approval integration</h2>
+<div class="card"><p>
+A <code>Needs approval</code> permission cannot be silently accepted during sync.
+The migration adds one-use server <code>approval_authorizations</code>. A typed domain RPC validates the actor/action/target, performs the real business mutation, writes its domain event, and only then consumes the authorization.
+</p></div>
+
+<h2>Drain-only sync</h2>
+<div class="note warn">
+The active entitlement rule requires already-legitimate outbound events to drain even if <code>cloud_sync</code> is lost before reconnection.
+This build adds server storage for verified entitlement/grace epochs, but deliberately does <b>not</b> trust a client boolean such as “recorded while entitled”.
+The exact tamper-resistant offline proof design remains open and must be chosen before production rollout.
+</div>
+
+<h2>Why this matters</h2>
+<div class="card"><p>
+The mobile app and the server now enforce the same high-value boundaries independently. A compromised or buggy client cannot use the generic sync layer to mutate payment history, silently change rent during a transfer, auto-apply security, or turn a cash discrepancy into an unpaid tenant.
+</p></div>
+</main></body></html>

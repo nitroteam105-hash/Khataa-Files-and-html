@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · PG V1 Sync Engine Contract v1</title>
+<style>
+:root{
+--canvas:#FDFCF8;--surface:#FFFFFF;--row:#F6F6F5;--line:#E6E0D7;--ink:#171716;--muted:#6B6B69;
+--info:#D7E1FE;--info-ink:#2B3A75;--done:#DDF3E6;--done-ink:#1E7A4C;--pending:#FFF0C4;--pending-ink:#6E5200;
+--alert:#FFE4DF;--alert-ink:#B83A2B;--act:#2B3A75;--act-text:#FFFFFF
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--canvas);color:var(--ink);font-family:Manrope,system-ui,sans-serif}
+main{max-width:860px;margin:auto;padding:20px 16px 44px}
+h1{font-size:27px;margin:0 0 6px}h2{font-size:20px;margin:22px 0 6px}h3{font-size:13px;margin:0 0 5px}
+p{font-size:11.5px;line-height:1.6;color:var(--muted);margin:0}
+.note{padding:11px 12px;border-radius:14px;background:var(--info);color:var(--info-ink);font-size:11px;line-height:1.5;margin:12px 0}
+.ok{background:var(--done);color:var(--done-ink)}.warn{background:var(--pending);color:var(--pending-ink)}.alert{background:var(--alert);color:var(--alert-ink)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:14px;margin-top:10px}
+.flow{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10.5px;line-height:1.65;white-space:pre-wrap;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px;overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:10.5px}th,td{text-align:left;vertical-align:top;padding:9px 8px;border-bottom:1px solid var(--line);line-height:1.45}th{color:var(--muted)}tr:last-child td{border-bottom:0}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.pill{display:inline-block;padding:4px 8px;border-radius:999px;background:var(--row);font-size:9.5px;font-weight:800}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.grid .card{margin-top:0}
+@media(max-width:640px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body><main>
+<h1>PG V1 Sync Engine Contract v1</h1>
+<p>Concrete sync behavior for the local-first SQLite ↔ Supabase architecture. This document defines the proposed runtime protocol, not the network transport implementation.</p>
+
+<div class="note ok"><b>Core guarantee:</b> Khaata writes locally first. A successful SQLite transaction is enough for the user to continue working immediately.</div>
+<div class="note warn"><b>Entitlement rule:</b> already-recorded outbound events must still drain after entitlement loss if they were created while entitled or inside valid offline grace.</div>
+
+<h2>1. Sync states</h2>
+<div class="grid">
+<section class="card"><h3>Normal</h3><p>Pull remote changes, apply locally, then push pending outbox work. Future synced writes allowed.</p></section>
+<section class="card"><h3>Offline</h3><p>All local-capable work continues. Outbox grows. UI may show pending sync state but does not block core operation.</p></section>
+<section class="card"><h3>Drain-only</h3><p>Used after sync entitlement loss. Existing legitimate outbox entries may upload; future gated synced capability stays blocked.</p></section>
+<section class="card"><h3>Conflict</h3><p>Automatic merge would destroy business meaning. Preserve local + remote facts and create an explicit conflict record.</p></section>
+</div>
+
+<h2>2. Push algorithm</h2>
+<div class="flow">acquire sync lock
+  ↓
+load pending outbox rows
+  ↓
+sort by dependency + created_at
+  ↓
+send idempotent batch using client-generated IDs
+  ↓
+server result per item
+  ├─ ACK
+  │    ├─ mark domain row synced/server_version
+  │    └─ mark outbox acknowledged
+  ├─ RETRYABLE ERROR
+  │    └─ increment attempt_count + backoff
+  ├─ PERMISSION / ENTITLEMENT LOSS
+  │    ├─ if event predates loss and was legitimately recorded → continue drain
+  │    └─ otherwise block future gated mutation
+  └─ SEMANTIC/VERSION CONFLICT
+       ├─ preserve local state
+       ├─ store remote snapshot
+       └─ create sync_conflicts row</div>
+
+<h2>3. Pull algorithm</h2>
+<div class="flow">read sync_checkpoint.server_cursor
+  ↓
+fetch remote changes after cursor
+  ↓
+BEGIN SQLite transaction
+  ↓
+for each remote event/record
+  ├─ already in applied_remote_events? → skip
+  ├─ safe append? → insert
+  ├─ safe mutable merge? → apply versioned update
+  └─ unsafe semantic overlap? → create sync_conflict
+  ↓
+record applied_remote_events
+  ↓
+advance checkpoint
+  ↓
+COMMIT</div>
+
+<div class="note alert"><b>Checkpoint rule:</b> never advance the server cursor before the corresponding SQLite transaction commits successfully.</div>
+
+<h2>4. Merge policy by data class</h2>
+<div class="card"><table>
+<tr><th>Data class</th><th>Policy</th></tr>
+<tr><td>Payments / reversals</td><td>Append-only. Preserve every legitimate event.</td></tr>
+<tr><td>Receipts</td><td>Immutable snapshot. Duplicate delivery is deduplicated by ID.</td></tr>
+<tr><td>Payment allocations</td><td>Append-only effects; recompute projection.</td></tr>
+<tr><td>Security events</td><td>Append-only; never infer automatic application.</td></tr>
+<tr><td>Cash custody events</td><td>Append-only; discrepancy cannot rewrite tenant payment truth.</td></tr>
+<tr><td>Occupancy history</td><td>Preserve assignments. Same-capacity overlap creates explicit conflict.</td></tr>
+<tr><td>Rent terms</td><td>Effective-dated. Non-overlapping changes can coexist; incompatible overlap requires resolution.</td></tr>
+<tr><td>Business/profile fields</td><td>Versioned mutable merge is acceptable where history is not semantically critical.</td></tr>
+<tr><td>Permissions/visibility</td><td>Versioned snapshots; action permission and offline cached-data access remain separate.</td></tr>
+</table></div>
+
+<h2>5. Idempotency contract</h2>
+<div class="card">
+<p>
+Every locally-created syncable object gets its final globally unique ID before network access.
+The server must treat re-sending the same ID as the same operation rather than creating a duplicate.
+Outbox retries therefore remain safe across process death, network timeout, app restart and uncertain ACK delivery.
+</p>
+</div>
+
+<h2>6. Ordering rules</h2>
+<div class="card"><table>
+<tr><th>Dependency</th><th>Required order</th></tr>
+<tr><td>New business + tenancy</td><td>Business before tenancy.</td></tr>
+<tr><td>Tenancy + role assignments</td><td>Tenancy/party before role assignment.</td></tr>
+<tr><td>Charge + charge obligation</td><td>Charge before obligation referencing it.</td></tr>
+<tr><td>Payment + allocation + receipt</td><td>Payment before allocation/receipt.</td></tr>
+<tr><td>Security account + event</td><td>Security account before security event.</td></tr>
+<tr><td>Approval + action execution</td><td>Approval decision can precede the separately recorded action event; they remain distinct.</td></tr>
+</table></div>
+
+<h2>7. Backoff / retry</h2>
+<div class="card">
+<p><b>Proposed policy:</b> retry transient failures with bounded exponential backoff plus jitter. Reset backoff after any successful sync. User-triggered “Sync now” may bypass waiting once, but must not create duplicate work.</p>
+</div>
+
+<h2>8. Entitlement-sensitive sync</h2>
+<div class="card">
+<p>
+The device keeps a last-verified entitlement snapshot. Paid access may continue offline within the configured grace period.
+When grace expires, future paid-only capability falls back to the effective Free set. However, outbound events already recorded while valid remain uploadable.
+This is a distinct <b>drain-only</b> mode: the queue empties, historical truth remains intact, but new gated synced work is not allowed until verification succeeds.
+</p>
+</div>
+
+<h2>9. Required sync test cases</h2>
+<div class="card"><table>
+<tr><th>ID</th><th>Case</th><th>Must happen</th></tr>
+<tr><td>SYNC-001</td><td>Offline cash payment → reconnect</td><td>Tenant paid immediately; later custody/handover remains separate.</td></tr>
+<tr><td>SYNC-002</td><td>Two devices pay same obligation</td><td>Both payments survive; projection recomputes.</td></tr>
+<tr><td>SYNC-003</td><td>Concurrent same-bed assignment</td><td>Explicit conflict; no automatic reassignment.</td></tr>
+<tr><td>SYNC-004</td><td>Entitlement expires before reconnect</td><td>Existing outbox drains; future gated actions stop.</td></tr>
+<tr><td>SYNC-005</td><td>Remote reversal</td><td>Original payment remains; reversal appends.</td></tr>
+<tr><td>SYNC-006</td><td>Room transfer + rent edit on separate devices</td><td>Occupancy and rent remain separate effective-dated facts.</td></tr>
+<tr><td>SYNC-007</td><td>Duplicate remote delivery</td><td>No double application; checkpoint advances only after commit.</td></tr>
+<tr><td>SYNC-008</td><td>Stale mutable version rejected</td><td>Create conflict record; preserve local/remote snapshots.</td></tr>
+</table></div>
+
+<h2>10. What is still open</h2>
+<div class="note">
+Exact wire protocol, batch size, realtime transport, background-job scheduler, ID format (UUID/ULID/etc.), conflict-resolution UI, and server RPC shape remain implementation decisions. The product requirement is the behavior above, not a specific library.
+</div>
+</main></body></html>

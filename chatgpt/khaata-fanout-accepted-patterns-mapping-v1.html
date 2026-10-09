@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · FANOUT accepted patterns mapping · v1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--canvas:#FDFCF8;--surface:#FFFFFF;--row:#F6F6F5;--line:#E6E0D7;--ink:#171716;--muted:#6B6B69;--alert:#FF6B5B;--alert-solid:#C23E2E;--alert-ink:#B83A2B;--alert-tint:#FFE4DF;--pending:#EBC36B;--pending-ink:#6E5200;--pending-tile:#FFF0C4;--done-ink:#1E7A4C;--done-tint:#DDF3E6;--info:#D7E1FE;--info-ink:#2B3A75;--info-line:#C3D0F7;--act:#2B3A75;--act-text:#FFFFFF;--neutral-tile:#EDEDEC;--neutral-ink:#6B6B69;--r-btn:14px;--r-card:20px;--r-pill:999px;--sp-1:4px;--sp-2:8px;--sp-3:12px;--sp-4:16px;--sp-5:20px;--sp-6:24px;--sp-7:32px;color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--canvas:#1B1B1A;--surface:#262625;--row:#232322;--line:#38383a;--ink:#FFFFFF;--muted:#9B9B98;--alert:#E8705C;--alert-solid:#E8705C;--alert-ink:#F59384;--alert-tint:#3A2420;--pending:#EBC36B;--pending-ink:#EBC36B;--pending-tile:#3A3122;--done-ink:#74C99A;--done-tint:#244232;--info:#252C42;--info-ink:#DCE4FF;--info-line:#34405E;--act:#C9D4FB;--act-text:#1A2140;--neutral-tile:#2A2A29;--neutral-ink:#9B9B98;color-scheme:dark}}
+:root[data-theme="dark"]{--canvas:#1B1B1A;--surface:#262625;--row:#232322;--line:#38383a;--ink:#FFFFFF;--muted:#9B9B98;--pending-tile:#3A3122;--pending-ink:#EBC36B;--done-tint:#244232;--done-ink:#74C99A;--info:#252C42;--info-ink:#DCE4FF;--act:#C9D4FB;--act-text:#1A2140;color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;min-height:100%;background:var(--canvas);color:var(--ink);font-family:'Manrope',system-ui,sans-serif}button,input{font:inherit}button{cursor:pointer}.app{max-width:760px;margin:0 auto;padding:14px 16px 40px}.top{position:sticky;top:0;z-index:10;background:var(--canvas);padding:4px 0 12px;border-bottom:1px solid var(--line)}.topline{display:flex;gap:12px;align-items:flex-start}.grow{flex:1;min-width:0}.eyebrow{font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}h1{font-size:24px;line-height:1.1;margin:4px 0 5px}p{font-size:12.5px;line-height:1.5;color:var(--muted);margin:0}.iconbtn{width:42px;height:42px;border:1px solid var(--line);border-radius:var(--r-btn);background:var(--surface);color:var(--ink)}.search{margin-top:12px}.search input{width:100%;height:44px;border:1px solid var(--line);border-radius:var(--r-btn);background:var(--surface);color:var(--ink);padding:0 12px;font-size:16px}.filters{display:flex;gap:7px;overflow:auto;padding-top:10px;scrollbar-width:none}.filters button{white-space:nowrap;border:0;border-radius:var(--r-pill);padding:7px 10px;background:var(--row);color:var(--muted);font-size:11px;font-weight:800}.filters button.on{background:var(--act);color:var(--act-text)}.note{margin-top:14px;padding:12px 13px;border-radius:var(--r-card);background:var(--info);color:var(--info-ink);font-size:12px;line-height:1.5}.section{margin-top:22px}.section h2{font-size:14px;margin:0 0 8px}.list{border-top:1px solid var(--line)}.item{border-bottom:1px solid var(--line)}.head{width:100%;border:0;background:transparent;color:var(--ink);padding:13px 2px;display:grid;grid-template-columns:minmax(0,1fr) auto 18px;gap:10px;align-items:center;text-align:left}.head strong{display:block;font-size:13.5px}.head small{display:block;margin-top:3px;font-size:11.5px;line-height:1.4;color:var(--muted)}.tag{font-size:9.5px;font-weight:800;border-radius:var(--r-pill);padding:4px 7px;background:var(--done-tint);color:var(--done-ink);white-space:nowrap}.body{display:none;padding:0 0 14px}.item.open .body{display:block}.mapgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mapcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:12px}.mapcard .label{font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}.mapcard p{color:var(--ink)}.constraint{margin-top:8px;padding:10px 11px;border-radius:var(--r-btn);background:var(--pending-tile);color:var(--pending-ink);font-size:11.5px;line-height:1.45}.hidden{display:none!important}@media(max-width:560px){.mapgrid{grid-template-columns:1fr}.head{grid-template-columns:minmax(0,1fr) 18px}.tag{grid-column:1;justify-self:start}.head .chev{grid-column:2;grid-row:1/3}}
+</style></head><body>
+<main class="app">
+<header class="top"><div class="topline"><div class="grow"><div class="eyebrow">External reference → Khaata mapping</div><h1>FANOUT accepted patterns</h1><p>15 accepted reference patterns mapped to possible Khaata uses. This file does not change the Khaata design-system source of truth.</p></div><button class="iconbtn" id="themeBtn" type="button" aria-label="Toggle theme">◐</button></div>
+<div class="search"><input id="search" type="search" placeholder="Search mappings…"></div><div class="filters" id="filters"></div></header>
+<div class="note"><strong>New in this file:</strong> the accepted FANOUT review is translated into Khaata-relevant opportunities and guardrails. Nothing here is standardized yet; adoption still happens only when a real Khaata screen needs the pattern.</div>
+<section class="section" data-cat="Cards &amp; layouts"><h2>Cards &amp; layouts</h2><div class="list">
+<article class="item" data-search="color-block module grid cards &amp; layouts large editorial destination cards with distinct color blocks. use only for non-status destination hubs such as more, setup or configuration areas. do not use status colors decoratively on operational screens.">
+  <button class="head" type="button">
+    <span><strong>Color-block module grid</strong><small>Large editorial destination cards with distinct color blocks.</small></span>
+    <span class="tag">KEEP</span><span class="chev">⌄</span>
+  </button>
+  <div class="body">
+    <div class="mapgrid">
+      <div class="mapcard"><div class="label">Fanout reference</div><p>Large editorial destination cards with distinct color blocks.</p></div>
+      <div class="mapcard"><div class="label">Possible Khaata use</div><p>Use only for non-status destination hubs such as More, Setup or configuration areas.</p></div>
+    </div>
+    <div class="constraint"><strong>Guardrail:</strong> Do not use status colors decoratively on operational screens.</div>
+  </div>
+</article>
+<article class="item" data-search="recommended pricing card cards &amp; layouts mostly neutral card with a soft favorable green treatment concentrated at the top. candidate for plan choice, backup/sync choice, or another screen with one recommended option. recommendation treatment must not be confused with done/complete.">
+  <button class="head" type="button">
+    <span><strong>Recommended pricing card</strong><small>Mostly neutral card with a soft favorable green treatment concentrated at the top.</small></span>
+    <span class="tag">KEEP</span><span class="chev">⌄</span>
+  </button>
+  <div class="body">
+    <div class="mapgrid">
+      <div class="mapcard"><div class="label">Fanout reference</div><p>Mostly neutral card with a soft favorable green treatment concentrated at the top.</p></div>
+      <div class="mapcard"><div class="label">Possible Khaata use</div><p>Candidate for plan choice, backup/sync choice, or another screen with one recommended option.</p></div>
+    </div>
+    <div class="constraint"><strong>Guardrail:</strong> Recommendation treatment must not be confused with Done/complete.</div>
+  </div>
+</article>
+<article class="item" data-search="pricing card hierarchy cards &amp; layouts eyebrow → dominant value → support line → explanation → lower action row. useful for plans, limits, entitlement summaries, and value-based choices. keep khaata action semantics for the cta.">
+  <button class="head" type="button">
+    <span><strong>Pricing card hierarchy</strong><small>Eyebrow → dominant value → support line → explanation → lower action row.</small></span>
+    <span class="tag">KEEP</span><span class="chev">⌄</span>
+  </button>
+  <div class="body">
+    <div class="mapgrid">
+      <div class="mapcard"><div class="label">Fanout reference</div><p>Eyebrow → dominant value → support line → explanation → lower action row.</p></div>
+      <div class="mapcard"><div class="label">Possible Khaata use</div><p>Useful for plans, limits, entitlement summaries, and value-based choices.</p></div>
+    </div>
+    <div class="constraint"><strong>Guardrail:</strong> Keep Khaata action semantics for the CTA.</div>
+  </div>
+</article>
+<article class="item" data-search="two-column destination layout cards &amp; layouts peer destinations presented as large side-by-side modules. useful for more/settings or setup hubs on wider mobile/tablet layouts. fall back to one column where width is insufficient.">
+  <button class="head" type="button">
+    <span><strong>Two-column destination layout</strong><small>Peer destinations presented as large side-by-side modules.</small></span>
+    <span class="tag">KEEP</span><span class="chev">⌄</span>
+  </button>
+  <div class="body">
+    <div class="mapgrid">
+      <div class="mapcard"><div class="label">Fanout reference</div><p>Peer destinations presented as large side-by-side modules.</p></div>
+      <div class="mapcard"><div class="label">Possible Khaata use</div><p>Useful for More/Settings or setup hubs on wider mobile/tablet layouts.</p></div>
+    </div>
+    <div class="constraint"><strong>Guardrail:</strong> Fall back to one column where width is insufficient.</div>
+  </div>
+</article></div></section><section class="section" data-cat="Navigation"><h2>Navigation</h2><div class="list">
+<article class="item" data-search="slide-out navigation drawer navigation white navigation panel over a dimmed page. reference for secondary/global navigation on wider layouts or future web. does not replace khaata bottom navigation on mobile.">
+  <button class="head" type="button">
+    <span><strong>Slide-out navigation drawer</strong><small>White navigation panel over a dimmed page.</small></span>
+    <span class="tag">KEEP</span><span class="chev">⌄</span>
+  </button>
+  <div class="body">
+    <div class="mapgrid">
+      <div class="mapcard"><div class="label">Fanout reference</div><p>White navigation panel over a dimmed page.</p></div>
+      <div class="mapcard"><div class="label">Possible Khaata use</div><p>Reference for secondary/global navigation on wider layouts or future web.</p></div>
+    </div>
+    <div class="constraint"><strong>Guardrail:</strong> Does not replace Khaata bottom navigation on mobile.</div>
+  </div>
+</article>
+<article class="item" data-search="expandable navigation group navigation parent navigation row expands inline to reveal child destinations. useful in more/settings when several related destinations sit under one heading. parent row should remain understandable even when collapsed.">
+  <button class="head" type="button">
+    <span><strong>Expandable navigation group</strong><small>Parent navigation row expands inline to reveal child destinations.</small></span>
+    <span class="tag">KEEP</span><span class="chev">⌄</span>
+  </button>
+  <div class="body">
+    <div class="mapgrid">
+      <div class="mapcard"><div class="label">Fanout reference</div><p>Parent navigation row expands inline to reveal child destinations.</p></div>
+      <div class="mapcard"><div class="label">Possible Khaata use</div><p>Useful in More/Settings when several related destinations sit under one heading.</p></div>
+    </div>
+    <div class="constraint"><strong>Guardrail:</strong> Parent row should remain understandable even when collapsed.</div>
+  </div>
+</article>
+<article class="item" data-search="compact top header navigation compact brand/title area with small utilities. useful on content-heavy or settings screens where vertical space matters. must coexist with khaata mobile navigation conventions.">
+  <button class="head" type="button">
+    <span><strong>Compact top header</strong><small>Compact brand/title area with small utilities.</small></span>
+    <span class="tag">KEEP</span><span class="chev">⌄</span>
+  </button>
+  <div class="body">
+    <div class="mapgrid">
+      <div class="mapcard"><div class="label">Fanout reference</div><p>Compact brand/title area with small utilities.</p></div>
+      <div class="mapcard"><div class="label">Possible Khaata use</div><p>Useful on content-heavy or settings screens where vertical space matters.</p></div>
+    </div>
+    <div class="constraint"><strong>Guardrail:</strong> Must coexist with Khaata mobile navigation conventions.</div>
+  </div>
+</article></div></section><section class="section" data-cat="Emphasis"><h2>Emphasis</h2><div class="list">
+<article class="item" data-search="announcement pill emphasis compact dark announcement strip with short copy and dismiss action. candidate for rare informational announcements, not operational alerts. do not replace khaata alert/caution/notice status components.">
+  <button class="head" type="button">
+    <span><strong>Announcement pill</strong><small>Compact dark announcement strip with short copy and dismiss action.</small></span>
+    <span class="tag">KEEP</span><span class="chev">⌄</span>
+  </button>
+  <div class="body">
+    <div class="mapgrid">
+      <div class="mapcard"><div class="label">Fanout reference</div><p>Compact dark announcement strip with short copy and dismiss action.</p></div>
+      <div class="mapcard"><div class="label">Possible Khaata use</div><p>Candidate for rare informational announcements, not operational alerts.</p></div>
+    </div>
+    <div class="constraint"><strong>Guardrail:</strong> Do not replace Khaata alert/caution/notice status components.</div>
+  </div>
+</article>
+<article class="item" data-search="favorable gradient treatment emphasis soft green gradient gives a positive/recommended feeling without filling the full card. use as a recommendation/emphasis layer for favorable choices. needs its own recommendation token/treatment if standardized.">
+  <button class="head" type="button">
+    <span><strong>Favorable gradient treatment</strong><small>Soft green gradient gives a positive/recommended feeling without filling the full card.</small></span>
+    <span class="tag">KEEP</span><span class="chev">⌄</span>
+  </button>
+  <div class="body">
+    <div class="mapgrid">
+      <div class="mapcard"><div class="label">Fanout reference</div><p>Soft green gradient gives a positive/recommended feeling without filling the full card.</p></div>
+      <div class="mapcard"><div class="label">Possible Khaata use</div><p>Use as a recommendation/emphasis layer for favorable choices.</p></div>
+    </div>
+    <div class="constraint"><strong>Guardrail:</strong> Needs its own recommendation token/treatment if standardized.</div>
+  </div>
+</article>
+<article class="item" data-search="soft active-row highlight emphasis expanded/active parent row receives a quiet background highlight. good for menus, accordions, and navigation groups. active state must still be explicit beyond color alone.">
+  <button class="head" type="button">
+    <span><strong>Soft active-row highlight</strong><small>Expanded/active parent row receives a quiet background highlight.</small></span>
+    <span class="tag">KEEP</span><span class="chev">⌄</span>
+  </button>
+  <div class="body">
+    <div class="mapgrid">
+      <div class="mapcard"><div class="label">Fanout reference</div><p>Expanded/active parent row receives a quiet background highlight.</p></div>
+      <div class="mapcard"><div class="label">Possible Khaata use</div><p>Good for menus, accordions, and navigation groups.</p></div>
+    </div>
+    <div class="constraint"><strong>Guardrail:</strong> Active state must still be explicit beyond color alone.</div>
+  </div>
+</article></div></section><section class="section" data-cat="Actions"><h2>Actions</h2><div class="list">
+<article class="item" data-search="compact menu trigger actions minimal menu control that opens a larger navigation surface. useful where an overflow/secondary menu is needed. use a real button and lucide icon in khaata.">
+  <button class="head" type="button">
+    <span><strong>Compact menu trigger</strong><small>Minimal menu control that opens a larger navigation surface.</small></span>
+    <span class="tag">KEEP</span><span class="chev">⌄</span>
+  </button>
+  <div class="body">
+    <div class="mapgrid">
+      <div class="mapcard"><div class="label">Fanout reference</div><p>Minimal menu control that opens a larger navigation surface.</p></div>
+      <div class="mapcard"><div class="label">Possible Khaata use</div><p>Useful where an overflow/secondary menu is needed.</p></div>
+    </div>
+    <div class="constraint"><strong>Guardrail:</strong> Use a real button and Lucide icon in Khaata.</div>
+  </div>
+</article></div></section><section class="section" data-cat="Visual language"><h2>Visual language</h2><div class="list">
+<article class="item" data-search="editorial color palette visual language bold orange, purple, lime, blue and yellow used to identify destination modules. reference for non-semantic section identity or illustration-led hubs. never override khaata semantic color meanings.">
+  <button class="head" type="button">
+    <span><strong>Editorial color palette</strong><small>Bold orange, purple, lime, blue and yellow used to identify destination modules.</small></span>
+    <span class="tag">KEEP</span><span class="chev">⌄</span>
+  </button>
+  <div class="body">
+    <div class="mapgrid">
+      <div class="mapcard"><div class="label">Fanout reference</div><p>Bold orange, purple, lime, blue and yellow used to identify destination modules.</p></div>
+      <div class="mapcard"><div class="label">Possible Khaata use</div><p>Reference for non-semantic section identity or illustration-led hubs.</p></div>
+    </div>
+    <div class="constraint"><strong>Guardrail:</strong> Never override Khaata semantic color meanings.</div>
+  </div>
+</article>
+<article class="item" data-search="large display typography visual language large, tightly tracked display headings create strong hierarchy. could be used sparingly in onboarding, empty states, setup hubs, or plan pages. operational lists should stay compact and readable.">
+  <button class="head" type="button">
+    <span><strong>Large display typography</strong><small>Large, tightly tracked display headings create strong hierarchy.</small></span>
+    <span class="tag">KEEP</span><span class="chev">⌄</span>
+  </button>
+  <div class="body">
+    <div class="mapgrid">
+      <div class="mapcard"><div class="label">Fanout reference</div><p>Large, tightly tracked display headings create strong hierarchy.</p></div>
+      <div class="mapcard"><div class="label">Possible Khaata use</div><p>Could be used sparingly in onboarding, empty states, setup hubs, or plan pages.</p></div>
+    </div>
+    <div class="constraint"><strong>Guardrail:</strong> Operational lists should stay compact and readable.</div>
+  </div>
+</article>
+<article class="item" data-search="muted supporting copy visual language small neutral text sits quietly under strong titles and values. directly compatible with khaata’s secondary text hierarchy. maintain sufficient contrast in dark mode.">
+  <button class="head" type="button">
+    <span><strong>Muted supporting copy</strong><small>Small neutral text sits quietly under strong titles and values.</small></span>
+    <span class="tag">KEEP</span><span class="chev">⌄</span>
+  </button>
+  <div class="body">
+    <div class="mapgrid">
+      <div class="mapcard"><div class="label">Fanout reference</div><p>Small neutral text sits quietly under strong titles and values.</p></div>
+      <div class="mapcard"><div class="label">Possible Khaata use</div><p>Directly compatible with Khaata’s secondary text hierarchy.</p></div>
+    </div>
+    <div class="constraint"><strong>Guardrail:</strong> Maintain sufficient contrast in dark mode.</div>
+  </div>
+</article>
+<article class="item" data-search="generous rounded corners visual language large radii soften cards, drawers and strong color blocks. useful for destination cards, option cards and large surfaces. keep consistency with khaata radius tokens rather than arbitrary radii.">
+  <button class="head" type="button">
+    <span><strong>Generous rounded corners</strong><small>Large radii soften cards, drawers and strong color blocks.</small></span>
+    <span class="tag">KEEP</span><span class="chev">⌄</span>
+  </button>
+  <div class="body">
+    <div class="mapgrid">
+      <div class="mapcard"><div class="label">Fanout reference</div><p>Large radii soften cards, drawers and strong color blocks.</p></div>
+      <div class="mapcard"><div class="label">Possible Khaata use</div><p>Useful for destination cards, option cards and large surfaces.</p></div>
+    </div>
+    <div class="constraint"><strong>Guardrail:</strong> Keep consistency with Khaata radius tokens rather than arbitrary radii.</div>
+  </div>
+</article></div></section>
+</main>
+<script>
+const root=document.documentElement, search=document.getElementById('search'), filters=document.getElementById('filters');
+let active='All';
+const cats=['All',...Array.from(document.querySelectorAll('.section')).map(x=>x.dataset.cat)];
+function drawFilters(){filters.innerHTML='';cats.forEach(c=>{const b=document.createElement('button');b.textContent=c;b.className=c===active?'on':'';b.onclick=()=>{active=c;drawFilters();apply()};filters.appendChild(b)})}
+function apply(){const q=search.value.trim().toLowerCase();document.querySelectorAll('.section').forEach(sec=>{let any=false;sec.querySelectorAll('.item').forEach(it=>{const ok=(active==='All'||sec.dataset.cat===active)&&(!q||it.dataset.search.includes(q));it.classList.toggle('hidden',!ok);if(ok)any=true});sec.classList.toggle('hidden',!any)})}
+document.querySelectorAll('.head').forEach(b=>b.onclick=()=>{const item=b.closest('.item');item.classList.toggle('open');b.querySelector('.chev').textContent=item.classList.contains('open')?'⌃':'⌄'});
+search.oninput=apply;document.getElementById('themeBtn').onclick=()=>{root.dataset.theme=root.dataset.theme==='dark'?'light':'dark'};drawFilters();apply();
+</script></body></html>

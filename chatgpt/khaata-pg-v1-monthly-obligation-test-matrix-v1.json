@@ -1,0 +1,100 @@
+{
+  "version": "1.0",
+  "status": "proposed monthly obligation engine tests",
+  "cases": [
+    {
+      "id": "BILL-001",
+      "case": "same generator run twice",
+      "expect": [
+        "one rent obligation per tenancy/month",
+        "second run counts alreadyPresent"
+      ]
+    },
+    {
+      "id": "BILL-002",
+      "case": "due day 31 in February",
+      "expect": [
+        "due date clamped to last day of February"
+      ]
+    },
+    {
+      "id": "BILL-003",
+      "case": "prepaid March term due day 5",
+      "expect": [
+        "March obligation due March 5"
+      ]
+    },
+    {
+      "id": "BILL-004",
+      "case": "postpaid March term due day 5",
+      "expect": [
+        "March obligation due April 5"
+      ]
+    },
+    {
+      "id": "BILL-005",
+      "case": "rent changes effective April 1",
+      "expect": [
+        "March uses old term",
+        "April uses new term",
+        "March obligation unchanged"
+      ]
+    },
+    {
+      "id": "BILL-006",
+      "case": "two effective terms overlap April",
+      "expect": [
+        "exactly one April obligation",
+        "latest valid_from selected",
+        "overlap remains eligible for semantic conflict elsewhere"
+      ]
+    },
+    {
+      "id": "BILL-007",
+      "case": "tenant joins mid-month",
+      "expect": [
+        "one full monthly obligation for eligible month",
+        "no automatic proration invented"
+      ]
+    },
+    {
+      "id": "BILL-008",
+      "case": "tenant ended March 18",
+      "expect": [
+        "March may remain eligible",
+        "no April obligation"
+      ]
+    },
+    {
+      "id": "BILL-009",
+      "case": "former tenant with older ungenerated months",
+      "expect": [
+        "historical eligible periods through end date can be generated",
+        "former status does not erase receivable history"
+      ]
+    },
+    {
+      "id": "BILL-010",
+      "case": "no effective rent term for period",
+      "expect": [
+        "period skipped",
+        "no guessed amount"
+      ]
+    },
+    {
+      "id": "BILL-011",
+      "case": "attempt to rewrite posted rent amount",
+      "expect": [
+        "SQLite trigger rejects core mutation"
+      ]
+    },
+    {
+      "id": "BILL-012",
+      "case": "old dues plus current month",
+      "expect": [
+        "separate obligations remain separate",
+        "no opaque merged due record"
+      ]
+    }
+  ]
+}

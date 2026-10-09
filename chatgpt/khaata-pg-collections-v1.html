@@ -1,0 +1,51 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Khaata — Collections V1</title>
+<style>
+:root{--bg:#fdfcf8;--card:#fff;--ink:#181817;--muted:#72716d;--line:#e7e2d9;--navy:#29396f;--red:#b64638;--amber:#846817;--blue:#405a9a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px system-ui,-apple-system,sans-serif}.app{max-width:520px;margin:auto;padding:24px 16px 100px}
+h1{font-size:28px;margin:8px 0 4px}.sub{color:var(--muted);font-size:12px}.period{margin:22px 0 14px;display:flex;justify-content:space-between;align-items:center}.period b{font-size:16px}.period button,.tabs button,.link{border:0;background:none;color:var(--navy);font-weight:700}
+.summary{border:1px solid var(--line);background:var(--card);border-radius:18px;display:grid;grid-template-columns:1fr 1fr;margin-bottom:22px}.metric{padding:16px}.metric+ .metric{border-left:1px solid var(--line)}.metric small{display:block;color:var(--muted);margin-bottom:5px}.metric strong{font-size:22px}.metric .bad{color:var(--red)}
+.tabs{display:flex;gap:8px;overflow:auto;margin-bottom:14px}.tabs button{white-space:nowrap;padding:9px 12px;border:1px solid var(--line);border-radius:99px;color:var(--muted);background:var(--card)}.tabs .on{background:var(--navy);color:white;border-color:var(--navy)}
+.sectionhead{display:flex;justify-content:space-between;align-items:center;margin:20px 2px 10px}.sectionhead h2{font-size:14px;margin:0}.sectionhead span{font-size:11px;color:var(--muted)}
+.list{border:1px solid var(--line);background:var(--card);border-radius:18px;overflow:hidden}.item{padding:14px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:10px;cursor:pointer}.item:last-child{border:0}.name{font-weight:750}.meta{font-size:11px;color:var(--muted);margin-top:4px}.amt{text-align:right;font-weight:800}.state{font-size:11px;margin-top:4px;text-align:right}.over{color:var(--red)}.due{color:var(--amber)}.paid{color:var(--muted)}.promise{color:var(--blue)}
+.note{margin-top:18px;padding:13px 14px;border:1px solid var(--line);border-radius:14px;color:var(--muted);font-size:11px;line-height:1.5}
+.fab{position:fixed;right:max(18px,calc((100vw - 520px)/2 + 18px));bottom:76px;width:54px;height:54px;border:0;border-radius:50%;background:var(--navy);color:#fff;font-size:26px}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);height:64px;background:var(--card);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr)}.nav button{border:0;background:none;color:var(--muted);font-size:11px}.nav .on{color:var(--ink);font-weight:800}
+.sheetbg{display:none;position:fixed;inset:0;background:#0005}.sheetbg.on{display:block}.sheet{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);background:var(--card);border-radius:22px 22px 0 0;padding:20px}.sheet h2{margin:0 0 4px}.sheet p{color:var(--muted);font-size:12px}.actions{display:grid;gap:8px;margin-top:18px}.actions button{height:46px;border-radius:13px;border:1px solid var(--line);background:var(--card);font-weight:700}.actions .primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+</style></head><body><main class="app">
+<div class="sub">Sunrise PG · Bengaluru</div><h1>Collections</h1><div class="sub">Rent and tenant payments</div>
+<div class="period"><b>October 2026</b><button>Change month</button></div>
+<section class="summary"><div class="metric"><small>Collected</small><strong>₹3.42L</strong></div><div class="metric"><small>Outstanding</small><strong class="bad">₹28K</strong></div></section>
+<div class="tabs"><button class="on" data-filter="attention">Needs attention</button><button data-filter="due">Due</button><button data-filter="paid">Paid</button><button data-filter="all">All</button></div>
+<div class="sectionhead"><h2 id="listTitle">Needs attention</h2><span id="count"></span></div>
+<section class="list" id="list"></section>
+<div class="note"><b>Collection and custody are separate.</b> A tenant payment counts as collected when received. If staff physically hold cash, that cash handover is tracked separately.</div>
+</main>
+<button class="fab" data-action="record">+</button>
+<nav class="nav"><button>Home</button><button>Tenants</button><button class="on">Collections</button><button>More</button></nav>
+<div class="sheetbg" id="sheetbg"><div class="sheet"><h2 id="sheetTitle"></h2><p id="sheetMeta"></p><div class="actions"><button class="primary">Record payment</button><button>View tenant statement</button><button>Record promise</button></div></div></div>
+<script>
+(function(){
+var rows=[
+{name:"Rohan Mehta",place:"Room 203 · Bed B",amount:"₹4,500",state:"Overdue · October rent",kind:"attention",cls:"over"},
+{name:"Vivek Rao",place:"Room 108 · Bed A",amount:"₹6,000",state:"Payment promise missed",kind:"attention",cls:"promise"},
+{name:"Neha Singh",place:"Room 304 · Bed B",amount:"₹5,500",state:"Older dues",kind:"attention",cls:"over"},
+{name:"Aditya Jain",place:"Room 201 · Bed A",amount:"₹8,500",state:"Due 8 Oct",kind:"due",cls:"due"},
+{name:"Sara Khan",place:"Room 102 · Bed B",amount:"₹7,500",state:"Due 10 Oct",kind:"due",cls:"due"},
+{name:"Meera Nair",place:"Room 205 · Bed A",amount:"₹8,500",state:"Paid 4 Oct",kind:"paid",cls:"paid"},
+{name:"Kabir Shah",place:"Room 301 · Bed B",amount:"₹9,000",state:"Paid 3 Oct",kind:"paid",cls:"paid"}];
+var filter="attention";
+function render(){
+ var a=rows.filter(function(x){return filter==="all"||x.kind===filter});
+ document.getElementById("listTitle").textContent=filter==="attention"?"Needs attention":filter==="due"?"Due this month":filter==="paid"?"Paid this month":"All obligations";
+ document.getElementById("count").textContent=a.length+" tenants";
+ document.getElementById("list").innerHTML=a.map(function(x,i){return '<div class="item" data-row="'+rows.indexOf(x)+'"><div><div class="name">'+x.name+'</div><div class="meta">'+x.place+'</div></div><div><div class="amt">'+x.amount+'</div><div class="state '+x.cls+'">'+x.state+'</div></div></div>'}).join("");
+}
+document.addEventListener("click",function(e){
+ var f=e.target.closest("[data-filter]");if(f){filter=f.getAttribute("data-filter");document.querySelectorAll("[data-filter]").forEach(function(b){b.classList.toggle("on",b===f)});render();return}
+ var r=e.target.closest("[data-row]");if(r){var x=rows[+r.getAttribute("data-row")];document.getElementById("sheetTitle").textContent=x.name+" · "+x.amount;document.getElementById("sheetMeta").textContent=x.place+" · "+x.state;document.getElementById("sheetbg").className="sheetbg on";return}
+ if(e.target===document.getElementById("sheetbg"))e.target.className="sheetbg";
+ if(e.target.closest("[data-action=record]")){document.getElementById("sheetTitle").textContent="Record payment";document.getElementById("sheetMeta").textContent="Choose a tenant, then record the money actually received.";document.getElementById("sheetbg").className="sheetbg on"}
+});render();
+})();
+</script></body></html>

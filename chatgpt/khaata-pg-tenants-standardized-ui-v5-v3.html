@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · PG / Hostel · Tenants · standardized with UI components v5 · v3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<style>
+/* 1. === Khaata tokens v1 — copy unchanged === */
+:root{
+  --canvas:#FDFCF8; --surface:#FFFFFF; --row:#F6F6F5; --line:#E6E0D7;
+  --ink:#171716; --muted:#6B6B69;
+  --alert:#FF6B5B; --alert-solid:#C23E2E; --alert-ink:#B83A2B; --alert-tint:#FFE4DF;
+  --pending:#EBC36B; --pending-ink:#6E5200; --pending-tile:#FFF0C4;
+  --done-ink:#1E7A4C; --done-tint:#DDF3E6;
+  --info:#D7E1FE; --info-ink:#2B3A75; --info-line:#C3D0F7;
+  --act:#2B3A75; --act-text:#FFFFFF;
+  --neutral-tile:#EDEDEC; --neutral-ink:#6B6B69;
+  --r-btn:14px; --r-card:20px; --r-pill:999px;
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:24px; --sp-7:32px;
+  --dur-fast:.18s; --dur-slide:.5s; --ease-slide:cubic-bezier(.33,1,.68,1);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --canvas:#1B1B1A; --surface:#262625; --row:#232322; --line:#38383a;
+    --ink:#FFFFFF; --muted:#9B9B98;
+    --alert:#E8705C; --alert-solid:#E8705C; --alert-ink:#F59384; --alert-tint:#3A2420;
+    --pending:#EBC36B; --pending-ink:#EBC36B; --pending-tile:#3A3122;
+    --done-ink:#74C99A; --done-tint:#244232;
+    --info:#252C42; --info-ink:#DCE4FF; --info-line:#34405E;
+    --act:#C9D4FB; --act-text:#1A2140;
+    --neutral-tile:#2A2A29; --neutral-ink:#9B9B98;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --canvas:#1B1B1A; --surface:#262625; --row:#232322; --line:#38383a;
+  --ink:#FFFFFF; --muted:#9B9B98;
+  --alert:#E8705C; --alert-solid:#E8705C; --alert-ink:#F59384; --alert-tint:#3A2420;
+  --pending:#EBC36B; --pending-ink:#EBC36B; --pending-tile:#3A3122;
+  --done-ink:#74C99A; --done-tint:#244232;
+  --info:#252C42; --info-ink:#DCE4FF; --info-line:#34405E;
+  --act:#C9D4FB; --act-text:#1A2140;
+  --neutral-tile:#2A2A29; --neutral-ink:#9B9B98;
+  color-scheme:dark;
+}
+/* === end Khaata tokens v1 === */
+
+/* 2. Accepted non-semantic business mark from UI components for build · v5 */
+:root{
+  --biz-pink:#FBB9C2; --biz-pink-ink:#171716;
+}
+
+/* 3. Base */
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--canvas);color:var(--ink);font-family:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif}
+button,input{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid var(--act);outline-offset:2px}
+svg.lucide{width:19px;height:19px;stroke-width:2}
+.app{max-width:520px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top)) 16px calc(104px + env(safe-area-inset-bottom))}
+
+/* 4. Shared components */
+.btn{min-height:44px;border-radius:var(--r-btn);padding:0 16px;border:0;background:var(--act);color:var(--act-text);font-weight:800;display:inline-flex;align-items:center;justify-content:center;gap:7px}
+.btn.secondary{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.pill{display:inline-flex;align-items:center;gap:5px;border-radius:var(--r-pill);padding:5px 9px;font-size:11px;font-weight:800;white-space:nowrap;border:0}
+.pill.alert{background:var(--alert-tint);color:var(--alert-ink)}
+.pill.pending{background:var(--pending-tile);color:var(--pending-ink)}
+.pill.info{background:var(--info);color:var(--info-ink)}
+.card{border:1px solid var(--line);border-radius:var(--r-card);background:var(--surface)}
+.ibtn{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);display:grid;place-items:center;padding:0}
+.toast{position:fixed;left:50%;bottom:calc(82px + env(safe-area-inset-bottom));transform:translate(-50%,180%);transition:transform var(--dur-fast);z-index:90;background:var(--ink);color:var(--canvas);border-radius:var(--r-btn);padding:11px 14px;font-size:12px;font-weight:800;max-width:calc(100% - 32px)}
+.toast.on{transform:translate(-50%,0)}
+
+/* 5. Screen-specific: pgtenants- */
+.pgtenants-new{padding:10px 12px;border-radius:var(--r-card);background:var(--info);color:var(--info-ink);font-size:11.5px;line-height:1.45;margin-bottom:12px}
+.pgtenants-new strong{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase}
+.pgtenants-top{display:flex;align-items:center;gap:10px;margin-bottom:24px}
+.pgtenants-mark{width:38px;height:38px;border-radius:50%;background:var(--biz-pink);color:var(--biz-pink-ink);display:grid;place-items:center;font-weight:800;flex:none}
+.pgtenants-business{flex:1;min-width:0;border:0;background:transparent;text-align:left;color:var(--ink);padding:0}
+.pgtenants-business strong{display:block;font-size:15px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pgtenants-business span{display:flex;align-items:center;gap:4px;margin-top:3px;color:var(--muted);font-size:11.5px}
+.pgtenants-business svg{width:14px;height:14px}
+.pgtenants-title{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:14px}
+.pgtenants-title h1{margin:0;font-size:28px;line-height:1.05;letter-spacing:-.025em}
+.pgtenants-count{color:var(--muted);font-size:12px}
+.pgtenants-search{height:48px;border:1px solid var(--line);background:var(--surface);border-radius:var(--r-btn);display:flex;align-items:center;gap:9px;padding:0 13px}
+.pgtenants-search svg{color:var(--muted);flex:none}
+.pgtenants-search input{width:100%;border:0;outline:0;background:transparent;color:var(--ink);font-size:14px}
+.pgtenants-filters{display:flex;gap:8px;overflow-x:auto;padding:12px 0 16px;scrollbar-width:none}
+.pgtenants-filters::-webkit-scrollbar{display:none}
+.pgtenants-filter{border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:var(--r-pill);padding:8px 12px;font-size:12px;font-weight:800;white-space:nowrap}
+.pgtenants-filter[aria-pressed="true"]{background:var(--act);border-color:var(--act);color:var(--act-text)}
+.pgtenants-list{overflow:hidden}
+.pgtenants-row{width:100%;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--ink);padding:14px;display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:12px;align-items:center;text-align:left;min-height:72px}
+.pgtenants-row:last-child{border-bottom:0}
+.pgtenants-avatar{width:38px;height:38px;border-radius:12px;background:var(--neutral-tile);color:var(--neutral-ink);display:grid;place-items:center;font-size:12px;font-weight:800}
+.pgtenants-copy{min-width:0}
+.pgtenants-copy strong{display:block;font-size:14px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pgtenants-copy .place{display:block;margin-top:2px;color:var(--muted);font-size:11.5px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pgtenants-copy .exception{display:block;margin-top:4px;font-size:11.5px;font-weight:750;line-height:1.35}
+.pgtenants-copy .exception.alert{color:var(--alert-ink)}
+.pgtenants-copy .exception.pending{color:var(--pending-ink)}
+.pgtenants-copy .exception.info{color:var(--info-ink)}
+.pgtenants-row .chev{color:var(--muted)}
+.pgtenants-row .chev svg{width:17px;height:17px}
+.pgtenants-empty{padding:32px 18px;text-align:center;color:var(--muted);font-size:13px}
+.pgtenants-fab{position:fixed;right:max(18px,calc((100vw - 520px)/2 + 18px));bottom:calc(76px + env(safe-area-inset-bottom));width:56px;height:56px;border:0;border-radius:50%;background:var(--act);color:var(--act-text);display:grid;place-items:center;box-shadow:0 8px 22px color-mix(in srgb,var(--ink) 16%,transparent);z-index:50}
+.pgtenants-fab svg{width:24px;height:24px}
+.pgtenants-fab-actions{position:fixed;right:max(18px,calc((100vw - 520px)/2 + 18px));bottom:calc(142px + env(safe-area-inset-bottom));display:none;flex-direction:column;align-items:flex-end;gap:8px;z-index:51}
+.pgtenants-fab-actions.on{display:flex}
+.pgtenants-fab-action{min-height:42px;border:1px solid var(--line);border-radius:var(--r-btn);background:var(--surface);color:var(--ink);padding:0 13px;font-size:12px;font-weight:800;display:flex;align-items:center;gap:8px;box-shadow:0 5px 16px color-mix(in srgb,var(--ink) 10%,transparent)}
+.pgtenants-nav{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(520px,100%);height:68px;background:var(--surface);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);z-index:40;padding-bottom:env(safe-area-inset-bottom)}
+.pgtenants-nav button{border:0;background:transparent;color:var(--muted);font-size:10.5px;font-weight:750;display:grid;place-items:center;align-content:center;gap:3px}
+.pgtenants-nav button.on{color:var(--act)}
+.pgtenants-nav svg{width:19px;height:19px}
+.scrim{position:fixed;inset:0;background:color-mix(in srgb,var(--ink) 30%,transparent);z-index:70;display:none}
+.scrim.on{display:block}
+.sheet{position:fixed;left:50%;bottom:0;transform:translate(-50%,110%);transition:transform var(--dur-slide) var(--ease-slide);z-index:71;width:min(520px,100%);background:var(--surface);border-radius:24px 24px 0 0;padding:10px 18px calc(26px + env(safe-area-inset-bottom))}
+.sheet.on{transform:translate(-50%,0)}
+.sheet-handle{width:38px;height:4px;border-radius:99px;background:var(--line);margin:0 auto 18px}
+.sheet-head{display:flex;gap:10px;align-items:flex-start}
+.sheet-head .grow{flex:1;min-width:0}
+.sheet-head h2{font-size:21px;margin:0}
+.sheet-head p{margin:4px 0 0;color:var(--muted);font-size:12px}
+.sheet-close{width:42px;height:42px;border-radius:var(--r-btn);border:1px solid var(--line);background:var(--surface);color:var(--ink);display:grid;place-items:center}
+.sheet-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
+.sheet-mini{background:var(--row);border-radius:var(--r-btn);padding:11px}
+.sheet-mini span{display:block;color:var(--muted);font-size:10.5px}
+.sheet-mini strong{display:block;margin-top:4px;font-size:13px}
+.sheet-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+@media(max-width:360px){.sheet-grid,.sheet-actions{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="app">
+  <div class="pgtenants-new"><strong>New in this file</strong><br>Tenants standardized against Khaata UI components for build · v5. The frozen lifecycle filters and row priority are unchanged; rows remain operational and intentionally avoid dashboard summaries.</div>
+
+  <header class="pgtenants-top">
+    <div class="pgtenants-mark" aria-hidden="true">S</div>
+    <button class="pgtenants-business" type="button" data-act="business">
+      <strong>Sunrise PG</strong>
+      <span>PG / Hostel · Bengaluru <i data-lucide="chevron-down" aria-hidden="true"></i></span>
+    </button>
+    <button class="ibtn" type="button" data-act="theme" aria-label="Toggle theme"><i data-lucide="sun-moon" aria-hidden="true"></i></button>
+  </header>
+
+  <div class="pgtenants-title">
+    <h1>Tenants</h1>
+    <span class="pgtenants-count" id="count"></span>
+  </div>
+
+  <label class="pgtenants-search">
+    <i data-lucide="search" aria-hidden="true"></i>
+    <input id="search" type="search" placeholder="Search name, room or phone" autocomplete="off">
+  </label>
+
+  <div class="pgtenants-filters" id="filters" aria-label="Tenant lifecycle filters"></div>
+  <section class="card pgtenants-list" id="list" aria-live="polite"></section>
+</main>
+
+<div class="pgtenants-fab-actions" id="fabActions">
+  <button class="pgtenants-fab-action" type="button" data-act="add-tenant"><i data-lucide="user-plus"></i>Add tenant</button>
+  <button class="pgtenants-fab-action" type="button" data-act="record-payment"><i data-lucide="indian-rupee"></i>Record payment</button>
+  <button class="pgtenants-fab-action" type="button" data-act="add-expense"><i data-lucide="receipt-text"></i>Add expense</button>
+  <button class="pgtenants-fab-action" type="button" data-act="add-charge"><i data-lucide="badge-plus"></i>Add charge</button>
+</div>
+<button class="pgtenants-fab" id="fab" type="button" data-act="fab" aria-label="Open quick actions" aria-expanded="false"><i data-lucide="plus"></i></button>
+
+<nav class="pgtenants-nav" aria-label="Primary navigation">
+  <button type="button" data-act="nav-home"><i data-lucide="house"></i><span>Home</span></button>
+  <button class="on" type="button" data-act="nav-tenants"><i data-lucide="users"></i><span>Tenants</span></button>
+  <button type="button" data-act="nav-collections"><i data-lucide="wallet-cards"></i><span>Collections</span></button>
+  <button type="button" data-act="nav-more"><i data-lucide="menu"></i><span>More</span></button>
+</nav>
+
+<div class="scrim" id="scrim" data-act="close-sheet"></div>
+<section class="sheet" id="tenantSheet" role="dialog" aria-modal="true" aria-labelledby="sheetName">
+  <div class="sheet-handle"></div>
+  <div class="sheet-head">
+    <div class="grow"><h2 id="sheetName"></h2><p id="sheetPlace"></p></div>
+    <button class="sheet-close" type="button" data-act="close-sheet" aria-label="Close"><i data-lucide="x"></i></button>
+  </div>
+  <div class="sheet-grid">
+    <div class="sheet-mini"><span>Phone</span><strong id="sheetPhone"></strong></div>
+    <div class="sheet-mini"><span>Monthly rent</span><strong id="sheetRent"></strong></div>
+  </div>
+  <div id="sheetStatus" style="margin-top:10px"></div>
+  <div class="sheet-actions">
+    <button class="btn secondary" type="button" data-act="open-detail">View tenant</button>
+    <button class="btn" type="button" data-act="sheet-payment">Record payment</button>
+  </div>
+</section>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const STORE="khaata-pg-tenants-standardized-v3";
+const state={filter:"active",q:"",fab:false,current:null};
+
+const tenants=[
+  {id:"t1",name:"Rohan Mehta",place:"Room 203 · Bed B",phone:"98765 43210",life:"active",rent:"₹8,500",exception:"₹4,500 overdue",tone:"alert"},
+  {id:"t2",name:"Arjun Nair",place:"Room 105 · Bed A",phone:"98450 22118",life:"active",rent:"₹9,000",exception:"",tone:""},
+  {id:"t3",name:"Karan Shah",place:"Room 301 · Bed A",phone:"99801 77421",life:"active",rent:"₹10,500",exception:"Setup incomplete",tone:"pending"},
+  {id:"t4",name:"Vivek Rao",place:"Room 204 · Bed C",phone:"99002 11567",life:"active",rent:"₹8,500",exception:"Payment promise missed",tone:"alert"},
+  {id:"t5",name:"Sameer Khan",place:"Room 102 · Bed B",phone:"98864 34002",life:"active",rent:"₹8,000",exception:"",tone:""},
+  {id:"t6",name:"Neeraj Kumar",place:"Room 208 · Bed A",phone:"97422 83011",life:"upcoming",rent:"₹9,500",exception:"Joining 12 Oct",tone:"info"},
+  {id:"t7",name:"Aman Verma",place:"Room 304 · Bed B",phone:"98441 50023",life:"upcoming",rent:"₹10,000",exception:"Joining 16 Oct",tone:"info"},
+  {id:"t8",name:"Aditya Jain",place:"Room 110 · Bed A",phone:"99640 31017",life:"moving",rent:"₹8,500",exception:"Moving out 28 Oct",tone:"pending"},
+  {id:"t9",name:"Nikhil Das",place:"Room 206 · Bed B",phone:"97310 77129",life:"moving",rent:"₹9,000",exception:"Moving out 31 Oct",tone:"pending"},
+  {id:"t10",name:"Rahul Bose",place:"Former · Room 202",phone:"98455 11009",life:"former",rent:"₹8,000",exception:"₹2,000 outstanding",tone:"alert"},
+  {id:"t11",name:"Dev Patel",place:"Former · Room 103",phone:"99870 44221",life:"former",rent:"₹9,000",exception:"",tone:""}
+];
+const labels={active:"Active",upcoming:"Upcoming",moving:"Moving out",former:"Former"};
+
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function countLife(k){return tenants.filter(t=>t.life===k).length;}
+function initials(n){return n.split(" ").map(x=>x[0]).join("").slice(0,2);}
+function save(){try{localStorage.setItem(STORE,JSON.stringify({filter:state.filter,q:state.q}));}catch(e){}}
+function load(){try{const x=JSON.parse(localStorage.getItem(STORE)||"{}");if(x.filter)state.filter=x.filter;if(typeof x.q==="string")state.q=x.q;}catch(e){}}
+
+function renderIcons(){
+  if(window.lucide&&window.lucide.createIcons){window.lucide.createIcons();}
+}
+function render(){
+  const keys=["active","upcoming","moving","former"];
+  document.getElementById("filters").innerHTML=keys.map(k=>
+    '<button class="pgtenants-filter" type="button" data-filter="'+k+'" aria-pressed="'+(state.filter===k)+'">'+labels[k]+' '+countLife(k)+'</button>'
+  ).join("");
+
+  const q=state.q.trim().toLowerCase();
+  const rows=tenants.filter(t=>t.life===state.filter && (!q || (t.name+" "+t.place+" "+t.phone).toLowerCase().includes(q)));
+  document.getElementById("count").textContent=rows.length+" "+(rows.length===1?"tenant":"tenants");
+
+  document.getElementById("list").innerHTML=rows.length?rows.map(t=>
+    '<button class="pgtenants-row" type="button" data-tenant="'+t.id+'">'+
+      '<span class="pgtenants-avatar">'+esc(initials(t.name))+'</span>'+
+      '<span class="pgtenants-copy"><strong>'+esc(t.name)+'</strong><span class="place">'+esc(t.place)+'</span>'+
+      (t.exception?'<span class="exception '+t.tone+'">'+esc(t.exception)+'</span>':'')+
+      '</span><span class="chev"><i data-lucide="chevron-right"></i></span>'+
+    '</button>'
+  ).join(""):'<div class="pgtenants-empty">No tenants found.</div>';
+
+  document.getElementById("fabActions").classList.toggle("on",state.fab);
+  document.getElementById("fab").setAttribute("aria-expanded",String(state.fab));
+  document.getElementById("fab").innerHTML='<i data-lucide="'+(state.fab?"x":"plus")+'"></i>';
+  renderIcons();
+}
+
+function showToast(msg){
+  const t=document.getElementById("toast");t.textContent=msg;t.classList.add("on");
+  clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>t.classList.remove("on"),1800);
+}
+function openTenant(id){
+  const t=tenants.find(x=>x.id===id);if(!t)return;state.current=t;
+  document.getElementById("sheetName").textContent=t.name;
+  document.getElementById("sheetPlace").textContent=t.place;
+  document.getElementById("sheetPhone").textContent=t.phone;
+  document.getElementById("sheetRent").textContent=t.rent;
+  document.getElementById("sheetStatus").innerHTML=t.exception?'<span class="pill '+t.tone+'">'+esc(t.exception)+'</span>':'';
+  document.getElementById("scrim").classList.add("on");
+  document.getElementById("tenantSheet").classList.add("on");
+  renderIcons();
+}
+function closeSheet(){
+  document.getElementById("scrim").classList.remove("on");
+  document.getElementById("tenantSheet").classList.remove("on");
+}
+function toggleTheme(){
+  const root=document.documentElement,current=root.getAttribute("data-theme");
+  if(current==="dark")root.setAttribute("data-theme","light");
+  else if(current==="light")root.setAttribute("data-theme","dark");
+  else root.setAttribute("data-theme",window.matchMedia&&window.matchMedia("(prefers-color-scheme:dark)").matches?"light":"dark");
+}
+
+load();
+document.getElementById("search").value=state.q;
+document.getElementById("search").addEventListener("input",e=>{state.q=e.target.value;save();render();});
+document.addEventListener("click",e=>{
+  const f=e.target.closest("[data-filter]");
+  if(f){state.filter=f.dataset.filter;save();render();return;}
+  const tr=e.target.closest("[data-tenant]");
+  if(tr){openTenant(tr.dataset.tenant);return;}
+  const b=e.target.closest("[data-act]");if(!b)return;
+  const a=b.dataset.act;
+  if(a==="theme")toggleTheme();
+  if(a==="business")showToast("Business switcher");
+  if(a==="fab"){state.fab=!state.fab;render();}
+  if(a==="close-sheet")closeSheet();
+  if(a==="add-tenant"){state.fab=false;render();showToast("Add tenant");}
+  if(a==="record-payment"){state.fab=false;render();showToast("Record payment");}
+  if(a==="add-expense"){state.fab=false;render();showToast("Add expense");}
+  if(a==="add-charge"){state.fab=false;render();showToast("Add charge");}
+  if(a==="open-detail"){closeSheet();showToast("Opening tenant detail");}
+  if(a==="sheet-payment"){closeSheet();showToast("Record payment");}
+  if(a==="nav-home")showToast("Home");
+  if(a==="nav-tenants")showToast("Tenants");
+  if(a==="nav-collections")showToast("Collections");
+  if(a==="nav-more")showToast("More");
+});
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+{
+  "version": "1.0",
+  "status": "proposed backdated accounting + statement tests",
+  "cases": [
+    {
+      "id": "OPEN-001",
+      "case": "start accounting from date with outstanding",
+      "expect": [
+        "explicit opening position created",
+        "no fake charge",
+        "no fake payment"
+      ]
+    },
+    {
+      "id": "OPEN-002",
+      "case": "opening tenant credit",
+      "expect": [
+        "credit shown separately",
+        "reduces net outstanding",
+        "does not count as Collected"
+      ]
+    },
+    {
+      "id": "OPEN-003",
+      "case": "opening security held",
+      "expect": [
+        "security shown separately",
+        "no deposit_received event fabricated"
+      ]
+    },
+    {
+      "id": "OPEN-004",
+      "case": "bring existing history path",
+      "expect": [
+        "accounting start recorded",
+        "historical transactions must be entered through real typed flows"
+      ]
+    },
+    {
+      "id": "OPEN-005",
+      "case": "opening position corrected",
+      "expect": [
+        "original opening row unchanged",
+        "append-only correction changes effective projection"
+      ]
+    },
+    {
+      "id": "OPEN-006",
+      "case": "second accounting start",
+      "expect": [
+        "rejected ACCOUNTING_START_ALREADY_SET"
+      ]
+    },
+    {
+      "id": "STMT-001",
+      "case": "statement with opening balance + later rent + payment",
+      "expect": [
+        "opening entry labeled",
+        "real activity distinct",
+        "running balance projected"
+      ]
+    },
+    {
+      "id": "STMT-002",
+      "case": "security statement",
+      "expect": [
+        "opening held + later security events shown in separate section"
+      ]
+    },
+    {
+      "id": "STMT-003",
+      "case": "moved-out tenancy",
+      "expect": [
+        "statement remains available",
+        "outstanding/refund history preserved"
+      ]
+    },
+    {
+      "id": "STMT-004",
+      "case": "opening credit exceeds dues",
+      "expect": [
+        "net outstanding zero",
+        "available credit positive"
+      ]
+    },
+    {
+      "id": "STMT-005",
+      "case": "payment reversal",
+      "expect": [
+        "payment and reversal both appear",
+        "original payment not removed"
+      ]
+    },
+    {
+      "id": "STMT-006",
+      "case": "adjustment",
+      "expect": [
+        "shown as adjustment",
+        "not labeled payment"
+      ]
+    }
+  ]
+}

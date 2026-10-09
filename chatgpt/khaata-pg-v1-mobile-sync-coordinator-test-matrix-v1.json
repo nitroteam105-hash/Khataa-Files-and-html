@@ -1,0 +1,109 @@
+{
+  "version": "1.0",
+  "status": "proposed mobile sync coordinator tests",
+  "cases": [
+    {
+      "id": "COORD-001",
+      "case": "Offline sync request",
+      "expect": [
+        "mode offline",
+        "no network RPC",
+        "outbox unchanged"
+      ]
+    },
+    {
+      "id": "COORD-002",
+      "case": "Normal entitled payment push",
+      "expect": [
+        "typed pg_record_payment called",
+        "same operation_id injected",
+        "ACK stored",
+        "outbox acknowledged"
+      ]
+    },
+    {
+      "id": "COORD-003",
+      "case": "cloud_sync lost but valid provenance present",
+      "expect": [
+        "validate_sync_operation_lease called",
+        "accepted_drain permits typed RPC",
+        "outbox acknowledged",
+        "no new entitlement granted"
+      ]
+    },
+    {
+      "id": "COORD-004",
+      "case": "cloud_sync lost and provenance missing",
+      "expect": [
+        "item blocked",
+        "domain data preserved locally",
+        "queue not deleted"
+      ]
+    },
+    {
+      "id": "COORD-005",
+      "case": "Duplicate retry after uncertain ACK",
+      "expect": [
+        "same operation_id reused",
+        "server idempotency returns prior result",
+        "single local ACK"
+      ]
+    },
+    {
+      "id": "COORD-006",
+      "case": "Dependency order payment before receipt/allocation",
+      "expect": [
+        "topological ordering preserves dependencies"
+      ]
+    },
+    {
+      "id": "COORD-007",
+      "case": "Server BED_CONFLICT",
+      "expect": [
+        "sync_conflict created",
+        "outbox blocked",
+        "local occupancy history preserved"
+      ]
+    },
+    {
+      "id": "COORD-008",
+      "case": "APPROVAL_REQUIRED from server",
+      "expect": [
+        "item blocked",
+        "no automatic downgrade to Allowed"
+      ]
+    },
+    {
+      "id": "COORD-009",
+      "case": "Transient network/server error",
+      "expect": [
+        "item failed",
+        "retry scheduled",
+        "attempt count increments"
+      ]
+    },
+    {
+      "id": "COORD-010",
+      "case": "Permanent membership/device revocation",
+      "expect": [
+        "item blocked",
+        "no endless retry loop"
+      ]
+    },
+    {
+      "id": "COORD-011",
+      "case": "Drain queue becomes empty",
+      "expect": [
+        "future sync no longer treated as drain-only solely because old queue existed"
+      ]
+    },
+    {
+      "id": "COORD-012",
+      "case": "Typed RPC not configured",
+      "expect": [
+        "item blocked with explicit reason",
+        "no generic arbitrary table mutation"
+      ]
+    }
+  ]
+}

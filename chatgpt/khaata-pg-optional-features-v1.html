@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · PG / Hostel · Optional features · v1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{
+--canvas:#FDFCF8;--surface:#FFFFFF;--row:#F6F6F5;--line:#E6E0D7;--ink:#171716;--muted:#6B6B69;
+--alert:#FF6B5B;--alert-solid:#C23E2E;--alert-ink:#B83A2B;--alert-tint:#FFE4DF;
+--pending:#EBC36B;--pending-ink:#6E5200;--pending-tile:#FFF0C4;
+--done-ink:#1E7A4C;--done-tint:#DDF3E6;--info:#D7E1FE;--info-ink:#2B3A75;--info-line:#C3D0F7;
+--act:#2B3A75;--act-text:#FFFFFF;--neutral-tile:#EDEDEC;--neutral-ink:#6B6B69;
+--r-btn:14px;--r-card:20px;--r-pill:999px;color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+--canvas:#1B1B1A;--surface:#262625;--row:#232322;--line:#38383A;--ink:#FFFFFF;--muted:#9B9B98;
+--alert:#E8705C;--alert-solid:#E8705C;--alert-ink:#F59384;--alert-tint:#3A2420;
+--pending:#EBC36B;--pending-ink:#EBC36B;--pending-tile:#3A3122;--done-ink:#74C99A;--done-tint:#244232;
+--info:#252C42;--info-ink:#DCE4FF;--info-line:#34405E;--act:#C9D4FB;--act-text:#1A2140;
+--neutral-tile:#2A2A29;--neutral-ink:#9B9B98;color-scheme:dark}}
+:root[data-theme="dark"]{
+--canvas:#1B1B1A;--surface:#262625;--row:#232322;--line:#38383A;--ink:#FFFFFF;--muted:#9B9B98;
+--alert:#E8705C;--alert-solid:#E8705C;--alert-ink:#F59384;--alert-tint:#3A2420;
+--pending:#EBC36B;--pending-ink:#EBC36B;--pending-tile:#3A3122;--done-ink:#74C99A;--done-tint:#244232;
+--info:#252C42;--info-ink:#DCE4FF;--info-line:#34405E;--act:#C9D4FB;--act-text:#1A2140;
+--neutral-tile:#2A2A29;--neutral-ink:#9B9B98;color-scheme:dark}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--canvas);color:var(--ink);font-family:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}:focus-visible{outline:2px solid var(--act);outline-offset:2px}
+[hidden]{display:none!important}.app{max-width:520px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top)) 16px calc(38px + env(safe-area-inset-bottom))}
+.top{position:sticky;top:0;z-index:5;background:var(--canvas);display:flex;align-items:center;gap:10px;padding:2px 0 10px}
+.ibtn{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;padding:0}
+.ibtn svg{width:18px;height:18px}.title{flex:1}.title strong{display:block;font-size:16px}.title small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.save{min-height:40px;border:0;border-radius:var(--r-btn);background:var(--act);color:var(--act-text);padding:0 12px;font-size:11px;font-weight:800}.save:disabled{opacity:.42}
+h1{font-size:26px;line-height:1.08;margin:12px 0 5px}.lead{font-size:12px;line-height:1.5;color:var(--muted);margin:0 0 16px}
+.grp{font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:21px 4px 8px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:14px;margin-top:10px}
+.card h2{font-size:14px;margin:0}.sub{font-size:11px;color:var(--muted);line-height:1.45;margin:4px 0 0}
+.row{display:flex;align-items:center;gap:12px;min-height:56px;padding:10px 0;border-bottom:1px solid var(--line)}.row:last-child{border-bottom:0}.grow{flex:1;min-width:0}
+.row strong{display:block;font-size:11.5px}.row small{display:block;color:var(--muted);font-size:11px;line-height:1.4;margin-top:3px}
+.tile{width:38px;height:38px;border-radius:12px;background:var(--neutral-tile);display:grid;place-items:center;flex:none}.tile svg{width:17px;height:17px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.chip{min-height:40px;border:1.5px solid var(--ink);background:var(--canvas);border-radius:999px;padding:7px 13px;font-size:11.5px;font-weight:600}
+.chip[aria-pressed="true"]{background:var(--info);color:var(--info-ink);border-color:var(--info-ink);box-shadow:inset 0 0 0 1px var(--info-ink);font-weight:800}
+.field{margin-top:14px}.field label,.flabel{display:block;font-size:11.5px;font-weight:800;margin-bottom:6px}.input{width:100%;min-height:44px;border:1px solid var(--line);background:var(--canvas);border-radius:12px;padding:9px 11px;font-size:12px}
+.note{border-radius:var(--r-btn);padding:11px 12px;font-size:11px;line-height:1.45;margin-top:10px;background:var(--row);color:var(--muted)}.note.info{background:var(--info);color:var(--info-ink)}
+.note.pending{background:var(--pending-tile);color:var(--pending-ink)}.note.alert{background:var(--alert-tint);color:var(--alert-ink)}.note.ok{background:var(--done-tint);color:var(--done-ink)}
+.btn{min-height:42px;border-radius:var(--r-btn);border:1px solid var(--line);background:var(--surface);padding:0 14px;font-size:11px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn.primary{background:var(--act);color:var(--act-text);border-color:var(--act)}.btn.danger{color:var(--alert-ink)}.btn.wide{width:100%;margin-top:10px}.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.tag{display:inline-flex;align-items:center;border-radius:999px;padding:3px 8px;font-size:10px;font-weight:800;background:var(--neutral-tile);color:var(--neutral-ink)}
+.tag.wait{background:var(--pending-tile);color:var(--pending-ink)}.tag.ok{background:var(--done-tint);color:var(--done-ink)}
+.tag.prop{background:transparent;color:var(--muted);border:1px dashed var(--muted)}
+.amount{font-size:26px;font-weight:800;letter-spacing:-.02em}.kv{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:11px}.kv:last-child{border-bottom:0}.kv span:first-child{color:var(--muted)}.kv b{text-align:right}
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.34);z-index:40;opacity:0;pointer-events:none}.scrim.on{opacity:1;pointer-events:auto}
+.dialog{position:fixed;left:50%;top:50%;transform:translate(-50%,-48%);z-index:50;width:min(380px,calc(100% - 32px));background:var(--surface);border-radius:20px;padding:17px;opacity:0;pointer-events:none}.dialog.on{opacity:1;pointer-events:auto;transform:translate(-50%,-50%)}.dialog h3{font-size:16px;margin:0}.dialog p{font-size:11px;color:var(--muted);line-height:1.5}.actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+.toast{position:fixed;left:50%;bottom:18px;transform:translate(-50%,20px);opacity:0;background:var(--ink);color:var(--canvas);padding:10px 13px;border-radius:14px;font-size:11px;font-weight:800;transition:.2s;z-index:70}.toast.on{opacity:1;transform:translate(-50%,0)}
+</style></head><body><main class="app">
+<header class="top"><button class="ibtn" type="button" data-act="back" aria-label="Back"><i data-lucide="arrow-left"></i></button>
+<div class="title"><strong>Optional features</strong><small>Sunrise PG</small></div><button class="save" id="saveBtn" type="button" data-act="save" disabled>Save</button>
+<button class="ibtn" type="button" data-act="theme" aria-label="Toggle theme"><i data-lucide="sun-moon"></i></button></header>
+<h1>Optional features</h1><p class="lead">Enable Electricity, Food / Mess and Parking only when this PG uses them.</p>
+<div class="note">Optional PG capabilities stay out of normal flows until enabled.</div>
+<div class="grp">Electricity</div><section class="card"><div class="chips">
+<button class="chip" data-select aria-pressed="true">✓ Not managed in Khaata</button><button class="chip" data-select aria-pressed="false">Included in rent</button><button class="chip" data-select aria-pressed="false">Charged separately</button><button class="chip" data-select aria-pressed="false">Included up to a limit</button></div>
+<p class="sub">Detailed meter and reading setup is deferred; it should not burden initial setup.</p></section>
+<div class="grp">Food / mess</div><section class="card"><div class="chips">
+<button class="chip" data-select aria-pressed="true">✓ Not offered</button><button class="chip" data-select aria-pressed="false">Included in rent</button><button class="chip" data-select aria-pressed="false">Fixed recurring charge</button></div>
+<p class="sub">A business default can be overridden per tenancy.</p></section>
+<div class="grp">Parking</div><section class="card"><div class="chips">
+<button class="chip" data-select aria-pressed="true">✓ Not offered</button><button class="chip" data-select aria-pressed="false">Included</button><button class="chip" data-select aria-pressed="false">Fixed recurring charge</button><button class="chip" data-select aria-pressed="false">One-time / ad-hoc charge</button></div>
+<p class="sub">Parking details belong to the tenancy. V1 does not manage parking-slot inventory.</p></section>
+</main>
+<div class="toast" id="toast" role="status"></div>
+<script>
+function icons(){if(window.lucide&&lucide.createIcons)lucide.createIcons()}
+function toastMsg(m){toast.textContent=m;toast.classList.add("on");setTimeout(function(){toast.classList.remove("on")},1500)}
+function selectChip(btn){var g=btn.parentElement;g.querySelectorAll(".chip").forEach(function(b){b.setAttribute("aria-pressed",String(b===btn));b.textContent=b.textContent.replace(/^✓\s*/,"")});btn.textContent="✓ "+btn.textContent}
+function bindCommon(){
+ document.addEventListener("click",function(e){
+  var c=e.target.closest(".chip[data-select]");if(c){selectChip(c);saveBtn&& (saveBtn.disabled=false);return}
+  var a=e.target.closest("[data-act]");if(!a)return;
+  if(a.dataset.act==="theme"){var r=document.documentElement;r.dataset.theme=r.dataset.theme==="dark"?"light":"dark";return}
+  if(a.dataset.act==="back"){toastMsg("Back to previous screen");return}
+  if(a.dataset.act==="save"){toastMsg("Saved");if(saveBtn)saveBtn.disabled=true;return}
+  if(a.dataset.act==="confirm"){toastMsg(a.dataset.msg||"Done");return}
+ })
+}
+
+bindCommon();icons();</script></body></html>

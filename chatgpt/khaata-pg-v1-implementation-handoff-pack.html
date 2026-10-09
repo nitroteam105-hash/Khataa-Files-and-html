@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · PG V1 Implementation Handoff Pack</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{
+--canvas:#FDFCF8;--surface:#FFFFFF;--row:#F6F6F5;--line:#E6E0D7;--ink:#171716;--muted:#6B6B69;
+--alert:#FF6B5B;--alert-solid:#C23E2E;--alert-ink:#B83A2B;--alert-tint:#FFE4DF;
+--pending:#EBC36B;--pending-ink:#6E5200;--pending-tile:#FFF0C4;
+--done-ink:#1E7A4C;--done-tint:#DDF3E6;--info:#D7E1FE;--info-ink:#2B3A75;--info-line:#C3D0F7;
+--act:#2B3A75;--act-text:#FFFFFF;--neutral-tile:#EDEDEC;--neutral-ink:#6B6B69;
+--r-card:20px;--r-btn:14px;--r-pill:999px;color-scheme:light
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+--canvas:#1B1B1A;--surface:#262625;--row:#232322;--line:#38383A;--ink:#FFFFFF;--muted:#9B9B98;
+--alert:#E8705C;--alert-solid:#E8705C;--alert-ink:#F59384;--alert-tint:#3A2420;
+--pending:#EBC36B;--pending-ink:#EBC36B;--pending-tile:#3A3122;--done-ink:#74C99A;--done-tint:#244232;
+--info:#252C42;--info-ink:#DCE4FF;--info-line:#34405E;--act:#C9D4FB;--act-text:#1A2140;
+--neutral-tile:#2A2A29;--neutral-ink:#9B9B98;color-scheme:dark}}
+:root[data-theme="dark"]{
+--canvas:#1B1B1A;--surface:#262625;--row:#232322;--line:#38383A;--ink:#FFFFFF;--muted:#9B9B98;
+--alert:#E8705C;--alert-solid:#E8705C;--alert-ink:#F59384;--alert-tint:#3A2420;
+--pending:#EBC36B;--pending-ink:#EBC36B;--pending-tile:#3A3122;--done-ink:#74C99A;--done-tint:#244232;
+--info:#252C42;--info-ink:#DCE4FF;--info-line:#34405E;--act:#C9D4FB;--act-text:#1A2140;
+--neutral-tile:#2A2A29;--neutral-ink:#9B9B98;color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--canvas);color:var(--ink);font-family:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif}
+button{font:inherit;color:inherit;cursor:pointer}:focus-visible{outline:2px solid var(--act);outline-offset:2px}
+svg.lucide{width:18px;height:18px;flex:none}
+.app{max-width:760px;margin:0 auto;padding:calc(14px + env(safe-area-inset-top)) 16px calc(44px + env(safe-area-inset-bottom))}
+.top{display:flex;align-items:flex-start;gap:12px;margin-bottom:18px}.top .grow{flex:1}.top h1{font-size:25px;margin:0 0 5px}.top p{font-size:11px;color:var(--muted);margin:0;line-height:1.45}
+.ibtn{width:44px;height:44px;border:1px solid var(--line);background:var(--surface);border-radius:12px;display:grid;place-items:center}
+.note{padding:11px 12px;border-radius:14px;background:var(--info);color:var(--info-ink);font-size:11px;line-height:1.5;margin:12px 0}.note.ok{background:var(--done-tint);color:var(--done-ink)}.note.warn{background:var(--pending-tile);color:var(--pending-ink)}.note.alert{background:var(--alert-tint);color:var(--alert-ink)}
+.tabs{display:flex;gap:8px;overflow:auto;padding:2px 0 8px;position:sticky;top:0;background:var(--canvas);z-index:5}.tab{min-height:40px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:0 12px;font-size:10.5px;font-weight:800;white-space:nowrap}.tab.on{background:var(--info);border-color:var(--info-line);color:var(--info-ink)}
+.section{display:none}.section.on{display:block}.section h2{font-size:20px;margin:18px 0 4px}.section>p{font-size:12px;color:var(--muted);line-height:1.55;margin:0 0 14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:14px;margin-top:10px}
+.grp{font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:20px 4px 8px}
+.row{display:flex;align-items:flex-start;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}.row:last-child{border-bottom:0}.tile{width:40px;height:40px;border-radius:13px;background:var(--neutral-tile);display:grid;place-items:center;flex:none}.grow{flex:1;min-width:0}.row strong{display:block;font-size:12px}.row small{display:block;font-size:10.5px;color:var(--muted);line-height:1.5;margin-top:3px}
+.code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10.5px;background:var(--row);border:1px solid var(--line);border-radius:12px;padding:10px;white-space:pre-wrap;overflow:auto;line-height:1.5}
+.pill{display:inline-flex;align-items:center;min-height:24px;border-radius:999px;background:var(--neutral-tile);color:var(--neutral-ink);padding:0 8px;font-size:9.5px;font-weight:800}.pill.ok{background:var(--done-tint);color:var(--done-ink)}.pill.warn{background:var(--pending-tile);color:var(--pending-ink)}.pill.alert{background:var(--alert-tint);color:var(--alert-ink)}
+table{width:100%;border-collapse:collapse;font-size:10.5px}th,td{text-align:left;vertical-align:top;padding:9px 8px;border-bottom:1px solid var(--line);line-height:1.45}th{color:var(--muted);font-weight:800}tr:last-child td{border-bottom:0}
+.check{display:grid;grid-template-columns:20px 1fr;gap:8px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line);font-size:11px;line-height:1.45}.check:last-child{border-bottom:0}.check i{color:var(--done-ink)}
+@media(max-width:520px){.wide-table{display:block;overflow:auto;white-space:nowrap}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main class="app">
+<header class="top">
+<div class="grow"><h1>PG V1 Implementation Handoff</h1><p>Canonical product contracts for building the frozen PG / Hostel V1. This is a handoff specification, not a database schema.</p></div>
+<button class="ibtn" id="themeBtn" aria-label="Toggle theme"><i data-lucide="sun-moon"></i></button>
+</header>
+
+<div class="note ok"><b>Status: structurally frozen.</b><br>The implementation must preserve the product hierarchy, lifecycle rules, money model, navigation, offline-first behavior and exception semantics. Visual refinement and internal architecture can still evolve.</div>
+
+<div class="tabs" role="tablist" aria-label="Handoff sections">
+<button class="tab on" data-tab="map">Build map</button>
+<button class="tab" data-tab="domain">Domain contracts</button>
+<button class="tab" data-tab="money">Money</button>
+<button class="tab" data-tab="access">Access & entitlements</button>
+<button class="tab" data-tab="offline">Offline & sync</button>
+<button class="tab" data-tab="qa">Acceptance QA</button>
+<button class="tab" data-tab="deferred">Do not build</button>
+</div>
+
+<section class="section on" id="map">
+<h2>Build map</h2><p>Recommended implementation slices, ordered to protect the core invariants first.</p>
+<div class="card">
+<div class="row"><span class="tile"><i data-lucide="building-2"></i></span><div class="grow"><strong>1. Business + property shell</strong><small>Business identity, one operational currency, Building/Block → Floor → Room → Bed/capacity. Property setup creates capacity only; tenancy commercial terms are separate.</small></div><span class="pill ok">Foundation</span></div>
+<div class="row"><span class="tile"><i data-lucide="users"></i></span><div class="grow"><strong>2. Tenancy lifecycle</strong><small>Upcoming → joined/active → planned move-out → end tenancy → Former, while preserving occupancy history and future commitments.</small></div></div>
+<div class="row"><span class="tile"><i data-lucide="wallet"></i></span><div class="grow"><strong>3. Obligation + payment engine</strong><small>Deterministic monthly obligations, many-to-many payment allocation, receipts, credit, arrears and statements.</small></div><span class="pill alert">Critical</span></div>
+<div class="row"><span class="tile"><i data-lucide="shield-check"></i></span><div class="grow"><strong>4. Security + corrections + charges</strong><small>Security held, refunds, explicit application to dues, immutable receipts, reversals/corrections, disputes, waivers and write-offs.</small></div></div>
+<div class="row"><span class="tile"><i data-lucide="receipt"></i></span><div class="grow"><strong>5. Expenses + staff cash custody</strong><small>Business-paid vs staff-paid expense accountability; tenant settlement remains separate from physical cash custody/handover.</small></div></div>
+<div class="row"><span class="tile"><i data-lucide="user-cog"></i></span><div class="grow"><strong>6. Staff & permissions</strong><small>Owner, Manager, Caretaker / Front desk, Accounts; action permission and visibility remain separate.</small></div></div>
+<div class="row"><span class="tile"><i data-lucide="cloud"></i></span><div class="grow"><strong>7. Backup, entitlements and sync</strong><small>Local-first operation, explicit conflict handling, named entitlement gates, offline entitlement snapshot.</small></div></div>
+<div class="row"><span class="tile"><i data-lucide="layout-dashboard"></i></span><div class="grow"><strong>8. UI shell</strong><small>Home · Tenants · Collections · More with global FAB: Add tenant · Record payment · Add expense · Add charge.</small></div></div>
+</div>
+<div class="note"><b>Source-of-truth rule:</b> when a prototype conflicts with the frozen PG Product Structure, the frozen specification wins. Visual-system sources govern visual treatment only.</div>
+</section>
+
+<section class="section" id="domain">
+<h2>Domain contracts</h2><p>These are semantic boundaries the implementation must keep distinct. They are intentionally not presented as final SQL tables.</p>
+<div class="grp">Core objects</div>
+<div class="card wide-table"><table>
+<tr><th>Concept</th><th>Must represent</th><th>Must not collapse into</th></tr>
+<tr><td>Business</td><td>Identity, type, location, one operational currency, shared configuration</td><td>Property or tenancy</td></tr>
+<tr><td>Property capacity</td><td>Building/Block → Floor → Room → Bed/capacity, lifecycle + history</td><td>Tenant commercial agreement</td></tr>
+<tr><td>Tenancy / Agreement</td><td>Commercial relationship, dates, rent terms, responsibility, payer context</td><td>Occupancy only</td></tr>
+<tr><td>Occupancy assignment</td><td>Room/bed assignment over time</td><td>Rent terms; room transfer must not silently change rent</td></tr>
+<tr><td>Future commitment</td><td>Upcoming tenant / reserved capacity</td><td>Active occupancy</td></tr>
+<tr><td>Security</td><td>Agreed, paid, actually held, owner/source, application, refund</td><td>Rent balance</td></tr>
+<tr><td>Promise to pay</td><td>Commitment amount/date and history</td><td>Payment or ledger settlement</td></tr>
+</table></div>
+<div class="grp">Lifecycle rules</div>
+<div class="card">
+<div class="check"><i data-lucide="check-circle"></i><span>Future tenants remain <b>Upcoming</b> until explicitly confirmed joined.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>Missing joining date does not auto-cancel the tenancy or release the bed.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>Room transfer preserves old occupancy history; new assignment begins separately.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>Planned move-out is not the same as tenancy end.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>Former tenant receivables and pending refunds remain discoverable.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>Capacity with history is retired/archived, not hard-deleted.</span></div>
+</div>
+</section>
+
+<section class="section" id="money">
+<h2>Money contracts</h2><p>The financial model is event/history based. Posted financial history must not be destructively rewritten.</p>
+<div class="card">
+<div class="row"><span class="tile"><i data-lucide="calendar-range"></i></span><div class="grow"><strong>Monthly obligations</strong><small>Active rent agreements deterministically create monthly calendar obligations. Billing timing is prepaid/postpaid; due-day changes are prospective.</small></div></div>
+<div class="row"><span class="tile"><i data-lucide="split"></i></span><div class="grow"><strong>Allocation</strong><small>One obligation can receive many payments; one payment can settle many obligations. Excess becomes credit. Old dues remain distinct from current dues.</small></div></div>
+<div class="row"><span class="tile"><i data-lucide="receipt-text"></i></span><div class="grow"><strong>Receipts</strong><small>Immutable snapshots of real payment events. A mistake creates a new correction/reversal event.</small></div></div>
+<div class="row"><span class="tile"><i data-lucide="shield"></i></span><div class="grow"><strong>Security</strong><small>Never silently settles arrears. Apply security to dues is an explicit action. Refund is separate money-out.</small></div></div>
+<div class="row"><span class="tile"><i data-lucide="badge-indian-rupee"></i></span><div class="grow"><strong>Charges and adjustments</strong><small>Charges are distinct from rent, payment and deposit. Waiver, discount, write-off, correction and dispute are not payments.</small></div></div>
+<div class="row"><span class="tile"><i data-lucide="hand-coins"></i></span><div class="grow"><strong>Cash custody</strong><small>A valid staff cash collection settles the tenant immediately. Physical cash custody, handover and discrepancies are separate events.</small></div></div>
+</div>
+<div class="grp">Event chain</div>
+<div class="code">rent agreement
+  → monthly obligation
+  → payment event
+  → allocation(s)
+  → immutable receipt
+
+staff cash collection
+  → tenant obligation settled
+  → cash custody assigned to staff
+  → handover event
+  → optional discrepancy
+  → discrepancy resolution
+
+wrong payment
+  → original payment preserved
+  → correction / reversal event
+
+security held
+  → explicit apply-to-dues OR refund
+  → never automatic</div>
+</section>
+
+<section class="section" id="access">
+<h2>Access & entitlements</h2><p>Permission policy and commercial packaging are separate layers.</p>
+<div class="grp">Staff permissions</div>
+<div class="card">
+<div class="row"><span class="tile"><i data-lucide="shield-check"></i></span><div class="grow"><strong>Action states</strong><small>Allowed · Needs approval · Not allowed.</small></div></div>
+<div class="row"><span class="tile"><i data-lucide="eye"></i></span><div class="grow"><strong>Visibility is separate</strong><small>A user may be allowed to perform an action without seeing every data area.</small></div></div>
+<div class="row"><span class="tile"><i data-lucide="badge-check"></i></span><div class="grow"><strong>Approval request</strong><small>An approval request does not mean the action already happened. Approval grants authority; execution remains explicit.</small></div></div>
+</div>
+<div class="grp">Entitlement contract</div>
+<div class="card">
+<div class="check"><i data-lucide="check-circle"></i><span>Feature code checks stable entitlement keys, never tier names.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span><code>multi_user</code> gates additional people/accounts and requires <code>cloud_sync</code>.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span><code>role_permissions</code> gates configurable roles, visibility and action permissions; it requires <code>multi_user</code>.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span><code>drive_backup</code> gates manual Google Drive backup/restore and does not require <code>cloud_sync</code>.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span><code>multi_device</code>, <code>auto_backup</code> and <code>cloud_restore</code> require <code>cloud_sync</code>.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>Tier-to-entitlement mapping is server-side configuration, not app logic.</span></div>
+</div>
+<div class="note warn"><b>Packaging note:</b> current minimum-tier mapping is configuration and can change. Do not hardcode Free / Pro / Premium checks into feature code.</div>
+</section>
+
+<section class="section" id="offline">
+<h2>Offline & sync</h2><p>Local-first is a product invariant, not merely a resilience feature.</p>
+<div class="card">
+<div class="row"><span class="tile"><i data-lucide="hard-drive"></i></span><div class="grow"><strong>Core work remains local/offline-capable</strong><small>Billing obligations and normal operating flows must not depend on live server availability.</small></div></div>
+<div class="row"><span class="tile"><i data-lucide="cloud-cog"></i></span><div class="grow"><strong>Sync is separate from backup</strong><small>On this device only, Google Drive backup and Khaata Sync are distinct operating choices.</small></div></div>
+<div class="row"><span class="tile"><i data-lucide="key-round"></i></span><div class="grow"><strong>Offline entitlement snapshot</strong><small>Device stores effective entitlement keys, verification metadata, grace expiry and configuration/version identity.</small></div></div>
+<div class="row"><span class="tile"><i data-lucide="triangle-alert"></i></span><div class="grow"><strong>Conflicts stay explicit</strong><small>Do not silently discard concurrent events or history. Exact sync protocol internals remain an implementation detail.</small></div></div>
+</div>
+</section>
+
+<section class="section" id="qa">
+<h2>Acceptance QA</h2><p>Minimum release checks for implementation fidelity.</p>
+<div class="card">
+<div class="check"><i data-lucide="check-circle"></i><span>Add Business carries name/type/location/currency into the PG workspace.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>Both capacity setup paths work: preconfigure rooms and progressive inline creation.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>Upcoming tenant cannot become active or release capacity merely because a date passed.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>Room transfer preserves prior occupancy history and does not silently change rent.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>Monthly obligations are deterministic and reproducible offline.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>Partial/multi-allocation/excess-credit cases work without replacing history.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>Payment correction creates a new event; original receipt remains immutable.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>Security never auto-settles dues.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>Staff cash discrepancy never makes a tenant unpaid.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>Former tenant can still have outstanding balance and pending refund.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>Permissions use Allowed / Needs approval / Not allowed; visibility is independently enforced.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>Entitlements are checked by key and tier mapping is not embedded in feature code.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>Top-level PG navigation remains Home · Tenants · Collections · More; FAB action set remains stable.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>360px-wide rendering has no horizontal overflow; interactive targets are at least 44px.</span></div>
+<div class="check"><i data-lucide="check-circle"></i><span>Sheets/dialogs support Escape, focus entry, focus containment and focus restoration.</span></div>
+</div>
+</section>
+
+<section class="section" id="deferred">
+<h2>Do not build into PG V1</h2><p>These are explicit scope boundaries. Adding them casually would be a structural change.</p>
+<div class="card wide-table"><table>
+<tr><th>Deferred / out of scope</th><th>Reason / boundary</th></tr>
+<tr><td>Floor-plan editor</td><td>Not part of V1 capacity model.</td></tr>
+<tr><td>Parking-slot inventory</td><td>Parking usage/charges are supported; slot-capacity inventory is not.</td></tr>
+<tr><td>Maintenance ticketing</td><td>Maintenance is an expense with optional property context, not a ticket system.</td></tr>
+<tr><td>Generic messaging</td><td>Not a PG V1 module.</td></tr>
+<tr><td>Full HR/workforce</td><td>Beyond PG staff access; separate shared-product discussion.</td></tr>
+<tr><td>Multi-currency transaction accounting</td><td>One base operational currency per business.</td></tr>
+<tr><td>Automatic no-show cancellation</td><td>Upcoming state requires explicit owner action.</td></tr>
+<tr><td>Automatic bed reassignment</td><td>Reservation conflicts stay explicit.</td></tr>
+<tr><td>Destructive financial-history editing</td><td>Corrections/reversals append events.</td></tr>
+<tr><td>Hard-delete historical capacity/tenancy</td><td>History-preserving lifecycle required.</td></tr>
+<tr><td>Home analytics dashboard / cash-flow chart</td><td>PG Home surfaces operational attention; broad analytics are deferred.</td></tr>
+<tr><td>Formal accounting period close</td><td>Not in PG V1 structure.</td></tr>
+</table></div>
+<div class="note alert"><b>Change rule:</b> restructure PG V1 only when usability testing reveals a real workflow failure, implementation exposes a contradiction, real PG use exposes a missing core case, or a deliberate V2 decision is made.</div>
+</section>
+</main>
+<script>
+(function(){
+"use strict";
+var tabs=Array.from(document.querySelectorAll(".tab"));
+var sections=Array.from(document.querySelectorAll(".section"));
+function icons(){if(window.lucide&&lucide.createIcons)lucide.createIcons()}
+function show(id){
+ tabs.forEach(function(b){b.classList.toggle("on",b.dataset.tab===id);b.setAttribute("aria-selected",String(b.dataset.tab===id))});
+ sections.forEach(function(s){s.classList.toggle("on",s.id===id)});
+ window.scrollTo(0,0);
+}
+tabs.forEach(function(b){b.addEventListener("click",function(){show(b.dataset.tab)})});
+document.getElementById("themeBtn").addEventListener("click",function(){
+ var r=document.documentElement;
+ r.dataset.theme=r.dataset.theme==="dark"?"light":"dark";
+ try{localStorage.setItem("khaata_theme",r.dataset.theme)}catch(_){}
+});
+try{
+ var t=localStorage.getItem("khaata_theme");
+ if(t)document.documentElement.dataset.theme=t;
+}catch(_){}
+icons();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · Mobile Sync Coordinator v1</title>
+<style>
+:root{--canvas:#FDFCF8;--surface:#FFFFFF;--line:#E6E0D7;--ink:#171716;--muted:#6B6B69;--info:#D7E1FE;--info-ink:#2B3A75;--done:#DDF3E6;--done-ink:#1E7A4C;--pending:#FFF0C4;--pending-ink:#6E5200;--alert:#FFE4DF;--alert-ink:#B83A2B}
+*{box-sizing:border-box}body{margin:0;background:var(--canvas);color:var(--ink);font-family:Manrope,system-ui,sans-serif}main{max-width:900px;margin:auto;padding:20px 16px 44px}h1{font-size:26px;margin:0 0 6px}h2{font-size:19px;margin:22px 0 6px}p{font-size:11.5px;line-height:1.6;color:var(--muted);margin:0}.note{padding:11px 12px;border-radius:14px;background:var(--info);color:var(--info-ink);font-size:11px;line-height:1.5;margin:12px 0}.ok{background:var(--done);color:var(--done-ink)}.warn{background:var(--pending);color:var(--pending-ink)}.alert{background:var(--alert);color:var(--alert-ink)}.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:14px;margin-top:10px;overflow:auto}table{width:100%;border-collapse:collapse;font-size:11px}th,td{text-align:left;vertical-align:top;padding:9px 8px;border-bottom:1px solid var(--line);line-height:1.45}th{color:var(--muted)}tr:last-child td{border-bottom:0}code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.flow{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;line-height:1.65;white-space:pre-wrap;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px}
+</style></head><body><main>
+<h1>Mobile Sync Coordinator v1</h1>
+<p>This connects the pieces we built separately: SQLite outbox, entitlement lease provenance, drain-only validation, and typed Supabase domain RPCs.</p>
+
+<div class="note ok"><b>Result:</b> a local command can now travel from committed SQLite truth to the correct server RPC without changing identity, losing dependency order, or bypassing permission/entitlement rules.</div>
+<div class="note warn"><b>Still local-first:</b> synchronization success is not what makes a payment, tenancy change or expense true on the phone. The local transaction already did that. Sync only reconciles shared server state.</div>
+
+<h2>Coordinator responsibilities</h2>
+<div class="card"><table><tr><th>Concern</th><th>Implementation</th><th>Guarantee</th></tr><tr><td>Outbox provenance</td><td>Lease ID, sequence, hash, effective server time</td><td>Supports normal/drain decision</td></tr><tr><td>Typed dispatch</td><td>Outbox row carries RPC name + exact RPC args</td><td>No arbitrary table mutation</td></tr><tr><td>Idempotency</td><td>Same outbox ID becomes server operation_id</td><td>Safe retry after uncertain ACK</td></tr><tr><td>Dependencies</td><td>Topological ordering from dependency IDs</td><td>Parent/payment before dependent rows</td></tr><tr><td>Conflict</td><td>Server semantic conflict → local sync_conflict</td><td>Local truth preserved</td></tr><tr><td>Permanent block</td><td>Permission/device/lease failures stop retry loop</td><td>Queue row remains visible</td></tr><tr><td>Transient failure</td><td>Retry with backoff</td><td>No data loss</td></tr><tr><td>Runtime mode</td><td>Normal / Offline / Drain-only / Conflict</td><td>UI can expose sync state</td></tr></table></div>
+
+<h2>Push path</h2>
+<div class="flow">pending SQLite outbox
+  ↓
+online?
+  ├─ no → Offline
+  └─ yes
+       ↓
+       dependency ordering
+       ↓
+       required entitlement currently active?
+       ├─ yes → Normal
+       └─ no → validate stored lease provenance
+                 ├─ invalid → Blocked
+                 └─ accepted_drain → Drain-only
+       ↓
+       typed RPC dispatch
+       ↓
+       server idempotent result
+       ├─ accepted → ACK local outbox
+       ├─ conflict → create sync_conflict
+       ├─ permanent denial → Blocked
+       └─ transient error → Failed + retry</div>
+
+<h2>Outbox migration</h2>
+<div class="card"><p>
+The SQLite outbox now stores the information needed to replay the exact operation:
+required entitlement, lease provenance, typed RPC name and arguments, server result, ACK time and conflict link.
+The same local outbox ID becomes the server <code>operation_id</code>, so retries cannot accidentally become new operations.
+</p></div>
+
+<h2>Drain-only behavior</h2>
+<div class="card"><p>
+When current <code>cloud_sync</code> is gone, only already-created outbox rows carrying valid lease provenance are eligible to continue.
+The coordinator validates that provenance first, then calls the same typed business RPC. It never restores the ability to create new cloud-sync-gated work.
+</p></div>
+
+<h2>Conflict behavior</h2>
+<div class="note alert">
+A semantic server conflict does not delete or rewrite the local business event. The outbox row is blocked, a local <code>sync_conflicts</code> record is created, and explicit resolution can happen later.
+</div>
+</main></body></html>

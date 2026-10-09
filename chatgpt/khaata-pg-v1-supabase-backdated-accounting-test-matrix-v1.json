@@ -1,0 +1,102 @@
+{
+  "version": "1.0",
+  "status": "proposed server backdated-accounting tests",
+  "cases": [
+    {
+      "id": "SOPEN-001",
+      "case": "set opening financial position",
+      "expect": [
+        "accounting-start row inserted",
+        "opening snapshot inserted",
+        "domain event appended",
+        "sync result idempotent"
+      ]
+    },
+    {
+      "id": "SOPEN-002",
+      "case": "opening position creates no fake financial transactions",
+      "expect": [
+        "no payment_event",
+        "no charge",
+        "no security_event"
+      ]
+    },
+    {
+      "id": "SOPEN-003",
+      "case": "duplicate operation_id retry",
+      "expect": [
+        "prior result returned",
+        "no duplicate opening records"
+      ]
+    },
+    {
+      "id": "SOPEN-004",
+      "case": "second accounting start for same tenancy",
+      "expect": [
+        "reject ACCOUNTING_START_ALREADY_SET"
+      ]
+    },
+    {
+      "id": "SOPEN-005",
+      "case": "correct opening position",
+      "expect": [
+        "original opening row unchanged",
+        "append-only correction created",
+        "domain event appended"
+      ]
+    },
+    {
+      "id": "SOPEN-006",
+      "case": "opening correction amount delta zero",
+      "expect": [
+        "reject INVALID_CORRECTION_DELTA"
+      ]
+    },
+    {
+      "id": "SOPEN-007",
+      "case": "Needs approval action",
+      "expect": [
+        "valid one-use authorization required",
+        "authorization consumed only with actual execution"
+      ]
+    },
+    {
+      "id": "SOPEN-008",
+      "case": "staff without tenant-balances visibility",
+      "expect": [
+        "direct read blocked/redacted by RLS boundary",
+        "write authority still evaluated separately"
+      ]
+    },
+    {
+      "id": "SOPEN-009",
+      "case": "change feed",
+      "expect": [
+        "accounting start/opening/correction feed rows created in same transaction"
+      ]
+    },
+    {
+      "id": "SOPEN-010",
+      "case": "remote opening position on second device",
+      "expect": [
+        "INSERT OR IGNORE typed applier",
+        "statement projection updates"
+      ]
+    },
+    {
+      "id": "SOPEN-011",
+      "case": "former tenant",
+      "expect": [
+        "opening/statement rows remain queryable when visibility allows"
+      ]
+    },
+    {
+      "id": "SOPEN-012",
+      "case": "bring existing history path",
+      "expect": [
+        "only accounting start path created",
+        "prior transactions must arrive through real typed finance flows"
+      ]
+    }
+  ]
+}

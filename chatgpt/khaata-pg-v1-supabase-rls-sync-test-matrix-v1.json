@@ -1,0 +1,105 @@
+{
+  "version": "1.0",
+  "status": "proposed server enforcement tests",
+  "cases": [
+    {
+      "id": "SRV-001",
+      "case": "Owner reads own business",
+      "expect": [
+        "RLS allows business access",
+        "safe RPC returns full fields"
+      ]
+    },
+    {
+      "id": "SRV-002",
+      "case": "Staff tenant records visible but balances hidden",
+      "expect": [
+        "tenant rows returned",
+        "outstanding field null",
+        "direct obligation select blocked"
+      ]
+    },
+    {
+      "id": "SRV-003",
+      "case": "Staff sensitive identity hidden",
+      "expect": [
+        "tenant summary phone null",
+        "basic tenant record may remain visible"
+      ]
+    },
+    {
+      "id": "SRV-004",
+      "case": "Disabled staff",
+      "expect": [
+        "has_business_access false",
+        "RLS rejects reads",
+        "sync RPC rejects"
+      ]
+    },
+    {
+      "id": "SRV-005",
+      "case": "Duplicate sync operation_id",
+      "expect": [
+        "same stored result returned",
+        "no duplicate domain mutation"
+      ]
+    },
+    {
+      "id": "SRV-006",
+      "case": "cloud_sync entitlement absent",
+      "expect": [
+        "new normal sync operation rejected by entitlement key",
+        "no tier-name check"
+      ]
+    },
+    {
+      "id": "SRV-007",
+      "case": "Action permission not_allowed",
+      "expect": [
+        "sync operation rejected",
+        "no domain dispatch"
+      ]
+    },
+    {
+      "id": "SRV-008",
+      "case": "Action permission needs_approval",
+      "expect": [
+        "generic sync rejected with APPROVAL_REQUIRED",
+        "approval-aware execution required"
+      ]
+    },
+    {
+      "id": "SRV-009",
+      "case": "Stale mutable base version",
+      "expect": [
+        "server conflict row created",
+        "client payload preserved",
+        "no blind overwrite"
+      ]
+    },
+    {
+      "id": "SRV-010",
+      "case": "Financial append event",
+      "expect": [
+        "must route to typed append-only domain RPC",
+        "generic dynamic table mutation forbidden"
+      ]
+    },
+    {
+      "id": "SRV-011",
+      "case": "Staff action allowed while field hidden",
+      "expect": [
+        "typed write may proceed",
+        "read remains redacted independently"
+      ]
+    },
+    {
+      "id": "SRV-012",
+      "case": "Entitlement lost with pre-existing legitimate outbox",
+      "expect": [
+        "requires dedicated drain rule before production",
+        "must not discard already-recorded truth"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+KHAATA PG FILE MANIFEST — 2026-10-09
+
+A. CANONICAL / CURRENT FINALISED PRODUCT + UI FILES
+These are the frozen/current product, decision, design-system, and accepted/latest UI/flow artifacts.
+
+- khaata-pg-hostel-product-structure-v1.md
+- khaata-versioned-decision-log-v1.1.1.md
+- khaata-pg-hostel-full-history-decisions-audits-v1.md
+- khaata-ui-components-for-build-v5.html
+- Khaata — Design System Catalogue.html
+- Khaata coding conventions — Design System (UI).md
+- khaata-owner-journey-implementation-ready-v1-4.html
+- khaata-pg-setup-v1-interactive.html
+- khaata-pg-operating-configuration-v2.html
+- khaata-pg-home-standardized-ui-v5-v6-1.html
+- khaata-pg-tenants-standardized-ui-v5-v3.html
+- khaata-pg-tenant-detail-standardized-ui-v5-v2-6.html
+- khaata-pg-collections-standardized-ui-v5-v2.html
+- khaata-pg-more-settings-standardized-ui-v5-v1.html
+- khaata-pg-add-tenant-standardized-ui-v5-v2.html
+- khaata-pg-rooms-beds-operations-v1-12.html
+- khaata-pg-staff-access-v1-9-1.html
+- khaata-pg-billing-settings-v1.html
+- khaata-pg-expense-settings-v1.html
+- khaata-pg-tenant-requirements-v1.html
+- khaata-pg-tenancy-history-v1.html
+- khaata-pg-backup-sync-v1.html
+- khaata-pg-business-settings-v1.html
+- khaata-pg-optional-features-v1.html
+- khaata-pg-record-payment-flow-v1-8.html
+- khaata-pg-record-promise-flow-v1-1.html
+- khaata-pg-add-expense-flow-v1.html
+- khaata-pg-add-charge-flow-v1.html
+- khaata-pg-room-transfer-flow-v1.html
+- khaata-pg-plan-moveout-flow-v1.html
+- khaata-pg-exit-settlement-flow-v1.html
+- khaata-pg-tenant-statement-flow-v1-1.html
+- khaata-pg-receipt-detail-v1.html
+- khaata-pg-cash-custody-v1.html
+- khaata-pg-cash-handover-v1.html
+- khaata-pg-v1-data-contract-v1.html
+- khaata-pg-v1-implementation-handoff-pack.html
+- khaata-pg-v1-sync-engine-contract-v1.html
+- khaata-pg-v1-sync-engine-test-vectors-v1.json
+
+B. CURRENT IMPLEMENTATION BUILDS
+These are completed build artifacts from the engineering sequence, but many are explicitly marked PROPOSED and have not been applied to a live SQLite/Supabase runtime.
+
+- khaata-pg-v1-mobile-service-contract-v1.ts
+- khaata-pg-v1-mobile-service-review-v1.html
+- khaata-pg-v1-local-sqlite-sync-schema-v1-1.sql
+- khaata-pg-v1-local-sync-correction-review-v1-1.html
+- khaata-pg-v1-sync-ack-state-contract-v1.ts
+- khaata-pg-v1-sync-ack-test-vectors-v1.json
+- khaata-pg-v1-mobile-command-implementation-skeleton-v2-1.ts
+- khaata-pg-v1-mobile-query-projection-layer-v1.ts
+- khaata-pg-v1-mobile-query-projection-review-v1.html
+- khaata-pg-v1-visibility-query-guard-v1.ts
+- khaata-pg-v1-visibility-query-review-v1.html
+- khaata-pg-v1-visibility-query-test-matrix-v1.json
+- khaata-pg-v1-staff-access-enforcement-sqlite-v1.sql
+- khaata-pg-v1-access-gate-approval-service-v1.ts
+- khaata-pg-v1-access-gate-test-matrix-v1.json
+- khaata-pg-v1-supabase-schema-proposal-v1.sql
+- khaata-pg-v1-supabase-schema-review-v1.html
+- khaata-pg-v1-supabase-rls-sync-server-v1.sql
+- khaata-pg-v1-supabase-rls-sync-test-matrix-v1.json
+- khaata-pg-v1-supabase-rls-sync-review-v1.html
+- khaata-pg-v1-supabase-typed-domain-rpcs-v1.sql
+- khaata-pg-v1-supabase-typed-rpc-test-matrix-v1.json
+- khaata-pg-v1-supabase-typed-domain-rpc-review-v1.html
+- khaata-pg-v1-drain-only-sync-lease-server-v1.sql
+- khaata-pg-v1-offline-entitlement-lease-v1.ts
+- khaata-pg-v1-drain-only-sync-test-matrix-v1.json
+- khaata-pg-v1-drain-only-sync-review-v1.html
+- khaata-pg-v1-local-sync-outbox-provenance-v2.sql
+- khaata-pg-v1-mobile-sync-coordinator-v1.ts
+- khaata-pg-v1-mobile-sync-coordinator-test-matrix-v1.json
+- khaata-pg-v1-mobile-sync-coordinator-review-v1.html
+- khaata-pg-v1-local-pull-conflict-resolution-v1.sql
+- khaata-pg-v1-mobile-pull-conflict-resolver-v1.ts
+- khaata-pg-v1-pull-conflict-test-matrix-v1.json
+- khaata-pg-v1-pull-conflict-review-v1.html
+- khaata-pg-v1-supabase-change-feed-v1.sql
+- khaata-pg-v1-mobile-remote-change-appliers-v1.ts
+- khaata-pg-v1-change-feed-test-matrix-v1.json
+- khaata-pg-v1-change-feed-review-v1.html
+- khaata-pg-v1-change-feed-integration-v1.sql
+- khaata-pg-v1-supabase-pull-adapter-v1.ts
+- khaata-pg-v1-change-feed-integration-test-matrix-v1.json
+- khaata-pg-v1-change-feed-integration-review-v1.html
+- khaata-pg-v1-monthly-obligation-engine-v1.ts
+- khaata-pg-v1-monthly-obligation-hardening-sqlite-v1.sql
+- khaata-pg-v1-monthly-obligation-test-matrix-v1.json
+- khaata-pg-v1-monthly-obligation-review-v1.html
+- khaata-pg-v1-backdated-accounting-statement-sqlite-v1.sql
+- khaata-pg-v1-backdated-accounting-statement-service-v1.ts
+- khaata-pg-v1-backdated-accounting-statement-test-matrix-v1.json
+- khaata-pg-v1-backdated-accounting-statement-review-v1.html
+- khaata-pg-v1-supabase-backdated-accounting-v1.sql
+- khaata-pg-v1-backdated-accounting-sync-appliers-v1.ts
+- khaata-pg-v1-supabase-backdated-accounting-test-matrix-v1.json
+- khaata-pg-v1-supabase-backdated-accounting-review-v1.html
+
+Finalised/current bundle files: 39
+Current implementation build files: 55

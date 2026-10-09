@@ -1,0 +1,105 @@
+{
+  "version": "1.0",
+  "status": "proposed server change-feed + local applier tests",
+  "cases": [
+    {
+      "id": "FEED-001",
+      "case": "payment RPC commits",
+      "expect": [
+        "payment feed row created in same server transaction",
+        "cursor increases"
+      ]
+    },
+    {
+      "id": "FEED-002",
+      "case": "payment RPC rolls back",
+      "expect": [
+        "no feed row survives"
+      ]
+    },
+    {
+      "id": "FEED-003",
+      "case": "fetch after cursor",
+      "expect": [
+        "only later business rows returned",
+        "ascending cursor order"
+      ]
+    },
+    {
+      "id": "FEED-004",
+      "case": "cross-business fetch",
+      "expect": [
+        "BUSINESS_ACCESS_DENIED or no unauthorized rows"
+      ]
+    },
+    {
+      "id": "FEED-005",
+      "case": "cloud_sync missing",
+      "expect": [
+        "normal pull rejected"
+      ]
+    },
+    {
+      "id": "FEED-006",
+      "case": "duplicate remote_event_id publication",
+      "expect": [
+        "single feed row",
+        "stable cursor result"
+      ]
+    },
+    {
+      "id": "FEED-007",
+      "case": "remote payment arrives on device",
+      "expect": [
+        "INSERT OR IGNORE into immutable payment_events",
+        "sync metadata externalized"
+      ]
+    },
+    {
+      "id": "FEED-008",
+      "case": "remote receipt arrives twice",
+      "expect": [
+        "single receipt row",
+        "no rewrite"
+      ]
+    },
+    {
+      "id": "FEED-009",
+      "case": "remote staff membership change",
+      "expect": [
+        "typed UPSERT",
+        "disabled state can propagate"
+      ]
+    },
+    {
+      "id": "FEED-010",
+      "case": "remote occupancy conflicts with local bed commitment",
+      "expect": [
+        "PullCoordinator blocks before typed UPSERT",
+        "explicit conflict"
+      ]
+    },
+    {
+      "id": "FEED-011",
+      "case": "unknown entity_type",
+      "expect": [
+        "NO_TYPED_REMOTE_APPLIER or conflict",
+        "no dynamic SQL"
+      ]
+    },
+    {
+      "id": "FEED-012",
+      "case": "page size > 500",
+      "expect": [
+        "server clamps to 500"
+      ]
+    },
+    {
+      "id": "FEED-013",
+      "case": "cursor checkpoint crash safety",
+      "expect": [
+        "device checkpoint advances only after local batch commit"
+      ]
+    }
+  ]
+}

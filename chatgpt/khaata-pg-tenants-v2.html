@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata — PG Tenants V2</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --canvas:#FDFCF8;--surface:#FFFFFF;--row:#F6F6F5;--line:#E6E0D7;
+  --ink:#171716;--muted:#6B6B69;--alert:#FF6B5B;--alert-ink:#B83A2B;
+  --alert-tint:#FFE4DF;--done-tint:#DDF3E6;--done-ink:#1E7A4C;
+  --info:#D7E1FE;--info-ink:#2B3A75;--act:#2B3A75;--act-text:#FFFFFF;
+  --warn:#F5E6B8;--warn-ink:#745B12;--r-card:20px;--r-btn:14px;--r-pill:999px;
+  color-scheme:light;
+}
+[data-theme="dark"]{
+  color-scheme:dark;--canvas:#1B1B1A;--surface:#262625;--row:#232322;--line:#38383A;
+  --ink:#FFFFFF;--muted:#9B9B98;--alert:#E8705C;--alert-ink:#F59384;--alert-tint:#3A2420;
+  --done-tint:#244232;--done-ink:#74C99A;--info:#252C42;--info-ink:#DCE4FF;
+  --act:#C9D4FB;--act-text:#1A2140;--warn:#3B3421;--warn-ink:#E5C96E;
+}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Manrope,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--canvas);color:var(--ink)}
+button,input{font:inherit}.app{max-width:520px;margin:auto;min-height:100vh;padding:18px 16px 112px}
+.business{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+.business b{font-size:15px}.business small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.iconbtn{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.head{display:flex;align-items:end;justify-content:space-between;margin-bottom:15px}
+h1{font-size:28px;line-height:1;margin:0;letter-spacing:-.03em}.count{font-size:12px;color:var(--muted)}
+.search{display:flex;align-items:center;gap:9px;border:1px solid var(--line);background:var(--surface);border-radius:16px;padding:0 13px;height:48px}
+.search svg{width:18px;color:var(--muted)}.search input{width:100%;border:0;outline:0;background:transparent;color:var(--ink);font-size:14px}
+.filters{display:flex;gap:8px;overflow:auto;padding:12px 0 17px;scrollbar-width:none}.filters::-webkit-scrollbar{display:none}
+.filter{white-space:nowrap;border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:var(--r-pill);padding:8px 12px;font-size:12px;font-weight:700}
+.filter.active{background:var(--act);border-color:var(--act);color:var(--act-text)}
+.list{border:1px solid var(--line);background:var(--surface);border-radius:var(--r-card);overflow:hidden}
+.tenant{width:100%;border:0;border-bottom:1px solid var(--line);background:transparent;color:inherit;text-align:left;padding:15px 14px;display:flex;gap:12px;align-items:center}
+.tenant:last-child{border-bottom:0}.avatar{width:42px;height:42px;border-radius:50%;background:var(--row);display:grid;place-items:center;font-weight:800;font-size:13px;flex:none}
+.tmain{min-width:0;flex:1}.name{font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.place{font-size:12px;color:var(--muted);margin-top:3px}
+.state{font-size:11px;font-weight:700;margin-top:5px}.state.alert{color:var(--alert-ink)}.state.warn{color:var(--warn-ink)}.state.info{color:var(--info-ink)}
+.chev{font-size:20px;color:var(--muted);font-weight:400}.empty{padding:30px 18px;text-align:center;color:var(--muted);font-size:13px}
+.fab{position:fixed;right:max(18px,calc((100vw - 520px)/2 + 18px));bottom:76px;width:54px;height:54px;border:0;border-radius:50%;background:var(--act);color:var(--act-text);font-size:28px;box-shadow:0 8px 22px rgba(0,0,0,.16);z-index:4}
+.fabmenu{position:fixed;right:max(18px,calc((100vw - 520px)/2 + 18px));bottom:140px;display:none;flex-direction:column;align-items:flex-end;gap:8px;z-index:5}
+.fabmenu.open{display:flex}.action{border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--ink);padding:10px 13px;font-weight:700;font-size:12px;box-shadow:0 5px 16px rgba(0,0,0,.10)}
+.nav{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(520px,100%);height:66px;background:var(--surface);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);z-index:3;padding-bottom:env(safe-area-inset-bottom)}
+.nav button{border:0;background:transparent;color:var(--muted);font-size:11px;font-weight:700}.nav button.on{color:var(--ink)}.nav span{display:block;font-size:18px;line-height:20px;margin-bottom:2px}
+.sheetback{position:fixed;inset:0;background:rgba(0,0,0,.28);display:none;z-index:8}.sheetback.open{display:block}
+.sheet{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);background:var(--surface);border-radius:24px 24px 0 0;padding:10px 18px 28px}
+.handle{width:38px;height:4px;border-radius:4px;background:var(--line);margin:0 auto 18px}.sheet h2{font-size:20px;margin:0}.sheet p{font-size:13px;color:var(--muted);margin:5px 0 18px}.detailrow{display:flex;justify-content:space-between;padding:12px 0;border-top:1px solid var(--line);font-size:13px}.detailrow span{color:var(--muted)}
+
+/* ===== Tenants V2: standardized Khaata spacing / row hierarchy ===== */
+.app{padding:20px 16px 112px}
+.business{margin-bottom:28px}
+.business b{font-size:16px;font-weight:800;line-height:1.25}
+.business small{font-size:12px;line-height:1.4;margin-top:4px}
+.head{align-items:center;margin-bottom:16px}
+h1{font-size:28px;line-height:1.12;font-weight:800;letter-spacing:-.025em}
+.count{font-size:12px;line-height:1.4}
+.search{height:48px;border-radius:16px;padding:0 14px;gap:10px}
+.search input{font-size:14px;line-height:20px}
+.filters{gap:8px;padding:12px 0 16px}
+.filter{padding:8px 12px;font-size:12px;line-height:16px;font-weight:700}
+.list{border-radius:20px}
+.tenant{
+  min-height:76px;
+  padding:14px 14px;
+  display:grid;
+  grid-template-columns:42px minmax(0,1fr) 18px;
+  column-gap:12px;
+  align-items:center;
+}
+.avatar{width:42px;height:42px;font-size:12px}
+.tmain{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:center;
+  gap:3px;
+}
+.name{
+  display:block;
+  width:100%;
+  font-size:14px;
+  line-height:19px;
+  font-weight:800;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.place{
+  display:block;
+  width:100%;
+  margin:0;
+  font-size:12px;
+  line-height:17px;
+  color:var(--muted);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.state{
+  display:block;
+  width:100%;
+  margin:1px 0 0;
+  font-size:11px;
+  line-height:16px;
+  font-weight:700;
+  white-space:normal;
+}
+.chev{
+  width:18px;
+  justify-self:end;
+  font-size:19px;
+  line-height:1;
+  color:var(--muted);
+}
+
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="business">
+    <div><b>Sunrise PG</b><small>PG / Hostel · Bengaluru</small></div>
+    <button class="iconbtn" type="button" data-act="theme" aria-label="Toggle theme">◐</button>
+  </header>
+
+  <div class="head"><h1>Tenants</h1><span class="count" id="count"></span></div>
+
+  <label class="search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+    <input id="search" type="search" placeholder="Search tenant, room or phone" autocomplete="off">
+  </label>
+
+  <div class="filters" id="filters"></div>
+  <section class="list" id="list"></section>
+</main>
+
+<div class="fabmenu" id="fabmenu">
+  <button class="action" type="button" data-act="add-tenant">Add tenant</button>
+  <button class="action" type="button">Record payment</button>
+  <button class="action" type="button">Add expense</button>
+  <button class="action" type="button">Add charge</button>
+</div>
+<button class="fab" id="fab" type="button" data-act="fab" aria-label="Actions">+</button>
+
+<nav class="nav">
+  <button type="button"><span>⌂</span>Home</button>
+  <button class="on" type="button"><span>♙</span>Tenants</button>
+  <button type="button"><span>₹</span>Collections</button>
+  <button type="button"><span>•••</span>More</button>
+</nav>
+
+<div class="sheetback" id="sheetback">
+  <div class="sheet">
+    <div class="handle"></div>
+    <h2 id="sname"></h2><p id="splace"></p>
+    <div class="detailrow"><span>Phone</span><b id="sphone"></b></div>
+    <div class="detailrow"><span>Status</span><b id="sstatus"></b></div>
+    <div class="detailrow"><span>Monthly rent</span><b id="srent"></b></div>
+  </div>
+</div>
+
+<script>
+(function(){
+var S={filter:"active",q:"",theme:"light",fab:false};
+var data=[
+{id:"t1",name:"Rohan Mehta",place:"Room 203 · Bed B",phone:"98765 43210",life:"active",rent:"₹8,500",state:"₹4,500 overdue",tone:"alert"},
+{id:"t2",name:"Arjun Nair",place:"Room 105 · Bed A",phone:"98450 22118",life:"active",rent:"₹9,000",state:"",tone:""},
+{id:"t3",name:"Karan Shah",place:"Room 301 · Bed A",phone:"99801 77421",life:"active",rent:"₹10,500",state:"Setup incomplete",tone:"warn"},
+{id:"t4",name:"Vivek Rao",place:"Room 204 · Bed C",phone:"99002 11567",life:"active",rent:"₹8,500",state:"Payment promise missed",tone:"alert"},
+{id:"t5",name:"Sameer Khan",place:"Room 102 · Bed B",phone:"98864 34002",life:"active",rent:"₹8,000",state:"",tone:""},
+{id:"t6",name:"Neeraj Kumar",place:"Room 208 · Bed A",phone:"97422 83011",life:"upcoming",rent:"₹9,500",state:"Joining 12 Oct",tone:"info"},
+{id:"t7",name:"Aman Verma",place:"Room 304 · Bed B",phone:"98441 50023",life:"upcoming",rent:"₹10,000",state:"Joining 16 Oct",tone:"info"},
+{id:"t8",name:"Aditya Jain",place:"Room 110 · Bed A",phone:"99640 31017",life:"moving",rent:"₹8,500",state:"Moving out 28 Oct",tone:"warn"},
+{id:"t9",name:"Nikhil Das",place:"Room 206 · Bed B",phone:"97310 77129",life:"moving",rent:"₹9,000",state:"Moving out 31 Oct",tone:"warn"},
+{id:"t10",name:"Rahul Bose",place:"Former · Room 202",phone:"98455 11009",life:"former",rent:"₹8,000",state:"₹2,000 outstanding",tone:"alert"},
+{id:"t11",name:"Dev Patel",place:"Former · Room 103",phone:"99870 44221",life:"former",rent:"₹9,000",state:"",tone:""}
+];
+var labels={active:"Active",upcoming:"Upcoming",moving:"Moving out",former:"Former"};
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c];});}
+function save(){try{localStorage.setItem("khaata-pg-tenants-v2",JSON.stringify(S));}catch(e){}}
+function load(){try{var x=JSON.parse(localStorage.getItem("khaata-pg-tenants-v2")||"null");if(x){S=x;}}catch(e){}}
+function mutate(k,v){S[k]=v;save();render();}
+function counts(k){var n=0,i;for(i=0;i<data.length;i++){if(data[i].life===k)n++;}return n;}
+function render(){
+ document.documentElement.setAttribute("data-theme",S.theme);
+ var keys=["active","upcoming","moving","former"],fh="",i,k;
+ for(i=0;i<keys.length;i++){k=keys[i];fh+='<button class="filter '+(S.filter===k?'active':'')+'" type="button" data-filter="'+k+'">'+labels[k]+(k!=="former"?" "+counts(k):"")+"</button>";}
+ document.getElementById("filters").innerHTML=fh;
+ var q=S.q.toLowerCase(),rows=[],d;
+ for(i=0;i<data.length;i++){d=data[i];if(d.life===S.filter&&(!q||(d.name+" "+d.place+" "+d.phone).toLowerCase().indexOf(q)>-1))rows.push(d);}
+ document.getElementById("count").textContent=rows.length+" "+(rows.length===1?"tenant":"tenants");
+ var h="";
+ for(i=0;i<rows.length;i++){d=rows[i];h+='<button class="tenant" type="button" data-tenant="'+d.id+'"><span class="avatar">'+esc(d.name.split(" ").map(function(x){return x.charAt(0);}).join("").slice(0,2))+'</span><span class="tmain"><span class="name">'+esc(d.name)+'</span><span class="place">'+esc(d.place)+'</span>'+(d.state?'<span class="state '+esc(d.tone)+'">'+esc(d.state)+'</span>':"")+'</span><span class="chev">›</span></button>';}
+ document.getElementById("list").innerHTML=h||'<div class="empty">No tenants found.</div>';
+ document.getElementById("fabmenu").className="fabmenu"+(S.fab?" open":"");
+ document.getElementById("fab").textContent=S.fab?"×":"+";
+}
+function openTenant(id){var i,d;for(i=0;i<data.length;i++){if(data[i].id===id){d=data[i];break;}}if(!d)return;
+ document.getElementById("sname").textContent=d.name;document.getElementById("splace").textContent=d.place;
+ document.getElementById("sphone").textContent=d.phone;document.getElementById("sstatus").textContent=d.state||"Active";
+ document.getElementById("srent").textContent=d.rent;document.getElementById("sheetback").className="sheetback open";
+}
+load();
+document.addEventListener("click",function(e){
+ var f=e.target.closest("[data-filter]"),t=e.target.closest("[data-tenant]"),a=e.target.closest("[data-act]");
+ if(f){mutate("filter",f.getAttribute("data-filter"));return;}
+ if(t){openTenant(t.getAttribute("data-tenant"));return;}
+ if(a){var act=a.getAttribute("data-act");if(act==="theme"){mutate("theme",S.theme==="dark"?"light":"dark");}else if(act==="fab"){mutate("fab",!S.fab);}else if(act==="add-tenant"){S.fab=false;save();alert("Add tenant flow is the next screen to build.");render();}return;}
+ if(e.target===document.getElementById("sheetback"))document.getElementById("sheetback").className="sheetback";
+});
+document.addEventListener("input",function(e){if(e.target.id==="search"){S.q=e.target.value;save();render();document.getElementById("search").focus();document.getElementById("search").value=S.q;}});
+document.addEventListener("change",function(){});
+render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · Shared Backup module · v1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{
+--canvas:#FDFCF8;--surface:#FFFFFF;--row:#F6F6F5;--line:#E6E0D7;--ink:#171716;--muted:#6B6B69;
+--alert:#FF6B5B;--alert-solid:#C23E2E;--alert-ink:#B83A2B;--alert-tint:#FFE4DF;
+--pending:#EBC36B;--pending-ink:#6E5200;--pending-tile:#FFF0C4;
+--done-ink:#1E7A4C;--done-tint:#DDF3E6;--info:#D7E1FE;--info-ink:#2B3A75;--info-line:#C3D0F7;
+--act:#2B3A75;--act-text:#FFFFFF;--neutral-tile:#EDEDEC;--neutral-ink:#6B6B69;
+--idb-teal:#8FD3CA;--idh-teal:#0E4D47;--idh-ink:#FBFBFA;
+--r-card:20px;--r-btn:14px;--r-pill:999px;color-scheme:light
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+--canvas:#1B1B1A;--surface:#262625;--row:#232322;--line:#38383A;--ink:#FFFFFF;--muted:#9B9B98;
+--alert:#E8705C;--alert-solid:#E8705C;--alert-ink:#F59384;--alert-tint:#3A2420;
+--pending:#EBC36B;--pending-ink:#EBC36B;--pending-tile:#3A3122;--done-ink:#74C99A;--done-tint:#244232;
+--info:#252C42;--info-ink:#DCE4FF;--info-line:#34405E;--act:#C9D4FB;--act-text:#1A2140;--neutral-tile:#2A2A29;--neutral-ink:#9B9B98;
+--idb-teal:#0E4D47;color-scheme:dark}}
+:root[data-theme="dark"]{
+--canvas:#1B1B1A;--surface:#262625;--row:#232322;--line:#38383A;--ink:#FFFFFF;--muted:#9B9B98;
+--alert:#E8705C;--alert-solid:#E8705C;--alert-ink:#F59384;--alert-tint:#3A2420;
+--pending:#EBC36B;--pending-ink:#EBC36B;--pending-tile:#3A3122;--done-ink:#74C99A;--done-tint:#244232;
+--info:#252C42;--info-ink:#DCE4FF;--info-line:#34405E;--act:#C9D4FB;--act-text:#1A2140;--neutral-tile:#2A2A29;--neutral-ink:#9B9B98;
+--idb-teal:#0E4D47;color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--canvas);color:var(--ink);font-family:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif}
+button{font:inherit;color:inherit;cursor:pointer}:focus-visible{outline:2px solid var(--act);outline-offset:2px}[hidden]{display:none!important}
+svg.lucide{width:18px;height:18px;flex:none}
+.app{max-width:520px;margin:0 auto;padding:0 16px calc(36px + env(safe-area-inset-bottom))}
+.hero{margin:0 -16px 16px;padding:calc(14px + env(safe-area-inset-top)) 16px 18px;background:var(--idh-teal);color:var(--idh-ink);display:flex;align-items:center;gap:10px}
+.hero .ibtn{border-color:rgba(255,255,255,.28);background:transparent;color:inherit}.hero .grow{flex:1}.hero small{display:block;font-size:11px;opacity:.8}.hero strong{display:block;font-size:18px;margin-top:2px}
+.ibtn{width:44px;height:44px;border:1px solid var(--line);background:var(--surface);border-radius:12px;display:grid;place-items:center;padding:0}
+h1{font-size:26px;line-height:1.08;margin:12px 0 5px}.lead{font-size:12px;color:var(--muted);line-height:1.5;margin:0 0 16px}
+.note{padding:11px 12px;border-radius:14px;background:var(--info);color:var(--info-ink);font-size:11px;line-height:1.45;margin-bottom:14px}
+.note.warn{background:var(--pending-tile);color:var(--pending-ink)}
+.grp{font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:22px 4px 8px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:14px}
+.row{width:100%;min-height:60px;border:0;border-bottom:1px solid var(--line);background:transparent;display:flex;align-items:center;gap:12px;text-align:left;padding:11px 0}.row:last-child{border-bottom:0}
+.tile{width:40px;height:40px;border-radius:13px;background:var(--neutral-tile);display:grid;place-items:center;flex:none;color:var(--neutral-ink)}
+.grow{flex:1;min-width:0}.row strong{display:block;font-size:12px}.row small{display:block;color:var(--muted);font-size:11px;line-height:1.4;margin-top:3px}
+.value{font-size:11px;font-weight:800;color:var(--muted);white-space:nowrap}
+.tag{display:inline-flex;align-items:center;border-radius:999px;padding:3px 8px;font-size:10px;font-weight:800;background:var(--done-tint);color:var(--done-ink)}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:11px}.kv:last-child{border-bottom:0}.kv span{color:var(--muted)}.kv b{text-align:right}
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.34);z-index:40;opacity:0;pointer-events:none}.scrim.on{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:50%;bottom:0;transform:translate(-50%,105%);width:min(520px,100%);max-height:88vh;overflow:auto;background:var(--surface);border-radius:24px 24px 0 0;padding:10px 16px calc(18px + env(safe-area-inset-bottom));z-index:50;transition:.22s}.sheet.on{transform:translate(-50%,0)}
+.handle{width:38px;height:4px;border-radius:99px;background:var(--line);margin:0 auto 12px}.shead{display:flex;align-items:flex-start;gap:10px}.shead .grow{flex:1}.shead h2{font-size:18px;margin:0}.shead p{font-size:11px;color:var(--muted);margin:3px 0 0}.close{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center}
+.btn{min-height:44px;border:1px solid var(--line);background:var(--surface);border-radius:var(--r-btn);padding:0 14px;font-size:11px;font-weight:800}.btn.primary{background:var(--act);color:var(--act-text);border-color:var(--act)}.btn.wide{width:100%;margin-top:12px}
+</style>
+</head>
+<body>
+<main class="app">
+<header class="hero">
+<button class="ibtn" data-act="back" aria-label="Back"><i data-lucide="arrow-left"></i></button>
+<div class="grow"><small>You are in</small><strong>Backup</strong></div>
+<i data-lucide="hard-drive"></i>
+</header>
+
+<div class="note"><b>Shared Backup module v1</b><br>Backup, restore and export are shared Khaata capabilities. Sync remains a separate plan-dependent setting.</div>
+
+<h1>Data & restore</h1>
+<p class="lead">Create recovery copies, restore them deliberately, or export your business data.</p>
+
+<div class="grp">This business</div>
+<section class="card">
+<div class="row"><span class="tile"><i data-lucide="building-2"></i></span><span class="grow"><strong>Sunrise PG</strong><small>PG / Hostel</small></span><span class="tag">Ready</span></div>
+<div class="kv"><span>Last backup</span><b id="lastBackup">Today · 10:42 PM</b></div>
+<div class="kv"><span>Backup destination</span><b>On this device</b></div>
+</section>
+
+<div class="grp">Actions</div>
+<section class="card">
+<button class="row" data-open="backup"><span class="tile"><i data-lucide="cloud-upload"></i></span><span class="grow"><strong>Back up now</strong><small>Create a new recovery copy</small></span><span class="value">2 min ago</span><i data-lucide="chevron-right"></i></button>
+<button class="row" data-open="restore"><span class="tile"><i data-lucide="history"></i></span><span class="grow"><strong>Restore</strong><small>Review a backup before replacing local data</small></span><i data-lucide="chevron-right"></i></button>
+<button class="row" data-open="export"><span class="tile"><i data-lucide="file-down"></i></span><span class="grow"><strong>Export</strong><small>Create a portable copy for your records</small></span><i data-lucide="chevron-right"></i></button>
+</section>
+
+<div class="grp">Sync</div>
+<section class="card">
+<button class="row" data-open="sync"><span class="tile"><i data-lucide="cloud"></i></span><span class="grow"><strong>Khaata Sync</strong><small>Separate from backup · available on supported plans</small></span><span class="value">Pro</span><i data-lucide="chevron-right"></i></button>
+</section>
+
+<div class="note warn" style="margin-top:14px"><b>Backup is not sync.</b><br>A backup is a recoverable copy. Sync keeps supported data aligned across connected devices when online.</div>
+</main>
+
+<div class="scrim" id="scrim"></div>
+<section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+<div class="handle"></div>
+<div class="shead"><div class="grow"><h2 id="sheetTitle"></h2><p id="sheetSub"></p></div><button class="close" data-act="close" aria-label="Close"><i data-lucide="x"></i></button></div>
+<div id="sheetBody"></div>
+</section>
+
+<script>
+(function(){
+"use strict";
+var lastFocus=null;
+var lastBackupText="Today · 10:42 PM";
+function icons(){if(window.lucide&&lucide.createIcons)lucide.createIcons()}
+function openSheet(t,s,b){lastFocus=document.activeElement;sheetTitle.textContent=t;sheetSub.textContent=s||"";sheetBody.innerHTML=b;scrim.classList.add("on");sheet.classList.add("on");icons();setTimeout(function(){var f=sheet.querySelector("button");if(f)f.focus()},0)}
+function closeSheet(){scrim.classList.remove("on");sheet.classList.remove("on");if(lastFocus&&lastFocus.focus)lastFocus.focus()}
+function backupBody(){return '<div class="kv"><span>Business</span><b>Sunrise PG</b></div><div class="kv"><span>Destination</span><b>On this device</b></div><div class="note" style="margin-top:12px">Creating a backup does not change business records.</div><button class="btn primary wide" data-act="confirm-backup">Create backup</button>'}
+function restoreBody(){return '<div class="kv"><span>Backup</span><b>Sunrise PG · Today</b></div><div class="kv"><span>Source</span><b>On this device</b></div><div class="note warn" style="margin-top:12px"><b>Review first.</b><br>Restore replaces the local business copy with the selected backup. Back up current data before continuing.</div><button class="btn primary wide" data-act="review-restore">Review restore</button>'}
+function exportBody(){return '<div class="kv"><span>Business</span><b>Sunrise PG</b></div><div class="kv"><span>Purpose</span><b>Portable business copy</b></div><div class="note" style="margin-top:12px">The exact exported file schema is not defined in the shared source material used for this prototype.</div><button class="btn primary wide" data-act="confirm-export">Create export</button>'}
+document.addEventListener("click",function(e){
+ var o=e.target.closest("[data-open]");if(o){
+   if(o.dataset.open==="backup")openSheet("Back up now","Create a recovery copy",backupBody());
+   if(o.dataset.open==="restore")openSheet("Restore","Review before replacing local data",restoreBody());
+   if(o.dataset.open==="export")openSheet("Export","Create a portable copy",exportBody());
+   if(o.dataset.open==="sync")openSheet("Khaata Sync","Plan-dependent connected data",'<div class="note"><b>Separate capability.</b><br>Sync is configured from Settings and does not replace backup/restore.</div><button class="btn wide" data-act="plans">View plans</button>');
+   return
+ }
+ var a=e.target.closest("[data-act]");if(!a)return;
+ if(a.dataset.act==="back"){alert("Back to Khaata hub");return}
+ if(a.dataset.act==="close"){closeSheet();return}
+ if(a.dataset.act==="confirm-backup"){lastBackupText="Just now";document.getElementById("lastBackup").textContent=lastBackupText;closeSheet();return}
+ if(a.dataset.act==="review-restore"){sheetBody.innerHTML='<div class="note warn"><b>Restore review</b><br>This prototype stops before the destructive confirmation. The selected backup and affected business would be shown here.</div><button class="btn wide" data-act="close">Cancel</button>';icons();return}
+ if(a.dataset.act==="confirm-export"){sheetBody.innerHTML='<div class="note" style="background:var(--done-tint);color:var(--done-ink)"><b>Export created</b><br>A portable business copy is ready.</div><button class="btn wide" data-act="close">Done</button>';icons();return}
+ if(a.dataset.act==="plans"){alert("Opens Plans / Upgrade.");return}
+});
+scrim.addEventListener("click",closeSheet);
+document.addEventListener("keydown",function(e){if(e.key==="Escape")closeSheet()});
+icons();
+})();
+</script>
+</body>
+</html>

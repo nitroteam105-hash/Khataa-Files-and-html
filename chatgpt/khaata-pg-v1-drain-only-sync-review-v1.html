@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · Drain-only Sync Lease v1</title>
+<style>
+:root{--canvas:#FDFCF8;--surface:#FFFFFF;--line:#E6E0D7;--ink:#171716;--muted:#6B6B69;--info:#D7E1FE;--info-ink:#2B3A75;--done:#DDF3E6;--done-ink:#1E7A4C;--pending:#FFF0C4;--pending-ink:#6E5200;--alert:#FFE4DF;--alert-ink:#B83A2B}
+*{box-sizing:border-box}body{margin:0;background:var(--canvas);color:var(--ink);font-family:Manrope,system-ui,sans-serif}main{max-width:900px;margin:auto;padding:20px 16px 44px}h1{font-size:26px;margin:0 0 6px}h2{font-size:19px;margin:22px 0 6px}p{font-size:11.5px;line-height:1.6;color:var(--muted);margin:0}.note{padding:11px 12px;border-radius:14px;background:var(--info);color:var(--info-ink);font-size:11px;line-height:1.5;margin:12px 0}.ok{background:var(--done);color:var(--done-ink)}.warn{background:var(--pending);color:var(--pending-ink)}.alert{background:var(--alert);color:var(--alert-ink)}.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:14px;margin-top:10px;overflow:auto}table{width:100%;border-collapse:collapse;font-size:11px}th,td{text-align:left;vertical-align:top;padding:9px 8px;border-bottom:1px solid var(--line);line-height:1.45}th{color:var(--muted)}tr:last-child td{border-bottom:0}code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.flow{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;line-height:1.65;white-space:pre-wrap;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px}
+</style></head><body><main>
+<h1>Drain-only Sync Lease v1</h1>
+<p>This closes the entitlement-expiry gap left intentionally open in the previous server build.</p>
+
+<div class="note ok"><b>Product guarantee:</b> an operation legitimately recorded while entitled or inside valid offline grace is not stranded merely because the entitlement disappears before reconnect. It may still upload in drain-only mode.</div>
+<div class="note alert"><b>Security boundary:</b> this design does not pretend a commodity phone can provide perfect forensic proof of the real-world time of an offline action. It provides a practical verified-server-time lease and explicitly states the remaining threat-model limit.</div>
+
+<h2>Lease model</h2>
+<div class="card"><table><tr><th>Mechanism</th><th>Purpose</th><th>Guarantee</th></tr><tr><td>Verified server time</td><td>Lease stores server time at verification</td><td>Device wall clock cannot extend grace</td></tr><tr><td>Monotonic elapsed time</td><td>Computes effective server-relative now</td><td>Detects clock rollback/casual tampering</td></tr><tr><td>Lease entitlement set</td><td>Proves which entitlement snapshot was issued</td><td>No plan/tier-name dependency</td></tr><tr><td>Outbox provenance</td><td>Lease ID + sequence + hash chain + effective server time</td><td>Supports later drain validation</td></tr><tr><td>Current entitlement gone</td><td>Existing valid rows may drain</td><td>No new gated capability is restored</td></tr><tr><td>Continuity lost</td><td>Stop new paid-only offline writes</td><td>Previously stamped outbox rows stay preserved</td></tr></table></div>
+
+<h2>Offline time model</h2>
+<div class="flow">server verifies entitlement
+  ↓
+issue device lease:
+  verified_server_time
+  grace_expires_at
+  entitlement keys
+  config version
+  ↓
+device stores monotonic_at_verification
+  ↓
+while offline:
+effective server time =
+  verified_server_time
+  + monotonic elapsed
+
+device wall clock is not used to extend grace</div>
+
+<h2>Operation provenance</h2>
+<div class="flow">create local outbox operation
+  ↓
+verify lease contains required entitlement
+  ↓
+verify server-relative effective time ≤ grace expiry
+  ↓
+assign local sequence
+  ↓
+link previous operation hash
+  ↓
+hash canonical operation + lease provenance
+  ↓
+commit domain write + outbox provenance together</div>
+
+<h2>Reconnect after entitlement loss</h2>
+<div class="flow">current cloud_sync entitlement?
+  ├─ yes → normal sync
+  └─ no
+       ↓
+       existing outbox item has valid lease provenance?
+       ├─ no → reject / surface issue
+       └─ yes → accepted_drain
+                 ↓
+                 same typed server domain RPC
+                 ↓
+                 ACK item
+                 ↓
+                 continue until queue empty
+
+Drain-only never re-enables creation of new gated sync work.</div>
+
+<h2>Reboot / monotonic continuity</h2>
+<div class="note warn">
+If the device loses trustworthy monotonic continuity, Khaata stops creating <b>new</b> paid-only offline operations until entitlement is re-verified. Already-created outbox entries are kept and may drain later. This is deliberately safer than falling back to the editable device wall clock.
+</div>
+
+<h2>Threat-model note</h2>
+<div class="card"><p>
+A hardware-backed device signing key can strengthen device binding, but it still does not universally prove when a human action occurred on a fully compromised/rooted phone. This V1 design therefore targets correctness, retry safety and casual clock-tampering resistance rather than claiming forensic timestamp guarantees.
+</p></div>
+</main></body></html>

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · Mobile Query & Projection Layer v1</title>
+<style>
+:root{--canvas:#FDFCF8;--surface:#FFFFFF;--line:#E6E0D7;--ink:#171716;--muted:#6B6B69;--info:#D7E1FE;--info-ink:#2B3A75;--done:#DDF3E6;--done-ink:#1E7A4C;--pending:#FFF0C4;--pending-ink:#6E5200}
+*{box-sizing:border-box}body{margin:0;background:var(--canvas);color:var(--ink);font-family:Manrope,system-ui,sans-serif}main{max-width:880px;margin:auto;padding:20px 16px 44px}h1{font-size:26px;margin:0 0 6px}h2{font-size:19px;margin:22px 0 6px}p{font-size:11.5px;line-height:1.6;color:var(--muted);margin:0}.note{padding:11px 12px;border-radius:14px;background:var(--info);color:var(--info-ink);font-size:11px;line-height:1.5;margin:12px 0}.ok{background:var(--done);color:var(--done-ink)}.warn{background:var(--pending);color:var(--pending-ink)}.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:14px;margin-top:10px;overflow:auto}table{width:100%;border-collapse:collapse;font-size:10.5px}th,td{text-align:left;vertical-align:top;padding:9px 8px;border-bottom:1px solid var(--line);line-height:1.45}th{color:var(--muted)}tr:last-child td{border-bottom:0}code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.flow{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10.5px;line-height:1.65;white-space:pre-wrap;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px}
+</style></head>
+<body><main>
+<h1>Mobile Query + Projection Layer v1</h1>
+<p>The write side is now paired with a local SQLite read side for Home, Tenants, Tenant Detail and Collections.</p>
+
+<div class="note ok"><b>Local-first read rule:</b> normal screens read SQLite projections directly. They do not wait for Supabase.</div>
+<div class="note warn"><b>Derived attention:</b> Needs attention is computed from underlying business state. This build does not invent a generic reminders, dismiss, snooze or acknowledge table.</div>
+
+<h2>UI projection coverage</h2>
+<div class="card"><table><tr><th>Surface</th><th>Projection</th><th>Rule</th></tr><tr><td>Home</td><td>Needs attention + Coming Up + Business Pulse</td><td>Derived locally from SQLite</td></tr><tr><td>Needs attention</td><td>Joining overdue, overdue dues, approvals, cash discrepancy, outstanding ≥ security held</td><td>No generic dismiss/snooze table</td></tr><tr><td>Coming Up</td><td>Joining, move-out, rent due in rolling 7 days</td><td>Unresolved dated items naturally age into attention queries</td></tr><tr><td>Business Pulse</td><td>Collected, Outstanding, Vacant beds, Becoming vacant this month</td><td>No expenses, profit, charts, collection % or cash-with-staff in permanent Pulse</td></tr><tr><td>Tenants</td><td>Search + Active / Upcoming / Moving out / Former</td><td>No dashboard summaries above tenant list</td></tr><tr><td>Tenant row</td><td>Name + room/bed + relevant exception only</td><td>No &#x27;All good&#x27; or zero-balance noise</td></tr><tr><td>Tenant Detail</td><td>Outstanding, current month, recent payments, security, lifecycle/location</td><td>Operational tenancy record</td></tr><tr><td>Collections</td><td>Current month obligation rows with settled/outstanding state</td><td>Read from obligation/payment projections</td></tr></table></div>
+
+<h2>Home read path</h2>
+<div class="flow">SQLite domain tables
+  ↓
+projection views
+  ├─ v_attention_candidates
+  ├─ v_coming_up
+  └─ v_business_pulse
+  ↓
+HomeQueries.getHome(businessId)
+  ↓
+Needs attention
+Coming Up
+Business Pulse</div>
+
+<h2>Business Pulse</h2>
+<div class="card"><p>
+Money fields use the current calendar month. Occupancy is point-in-time.
+Vacant beds returns <code>null</code> when capacity is unknown so the UI never misrepresents unknown capacity as zero.
+The permanent Pulse deliberately excludes expenses, profit, trends, charts, collection percentage and cash-with-staff.
+</p></div>
+
+<h2>Tenants</h2>
+<div class="card"><p>
+The repository exposes the frozen lifecycle filters <b>Active, Upcoming, Moving out and Former</b>, with Active as the default.
+Rows contain identity and room/bed plus only an operational exception when one exists; routine “all good” copy is omitted.
+</p></div>
+
+<h2>Important limitation kept visible</h2>
+<div class="note">
+The current SQLite schema does not yet define tenant-requirement completion records, so the read model does <b>not</b> fabricate “missing required information” attention logic. That should be added only when the requirement-storage model is concretely specified.
+</div>
+</main></body></html>

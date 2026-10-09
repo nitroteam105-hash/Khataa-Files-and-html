@@ -1,0 +1,91 @@
+{
+  "version": "1.0",
+  "status": "proposed implementation tests",
+  "cases": [
+    {
+      "id": "VIS-001",
+      "case": "Owner reads business data",
+      "expect": [
+        "full visibility",
+        "staff membership not required"
+      ]
+    },
+    {
+      "id": "VIS-002",
+      "case": "Tenant records hidden",
+      "expect": [
+        "tenant list/detail rejected"
+      ]
+    },
+    {
+      "id": "VIS-003",
+      "case": "Tenant records visible, balances hidden",
+      "expect": [
+        "tenant identity visible",
+        "outstanding/amount fields omitted"
+      ]
+    },
+    {
+      "id": "VIS-004",
+      "case": "Tenant records visible, rooms hidden",
+      "expect": [
+        "tenant visible",
+        "room/bed omitted"
+      ]
+    },
+    {
+      "id": "VIS-005",
+      "case": "Sensitive identity hidden",
+      "expect": [
+        "phone/document fields omitted",
+        "basic tenant row remains visible"
+      ]
+    },
+    {
+      "id": "VIS-006",
+      "case": "Expenses hidden",
+      "expect": [
+        "expense query rejected"
+      ]
+    },
+    {
+      "id": "VIS-007",
+      "case": "Staff cash custody hidden",
+      "expect": [
+        "cash custody query rejected",
+        "tenant payment truth unaffected"
+      ]
+    },
+    {
+      "id": "VIS-008",
+      "case": "Staff access hidden",
+      "expect": [
+        "staff member list rejected"
+      ]
+    },
+    {
+      "id": "VIS-009",
+      "case": "Disabled membership",
+      "expect": [
+        "all new operational reads rejected through resolver",
+        "historical attribution remains in DB"
+      ]
+    },
+    {
+      "id": "VIS-010",
+      "case": "Action allowed but visibility hidden",
+      "expect": [
+        "write permission may still allow command",
+        "read query redacts/blocks independently"
+      ]
+    },
+    {
+      "id": "VIS-011",
+      "case": "Offline cached database after role change not yet synced",
+      "expect": [
+        "app enforces last known local visibility snapshot",
+        "does not claim remote revocation has already erased cached bytes"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · PG / Hostel · Add tenant · standardized with UI components v5 · v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{
+  --canvas:#FDFCF8; --surface:#FFFFFF; --row:#F6F6F5; --line:#E6E0D7;
+  --ink:#171716; --muted:#6B6B69;
+  --alert:#FF6B5B; --alert-solid:#C23E2E; --alert-ink:#B83A2B; --alert-tint:#FFE4DF;
+  --pending:#EBC36B; --pending-ink:#6E5200; --pending-tile:#FFF0C4;
+  --done-ink:#1E7A4C; --done-tint:#DDF3E6;
+  --info:#D7E1FE; --info-ink:#2B3A75; --info-line:#C3D0F7;
+  --act:#2B3A75; --act-text:#FFFFFF;
+  --neutral-tile:#EDEDEC; --neutral-ink:#6B6B69;
+  --r-btn:14px; --r-card:20px; --r-pill:999px;
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:24px; --sp-7:32px;
+  --dur-fast:.18s; --dur-slide:.5s; --ease-slide:cubic-bezier(.33,1,.68,1);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --canvas:#1B1B1A; --surface:#262625; --row:#232322; --line:#38383a;
+    --ink:#FFFFFF; --muted:#9B9B98;
+    --alert:#E8705C; --alert-solid:#E8705C; --alert-ink:#F59384; --alert-tint:#3A2420;
+    --pending:#EBC36B; --pending-ink:#EBC36B; --pending-tile:#3A3122;
+    --done-ink:#74C99A; --done-tint:#244232;
+    --info:#252C42; --info-ink:#DCE4FF; --info-line:#34405E;
+    --act:#C9D4FB; --act-text:#1A2140;
+    --neutral-tile:#2A2A29; --neutral-ink:#9B9B98;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --canvas:#1B1B1A; --surface:#262625; --row:#232322; --line:#38383a;
+  --ink:#FFFFFF; --muted:#9B9B98;
+  --alert:#E8705C; --alert-solid:#E8705C; --alert-ink:#F59384; --alert-tint:#3A2420;
+  --pending:#EBC36B; --pending-ink:#EBC36B; --pending-tile:#3A3122;
+  --done-ink:#74C99A; --done-tint:#244232;
+  --info:#252C42; --info-ink:#DCE4FF; --info-line:#34405E;
+  --act:#C9D4FB; --act-text:#1A2140;
+  --neutral-tile:#2A2A29; --neutral-ink:#9B9B98;
+  color-scheme:dark;
+}
+:root{--biz-pink:#FBB9C2;--biz-pink-ink:#171716}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--canvas);color:var(--ink);font-family:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif}
+button,input,select{font:inherit}button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--act);outline-offset:2px}
+svg.lucide{width:18px;height:18px;stroke-width:2}
+.app{max-width:520px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top)) 16px calc(94px + env(safe-area-inset-bottom))}
+[hidden]{display:none!important}
+.btn{min-height:44px;border-radius:var(--r-btn);padding:0 16px;border:0;background:var(--act);color:var(--act-text);font-weight:800;display:inline-flex;align-items:center;justify-content:center;gap:7px;white-space:nowrap}
+.btn.secondary{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.pill{display:inline-flex;align-items:center;gap:5px;border-radius:var(--r-pill);padding:5px 9px;font-size:11px;font-weight:800;border:0}
+.pill.pending{background:var(--pending-tile);color:var(--pending-ink)}
+.pill.info{background:var(--info);color:var(--info-ink)}
+.pill.done{background:var(--done-tint);color:var(--done-ink)}
+.card{border:1px solid var(--line);border-radius:var(--r-card);background:var(--surface)}
+.ibtn{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);display:grid;place-items:center;padding:0}
+.toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom));transform:translate(-50%,180%);transition:transform var(--dur-fast);z-index:90;background:var(--ink);color:var(--canvas);border-radius:var(--r-btn);padding:11px 14px;font-size:12px;font-weight:800;max-width:calc(100% - 32px)}.toast.on{transform:translate(-50%,0)}
+.new{padding:10px 12px;border-radius:var(--r-card);background:var(--info);color:var(--info-ink);font-size:11.5px;line-height:1.45;margin-bottom:12px}
+.new strong{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.mark{width:38px;height:38px;border-radius:50%;background:var(--biz-pink);color:var(--biz-pink-ink);display:grid;place-items:center;font-weight:800;flex:none}
+.business{flex:1;min-width:0}.business strong{display:block;font-size:14px}.business small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.flow-head{margin-bottom:14px}
+.flow-head .meta{display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:11px;font-weight:700}
+.flow-head h1{font-size:24px;line-height:1.1;margin:6px 0 4px}
+.flow-head p{margin:0;color:var(--muted);font-size:12px;line-height:1.45}
+.progress{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:12px}
+.stepbar{height:4px;border-radius:99px;background:var(--neutral-tile)}
+.stepbar.done{background:var(--done-ink)}.stepbar.on{background:var(--act)}
+.panel{display:none}.panel.on{display:block}
+.form-card{padding:14px}
+.field{margin-bottom:14px}.field:last-child{margin-bottom:0}
+.field label{display:block;font-size:11px;font-weight:800;margin-bottom:6px}
+.field small{display:block;margin-top:5px;color:var(--muted);font-size:10.5px;line-height:1.4}
+.input{width:100%;height:46px;border:1px solid var(--line);border-radius:var(--r-btn);background:var(--surface);color:var(--ink);padding:0 12px;font-size:14px}
+.inputrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.choicegrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.choice{position:relative;width:100%;min-height:72px;border:1px solid var(--line);border-radius:var(--r-btn);background:var(--surface);color:var(--ink);padding:11px 12px;text-align:left}
+.choice strong{display:block;font-size:13px}.choice span{display:block;margin-top:3px;color:var(--muted);font-size:11px}
+.choice[aria-pressed="true"]{background:var(--info);border-color:var(--act)}
+.choice[aria-pressed="true"]::after{content:"";position:absolute;right:8px;top:8px;width:18px;height:18px;border-radius:50%;background:var(--done-ink)}
+.choice[aria-pressed="true"]::before{content:"✓";position:absolute;right:12px;top:8px;color:#fff;font-size:12px;font-weight:900;z-index:1}
+.notice{padding:11px 12px;border-radius:var(--r-btn);background:var(--info);color:var(--info-ink);font-size:11.5px;line-height:1.45;margin-bottom:12px}
+.requirements{overflow:hidden}
+.req{display:flex;gap:12px;align-items:center;min-height:60px;padding:10px 12px;border-bottom:1px solid var(--line)}.req:last-child{border-bottom:0}
+.req .copy{flex:1}.req strong{display:block;font-size:13px}.req small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.switch{width:44px;height:26px;border:0;border-radius:99px;background:var(--neutral-tile);padding:3px;display:flex;justify-content:flex-start}
+.switch span{width:20px;height:20px;border-radius:50%;background:var(--surface);box-shadow:0 1px 3px color-mix(in srgb,var(--ink) 18%,transparent)}
+.switch[aria-checked="true"]{background:var(--act);justify-content:flex-end}
+.review{overflow:hidden}
+.rrow{display:flex;align-items:flex-start;gap:12px;padding:11px 12px;border-bottom:1px solid var(--line);font-size:12px}.rrow:last-child{border-bottom:0}
+.rrow span:first-child{color:var(--muted);flex:0 0 120px}.rrow b{margin-left:auto;text-align:right;line-height:1.4}
+.footer{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(520px,100%);background:var(--surface);border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom));display:grid;grid-template-columns:auto 1fr;gap:8px;z-index:40}
+.footer .btn:last-child{width:100%}
+.scrim{position:fixed;inset:0;background:color-mix(in srgb,var(--ink) 30%,transparent);z-index:70;display:none}.scrim.on{display:block}
+.sheet{position:fixed;left:50%;bottom:0;transform:translate(-50%,110%);transition:transform var(--dur-slide) var(--ease-slide);z-index:71;width:min(520px,100%);background:var(--surface);border-radius:24px 24px 0 0;padding:10px 18px calc(24px + env(safe-area-inset-bottom))}.sheet.on{transform:translate(-50%,0)}
+.handle{width:38px;height:4px;border-radius:99px;background:var(--line);margin:0 auto 18px}.sheet h2{margin:0;font-size:20px}.sheet p{margin:5px 0 0;color:var(--muted);font-size:12px}.sheet .btn{width:100%;margin-top:16px}
+@media(max-width:360px){.inputrow,.choicegrid{grid-template-columns:1fr}.rrow span:first-child{flex-basis:100px}}
+</style>
+</head>
+<body>
+<main class="app">
+  <div class="new"><strong>New in this file</strong><br>Add Tenant standardized against Khaata UI components for build · v5. The frozen five-step onboarding flow and save-with-incomplete-requirements rule are unchanged.</div>
+  <header class="top">
+    <div class="mark" aria-hidden="true">S</div>
+    <div class="business"><strong>Sunrise PG</strong><small>Add tenant</small></div>
+    <button class="ibtn" type="button" data-act="theme" aria-label="Toggle theme"><i data-lucide="sun-moon"></i></button>
+  </header>
+  <section class="flow-head">
+    <div class="meta"><span id="stepname">Basics</span><span id="stepcount">1 of 5</span></div>
+    <h1 id="heading">Basics</h1>
+    <p id="subheading">Start with the person and their joining date.</p>
+    <div class="progress" id="steps"></div>
+  </section>
+  <section class="panel on" data-step="0">
+    <div class="card form-card">
+      <div class="field"><label for="name">Tenant name</label><input class="input" id="name" value="Aarav Sharma"></div>
+      <div class="field"><label for="phone">Phone</label><input class="input" id="phone" value="98765 12345" inputmode="tel"></div>
+      <div class="field"><label for="joining">Agreed joining date</label><input class="input" id="joining" type="date" value="2026-10-08"><small>This is the agreed joining / rent-start date for the tenancy.</small></div>
+    </div>
+  </section>
+  <section class="panel" data-step="1">
+    <div class="card form-card">
+      <div class="field"><label for="room">Room</label><select class="input" id="room"><option>Room 204</option><option>Room 208</option><option>Room 304</option></select></div>
+      <div class="field"><label>Bed</label><div class="choicegrid">
+        <button class="choice" type="button" data-choice="bed" data-value="Bed A" aria-pressed="true"><strong>Bed A</strong><span>Vacant</span></button>
+        <button class="choice" type="button" data-choice="bed" data-value="Bed B" aria-pressed="false"><strong>Bed B</strong><span>Vacant</span></button>
+      </div></div>
+      <button class="btn secondary" type="button" data-act="create-room"><i data-lucide="plus"></i>Create room</button>
+    </div>
+  </section>
+  <section class="panel" data-step="2">
+    <div class="card form-card">
+      <div class="inputrow">
+        <div class="field"><label for="rent">Monthly rent</label><input class="input" id="rent" value="8500" inputmode="numeric"></div>
+        <div class="field"><label for="due">Due day</label><select class="input" id="due"><option>5th</option><option>1st</option><option>10th</option></select></div>
+      </div>
+      <div class="inputrow">
+        <div class="field"><label for="security">Security agreed</label><input class="input" id="security" value="10000" inputmode="numeric"></div>
+        <div class="field"><label for="securityPaid">Security received</label><input class="input" id="securityPaid" value="0" inputmode="numeric"><small>Agreed and actually held stay separate.</small></div>
+      </div>
+    </div>
+  </section>
+  <section class="panel" data-step="3">
+    <div class="notice">Requirements can be completed later. Missing required items mark the tenancy as <strong>Setup incomplete</strong>, but do not block saving.</div>
+    <div class="card requirements">
+      <div class="req"><div class="copy"><strong>Government ID</strong><small>Required</small></div><button class="switch" type="button" role="switch" aria-checked="true" data-check="id"><span></span></button></div>
+      <div class="req"><div class="copy"><strong>Emergency contact</strong><small>Required</small></div><button class="switch" type="button" role="switch" aria-checked="false" data-check="emergency"><span></span></button></div>
+      <div class="req"><div class="copy"><strong>Photo</strong><small>Optional</small></div><button class="switch" type="button" role="switch" aria-checked="false" data-check="photo"><span></span></button></div>
+    </div>
+  </section>
+  <section class="panel" data-step="4">
+    <div class="card review">
+      <div class="rrow"><span>Tenant</span><b id="rvName"></b></div>
+      <div class="rrow"><span>Joining</span><b id="rvJoining"></b></div>
+      <div class="rrow"><span>Room / bed</span><b id="rvRoom"></b></div>
+      <div class="rrow"><span>Monthly rent</span><b id="rvRent"></b></div>
+      <div class="rrow"><span>Due day</span><b id="rvDue"></b></div>
+      <div class="rrow"><span>Security agreed</span><b id="rvSecurity"></b></div>
+      <div class="rrow"><span>Security received</span><b id="rvSecurityPaid"></b></div>
+      <div class="rrow"><span>Requirements</span><b id="rvStatus"></b></div>
+    </div>
+    <div class="notice" id="reviewNote" style="margin-top:12px"></div>
+  </section>
+</main>
+<footer class="footer">
+  <button class="btn secondary" id="backBtn" type="button" data-act="back">Cancel</button>
+  <button class="btn" id="nextBtn" type="button" data-act="next">Continue</button>
+</footer>
+<div class="scrim" id="scrim"></div>
+<section class="sheet" id="savedSheet" role="dialog" aria-modal="true">
+  <div class="handle"></div><h2>Tenant saved</h2><p id="savedText"></p>
+  <button class="btn" type="button" data-act="done">Open tenant</button>
+</section>
+<div class="toast" id="toast"></div>
+<script>
+const STORE="khaata-pg-add-tenant-standardized-v2";
+const S={step:0,theme:null,name:"Aarav Sharma",phone:"98765 12345",joining:"2026-10-08",room:"Room 204",bed:"Bed A",rent:"8500",due:"5th",security:"10000",securityPaid:"0",checks:{id:true,emergency:false,photo:false}};
+const names=["Basics","Room / Bed","Money","Requirements","Review"];
+const subs=["Start with the person and their joining date.","Choose where this tenant will stay.","Set the agreed rent and security.","Add the details your property requires.","Check the tenancy before saving."];
+function money(v){const n=parseInt(v,10)||0;return "₹"+n.toLocaleString("en-IN")}
+function icons(){if(window.lucide&&lucide.createIcons)lucide.createIcons()}
+function pull(){S.name=name.value;S.phone=phone.value;S.joining=joining.value;S.room=room.value;S.rent=rent.value;S.due=due.value;S.security=security.value;S.securityPaid=securityPaid.value}
+function save(){try{localStorage.setItem(STORE,JSON.stringify(S))}catch(e){}}
+function load(){try{const x=JSON.parse(localStorage.getItem(STORE)||"null");if(x)Object.assign(S,x)}catch(e){}}
+function push(){name.value=S.name;phone.value=S.phone;joining.value=S.joining;room.value=S.room;rent.value=S.rent;due.value=S.due;security.value=S.security;securityPaid.value=S.securityPaid}
+function render(){
+  document.querySelectorAll(".panel").forEach((p,i)=>p.classList.toggle("on",i===S.step));
+  heading.textContent=names[S.step];subheading.textContent=subs[S.step];stepname.textContent=names[S.step];stepcount.textContent=(S.step+1)+" of 5";
+  steps.innerHTML=names.map((_,i)=>'<div class="stepbar '+(i<S.step?"done":i===S.step?"on":"")+'"></div>').join("");
+  backBtn.textContent=S.step===0?"Cancel":"Back";nextBtn.textContent=S.step===4?"Save tenant":"Continue";
+  document.querySelectorAll('[data-choice="bed"]').forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.value===S.bed)));
+  document.querySelectorAll("[data-check]").forEach(b=>b.setAttribute("aria-checked",String(!!S.checks[b.dataset.check])));
+  if(S.step===4){
+    const complete=S.checks.id&&S.checks.emergency;
+    rvName.textContent=S.name+" · "+S.phone;rvJoining.textContent=S.joining;rvRoom.textContent=S.room+" · "+S.bed;
+    rvRent.textContent=money(S.rent);rvDue.textContent=S.due;rvSecurity.textContent=money(S.security);rvSecurityPaid.textContent=money(S.securityPaid);
+    rvStatus.innerHTML='<span class="pill '+(complete?"done":"pending")+'">'+(complete?"Complete":"Setup incomplete")+'</span>';
+    reviewNote.textContent=complete?"All configured required details are complete.":"Emergency contact is still required. You can save now and complete it from the tenant record.";
+  }
+  icons();
+}
+function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("on");clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove("on"),1600)}
+function theme(){const r=document.documentElement,c=r.getAttribute("data-theme");r.setAttribute("data-theme",c==="dark"?"light":"dark")}
+function saved(){const complete=S.checks.id&&S.checks.emergency;savedText.textContent=S.name+" · "+S.room+" · "+S.bed+(complete?"":" · Setup incomplete");scrim.classList.add("on");savedSheet.classList.add("on")}
+load();push();render();
+document.addEventListener("click",e=>{
+  const choice=e.target.closest('[data-choice="bed"]');if(choice){S.bed=choice.dataset.value;save();render();return}
+  const check=e.target.closest("[data-check]");if(check){S.checks[check.dataset.check]=!S.checks[check.dataset.check];save();render();return}
+  const b=e.target.closest("[data-act]");if(!b)return;const a=b.dataset.act;
+  if(a==="theme"){theme();return}
+  if(a==="create-room"){toast("Create room");return}
+  if(a==="back"){pull();save();if(S.step===0){toast("Cancel Add tenant");return}S.step--;render();return}
+  if(a==="next"){pull();save();if(S.step<4){S.step++;render();return}saved();return}
+  if(a==="done"){toast("Opening tenant record");return}
+});
+scrim.addEventListener("click",()=>{scrim.classList.remove("on");savedSheet.classList.remove("on")});
+</script>
+</body>
+</html>

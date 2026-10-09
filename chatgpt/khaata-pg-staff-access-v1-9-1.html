@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Khaata · PG / Hostel · Staff & access · v1.9.1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Khaata theme tokens (KB-UI-THEME UI-48..UI-82), same block as Online booking settings. */
+  --bg:#FDFCF8;--surface:#F5F4EF;--surface2:#EFEEE9;--ink:#222222;--ink2:#6B6B69;--line:#E4E2DA;
+  --pri:#222222;--pri-ink:#FFFFFF;--knob:#FFFFFF;--scrim:rgba(0,0,0,.35);--lift:0 1px 3px rgba(0,0,0,.08);
+  --alert-solid:#C23E2E;--on-alert:#FFFFFF;--alert-ink:#B83A2B;--alert-tint:#FFE4DF;
+  --pending-tint:#FFF0C4;--pending-ink:#6E5200;
+  --done-tint:#DDF3E6;--done-ink:#1E7A4C;
+  --neutral-tint:#EAE9E4;--neutral-ink:#555555;
+  --info:#D7E1FE;--info-ink:#2B3A75;--info-line:#C3D0F7;--navy:#2B3A75;--on-navy:#FFFFFF;
+  --idb-violet:#B898F4;--idb-sky:#AFD8F0;--idb-teal:#8FD3CA;--idb-sand:#E2D3BC;
+  --body:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r-card:24px;--r-btn:14px;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#1B1B1A;--surface:#262625;--surface2:#2C2C2B;--ink:#FFFFFF;--ink2:#ADABA6;--line:#353533;
+  --pri:#FFFFFF;--pri-ink:#1B1B1A;--knob:#ADABA6;--scrim:rgba(0,0,0,.6);--lift:0 1px 3px rgba(0,0,0,.4);
+  --alert-solid:#E8705C;--on-alert:#1B1B1A;--alert-ink:#F59384;--alert-tint:rgba(240,122,104,.16);
+  --pending-tint:#3A3122;--pending-ink:#EBC36B;--done-tint:#244232;--done-ink:#74C99A;
+  --neutral-tint:#2E2D28;--neutral-ink:#C2BEB5;
+  --info:#252C42;--info-ink:#DCE4FF;--info-line:#34405E;--navy:#C9D4FB;--on-navy:#1A2140;
+  --idb-violet:#3B2A6E;--idb-sky:#0F4A66;--idb-teal:#0E4D47;--idb-sand:#4A3B26;}}
+:root[data-theme="dark"]{
+  --bg:#1B1B1A;--surface:#262625;--surface2:#2C2C2B;--ink:#FFFFFF;--ink2:#ADABA6;--line:#353533;
+  --pri:#FFFFFF;--pri-ink:#1B1B1A;--knob:#ADABA6;--scrim:rgba(0,0,0,.6);--lift:0 1px 3px rgba(0,0,0,.4);
+  --alert-solid:#E8705C;--on-alert:#1B1B1A;--alert-ink:#F59384;--alert-tint:rgba(240,122,104,.16);
+  --pending-tint:#3A3122;--pending-ink:#EBC36B;--done-tint:#244232;--done-ink:#74C99A;
+  --neutral-tint:#2E2D28;--neutral-ink:#C2BEB5;
+  --info:#252C42;--info-ink:#DCE4FF;--info-line:#34405E;--navy:#C9D4FB;--on-navy:#1A2140;
+  --idb-violet:#3B2A6E;--idb-sky:#0F4A66;--idb-teal:#0E4D47;--idb-sand:#4A3B26;}
+*,*::before,*::after{box-sizing:inherit}
+*{-webkit-tap-highlight-color:transparent}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--body);-webkit-font-smoothing:antialiased}
+h1,h2,h3{margin:0;letter-spacing:-.01em}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.wrap{max-width:520px;margin:0 auto;padding:0 16px 48px}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;align-items:center;gap:10px;padding:14px 0 10px}
+.icon-btn{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;padding:0;flex:none}
+.icon-btn svg{width:20px;height:20px}
+.top h1{font-size:19px;font-weight:700;flex:1}
+.place{color:var(--ink2);font-size:13.5px;margin:-4px 0 0}
+
+.grp{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);margin:22px 4px 0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:16px;margin-top:12px}
+.card h2{font-size:16px;font-weight:700}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.edit-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.edit-head .btn{margin:0}
+.applied-note{font-size:11.5px;color:var(--ink2);font-weight:500;margin-left:6px}
+.levelrow{padding:14px 0;border-top:1px solid var(--line)}
+.levelrow:first-of-type{border-top:0}
+.levelrow .chips{margin-top:8px}
+.section-locked .chip,.section-locked .sw{pointer-events:none}
+.section-locked .chip{opacity:.76}
+.top-save{min-height:40px;padding:7px 12px;border:0;border-radius:var(--r-btn);background:var(--navy);color:var(--on-navy);font-weight:700;font-size:13px}
+.top-save:disabled{opacity:.4;cursor:not-allowed}
+
+.sub{color:var(--ink2);font-size:13.5px;margin:2px 0 0}
+.sl{font-weight:600;font-size:14.5px;display:block}
+.field{margin-top:16px}
+
+.tag{display:inline-block;font-size:11.5px;font-weight:600;padding:2px 8px;border-radius:99px;white-space:nowrap;vertical-align:middle}
+.tag.ok{background:var(--done-tint);color:var(--done-ink)}
+.tag.neu{background:var(--neutral-tint);color:var(--neutral-ink)}
+.tag.wait{background:var(--pending-tint);color:var(--pending-ink)}
+.tag.mute{background:var(--surface2);color:var(--ink2)}
+/* Proposed / TBD: a design note, not a status, so it never uses a status colour */
+.tag.prop{background:transparent;color:var(--ink2);border:1px dashed var(--ink2);padding:1px 7px}
+
+.banner{border-radius:14px;padding:12px 14px;font-size:13.5px;margin-top:12px}
+.banner.info{background:var(--info);color:var(--info-ink)}
+.banner.neutral{background:var(--surface2);color:var(--ink)}
+.banner.pending{background:var(--pending-tint);color:var(--pending-ink)}
+
+/* chips — UI-77: unselected black outline, chosen pale blue with navy border */
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.chip{position:relative;border:1.5px solid var(--ink);background:var(--bg);border-radius:99px;padding:8px 14px;font-size:13.5px;font-weight:500;line-height:1.3}
+.chip::before{content:"";position:absolute;inset:-4px 0}
+.chip[aria-pressed="true"]{background:var(--info);color:var(--info-ink);border-color:var(--info-ink);box-shadow:inset 0 0 0 1px var(--info-ink);font-weight:600}.chip .ck{font-weight:800;margin-right:4px}
+
+/* switches, same as booking settings */
+.sw{position:relative;width:46px;height:28px;flex:none;margin-top:2px}
+.sw input{position:absolute;opacity:0;inset:-8px;margin:0;cursor:pointer;z-index:1}
+.sw span{position:absolute;inset:0;border-radius:99px;background:var(--surface2);border:1px solid var(--line);transition:background .15s}
+.sw span::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--knob);box-shadow:var(--lift);transition:transform .15s}
+.sw input:checked+span{background:var(--pri);border-color:var(--pri)}
+.sw input:checked+span::after{background:var(--pri-ink);transform:translateX(18px)}
+.sw input:focus-visible+span{outline:2px solid var(--pri);outline-offset:2px}
+
+.setrow{display:flex;gap:12px;align-items:flex-start;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.setrow.first{border-top:0;padding-top:0}
+.grow{flex:1;min-width:0}
+.perm{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.perm:first-of-type{border-top:0;padding-top:0}
+/* three-level choices fit on one line from 400px (OnePlus 6 is 412px); narrower phones wrap */
+.perm .chips{gap:6px;flex-wrap:nowrap}
+.perm .chip{padding:8px 11px;white-space:nowrap}
+@media (max-width:399px){.perm .chips{flex-wrap:wrap}}
+
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:var(--r-btn);padding:10px 16px;min-height:44px;font-weight:600;font-size:14px;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn svg{width:18px;height:18px}
+.btn.primary{background:var(--navy);border-color:var(--navy);color:var(--on-navy)}
+.btn.danger{color:var(--alert-ink)}
+.btn.wide{width:100%;margin-top:12px}
+.btn.small{min-height:36px;padding:6px 12px;font-size:13px;border-radius:10px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+
+/* list rows */
+.lrow{display:flex;align-items:center;gap:12px;width:100%;padding:12px 0;border:0;border-top:1px solid var(--line);background:none;text-align:left;min-height:60px}
+.lrow:first-child{border-top:0;padding-top:4px}
+.lrow .who{font-weight:600;font-size:15px;display:block}
+.lrow small{display:block;font-size:13px;color:var(--ink2);line-height:1.4}
+.lrow .chev{color:var(--ink2);width:18px;height:18px;flex:none}
+.lrow.gone .who,.lrow.gone small{opacity:.6}
+.av{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-weight:700;font-size:13.5px;flex:none;color:var(--ink)}
+.count{min-width:26px;height:26px;padding:0 8px;border-radius:99px;background:var(--pending-tint);color:var(--pending-ink);display:grid;place-items:center;font-size:13px;font-weight:700}
+
+.tinput{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:12px;padding:10px 12px;font-size:15px;margin-top:6px;min-height:44px}
+.dl{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+.dl:last-child{border-bottom:0}
+.dl span:first-child{color:var(--ink2)}
+.dl span:last-child{text-align:right;font-weight:600}
+.summary{font-size:14px;line-height:1.55;margin:8px 0 0}
+.summary p{margin:0 0 6px}
+
+/* sheet */
+.scrim{position:fixed;inset:0;background:var(--scrim);z-index:20;display:none}
+.scrim.on{display:block}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:21;background:var(--surface);border-radius:22px 22px 0 0;max-height:90vh;overflow:auto;
+  padding:10px 18px 0;transform:translateY(105%);transition:transform .22s ease;max-width:560px;margin:0 auto}
+.sheet.on{transform:none}
+.sheet .card{background:var(--bg)}
+.grab{width:40px;height:4px;border-radius:9px;background:var(--line);margin:0 auto 12px}
+.shead{display:flex;align-items:flex-start;gap:10px}
+.shead h3{font-size:18px;font-weight:700}
+.shead .grow .sub{margin-top:2px}
+.sbody{padding-bottom:calc(20px + env(safe-area-inset-bottom,0px))}
+
+
+/* confirm dialog */
+.dlg-scrim{position:fixed;inset:0;background:var(--scrim);z-index:40;display:none;align-items:center;justify-content:center;padding:20px}
+.dlg-scrim.on{display:flex}
+.dlg{background:var(--surface);border-radius:20px;padding:18px;max-width:380px;width:100%}
+.dlg h3{font-size:17px;font-weight:700}
+.dlg p{font-size:14px;color:var(--ink2);margin:6px 0 0}
+.dlg .btns{justify-content:flex-end;margin-top:16px}
+
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,calc(100% + 40px));visibility:hidden;z-index:50;
+  background:var(--ink);color:var(--bg);padding:11px 16px;border-radius:14px;font-size:14px;max-width:92vw;transition:transform .2s}
+.toast.on{transform:translate(-50%,0);visibility:visible}
+.proto{border-style:dashed}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <button class="icon-btn" type="button" data-act="back" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <h1>Staff &amp; access</h1>
+    <span class="tag neu" id="tierTag"></span>
+    <button class="icon-btn" type="button" data-act="theme" aria-label="Switch light or dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+  </header>
+  <p class="place">Sunrise PG</p>
+  <div class="banner info" style="margin-top:10px"><b>New in this file</b><br>v1.9.1 fixes role-sheet opening/editing and keeps the existing Staff & Access safety model while adopting the cleaner v1.8 mobile presentation: compact Khaata chips, section-level Edit → Apply, top Save role, unsaved-exit protection, area access levels, person-level property access, expiry controls and historical access activity.</div>
+
+  <div class="banner neutral" id="upgradeBanner" hidden>
+    <b>Staff access comes with <span id="upgradeTier"></span>.</b> Upgrade to invite staff and give each person their own access.
+    <div class="btns"><button class="btn small primary" type="button" data-act="upgrade">Upgrade</button></div>
+  </div>
+
+  <h4 class="grp">People</h4>
+  <section class="card">
+    <div class="card-head"><h2>Who can use this business</h2><span class="sub" id="peopleCount"></span></div>
+    <div id="peopleList" style="margin-top:8px"></div>
+    <button class="btn wide primary" type="button" id="addStaffBtn" data-act="invite"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Add staff</button>
+  </section>
+
+  <section class="card" id="opsCard">
+    <button class="lrow" type="button" data-act="approvals"><span class="grow"><span class="who">Waiting for approval</span><small>Requests from staff that need a yes or no</small></span><span class="count" id="approvalCount">3</span></button>
+    <button class="lrow" type="button" data-act="activity"><span class="grow"><span class="who">Access history</span><small>Who changed what, and when</small></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></button>
+  </section>
+
+  <div id="rolesArea">
+    <h4 class="grp">Roles</h4>
+    <section class="card">
+      <h2>Roles</h2>
+      <p class="sub">A role is a set of access you give to several people. Change it once and everyone in it is updated.</p>
+      <div id="roleList" style="margin-top:8px"></div>
+      <button class="btn wide" type="button" data-act="create-role"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Create role</button>
+    </section>
+  </div>
+
+  <div class="banner info">Changes reach a staff member’s phone the next time it syncs. <span class="tag prop">Proposed</span> Entries they made before that sync are marked “Recorded under previous access”.</div>
+
+  <h4 class="grp">Prototype controls</h4>
+  <section class="card proto">
+    <div class="setrow first">
+      <div class="grow"><span class="sl">Solo owner</span><p class="sub">Show the page as an owner with no staff yet.</p></div>
+      <label class="sw"><input type="checkbox" id="soloToggle" aria-label="Solo owner"><span></span></label>
+    </div>
+    <div class="field">
+      <span class="sl">Current plan</span>
+      <p class="sub">Reads from the entitlement registry, not the page.</p>
+      <div class="chips" id="tierChips"></div>
+    </div>
+  </section>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <div class="grab"></div>
+  <div class="shead">
+    <div class="grow"><h3 id="sheetTitle"></h3><p class="sub" id="sheetSub"></p></div>
+    <button class="top-save" type="button" id="topSaveRole" data-act="save-role" hidden disabled>Save role</button>
+    <button class="icon-btn" type="button" data-act="close" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+  <div id="sheetBody" class="sbody"></div>
+</section>
+
+<div class="dlg-scrim" id="dlgScrim">
+  <div class="dlg" role="alertdialog" aria-modal="true" aria-labelledby="dlgTitle" aria-describedby="dlgText">
+    <h3 id="dlgTitle"></h3>
+    <p id="dlgText"></p>
+    <div class="btns"><button class="btn" type="button" id="dlgCancel"></button><button class="btn primary" type="button" id="dlgOk"></button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ---------- entitlement registry (mock) ---------- */
+const entitlementRegistry = {
+  currentTier: "premium",
+  tiers: ["free","pro","premium"],
+  features: { staff_access: ["premium"] }
+};
+const TIER_NAME = {free:"Free",pro:"Pro",premium:"Premium"};
+function hasFeature(f){return (entitlementRegistry.features[f]||[]).includes(entitlementRegistry.currentTier)}
+function featureTierName(f){return TIER_NAME[(entitlementRegistry.features[f]||["premium"])[0]]}
+
+/* ---------- vocabulary ---------- */
+const LEVELS = ["Allowed","Needs approval","Not allowed"];
+const ACTIONS = [
+  ["payment","Record payment","Money received from tenants."],
+  ["expense","Add expense","Business-paid or staff-paid."],
+  ["waive","Waive or discount dues","Lowers what a tenant owes without a payment."],
+  ["editbill","Edit a bill","Only bills the bill lock still allows."],
+  ["backdate","Enter an earlier date","For something that happened on a past day."],
+  ["export","Export data","Only data this role can see."],
+  ["reminder","Send dues reminder","From the tenant’s page."]
+];
+const SENSITIVE = [
+  ["end","End tenancy","Moves the tenant to Former. Their history stays."],
+  ["retire","Retire a room or bed","Stops future use. The past stays on record."],
+  ["void","Void a bill","Adds a correction entry. The original bill stays."],
+  ["refund","Refund deposit","Records money paid back to a tenant."],
+  ["manage","Manage staff","Invite, suspend, deactivate or change access."]
+];
+const AREA_LEVELS = ["No access","Read only","Create only","Manage"];
+const AREAS = [
+  ["tenants","Tenant records","Onboarding, current tenancy and tenant details."],
+  ["balances","Tenant balances","Outstanding balances and financial context."],
+  ["expenses","Expenses","Business-paid and staff-paid expense records."],
+  ["rooms","Rooms and beds","Occupancy, vacancies and room information."]
+];
+const EXTRA_VIS = [
+  ["ids","Tenant ID documents and phone numbers","Off by default for non-owner staff."],
+  ["cash","Staff cash custody","Cash recorded as held by staff. It does not change what tenants owe."]
+];
+const PROPERTIES = ["Sunrise PG","Lake View PG"];
+const LIMITS_ONE = [[2000,"₹2,000"],[5000,"₹5,000"],[10000,"₹10,000"],[0,"No limit"]];
+const LIMITS_DAY = [[10000,"₹10,000"],[15000,"₹15,000"],[25000,"₹25,000"],[0,"No limit"]];
+
+const A="Allowed",N="Needs approval",X="Not allowed";
+function role(desc,actions,sensitive,areaAccess,extraVis,extra){
+  return Object.assign({desc,actions,sensitive,areaAccess,extraVis,approver:"Owner",limits:null,custom:false},extra||{})
+}
+const roles = {
+  "Manager": role("Runs the PG day to day. Big changes need your approval.",
+    {payment:A,expense:A,waive:N,editbill:N,backdate:N,export:N,reminder:A},
+    {end:N,retire:N,void:N,refund:N,manage:N},
+    {tenants:"Manage",balances:"Read only",expenses:"Manage",rooms:"Read only"},
+    {ids:false,cash:true}),
+  "Caretaker / Front desk": role("Handles tenants and collects rent at the desk.",
+    {payment:A,expense:N,waive:N,editbill:X,backdate:X,export:X,reminder:A},
+    {end:N,retire:X,void:X,refund:X,manage:X},
+    {tenants:"Create only",balances:"Read only",expenses:"Create only",rooms:"Read only"},
+    {ids:false,cash:true},
+    {approver:"Manager",limits:{one:5000,day:15000,cashOk:true,upiOk:true}}),
+  "Accounts": role("Looks after money, bills and reports.",
+    {payment:A,expense:A,waive:N,editbill:N,backdate:N,export:A,reminder:A},
+    {end:X,retire:X,void:N,refund:N,manage:X},
+    {tenants:"Read only",balances:"Manage",expenses:"Manage",rooms:"No access"},
+    {ids:false,cash:true})
+};
+const READ_ONLY = {
+  actions:Object.fromEntries(ACTIONS.map(a=>[a[0],X])),
+  sensitive:Object.fromEntries(SENSITIVE.map(a=>[a[0],X]))
+};
+
+let people = [
+  {id:"owner",name:"Sanjay Kumar",contact:"+91 98xxxxxx04",role:"Owner",status:"owner",props:["Sunrise PG","Lake View PG"],last:"Now",color:"--idb-violet"},
+  {id:"ravi",name:"Ravi Kumar",contact:"+91 98xxxxxx21",role:"Manager",status:"active",props:["Sunrise PG","Lake View PG"],last:"today, 8:42 pm",color:"--idb-sky",expiry:null},
+  {id:"sunita",name:"Sunita Rao",contact:"+91 97xxxxxx11",role:"Caretaker / Front desk",status:"active",props:["Sunrise PG"],last:"today, 6:18 pm",color:"--idb-teal",expiry:null},
+  {id:"anil",name:"Anil Menon",contact:"anil@example.com",role:"Accounts",status:"invited",props:["Sunrise PG"],last:"Invite sent 7 Oct",color:"--idb-sand",expiry:null}
+];
+let approvals = [
+  {id:1,what:"End tenancy · Rohan Mehta",by:"Sunita"},
+  {id:2,what:"Waive ₹500 · Room 203",by:"Ravi"},
+  {id:3,what:"Retire Bed B · Room 118",by:"Ravi"}
+];
+let events = [
+  {t:"Anil invited as Accounts",s:"By Sanjay · 7 Oct 2026"},
+  {t:"Ravi moved from Caretaker to Manager",s:"By Sanjay · 7 Oct 2026"},
+  {t:"Sunita invited as Caretaker / Front desk",s:"By Sanjay · 4 Oct 2026"}
+];
+function logEvent(t){events.unshift({t,s:"By Sanjay · just now"})}
+
+/* ---------- helpers ---------- */
+const $=id=>document.getElementById(id);
+const clone=o=>JSON.parse(JSON.stringify(o));
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const initials=n=>n.split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase();
+const CHEV='<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>';
+function chips(group,key,opts,cur,disabled){
+  return '<div class="chips" role="group">'+opts.map(o=>{
+    const v=Array.isArray(o)?o[0]:o,l=Array.isArray(o)?o[1]:o,on=String(v)===String(cur);
+    return '<button type="button" class="chip" data-act="pick" data-group="'+group+'" data-key="'+esc(key)+'" data-v="'+esc(v)+'" aria-pressed="'+on+'"'+(disabled?' disabled':'')+'>'+(on?'<span class="ck">✓</span>':'')+esc(l)+'</button>'
+  }).join("")+'</div>';
+}
+function sw(id,label,checked,act,extra){return '<label class="sw"><input type="checkbox" '+(checked?"checked ":"")+'data-act="'+act+'" data-key="'+esc(id)+'" aria-label="'+esc(label)+'"'+(extra||"")+'><span></span></label>'}
+let toastT;
+function toast(msg){const t=$("toast");t.textContent=msg;t.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("on"),2200)}
+function ask(title,text,ok,cancel){
+  return new Promise(res=>{
+    $("dlgTitle").textContent=title;$("dlgText").textContent=text;$("dlgOk").textContent=ok;$("dlgCancel").textContent=cancel||"Cancel";
+    $("dlgScrim").classList.add("on");$("dlgOk").focus();
+    const done=v=>{$("dlgScrim").classList.remove("on");$("dlgOk").onclick=$("dlgCancel").onclick=null;res(v)};
+    $("dlgOk").onclick=()=>done(true);$("dlgCancel").onclick=()=>done(false);
+  });
+}
+const activeIn=r=>people.filter(p=>p.role===r&&(p.status==="active"||p.status==="suspended"));
+const invitedIn=r=>people.filter(p=>p.role===r&&p.status==="invited");
+function impactText(r){
+  const a=activeIn(r).length,i=invitedIn(r).length,parts=[];
+  if(a)parts.push(a+" "+(a===1?"person":"people"));
+  if(i)parts.push(i+" pending "+(i===1?"invite":"invites"));
+  return parts.length?"Affects "+parts.join(" and "):"Nobody has this role yet";
+}
+
+/* ---------- main page ---------- */
+function statusTag(p){
+  if(p.status==="owner")return '<span class="tag neu">Owner</span>';
+  if(p.status==="invited")return '<span class="tag wait">Invited</span>';
+  if(p.status==="suspended")return '<span class="tag mute">Suspended</span>';
+  if(p.status==="deactivated")return '<span class="tag mute">Deactivated</span>';
+  return "";
+}
+function renderMain(){
+  const enabled=hasFeature("staff_access"),solo=$("soloToggle").checked,showStaff=enabled&&!solo;
+  $("tierTag").textContent=featureTierName("staff_access");
+  $("upgradeBanner").hidden=enabled;$("upgradeTier").textContent=featureTierName("staff_access");
+  $("addStaffBtn").hidden=!enabled;
+  $("opsCard").hidden=!showStaff;$("rolesArea").hidden=!showStaff;
+  const list=people.filter(p=>p.status==="owner"||showStaff);
+  const live=people.filter(p=>p.status==="active"||p.status==="suspended").length,inv=people.filter(p=>p.status==="invited").length;
+  $("peopleCount").textContent=showStaff?(live+" staff"+(inv?" · "+inv+" invited":"")):"Only you";
+  $("peopleList").innerHTML=list.map(p=>{
+    const line=p.status==="owner"?"Full access · all properties":esc(p.role)+" · "+(p.props.length?esc(p.props.join(", ")):"No property");
+    return '<button class="lrow'+(p.status==="deactivated"?" gone":"")+'" type="button" data-act="person" data-id="'+p.id+'"><span class="av" style="background:var('+p.color+')">'+initials(p.name)+'</span><span class="grow"><span class="who">'+esc(p.name)+'</span><small>'+line+'</small></span>'+statusTag(p)+CHEV+'</button>';
+  }).join("")+(solo&&enabled?'<p class="sub" style="margin-top:10px">Roles and approvals appear once you add your first staff member.</p>':"");
+  $("approvalCount").textContent=approvals.length;$("approvalCount").hidden=!approvals.length;
+  $("roleList").innerHTML=Object.keys(roles).map(r=>{
+    const n=activeIn(r).length+invitedIn(r).length;
+    return '<button class="lrow" type="button" data-act="role" data-role="'+esc(r)+'"><span class="grow"><span class="who">'+esc(r)+'</span><small>'+esc(roles[r].desc)+'</small></span><span class="tag neu">'+n+'</span>'+CHEV+'</button>';
+  }).join("");
+  $("tierChips").innerHTML=chips("tier","tier",entitlementRegistry.tiers.map(t=>[t,TIER_NAME[t]]),entitlementRegistry.currentTier).replace('<div class="chips" role="group">','').replace(/<\/div>$/,'');
+}
+
+/* ---------- sheet plumbing ---------- */
+let view=null;          // {type, ...}
+let draft=null,draftRole=null,lastFocus=null;
+let sectionEdit={actions:false,areas:false,visibility:false,sensitive:false};
+function setHead(title,sub){$("sheetTitle").textContent=title;$("sheetSub").textContent=sub||""}
+function openSheet(v){lastFocus=document.activeElement;view=v;renderSheet();$("scrim").classList.add("on");$("sheet").classList.add("on");$("sheet").scrollTop=0;setTimeout(()=>$("sheet").querySelector("button,input")?.focus(),60)}
+function closeSheetNow(){$("scrim").classList.remove("on");$("sheet").classList.remove("on");view=null;draft=null;draftRole=null;sectionEdit={actions:false,areas:false,visibility:false,sensitive:false};$("topSaveRole").hidden=true;setTimeout(()=>lastFocus?.focus?.(),150)}
+function isDirty(){return draft&&JSON.stringify(draft)!==JSON.stringify(roles[draftRole])}
+function anyEditing(){return Object.values(sectionEdit).some(Boolean)}
+async function requestClose(){
+  if(view?.type==="sensitive"){
+    view={type:"role"};renderSheet();$("sheet").scrollTop=0;return;
+  }
+  if(isDirty()||anyEditing()){
+    const discard=await ask("Discard unsaved changes?","Your role changes haven’t been saved.","Discard changes","Keep editing");
+    if(!discard)return;
+  }
+  closeSheetNow();
+}
+function renderSheet(){
+  const b=$("sheetBody");
+  const r={role:viewRole,sensitive:viewSensitive,person:viewPerson,invite:viewInvite,picker:viewPicker,approvals:viewApprovals,activity:viewActivity,create:viewCreate}[view.type];
+  b.innerHTML=r();
+  const roleView=view.type==="role"||view.type==="sensitive";
+  $("topSaveRole").hidden=!roleView;
+  $("topSaveRole").disabled=!roleView||!isDirty()||anyEditing();
+}
+
+/* ---------- role sheet ---------- */
+function openRole(name){draftRole=name;draft=clone(roles[name]);sectionEdit={actions:false,areas:false,visibility:false,sensitive:false};openSheet({type:"role"})}
+function sensitiveLine(d){
+  const c={};SENSITIVE.forEach(s=>{const v=d.sensitive[s[0]];c[v]=(c[v]||0)+1});
+  return LEVELS.filter(l=>c[l]).map(l=>c[l]+" "+(l===N&&c[l]>1?"need approval":l.toLowerCase())).join(" · ");
+}
+function editHead(label,section){
+  return '<div class="edit-head"><h2>'+label+' <span class="applied-note" id="'+section+'Applied"></span></h2><button class="btn small'+(sectionEdit[section]?' primary':'')+'" type="button" data-act="section-edit" data-section="'+section+'">'+(sectionEdit[section]?'Apply':'Edit')+'</button></div>';
+}
+function viewRole(){
+  const d=draft;
+  setHead(draftRole,impactText(draftRole).replace("Affects","Used by"));
+  let h='';
+  if(d.custom)h+='<section class="card"><label class="sl" for="roleName">Role name</label><input class="tinput" id="roleName" data-act="rename" value="'+esc(draftRole)+'"></section>';
+
+  h+='<section class="card '+(sectionEdit.actions?'':'section-locked')+'">'+editHead("What they can do","actions")+
+     '<div class="setrow first" style="margin-top:14px"><div class="grow"><span class="sl">Read-only preset</span><p class="sub">Sets every action, including sensitive actions, to Not allowed. What they can see stays separate.</p></div><button class="btn small" type="button" data-act="readonly"'+(sectionEdit.actions?'':' disabled')+'>Apply</button></div>'+
+     '<p class="sub" style="margin-top:14px">“Needs approval” sends the request to '+esc(d.approver)+' before it counts.</p>';
+  ACTIONS.forEach(a=>{h+='<div class="perm"><span class="sl">'+a[1]+'</span><p class="sub">'+a[2]+'</p>'+chips("actions",a[0],LEVELS,d.actions[a[0]],!sectionEdit.actions)+'</div>'});
+  h+='</section>';
+
+  h+='<section class="card"><button class="lrow" type="button" data-act="open-sensitive" style="padding-top:0"><span class="grow"><span class="who">Sensitive actions</span><small id="sensLine">'+sensitiveLine(d)+'</small></span>'+CHEV+'</button></section>';
+
+  h+='<section class="card '+(sectionEdit.areas?'':'section-locked')+'">'+editHead("Area access","areas")+
+     '<p class="sub">Choose whether this role has no access, can only read, can create new records without editing them later, or can manage the area.</p>';
+  AREAS.forEach(a=>{h+='<div class="levelrow"><span class="sl">'+a[1]+'</span><p class="sub">'+a[2]+'</p>'+chips("areas",a[0],AREA_LEVELS,d.areaAccess[a[0]],!sectionEdit.areas)+'</div>'});
+  h+='</section>';
+
+  h+='<section class="card '+(sectionEdit.visibility?'':'section-locked')+'">'+editHead("Extra visibility","visibility")+
+     '<p class="sub">Sensitive information is separate from area access.</p>';
+  EXTRA_VIS.forEach((v,i)=>{h+='<div class="setrow'+(i===0?" first":"")+'" style="'+(i===0?"margin-top:14px":"")+'"><div class="grow"><span class="sl">'+v[1]+'</span><p class="sub">'+v[2]+'</p></div>'+sw(v[0],v[1],d.extraVis[v[0]],"vis",sectionEdit.visibility?'':' disabled')+'</div>'});
+  h+='</section>';
+
+  const approverOpts=["Owner","Manager"].filter(x=>x!==draftRole);
+  h+='<section class="card"><h2>Approvals</h2><div class="field"><span class="sl">Who says yes or no</span>'+chips("approver","approver",approverOpts,d.approver)+'</div>'+
+     '<div class="setrow"><div class="grow"><span class="sl">Request expires after</span><p class="sub">What happens to a request nobody answers.</p></div><span class="tag prop">TBD</span></div></section>';
+
+  if(d.limits){
+    h+='<section class="card"><div class="card-head"><h2>Collection limits</h2><span class="tag prop">Proposed</span></div>'+
+       '<div class="field"><span class="sl">Most cash in one collection</span>'+chips("limits","one",LIMITS_ONE,d.limits.one)+'</div>'+
+       '<div class="field"><span class="sl">Most cash in one day</span>'+chips("limits","day",LIMITS_DAY,d.limits.day)+'</div>'+
+       '<div class="setrow"><div class="grow"><span class="sl">Can take cash</span></div>'+sw("cashOk","Can take cash",d.limits.cashOk,"limit-sw")+'</div>'+
+       '<div class="setrow"><div class="grow"><span class="sl">Can take UPI</span></div>'+sw("upiOk","Can take UPI",d.limits.upiOk,"limit-sw")+'</div></section>';
+  }
+  if(d.custom)h+='<button class="btn wide danger" type="button" data-act="delete-role">Remove this role</button>';
+  return h;
+}
+function viewSensitive(){
+  setHead("Sensitive actions",draftRole);
+  let h='<div class="banner pending">These change history or money. Turning one from Not allowed to Allowed asks you to confirm.</div>'+
+        '<section class="card '+(sectionEdit.sensitive?'':'section-locked')+'">'+editHead("Sensitive actions","sensitive");
+  SENSITIVE.forEach(a=>{h+='<div class="perm"><span class="sl">'+a[1]+'</span><p class="sub">'+a[2]+'</p>'+chips("sensitive",a[0],LEVELS,draft.sensitive[a[0]],!sectionEdit.sensitive)+'</div>'});
+  return h+'</section><p class="sub" style="margin-top:10px">Use × to return to '+esc(draftRole)+' without losing your draft.</p>';
+}
+function refreshRoleBits(){
+  const sl=$("sensLine");if(sl)sl.textContent=sensitiveLine(draft);
+  $("topSaveRole").disabled=!isDirty()||anyEditing();
+}
+function setGroupPressed(group,key,v){
+  document.querySelectorAll('#sheetBody .chip[data-group="'+group+'"][data-key="'+key+'"]').forEach(c=>c.setAttribute("aria-pressed",String(c.dataset.v===String(v))));
+}
+
+/* ---------- person sheet ---------- */
+function summaryFor(p){
+  const r=roles[p.role];if(!r)return "";
+  const out=[];
+  const by={};ACTIONS.forEach(a=>{(by[r.actions[a[0]]]=by[r.actions[a[0]]]||[]).push(a[1].toLowerCase())});
+  const list=a=>a.length>1?a.slice(0,-1).join(", ")+" and "+a[a.length-1]:a[0];
+  if(by[A])out.push("Can "+list(by[A])+".");
+  if(by[N])out.push("Needs approval to "+list(by[N])+".");
+  if(by[X])out.push("Can’t "+list(by[X])+".");
+  const areaText=AREAS.map(a=>a[1]+": "+r.areaAccess[a[0]]).join(" · ");
+  out.push(areaText+".");
+  const visible=EXTRA_VIS.filter(v=>r.extraVis[v[0]]).map(v=>v[1].toLowerCase());
+  const hidden=EXTRA_VIS.filter(v=>!r.extraVis[v[0]]).map(v=>v[1].toLowerCase());
+  if(visible.length)out.push("Extra visibility: "+visible.join(", ")+".");
+  if(hidden.length)out.push("Hidden: "+hidden.join(", ")+".");
+  return out.map(s=>"<p>"+esc(s)+"</p>").join("");
+}
+function viewPerson(){
+  const p=people.find(x=>x.id===view.id);
+  if(p.status==="owner"){
+    setHead(p.name,"Owner");
+    return '<section class="card"><div class="dl"><span>Phone</span><span>'+esc(p.contact)+'</span></div><div class="dl"><span>Access</span><span>Everything, all properties</span></div></section>'+
+      '<div class="banner neutral">The owner can’t be removed, suspended or limited. There is always one owner.</div>'+
+      '<section class="card"><div class="card-head"><h2>Transfer ownership</h2><span class="tag prop">Proposed</span></div><p class="sub">Hand the business to an active staff member. You become their staff.</p><button class="btn wide" type="button" data-act="transfer">Choose who takes over</button></section>';
+  }
+  if(p.status==="invited"){
+    setHead(p.name,"Invite sent, not accepted yet");
+    return '<section class="card"><div class="dl"><span>Sent to</span><span>'+esc(p.contact)+'</span></div><div class="dl"><span>Role</span><span>'+esc(p.role)+'</span></div><div class="dl"><span>Property</span><span>'+esc(p.props.join(", "))+'</span></div></section>'+
+      '<div class="btns"><button class="btn primary" type="button" data-act="resend">Resend invite</button><button class="btn" type="button" data-act="change-role">Change role</button><button class="btn danger" type="button" data-act="cancel-invite">Cancel invite</button></div>';
+  }
+  const gone=p.status==="deactivated";
+  setHead(p.name,gone?"Access ended · history kept":p.status==="suspended"?"Suspended":"Last active "+p.last);
+  let h='<section class="card"><div class="dl"><span>Phone</span><span>'+esc(p.contact)+'</span></div><div class="dl"><span>Role</span><span>'+esc(p.role)+'</span></div></section>';
+  if(gone)return h+'<div class="banner neutral">Everything '+esc(p.name.split(" ")[0])+' recorded stays in the books with their name on it.</div>';
+  h+='<section class="card"><div class="card-head"><h2>What '+esc(p.name.split(" ")[0])+' can do</h2></div><div class="summary">'+summaryFor(p)+'</div><div class="btns"><button class="btn small" type="button" data-act="change-role">Change role</button><button class="btn small" type="button" data-act="edit-their-role">Edit '+esc(p.role)+' role</button></div></section>';
+  h+='<section class="card"><h2>Properties</h2><p class="sub">Which PGs '+esc(p.name.split(" ")[0])+' works at. Set for this person, not the role.</p>';
+  PROPERTIES.forEach((pr,i)=>{h+='<div class="setrow'+(i===0?" first":"")+'" style="'+(i===0?"margin-top:14px":"")+'"><div class="grow"><span class="sl">'+pr+'</span></div>'+sw(pr,pr+" access",p.props.includes(pr),"prop")+'</div>'});
+  if(!p.props.length)h+='<div class="banner pending">No property selected. They can sign in but won’t see anything.</div>';
+  h+='</section>';
+  const ex=p.expiry||{on:false,date:"",mode:"freeze"};
+  h+='<section class="card"><div class="card-head"><h2>Access ends</h2><span class="tag prop">Proposed</span></div><p class="sub">For temporary staff, like someone covering a holiday.</p>'+
+     chips("expiry","on",[["no","No end date"],["yes","On a date"]],ex.on?"yes":"no");
+  if(ex.on){
+    h+='<div class="field"><label class="sl" for="expDate">Last day</label><input class="tinput" type="date" id="expDate" data-act="exp-date" value="'+esc(ex.date)+'"></div>'+
+       '<div class="field"><span class="sl">After that</span>'+chips("expiry","mode",[["freeze","Freeze"],["deactivate","Deactivate"]],ex.mode)+
+       '<p class="sub" style="margin-top:8px">'+(ex.mode==="freeze"?"They can still sign in to this business, but sync stops. They only see data already on the device and can’t add or change anything.":"Access ends completely. Their history stays.")+'</p></div>';
+  }
+  h+='</section>';
+  h+='<section class="card"><div class="card-head"><h2>Exceptions for one person</h2><span class="tag prop">Proposed</span></div><p class="sub">Give '+esc(p.name.split(" ")[0])+' something different from the rest of the role. Not part of V1.</p></section>';
+  h+='<div class="btns">'+(p.status==="suspended"?'<button class="btn" type="button" data-act="restore">Restore access</button>':'<button class="btn" type="button" data-act="suspend">Suspend</button>')+'<button class="btn danger" type="button" data-act="deactivate">Deactivate</button></div>';
+  return h;
+}
+
+/* ---------- small sheets ---------- */
+let inviteDraft={name:"",contact:"",role:"Caretaker / Front desk",props:["Sunrise PG"]};
+function viewInvite(){
+  setHead("Add staff","They get a link to join this business");
+  const d=inviteDraft,ok=d.name.trim()&&d.contact.trim()&&d.props.length;
+  return '<section class="card"><label class="sl" for="invName">Name</label><input class="tinput" id="invName" data-act="inv-name" value="'+esc(d.name)+'" placeholder="Their name">'+
+    '<div class="field"><label class="sl" for="invContact">Phone or email</label><input class="tinput" id="invContact" data-act="inv-contact" value="'+esc(d.contact)+'" placeholder="98765 43210"></div></section>'+
+    '<section class="card"><span class="sl">Role</span>'+chips("invite","role",Object.keys(roles),d.role)+
+    '<div class="field"><span class="sl">Works at</span><p class="sub">Pick one or both.</p><div class="chips">'+PROPERTIES.map(pr=>'<button type="button" class="chip" data-act="inv-prop" data-v="'+esc(pr)+'" aria-pressed="'+d.props.includes(pr)+'">'+esc(pr)+'</button>').join("")+'</div></div></section>'+
+    '<button class="btn wide primary" type="button" id="sendInvite" data-act="send-invite"'+(ok?"":" disabled")+'>Send invite</button>';
+}
+function viewPicker(){
+  const p=people.find(x=>x.id===view.id);
+  if(view.mode==="transfer"){
+    setHead("Who takes over?","Only active staff can become owner");
+    const cand=people.filter(x=>x.status==="active");
+    return '<section class="card">'+cand.map(c=>'<button class="lrow" type="button" data-act="pick-owner" data-id="'+c.id+'"><span class="av" style="background:var('+c.color+')">'+initials(c.name)+'</span><span class="grow"><span class="who">'+esc(c.name)+'</span><small>'+esc(c.role)+'</small></span>'+CHEV+'</button>').join("")+'</section>';
+  }
+  setHead("Change role",p.name);
+  return '<section class="card">'+Object.keys(roles).map(r=>'<button class="lrow" type="button" data-act="pick-role" data-role="'+esc(r)+'"><span class="grow"><span class="who">'+esc(r)+'</span><small>'+esc(roles[r].desc)+'</small></span>'+(r===p.role?'<span class="tag neu">Current</span>':CHEV)+'</button>').join("")+'</section>';
+}
+function viewApprovals(){
+  setHead("Waiting for approval",approvals.length?approvals.length+" waiting":"Nothing waiting");
+  if(!approvals.length)return '<p class="sub" style="margin-top:12px">All caught up. New requests from staff appear here.</p>';
+  return approvals.map(a=>'<section class="card"><span class="sl">'+esc(a.what)+'</span><p class="sub">Asked by '+esc(a.by)+' · expires <span class="tag prop">TBD</span></p><div class="btns"><button class="btn small primary" type="button" data-act="approve" data-id="'+a.id+'">Approve</button><button class="btn small" type="button" data-act="decline" data-id="'+a.id+'">Decline</button></div></section>').join("");
+}
+function viewActivity(){
+  setHead("Access history","Newest first");
+  return '<section class="card">'+events.map(e=>'<div class="lrow"><span class="grow"><span class="who" style="font-size:14.5px">'+esc(e.t)+'</span><small>'+esc(e.s)+'</small></span></div>').join("")+'</section>';
+}
+let createDraft={name:"",base:"Read-only"};
+function viewCreate(){
+  setHead("Create role","For a job the three roles don’t fit");
+  return '<section class="card"><label class="sl" for="newRole">Role name</label><input class="tinput" id="newRole" data-act="new-name" value="'+esc(createDraft.name)+'" placeholder="Night warden">'+
+    '<div class="field"><span class="sl">Start from</span>'+chips("create","base",["Read-only"].concat(Object.keys(roles)),createDraft.base)+'</div></section>'+
+    '<button class="btn wide primary" type="button" id="createBtn" data-act="create-save"'+(createDraft.name.trim()?"":" disabled")+'>Create</button>';
+}
+
+/* ---------- events ---------- */
+document.addEventListener("click",async e=>{
+  const t=e.target.closest("[data-act]");if(!t||t.tagName==="INPUT")return;
+  const act=t.dataset.act;
+  switch(act){
+    case "theme":{const r=document.documentElement,dark=r.dataset.theme==="dark"||(!r.dataset.theme&&matchMedia("(prefers-color-scheme:dark)").matches);r.dataset.theme=dark?"light":"dark";return}
+    case "back":toast("Back to Settings");return;
+    case "upgrade":toast("Opens plans");return;
+    case "close":requestClose();return;
+    case "person":openSheet({type:"person",id:t.dataset.id});return;
+    case "role":openRole(t.dataset.role);return;
+    case "invite":inviteDraft={name:"",contact:"",role:"Caretaker / Front desk",props:["Sunrise PG"]};openSheet({type:"invite"});return;
+    case "approvals":openSheet({type:"approvals"});return;
+    case "activity":openSheet({type:"activity"});return;
+    case "create-role":createDraft={name:"",base:"Read-only"};openSheet({type:"create"});return;
+    case "open-sensitive":view={type:"sensitive"};renderSheet();$("sheet").scrollTop=0;return;
+    case "section-edit":{
+      const s=t.dataset.section;
+      if(sectionEdit[s]){
+        sectionEdit[s]=false;
+        renderSheet();
+        toast("Applied to draft. Save role to commit.");
+      }else{
+        sectionEdit[s]=true;
+        renderSheet();
+      }
+      return;
+    }
+    case "pick":return onPick(t);
+    case "readonly":
+      if(!sectionEdit.actions)return;
+      if(!await ask("Apply read-only preset?","All action permissions, including sensitive actions, become Not allowed in this draft. Visibility and area access do not change.","Apply preset"))return;
+      draft.actions=clone(READ_ONLY.actions);draft.sensitive=clone(READ_ONLY.sensitive);
+      renderSheet();toast("Read-only applied to draft.");return;
+    case "discard":draft=clone(roles[draftRole]);renderSheet();toast("Changes discarded");return;
+    case "save-role":{
+      if(anyEditing()){toast("Apply the open section first");return}
+      if(!isDirty()){toast("No unsaved role changes");return}
+      if(!await ask("Save "+draftRole+" role?",impactText(draftRole)+". These changes reach staff on their next sync.","Save role","Keep editing"))return;
+      let name=draftRole;const nn=(draft.pendingName||"").trim();delete draft.pendingName;
+      if(nn&&nn!==name){
+        if(roles[nn]){draft.pendingName=nn;toast("A role called "+nn+" already exists");return}
+        const order=Object.keys(roles),copy={};order.forEach(k=>copy[k===name?nn:k]=k===name?clone(draft):roles[k]);
+        order.forEach(k=>delete roles[k]);Object.assign(roles,copy);
+        people.forEach(p=>{if(p.role===name)p.role=nn});logEvent(name+" renamed to "+nn);name=nn;
+      }else roles[name]=clone(draft);
+      logEvent(name+" role updated");
+      toast(name+" saved. Applies on their next sync.");closeSheetNow();renderMain();return}
+    case "delete-role":{
+      if(activeIn(draftRole).length||invitedIn(draftRole).length){await ask("Move people first",impactText(draftRole).replace("Affects","This role has")+". Give them another role, then remove it.","OK","Close");return}
+      if(!await ask("Remove "+draftRole+"?","Nobody uses it. This can’t be undone.","Remove"))return;
+      const n=draftRole;delete roles[n];logEvent(n+" role removed");closeSheetNow();renderMain();toast(n+" removed");return}
+    case "change-role":openSheet({type:"picker",id:view.id,mode:"role"});return;
+    case "pick-role":{
+      const p=people.find(x=>x.id===view.id),r=t.dataset.role;
+      if(r!==p.role){p.role=r;logEvent(p.name.split(" ")[0]+" moved to "+r);toast(p.name.split(" ")[0]+" is now "+r);renderMain()}
+      view={type:"person",id:p.id};renderSheet();return}
+    case "edit-their-role":{const p=people.find(x=>x.id===view.id);draftRole=p.role;draft=clone(roles[p.role]);view={type:"role"};renderSheet();$("sheet").scrollTop=0;return}
+    case "suspend":case "restore":case "deactivate":{
+      const p=people.find(x=>x.id===view.id),first=p.name.split(" ")[0];
+      const msgs={suspend:["Suspend "+first+"?","They can’t sign in until you restore access. Nothing is deleted.","Suspend"],
+                  restore:["Restore "+first+"’s access?","They get their "+p.role+" access back.","Restore"],
+                  deactivate:["Deactivate "+first+"?","Ends their access for good. Everything they recorded stays, with their name on it.","Deactivate"]};
+      if(!await ask(...msgs[act]))return;
+      p.status=act==="suspend"?"suspended":act==="restore"?"active":"deactivated";
+      logEvent(first+" "+(act==="suspend"?"suspended":act==="restore"?"restored":"deactivated"));
+      toast(act==="suspend"?first+" suspended":act==="restore"?first+" can sign in again":first+" deactivated. History kept.");
+      renderMain();renderSheet();return}
+    case "resend":{const p=people.find(x=>x.id===view.id);p.last="Invite resent just now";toast("Invite resent to "+p.contact);return}
+    case "cancel-invite":{
+      const p=people.find(x=>x.id===view.id);
+      if(!await ask("Cancel invite?","The link sent to "+p.contact+" stops working.","Cancel invite","Keep invite"))return;
+      people=people.filter(x=>x.id!==p.id);logEvent("Invite to "+p.name+" cancelled");closeSheetNow();renderMain();toast("Invite cancelled");return}
+    case "transfer":openSheet({type:"picker",id:"owner",mode:"transfer"});return;
+    case "pick-owner":{
+      const c=people.find(x=>x.id===t.dataset.id);
+      if(!await ask("Make "+c.name+" the owner?","They get full access. You become staff.","Transfer"))return;
+      closeSheetNow();toast("Transfer to "+c.name+" started. They must accept.");return}
+    case "inv-prop":{
+      const v=t.dataset.v,pr=inviteDraft.props;
+      inviteDraft.props=pr.includes(v)?pr.filter(x=>x!==v):pr.concat(v);
+      t.setAttribute("aria-pressed",String(inviteDraft.props.includes(v)));syncInviteBtn();return}
+    case "send-invite":{
+      const d=inviteDraft,id="p"+Date.now(),colors=["--idb-violet","--idb-sky","--idb-teal","--idb-sand"];
+      people.push({id,name:d.name.trim(),contact:d.contact.trim(),role:d.role,status:"invited",props:d.props.slice(),last:"Invite sent just now",color:colors[people.length%4],expiry:null});
+      logEvent(d.name.trim()+" invited as "+d.role);closeSheetNow();renderMain();toast("Invite sent to "+d.name.trim());return}
+    case "approve":case "decline":{
+      const a=approvals.find(x=>x.id===+t.dataset.id);approvals=approvals.filter(x=>x!==a);
+      logEvent((act==="approve"?"Approved: ":"Declined: ")+a.what);renderSheet();renderMain();toast(act==="approve"?"Approved":"Declined");return}
+    case "create-save":{
+      const n=createDraft.name.trim();
+      if(roles[n]){toast("A role called "+n+" already exists");return}
+      const base=createDraft.base==="Read-only"?role("Custom role.",clone(READ_ONLY.actions),clone(READ_ONLY.sensitive),{tenants:"Read only",balances:"Read only",expenses:"Read only",rooms:"Read only"},{ids:false,cash:false},{custom:true}):clone(roles[createDraft.base]);
+      base.custom=true;base.desc="Custom role.";base.limits=base.limits||null;
+      roles[n]=base;logEvent(n+" role created");renderMain();openRole(n);toast(n+" created");return}
+  }
+});
+async function onPick(t){
+  const g=t.dataset.group,k=t.dataset.key,v=t.dataset.v;
+  if(g==="tier"){entitlementRegistry.currentTier=v;renderMain();document.querySelectorAll('#tierChips .chip').forEach(c=>c.setAttribute("aria-pressed",String(c.dataset.v===v)));return}
+  if(g==="actions"){if(!sectionEdit.actions)return;draft.actions[k]=v}
+  else if(g==="areas"){if(!sectionEdit.areas)return;draft.areaAccess[k]=v}
+  else if(g==="sensitive"){if(!sectionEdit.sensitive)return;
+    if(draft.sensitive[k]===X&&v===A){
+      const name=SENSITIVE.find(s=>s[0]===k)[1];
+      if(!await ask("Allow “"+name+"” without approval?","Everyone with the "+draftRole+" role can do this on their own.","Allow"))return;
+    }
+    draft.sensitive[k]=v;
+  }
+  else if(g==="approver"){draft.approver=v;renderSheet();return}
+  else if(g==="limits"){draft.limits[k]=+v}
+  else if(g==="invite"){inviteDraft.role=v}
+  else if(g==="create"){createDraft.base=v}
+  else if(g==="expiry"){
+    const p=people.find(x=>x.id===view.id);p.expiry=p.expiry||{on:false,date:"",mode:"freeze"};
+    if(k==="on")p.expiry.on=v==="yes";else p.expiry.mode=v;renderSheet();return;
+  }
+  setGroupPressed(g,k,v);if(draft)refreshRoleBits();
+}
+document.addEventListener("change",e=>{
+  const t=e.target,act=t.dataset.act;
+  if(t.id==="soloToggle"){renderMain();return}
+  if(act==="vis"){if(!sectionEdit.visibility){t.checked=!t.checked;return}draft.extraVis[t.dataset.key]=t.checked;refreshRoleBits()}
+  if(act==="limit-sw"){draft.limits[t.dataset.key]=t.checked;refreshRoleBits()}
+  if(act==="prop"){
+    const p=people.find(x=>x.id===view.id),pr=t.dataset.key;
+    p.props=t.checked?PROPERTIES.filter(x=>p.props.includes(x)||x===pr):p.props.filter(x=>x!==pr);
+    logEvent(p.name.split(" ")[0]+(t.checked?" given ":" removed from ")+pr);
+    toast(p.name.split(" ")[0]+(t.checked?" can now work at ":" no longer works at ")+pr);renderSheet();renderMain();
+  }
+  if(act==="exp-date"){const p=people.find(x=>x.id===view.id);p.expiry.date=t.value}
+});
+document.addEventListener("input",e=>{
+  const t=e.target,act=t.dataset.act;
+  if(act==="inv-name"){inviteDraft.name=t.value;syncInviteBtn()}
+  if(act==="inv-contact"){inviteDraft.contact=t.value;syncInviteBtn()}
+  if(act==="new-name"){createDraft.name=t.value;$("createBtn").disabled=!t.value.trim()}
+  if(act==="rename"){if(t.value.trim()===draftRole)delete draft.pendingName;else draft.pendingName=t.value;refreshRoleBits()}
+});
+function syncInviteBtn(){const d=inviteDraft;$("sendInvite").disabled=!(d.name.trim()&&d.contact.trim()&&d.props.length)}
+$("scrim").addEventListener("click",requestClose);
+document.addEventListener("keydown",e=>{
+  if($("dlgScrim").classList.contains("on")){if(e.key==="Escape")$("dlgCancel").click();return}
+  if(!view)return;
+  if(e.key==="Escape"){e.preventDefault();requestClose();return}
+  if(e.key==="Tab"){
+    const f=[...$("sheet").querySelectorAll("button:not([disabled]),input,[tabindex]")].filter(x=>x.offsetParent!==null);if(!f.length)return;
+    if(e.shiftKey&&document.activeElement===f[0]){e.preventDefault();f[f.length-1].focus()}
+    else if(!e.shiftKey&&document.activeElement===f[f.length-1]){e.preventDefault();f[0].focus()}
+  }
+});
+renderMain();
+</script>
+</body>
+</html>

@@ -1,0 +1,130 @@
+{
+  "version": "1.0",
+  "status": "proposed approval command retrofit tests",
+  "cases": [
+    {
+      "id": "APR-CMD-001",
+      "case": "Needs approval command",
+      "expect": [
+        "approval request committed",
+        "returns approval_required",
+        "no business mutation"
+      ]
+    },
+    {
+      "id": "APR-CMD-002",
+      "case": "same command tapped twice",
+      "expect": [
+        "same pending request reused",
+        "no duplicate request"
+      ]
+    },
+    {
+      "id": "APR-CMD-003",
+      "case": "request approved",
+      "expect": [
+        "authorization created",
+        "underlying business action still not executed"
+      ]
+    },
+    {
+      "id": "APR-CMD-004",
+      "case": "active staff without approve_requests",
+      "expect": [
+        "cannot approve"
+      ]
+    },
+    {
+      "id": "APR-CMD-005",
+      "case": "owner approves without staff membership",
+      "expect": [
+        "allowed",
+        "decided_by_user_id owner",
+        "decided_by_membership_id null"
+      ]
+    },
+    {
+      "id": "APR-CMD-006",
+      "case": "approved command retry",
+      "expect": [
+        "domain mutation executes",
+        "domain event appended",
+        "authorization consumed atomically"
+      ]
+    },
+    {
+      "id": "APR-CMD-007",
+      "case": "mutation fails after authorization validation",
+      "expect": [
+        "whole tx rolls back",
+        "authorization remains unused"
+      ]
+    },
+    {
+      "id": "APR-CMD-008",
+      "case": "reuse consumed authorization",
+      "expect": [
+        "rejected APPROVAL_ALREADY_USED",
+        "no mutation"
+      ]
+    },
+    {
+      "id": "APR-CMD-009",
+      "case": "authorization wrong actor",
+      "expect": [
+        "rejected",
+        "no mutation"
+      ]
+    },
+    {
+      "id": "APR-CMD-010",
+      "case": "authorization wrong action",
+      "expect": [
+        "rejected",
+        "no mutation"
+      ]
+    },
+    {
+      "id": "APR-CMD-011",
+      "case": "authorization wrong target",
+      "expect": [
+        "rejected",
+        "no mutation"
+      ]
+    },
+    {
+      "id": "APR-CMD-012",
+      "case": "permission allowed",
+      "expect": [
+        "command executes directly",
+        "no approval request"
+      ]
+    },
+    {
+      "id": "APR-CMD-013",
+      "case": "permission not_allowed",
+      "expect": [
+        "command rejected",
+        "no approval request",
+        "no mutation"
+      ]
+    },
+    {
+      "id": "APR-CMD-014",
+      "case": "record payment approved retry",
+      "expect": [
+        "payment+allocations+receipt commit",
+        "authorization consumed with payment event"
+      ]
+    },
+    {
+      "id": "APR-CMD-015",
+      "case": "opening balance approved retry",
+      "expect": [
+        "opening position commits",
+        "authorization consumed",
+        "no fabricated payment or charge"
+      ]
+    }
+  ]
+}

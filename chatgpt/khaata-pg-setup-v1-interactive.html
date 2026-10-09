@@ -1,0 +1,50 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Khaata — PG Setup V1</title><style>
+:root{--bg:#fdfcf8;--card:#fff;--ink:#191918;--muted:#74736f;--line:#e7e2d9;--act:#29396f;--info:#eaf0ff;--ok:#eaf5ee}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px system-ui,-apple-system,sans-serif}
+.app{max-width:540px;margin:auto;padding:18px 16px 70px}.top{display:flex;align-items:center;gap:12px;margin-bottom:13px}
+.back{width:44px;height:44px;border:1px solid var(--line);border-radius:14px;background:var(--card);font-size:20px}.back:disabled{opacity:.3}
+.prog{flex:1}.step{font-size:11px;color:var(--muted);margin-bottom:6px}.track{height:5px;background:var(--line);border-radius:9px;overflow:hidden}.fill{height:100%;background:var(--act);transition:width .2s}
+h1{font-size:26px;margin:18px 0 6px}.sub{color:var(--muted);font-size:12px;line-height:1.5;margin:0 0 20px}
+.card,.option{border:1px solid var(--line);border-radius:17px;background:var(--card)}.card{padding:15px;margin-bottom:12px}
+label{display:block;font-size:11px;color:var(--muted);margin:0 0 6px}.field{width:100%;height:46px;border:1px solid var(--line);border-radius:12px;background:white;padding:0 12px;font-size:16px;margin-bottom:14px}
+.option{width:100%;text-align:left;padding:15px;margin-bottom:10px;color:var(--ink)}.option.sel{border:2px solid var(--act);background:var(--info)}.option b{display:block}.option span{display:block;color:var(--muted);font-size:11px;margin-top:4px;line-height:1.4}
+.actions{display:grid;gap:9px;margin-top:18px}.primary,.secondary{min-height:48px;border-radius:14px;font-weight:800}.primary{border:0;background:var(--act);color:#fff}.secondary{border:1px solid var(--line);background:var(--card);color:var(--ink)}
+.methods{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.method{border:1px solid var(--line);border-radius:14px;background:white;padding:12px 6px;text-align:center;font-size:12px;font-weight:750}.method.sel{border:2px solid var(--act);background:var(--info)}
+.row{display:flex;justify-content:space-between;gap:14px;padding:12px 0;border-bottom:1px solid var(--line)}.row:last-child{border:0}.row span{color:var(--muted);font-size:12px}.row b{text-align:right;font-size:12px}
+.note{padding:12px;border-radius:14px;background:var(--info);font-size:11px;line-height:1.5;margin-top:12px}.ok{background:var(--ok)}
+.csv{font-size:11px;overflow:auto;white-space:nowrap;border:1px solid var(--line);border-radius:12px;padding:10px;margin-top:10px}.hide{display:none}
+</style></head><body><main class="app"><div class="top"><button class="back" id="back">‹</button><div class="prog"><div class="step" id="step"></div><div class="track"><div class="fill" id="fill"></div></div></div></div><section id="screen"></section></main>
+<script>(function(){
+var S={page:0,path:"now",structure:"floors",method:"manual",history:[]};
+var screen=document.getElementById("screen"),back=document.getElementById("back"),step=document.getElementById("step"),fill=document.getElementById("fill");
+function opt(id,title,desc,selected){return '<button class="option '+(selected?'sel':'')+'" data-select="'+id+'"><b>'+title+'</b><span>'+desc+'</span></button>'}
+function rows(a){var x='';for(var i=0;i<a.length;i++)x+='<div class="row"><span>'+a[i][0]+'</span><b>'+a[i][1]+'</b></div>';return x}
+function nav(n){S.history.push(S.page);S.page=n;render()} function goBack(){if(S.history.length){S.page=S.history.pop();render()}}
+function chrome(n,total){step.innerHTML='Step '+n+' of '+total;fill.style.width=(n/total*100)+'%';back.disabled=S.history.length===0}
+function render(){
+var h='';
+if(S.page===0){chrome(1,S.path==="now"?6:4);h='<h1>Create PG</h1><p class="sub">Create the business shell. Property capacity and tenant terms come later.</p><div class="card"><label>Business name</label><input class="field" value="Sunrise PG"><label>Business type</label><input class="field" value="PG / Hostel"><label>Location</label><input class="field" value="Bengaluru"><label>Operational currency</label><input class="field" value="INR (₹)"></div><div class="actions"><button class="primary" data-next="1">Continue</button></div>'}
+else if(S.page===1){chrome(2,S.path==="now"?6:4);h='<h1>Choose setup path</h1><p class="sub">Choose how you want to establish rooms and beds. You can change the structure later.</p>'+opt("path:now","Set up rooms now","Create property capacity before adding tenants.",S.path==="now")+opt("path:progressive","Add rooms as I add tenants","Start operating and create rooms during tenant onboarding.",S.path==="progressive")+'<div class="actions"><button class="primary" data-route>Continue</button></div>'}
+else if(S.page===2){chrome(3,6);h='<h1>Choose structure</h1><p class="sub">Use only the hierarchy your property needs.</p>'+opt("structure:rooms","Rooms only","No floor or building grouping.",S.structure==="rooms")+opt("structure:floors","Floors & rooms","Rooms grouped by floor.",S.structure==="floors")+opt("structure:blocks","Blocks/buildings, floors & rooms","For multi-building properties.",S.structure==="blocks")+'<div class="actions"><button class="primary" data-next="3">Continue</button></div>'}
+else if(S.page===3){chrome(4,6);h='<h1>Rooms & capacity</h1><p class="sub">Choose the fastest way to create the property inventory.</p><div class="methods"><button class="method '+(S.method==="manual"?"sel":"")+'" data-select="method:manual">Manual</button><button class="method '+(S.method==="bulk"?"sel":"")+'" data-select="method:bulk">Bulk generate</button><button class="method '+(S.method==="csv"?"sel":"")+'" data-select="method:csv">Import CSV</button></div>';
+if(S.method==="manual")h+='<div class="card" style="margin-top:12px">'+rows([["Floor","Ground"],["Room","101"],["Capacity","4 beds"],["Bed labels","1, 2, 3, 4"]])+'</div>';
+if(S.method==="bulk")h+='<div class="card" style="margin-top:12px">'+rows([["Floor","First"],["Room range","101–150"],["Beds per room","4"],["Result","50 rooms · 200 beds"]])+'<div class="note">Preview the generated inventory before saving.</div></div>';
+if(S.method==="csv")h+='<div class="card" style="margin-top:12px"><b>Import room & bed CSV</b><div class="actions"><button class="secondary">Download template</button><button class="secondary" data-csv>Choose CSV</button></div><div id="csvPreview" class="hide"><div class="csv">Building | Floor | Room | Bed<br>Block A | 1 | 101 | A<br>Block A | 1 | 101 | B<br>Block A | 1 | 102 | A</div><div class="note ok">497 rows valid · 3 need attention. Nothing is imported until confirmation.</div></div></div>';
+h+='<div class="actions"><button class="primary" data-next="4">Review capacity</button></div>'}
+else if(S.page===4){chrome(5,6);h='<h1>Review capacity</h1><p class="sub">Confirm the operational structure before making it available for tenant assignment.</p><div class="card">'+rows([["Floors","2"],["Rooms","50"],["Total beds","200"],["Occupied","0"],["Vacant","200"]])+'</div><div class="actions"><button class="primary" data-next="5">Confirm</button><button class="secondary" data-next="3">Edit rooms</button></div>'}
+else if(S.page===5){chrome(6,6);h='<h1>Property setup complete</h1><p class="sub">Rooms and beds are ready for tenant onboarding. Commercial terms remain part of each tenancy.</p><div class="note ok">Capacity setup complete. Continue with the remaining PG configuration or start operating.</div><div class="actions"><button class="primary">Continue setup</button></div>'}
+else if(S.page===6){chrome(3,4);h='<h1>Add your first tenant</h1><p class="sub">Progressive setup starts with the tenant. Room creation happens inside Room / Bed assignment.</p><div class="card">'+rows([["Tenant","Rohan Mehta"],["Phone","98765 43210"],["Joining date","10 Oct 2026"]])+'</div><div class="actions"><button class="primary" data-next="7">Room / Bed</button></div>'}
+else if(S.page===7){chrome(4,4);h='<h1>Assign room / bed</h1><p class="sub">Select an existing room or create one without leaving tenant onboarding.</p><div class="card">'+rows([["Room","203 · new"],["Capacity","2 beds"],["Assign tenant","Bed A"],["Other bed","Vacant"]])+'</div><div class="note">Underneath: Khaata creates Room 203 and its beds first, then assigns the tenancy to Bed A.</div><div class="actions"><button class="primary">Create & assign</button></div>'}
+screen.innerHTML=h;
+}
+document.addEventListener("click",function(e){
+var el=e.target;while(el&&el!==document&&!el.getAttribute("data-next")&&!el.getAttribute("data-select")&&!el.hasAttribute("data-route")&&!el.hasAttribute("data-csv"))el=el.parentNode;
+if(!el||el===document)return;
+if(el.getAttribute("data-next"))nav(parseInt(el.getAttribute("data-next"),10));
+else if(el.hasAttribute("data-route"))nav(S.path==="now"?2:6);
+else if(el.getAttribute("data-select")){var a=el.getAttribute("data-select").split(":");S[a[0]]=a[1];render()}
+else if(el.hasAttribute("data-csv")){var x=document.getElementById("csvPreview");if(x)x.className="";}
+},false);
+back.addEventListener("click",goBack,false);render();
+})();</script></body></html>

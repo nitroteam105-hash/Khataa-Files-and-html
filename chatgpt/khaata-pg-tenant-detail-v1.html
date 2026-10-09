@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata — Tenant Detail V1</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+ --canvas:#FDFCF8;--surface:#FFFFFF;--row:#F6F6F5;--line:#E6E0D7;--ink:#171716;--muted:#6B6B69;
+ --alert:#FF6B5B;--alert-ink:#B83A2B;--alert-tint:#FFE4DF;--done-tint:#DDF3E6;--done-ink:#1E7A4C;
+ --info:#D7E1FE;--info-ink:#2B3A75;--act:#2B3A75;--act-text:#FFFFFF;--warn:#F5E6B8;--warn-ink:#745B12;
+ --r-card:20px;--r-btn:14px;--r-pill:999px;--section:24px; color-scheme:light;
+}
+[data-theme="dark"]{
+ color-scheme:dark;--canvas:#1B1B1A;--surface:#262625;--row:#232322;--line:#38383A;--ink:#FFFFFF;--muted:#9B9B98;
+ --alert:#E8705C;--alert-ink:#F59384;--alert-tint:#3A2420;--done-tint:#244232;--done-ink:#74C99A;
+ --info:#252C42;--info-ink:#DCE4FF;--act:#C9D4FB;--act-text:#1A2140;--warn:#3B3421;--warn-ink:#E5C96E;
+}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Manrope,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--canvas);color:var(--ink)}
+button{font:inherit}.app{max-width:520px;margin:auto;padding:18px 16px 110px}
+.top{display:grid;grid-template-columns:40px 1fr 40px;align-items:center;margin-bottom:22px}
+.round{width:38px;height:38px;border:1px solid var(--line);border-radius:50%;background:var(--surface);color:var(--ink);font-size:18px}
+.top-title{text-align:center;font-size:13px;font-weight:800}.person{display:flex;gap:14px;align-items:center;margin-bottom:22px}
+.avatar{width:52px;height:52px;border-radius:50%;background:var(--row);display:grid;place-items:center;font-size:15px;font-weight:800;flex:none}
+.person h1{font-size:23px;line-height:1.15;letter-spacing:-.025em;margin:0 0 5px}.person p{font-size:12px;color:var(--muted);margin:0;line-height:1.5}
+.attn{border:1px solid var(--line);border-radius:var(--r-card);background:var(--surface);padding:15px 16px;margin-bottom:var(--section)}
+.attn-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.eyebrow{font-size:11px;color:var(--muted);font-weight:700}
+.attn strong{display:block;font-size:21px;line-height:1.2;margin-top:4px;color:var(--alert-ink)}.pill{font-size:10px;font-weight:800;padding:5px 8px;border-radius:var(--r-pill);background:var(--alert-tint);color:var(--alert-ink)}
+.attn p{font-size:12px;line-height:1.55;color:var(--muted);margin:10px 0 0}.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.btn{height:42px;border-radius:var(--r-btn);border:1px solid var(--line);background:transparent;color:var(--ink);font-weight:800;font-size:12px}
+.btn.primary{background:var(--act);border-color:var(--act);color:var(--act-text)}
+.section{margin-top:var(--section)}.section-head{display:flex;justify-content:space-between;align-items:center;margin:0 2px 10px}
+.section-head h2{font-size:14px;margin:0}.section-head button{border:0;background:none;color:var(--muted);font-size:11px;font-weight:700}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);overflow:hidden}
+.row{min-height:54px;padding:11px 14px;display:flex;justify-content:space-between;align-items:center;gap:18px;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}.row .left{min-width:0}.label{font-size:11px;color:var(--muted);line-height:1.4}.value{font-size:13px;font-weight:700;line-height:1.45;margin-top:2px}
+.right{text-align:right;font-size:13px;font-weight:700;white-space:nowrap}.right.muted{color:var(--muted);font-weight:600}.right.alert{color:var(--alert-ink)}
+.payment{padding:13px 14px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;border-bottom:1px solid var(--line)}
+.payment:last-child{border-bottom:0}.payment b{font-size:13px}.payment small{display:block;color:var(--muted);font-size:11px;margin-top:4px}.amount{text-align:right;font-size:13px;font-weight:800}.amount small{font-weight:600}
+.morebtn{width:100%;border:0;background:transparent;color:var(--ink);padding:14px;font-weight:800;font-size:12px}
+.fab{position:fixed;right:max(18px,calc((100vw - 520px)/2 + 18px));bottom:76px;width:54px;height:54px;border:0;border-radius:50%;background:var(--act);color:var(--act-text);font-size:28px;box-shadow:0 8px 22px rgba(0,0,0,.16);z-index:4}
+.fabmenu{position:fixed;right:max(18px,calc((100vw - 520px)/2 + 18px));bottom:140px;display:none;flex-direction:column;align-items:flex-end;gap:8px;z-index:5}.fabmenu.open{display:flex}
+.action{border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--ink);padding:10px 13px;font-weight:700;font-size:12px;box-shadow:0 5px 16px rgba(0,0,0,.10)}
+.nav{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(520px,100%);height:66px;background:var(--surface);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);z-index:3;padding-bottom:env(safe-area-inset-bottom)}
+.nav button{border:0;background:transparent;color:var(--muted);font-size:11px;font-weight:700}.nav button.on{color:var(--ink)}.nav span{display:block;font-size:18px;line-height:20px;margin-bottom:2px}
+.sheetback{position:fixed;inset:0;background:rgba(0,0,0,.28);display:none;z-index:8}.sheetback.open{display:block}.sheet{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);background:var(--surface);border-radius:24px 24px 0 0;padding:10px 18px 28px}.handle{width:38px;height:4px;border-radius:4px;background:var(--line);margin:0 auto 18px}.sheet h2{font-size:19px;margin:0 0 5px}.sheet p{font-size:12px;color:var(--muted);margin:0 0 16px}.sheetrow{padding:12px 0;border-top:1px solid var(--line);display:flex;justify-content:space-between;font-size:13px}.sheetrow span{color:var(--muted)}
+</style>
+</head>
+<body>
+<main class="app">
+ <header class="top">
+  <button class="round" type="button" data-act="back" aria-label="Back">‹</button>
+  <div class="top-title">Tenant</div>
+  <button class="round" type="button" data-act="theme" aria-label="Toggle theme">◐</button>
+ </header>
+
+ <section class="person">
+  <div class="avatar">RM</div>
+  <div><h1>Rohan Mehta</h1><p>Room 203 · Bed B<br>Active since 5 Mar 2026</p></div>
+ </section>
+
+ <section class="attn">
+  <div class="attn-top">
+   <div><span class="eyebrow">Outstanding</span><strong>₹4,500</strong></div>
+   <span class="pill">Overdue</span>
+  </div>
+  <p>October rent is partly paid. ₹4,500 remains due.</p>
+  <div class="actions">
+   <button class="btn primary" type="button" data-act="payment">Record payment</button>
+   <button class="btn" type="button" data-act="remind">Share reminder</button>
+  </div>
+ </section>
+
+ <section class="section">
+  <div class="section-head"><h2>Tenancy</h2><button type="button" data-act="tenancy">View details ›</button></div>
+  <div class="card">
+   <div class="row"><div class="left"><div class="label">Room / bed</div><div class="value">Room 203 · Bed B</div></div><div class="right muted">2nd floor</div></div>
+   <div class="row"><div class="left"><div class="label">Monthly rent</div><div class="value">₹8,500</div></div><div class="right muted">Due on 5th</div></div>
+   <div class="row"><div class="left"><div class="label">Security held</div><div class="value">₹10,000</div></div><div class="right muted">Held</div></div>
+  </div>
+ </section>
+
+ <section class="section">
+  <div class="section-head"><h2>This month</h2><button type="button" data-act="statement">Statement ›</button></div>
+  <div class="card">
+   <div class="row"><div class="left"><div class="label">October rent</div><div class="value">₹8,500</div></div><div class="right alert">₹4,500 due</div></div>
+   <div class="row"><div class="left"><div class="label">Paid</div><div class="value">₹4,000</div></div><div class="right muted">2 Oct</div></div>
+  </div>
+ </section>
+
+ <section class="section">
+  <div class="section-head"><h2>Recent payments</h2><button type="button" data-act="payments">See all ›</button></div>
+  <div class="card">
+   <div class="payment"><div><b>Rent payment</b><small>2 Oct · UPI</small></div><div class="amount">₹4,000<small>Receipt #184</small></div></div>
+   <div class="payment"><div><b>September rent</b><small>5 Sep · Cash</small></div><div class="amount">₹8,500<small>Receipt #169</small></div></div>
+   <div class="payment"><div><b>August rent</b><small>4 Aug · UPI</small></div><div class="amount">₹8,500<small>Receipt #151</small></div></div>
+  </div>
+ </section>
+
+ <section class="section">
+  <div class="section-head"><h2>Tenant details</h2></div>
+  <div class="card">
+   <div class="row"><div class="left"><div class="label">Phone</div><div class="value">98765 43210</div></div><div class="right muted">Call</div></div>
+   <div class="row"><div class="left"><div class="label">Requirements</div><div class="value">All required details added</div></div><div class="right muted">View</div></div>
+   <button class="morebtn" type="button" data-act="more">More tenant actions</button>
+  </div>
+ </section>
+</main>
+
+<div class="fabmenu" id="fabmenu">
+ <button class="action" type="button" data-act="payment">Record payment</button>
+ <button class="action" type="button">Add charge</button>
+ <button class="action" type="button">Add expense</button>
+</div>
+<button class="fab" id="fab" type="button" data-act="fab">+</button>
+
+<nav class="nav">
+ <button type="button"><span>⌂</span>Home</button>
+ <button class="on" type="button"><span>♙</span>Tenants</button>
+ <button type="button"><span>₹</span>Collections</button>
+ <button type="button"><span>•••</span>More</button>
+</nav>
+
+<div class="sheetback" id="sheetback">
+ <div class="sheet"><div class="handle"></div><h2 id="sheetTitle">Record payment</h2><p id="sheetText">Rohan Mehta · Room 203 · Bed B</p>
+ <div class="sheetrow"><span>Outstanding</span><b>₹4,500</b></div>
+ <div class="sheetrow"><span>October rent</span><b>₹8,500</b></div>
+ </div>
+</div>
+
+<script>
+(function(){
+ var S={theme:"light",fab:false};
+ function save(){try{localStorage.setItem("khaata-tenant-detail-v1",JSON.stringify(S));}catch(e){}}
+ function load(){try{var x=JSON.parse(localStorage.getItem("khaata-tenant-detail-v1")||"null");if(x)S=x;}catch(e){}}
+ function render(){document.documentElement.setAttribute("data-theme",S.theme);document.getElementById("fabmenu").className="fabmenu"+(S.fab?" open":"");document.getElementById("fab").textContent=S.fab?"×":"+";}
+ function mutate(k,v){S[k]=v;save();render();}
+ function sheet(title,text){document.getElementById("sheetTitle").textContent=title;document.getElementById("sheetText").textContent=text;document.getElementById("sheetback").className="sheetback open";}
+ load();
+ document.addEventListener("click",function(e){
+  var a=e.target.closest("[data-act]"); if(a){var act=a.getAttribute("data-act");
+   if(act==="theme")mutate("theme",S.theme==="dark"?"light":"dark");
+   else if(act==="fab")mutate("fab",!S.fab);
+   else if(act==="payment"){S.fab=false;save();render();sheet("Record payment","Rohan Mehta · ₹4,500 outstanding");}
+   else if(act==="remind")sheet("Share reminder","October rent · ₹4,500 outstanding");
+   else if(act==="tenancy")sheet("Tenancy details","Room 203 · Bed B · Active since 5 Mar 2026");
+   else if(act==="statement")sheet("Tenant statement","Rent ledger and payment history");
+   else if(act==="payments")sheet("Payments","All recorded payments for this tenancy");
+   else if(act==="more")sheet("Tenant actions","Transfer room · Plan move-out · Edit agreement");
+   else if(act==="back")history.back();
+   return;
+  }
+  if(e.target===document.getElementById("sheetback"))document.getElementById("sheetback").className="sheetback";
+ });
+ render();
+})();
+</script>
+</body>
+</html>

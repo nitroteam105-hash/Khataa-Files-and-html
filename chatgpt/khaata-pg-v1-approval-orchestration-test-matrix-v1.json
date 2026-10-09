@@ -1,0 +1,118 @@
+{
+  "version": "1.0",
+  "status": "proposed approval orchestration tests",
+  "cases": [
+    {
+      "id": "APR-001",
+      "case": "Needs approval command",
+      "expect": [
+        "approval request commits",
+        "command returns approval_required normally",
+        "no domain mutation"
+      ]
+    },
+    {
+      "id": "APR-002",
+      "case": "same command intent retried before approval",
+      "expect": [
+        "same pending request reused by request_key",
+        "no duplicate pending request"
+      ]
+    },
+    {
+      "id": "APR-003",
+      "case": "Not allowed action",
+      "expect": [
+        "rejected",
+        "no approval request"
+      ]
+    },
+    {
+      "id": "APR-004",
+      "case": "approval granted",
+      "expect": [
+        "authorization created",
+        "underlying action still not executed"
+      ]
+    },
+    {
+      "id": "APR-005",
+      "case": "active staff without approve_requests",
+      "expect": [
+        "cannot approve"
+      ]
+    },
+    {
+      "id": "APR-006",
+      "case": "staff with approve_requests=allowed",
+      "expect": [
+        "may approve",
+        "decision attributed to exact user/membership"
+      ]
+    },
+    {
+      "id": "APR-007",
+      "case": "owner with no staff membership approves",
+      "expect": [
+        "may approve",
+        "decided_by_user_id is owner",
+        "membership attribution remains null",
+        "no fake requester attribution"
+      ]
+    },
+    {
+      "id": "APR-008",
+      "case": "approved command execution",
+      "expect": [
+        "domain mutation and authorization consumption same transaction"
+      ]
+    },
+    {
+      "id": "APR-009",
+      "case": "domain mutation throws after authorization validation",
+      "expect": [
+        "transaction rolls back",
+        "authorization remains unconsumed"
+      ]
+    },
+    {
+      "id": "APR-010",
+      "case": "authorization reuse",
+      "expect": [
+        "rejected APPROVAL_ALREADY_USED",
+        "no domain mutation"
+      ]
+    },
+    {
+      "id": "APR-011",
+      "case": "wrong actor/action/target authorization",
+      "expect": [
+        "rejected",
+        "no domain mutation"
+      ]
+    },
+    {
+      "id": "APR-012",
+      "case": "approval decision only",
+      "expect": [
+        "does not alter payment/tenancy/security business state"
+      ]
+    },
+    {
+      "id": "APR-013",
+      "case": "disabled approver",
+      "expect": [
+        "cannot approve",
+        "historical approvals remain"
+      ]
+    },
+    {
+      "id": "APR-014",
+      "case": "sync metadata",
+      "expect": [
+        "approval rows use outbox/entity-state bookkeeping",
+        "do not require domain sync_status mutation"
+      ]
+    }
+  ]
+}

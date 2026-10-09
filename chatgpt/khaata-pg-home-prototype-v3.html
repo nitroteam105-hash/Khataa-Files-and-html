@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · Sunrise PG · Home V3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{
+  --canvas:#FDFCF8;--canvas-alt:#FFFFFF;--surface:#FFFFFF;--row:#F6F6F5;--line:#E6E0D7;
+  --ink:#171716;--muted:#6B6B69;--alert:#FF6B5B;--alert-solid:#C23E2E;--alert-ink:#B83A2B;--alert-tint:#FFE4DF;
+  --pending-tile:#FFF0C4;--pending-ink:#6E5200;--pending:#EBC36B;--done-tint:#DDF3E6;--done-ink:#1E7A4C;
+  --info:#D7E1FE;--info-ink:#2B3A75;--info-line:#C3D0F7;--act:#2B3A75;--act-text:#FFFFFF;
+  --neutral-tile:#EDEDEC;--neutral-ink:#6B6B69;--r-btn:14px;--r-card:20px;--r-pill:999px;
+  --dur-fast:.18s;--dur-slide:.5s;--ease-slide:cubic-bezier(.33,1,.68,1);
+  --sp-1:4px;--sp-2:8px;--sp-3:12px;--sp-4:16px;--sp-5:20px;--sp-6:24px;--sp-7:32px;
+  color-scheme:light;
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;--canvas:#1B1B1A;--canvas-alt:#000000;--surface:#262625;--row:#232322;--line:#38383A;
+  --ink:#FFFFFF;--muted:#9B9B98;--alert:#E8705C;--alert-solid:#E8705C;--alert-ink:#F59384;--alert-tint:#3A2420;
+  --pending-tile:#3A3122;--pending-ink:#EBC36B;--pending:#EBC36B;--done-tint:#244232;--done-ink:#74C99A;
+  --info:#252C42;--info-ink:#DCE4FF;--info-line:#34405E;--act:#C9D4FB;--act-text:#1A2140;
+  --neutral-tile:#2A2A29;--neutral-ink:#9B9B98;
+}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--canvas);color:var(--ink);font-family:Manrope,system-ui,sans-serif;-webkit-font-smoothing:antialiased}button{font:inherit;color:inherit}.app{max-width:520px;margin:0 auto;min-height:100vh;padding:calc(env(safe-area-inset-top,0px) + var(--sp-4)) var(--sp-4) calc(92px + env(safe-area-inset-bottom,0px))}.icon{width:18px;height:18px;stroke-width:2}.bizhead{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:var(--r-card);background:var(--surface);border:1px solid var(--line);cursor:pointer}.bizhead .tile{width:36px;height:36px;border-radius:11px;background:var(--act);color:var(--act-text);display:grid;place-items:center;font-weight:800;font-size:15px;flex:none}.bizmeta{flex:1;min-width:0;text-align:left}.bizname{font-weight:700;font-size:14.5px;line-height:1.25}.bizsub{font-size:11.5px;color:var(--muted);margin-top:2px}.headicon{width:36px;height:36px;border-radius:var(--r-btn);border:1px solid var(--line);background:var(--surface);display:grid;place-items:center}.bizlist{display:none;margin-top:8px;border:1px solid var(--line);border-radius:var(--r-card);overflow:hidden;background:var(--surface)}.bizlist.on{display:block}.bizrow{width:100%;border:0;border-bottom:1px solid var(--line);background:transparent;display:flex;align-items:center;gap:10px;padding:11px 14px;text-align:left}.bizrow:last-child{border-bottom:0}.bizrow .mini{width:30px;height:30px;border-radius:9px;background:var(--neutral-tile);color:var(--neutral-ink);display:grid;place-items:center;font-size:12px;font-weight:800}.bizrow.sel .mini{background:var(--act);color:var(--act-text)}.bizrow span:nth-child(2){flex:1;font-size:13.5px;font-weight:600}.bizrow .check{color:var(--done-ink)}
+.section{margin-top:var(--sp-7)}.sectionhead{display:flex;align-items:baseline;gap:var(--sp-3);margin-bottom:var(--sp-2)}.sectionhead h2{font-size:19px;line-height:1.25;margin:0;font-weight:700;letter-spacing:-.02em}.sectionhead .link{margin-left:auto;border:0;background:transparent;padding:4px 0;color:var(--muted);font-size:12px;font-weight:700}.list{border-top:1px solid var(--line)}.rowitem{width:100%;display:flex;align-items:flex-start;gap:var(--sp-3);padding:var(--sp-4) 0;border:0;border-bottom:1px solid var(--line);background:transparent;text-align:left}.statusicon{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;flex:none}.statusicon.alert{background:var(--alert-tint);color:var(--alert-ink)}.statusicon.pending{background:var(--pending-tile);color:var(--pending-ink)}.statusicon.neutral{background:var(--neutral-tile);color:var(--neutral-ink)}.statusicon svg{width:18px;height:18px}.rowcopy{flex:1;min-width:0}.rowtitle{font-size:15px;font-weight:700;line-height:1.35}.rowmeta{font-size:12px;font-weight:600;color:var(--muted);line-height:1.5;margin-top:3px}.arrow{color:var(--muted);padding-top:9px}.arrow svg{width:16px;height:16px}.date{width:64px;flex:none;font-size:12px;font-weight:700;color:var(--muted);padding-top:2px}.caught{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:var(--sp-4) 0}.caught strong{display:block;font-size:15px}.caught span{display:block;font-size:12px;color:var(--muted);margin-top:4px}
+.pulsehead{display:flex;align-items:end;margin-bottom:var(--sp-3)}.pulsehead h2{font-size:19px;margin:0;font-weight:700}.pulsehead span{margin-left:auto;font-size:12px;color:var(--muted);font-weight:600}.pulse{border:1px solid var(--line);border-radius:var(--r-card);background:var(--surface);overflow:hidden}.pulsegroup{display:grid;grid-template-columns:1fr 1fr}.pulsegroup+.pulsegroup{border-top:1px solid var(--line)}.metric{border:0;background:transparent;text-align:left;padding:var(--sp-5)}.metric+.metric{border-left:1px solid var(--line)}.metric strong{display:block;font-size:26px;font-weight:600;line-height:1.1;letter-spacing:-.04em}.metric span{display:block;margin-top:6px;font-size:12px;font-weight:600;color:var(--muted)}.pulsefoot{margin:8px 2px 0;font-size:11.5px;color:var(--muted)}
+.bbar{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,520px);height:calc(68px + env(safe-area-inset-bottom,0px));padding:0 12px env(safe-area-inset-bottom,0px);background:var(--surface);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);z-index:20}.nav{border:0;background:transparent;color:var(--muted);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:10.5px;font-weight:700}.nav.on{color:var(--act)}.nav svg{width:20px;height:20px}.fab{position:fixed;right:max(18px,calc((100vw - 520px)/2 + 18px));bottom:calc(78px + env(safe-area-inset-bottom,0px));width:54px;height:54px;border-radius:50%;border:0;background:var(--act);color:var(--act-text);display:grid;place-items:center;z-index:32;box-shadow:0 6px 16px rgba(43,58,117,.35);transition:transform var(--dur-fast)}:root[data-theme="dark"] .fab{box-shadow:0 6px 16px rgba(0,0,0,.4)}.fab.open{transform:rotate(45deg)}.fab svg{width:24px;height:24px}.scrim{position:fixed;inset:0;background:rgba(0,0,0,.28);backdrop-filter:blur(1px);opacity:0;pointer-events:none;transition:opacity var(--dur-fast);z-index:25}.scrim.on{opacity:1;pointer-events:auto}.actions{position:fixed;right:max(18px,calc((100vw - 520px)/2 + 18px));bottom:calc(142px + env(safe-area-inset-bottom,0px));z-index:31;display:flex;flex-direction:column;align-items:flex-end;gap:10px;pointer-events:none}.action{border:0;background:transparent;padding:0;display:flex;align-items:center;gap:10px;opacity:0;transform:translateY(10px);transition:opacity var(--dur-fast),transform var(--dur-fast);pointer-events:none}.actions.on .action{opacity:1;transform:translateY(0);pointer-events:auto}.actions.on .action:nth-child(1){transition-delay:.09s}.actions.on .action:nth-child(2){transition-delay:.06s}.actions.on .action:nth-child(3){transition-delay:.03s}.actionlabel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-btn);padding:9px 12px;font-size:13px;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.08)}.actionicon{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line);color:var(--ink);box-shadow:0 4px 14px rgba(0,0,0,.08)}.action.primary .actionicon{background:var(--act);color:var(--act-text);border-color:var(--act)}.actionicon svg{width:19px;height:19px}.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translate(-50%,12px);background:var(--ink);color:var(--canvas);border-radius:var(--r-pill);padding:9px 14px;font-size:12px;font-weight:700;opacity:0;pointer-events:none;transition:opacity var(--dur-fast),transform var(--dur-fast);z-index:40;white-space:nowrap}.toast.on{opacity:1;transform:translate(-50%,0)}.dev{margin-top:var(--sp-7);display:flex;gap:8px}.dev button{border:1px solid var(--line);background:var(--surface);border-radius:var(--r-btn);padding:8px 10px;font-size:11px;color:var(--muted)}
+@media(max-width:360px){.app{padding-left:12px;padding-right:12px}.metric{padding:16px}.metric strong{font-size:23px}}
+</style>
+</head>
+<body>
+<main class="app">
+  <div class="bizhead" data-act="business">
+    <div class="tile">S</div>
+    <div class="bizmeta"><div class="bizname">Sunrise PG</div><div class="bizsub">PG / Hostel</div></div>
+    <button class="headicon" data-act="theme" aria-label="Change theme"><i data-lucide="sun-moon"></i></button>
+    <i data-lucide="chevron-down" class="icon"></i>
+  </div>
+  <div class="bizlist" id="bizlist">
+    <button class="bizrow sel" data-act="pickbiz"><span class="mini">S</span><span>Sunrise PG</span><i data-lucide="check" class="icon check"></i></button>
+    <button class="bizrow" data-act="pickbiz"><span class="mini">H</span><span>Himalaya Dairy</span></button>
+  </div>
+
+  <section class="section">
+    <div class="sectionhead"><h2>Needs attention</h2><button class="link" data-act="seeall">See all</button></div>
+    <div id="attention"></div>
+  </section>
+
+  <section class="section">
+    <div class="sectionhead"><h2>Coming up</h2></div>
+    <div class="list">
+      <button class="rowitem" data-act="open"><span class="date">Tomorrow</span><span class="rowcopy"><span class="rowtitle">Priya joins · Room 102-A</span><span class="rowmeta">ID proof still missing</span></span><span class="arrow"><i data-lucide="chevron-right"></i></span></button>
+      <button class="rowitem" data-act="open"><span class="date">5 Oct</span><span class="rowcopy"><span class="rowtitle">18 rents due</span><span class="rowmeta">₹1,08,000 expected</span></span><span class="arrow"><i data-lucide="chevron-right"></i></span></button>
+      <button class="rowitem" data-act="open"><span class="date">8 Oct</span><span class="rowcopy"><span class="rowtitle">Amit moves out · Room 203-B</span><span class="rowmeta">Bed becomes available</span></span><span class="arrow"><i data-lucide="chevron-right"></i></span></button>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="pulsehead"><h2>Business pulse</h2><span>October 2026</span></div>
+    <div class="pulse">
+      <div class="pulsegroup"><button class="metric" data-act="collections"><strong>₹3.42L</strong><span>Collected</span></button><button class="metric" data-act="collections"><strong>₹48K</strong><span>Outstanding</span></button></div>
+      <div class="pulsegroup"><button class="metric" data-act="rooms"><strong>43 / 50</strong><span>Beds occupied now</span></button><button class="metric" data-act="rooms"><strong>3</strong><span>Upcoming</span></button></div>
+    </div>
+    <p class="pulsefoot">Money is for October. Occupancy is current.</p>
+  </section>
+
+  <div class="dev"><button data-act="caught">Toggle healthy state</button></div>
+</main>
+
+<div class="scrim" id="scrim" data-act="closeactions"></div>
+<div class="actions" id="actions" aria-hidden="true">
+  <button class="action" data-act="quick" data-name="Add charge"><span class="actionlabel">Add charge</span><span class="actionicon"><i data-lucide="receipt-text"></i></span></button>
+  <button class="action" data-act="quick" data-name="Add expense"><span class="actionlabel">Add expense</span><span class="actionicon"><i data-lucide="wallet-cards"></i></span></button>
+  <button class="action" data-act="quick" data-name="Record payment"><span class="actionlabel">Record payment</span><span class="actionicon"><i data-lucide="indian-rupee"></i></span></button>
+  <button class="action primary" data-act="quick" data-name="Add tenant"><span class="actionlabel">Add tenant</span><span class="actionicon"><i data-lucide="user-plus"></i></span></button>
+</div>
+<button class="fab" id="fab" data-act="actions" aria-label="Create"><i data-lucide="plus"></i></button>
+<nav class="bbar" aria-label="Primary navigation">
+  <button class="nav on" data-act="nav"><i data-lucide="house"></i><span>Home</span></button>
+  <button class="nav" data-act="nav"><i data-lucide="users"></i><span>Tenants</span></button>
+  <button class="nav" data-act="nav"><i data-lucide="indian-rupee"></i><span>Collections</span></button>
+  <button class="nav" data-act="nav"><i data-lucide="menu"></i><span>More</span></button>
+</nav>
+<div class="toast" id="toast"></div>
+<script>
+(function(){
+  var S={caught:false,theme:"light",actions:false,biz:false};
+  function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}
+  function save(){try{localStorage.setItem("khaata_pg_home_v3",JSON.stringify(S))}catch(e){}}
+  function load(){try{var x=JSON.parse(localStorage.getItem("khaata_pg_home_v3")||"null");if(x){S=x}}catch(e){}}
+  function icons(){if(window.lucide){window.lucide.createIcons({attrs:{"stroke-width":2}})}}
+  function attention(){var e=document.getElementById("attention");if(S.caught){e.innerHTML='<div class="caught"><strong>You’re caught up</strong><span>Nothing needs your attention right now.</span></div>';return}e.innerHTML='<div class="list">'+
+    '<button class="rowitem" data-act="open"><span class="statusicon alert"><i data-lucide="badge-indian-rupee"></i></span><span class="rowcopy"><span class="rowtitle">Rajesh · ₹12,000 overdue</span><span class="rowmeta">2 months · Exceeds security by ₹2,000</span></span><span class="arrow"><i data-lucide="chevron-right"></i></span></button>'+
+    '<button class="rowitem" data-act="open"><span class="statusicon alert"><i data-lucide="triangle-alert"></i></span><span class="rowcopy"><span class="rowtitle">Room 101-A has a conflict</span><span class="rowmeta">Rajesh until 5 Dec · Priya from 1 Dec</span></span><span class="arrow"><i data-lucide="chevron-right"></i></span></button>'+
+    '<button class="rowitem" data-act="open"><span class="statusicon pending"><i data-lucide="stamp"></i></span><span class="rowcopy"><span class="rowtitle">2 approvals waiting</span><span class="rowmeta">Rent discount · Expense</span></span><span class="arrow"><i data-lucide="chevron-right"></i></span></button></div>';icons()}
+  function actionState(){document.getElementById("actions").className=S.actions?"actions on":"actions";document.getElementById("scrim").className=S.actions?"scrim on":"scrim";document.getElementById("fab").className=S.actions?"fab open":"fab";document.getElementById("actions").setAttribute("aria-hidden",S.actions?"false":"true")}
+  function bizState(){document.getElementById("bizlist").className=S.biz?"bizlist on":"bizlist"}
+  function theme(){document.documentElement.setAttribute("data-theme",S.theme)}
+  function toast(msg){var t=document.getElementById("toast");t.textContent=msg;t.className="toast on";setTimeout(function(){t.className="toast"},1300)}
+  function render(){theme();attention();actionState();bizState();icons()}
+  load();render();
+  document.addEventListener("click",function(e){var b=e.target.closest("[data-act]");if(!b)return;var a=b.getAttribute("data-act");
+    if(a==="actions"){S.actions=!S.actions;save();actionState();return}
+    if(a==="closeactions"){S.actions=false;save();actionState();return}
+    if(a==="quick"){S.actions=false;save();actionState();toast(b.getAttribute("data-name"));return}
+    if(a==="caught"){S.caught=!S.caught;save();attention();return}
+    if(a==="theme"){e.stopPropagation();S.theme=S.theme==="dark"?"light":"dark";save();theme();icons();return}
+    if(a==="business"){S.biz=!S.biz;save();bizState();return}
+    if(a==="pickbiz"){S.biz=false;save();bizState();toast("Prototype keeps Sunrise PG active");return}
+    if(a==="nav"){var ns=document.querySelectorAll(".nav");var i;for(i=0;i<ns.length;i++){ns[i].classList.remove("on")}b.classList.add("on");toast(b.textContent.trim());return}
+    if(a==="open"||a==="seeall"||a==="collections"||a==="rooms"){toast("Prototype interaction");return}
+  });
+  document.addEventListener("input",function(){});
+  document.addEventListener("change",function(){});
+}());
+</script>
+</body></html>

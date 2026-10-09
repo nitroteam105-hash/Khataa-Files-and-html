@@ -1,0 +1,142 @@
+{
+  "version": "1.0",
+  "status": "proposed implementation tests",
+  "commands": [
+    {
+      "command": "recordPayment",
+      "cases": [
+        {
+          "name": "offline success",
+          "expect": [
+            "payment inserted",
+            "allocations inserted",
+            "receipt inserted",
+            "outbox queued",
+            "commit succeeds without network"
+          ]
+        },
+        {
+          "name": "cash collected by staff",
+          "expect": [
+            "cash custody event inserted",
+            "tenant payment remains settled"
+          ]
+        },
+        {
+          "name": "allocation exceeds payment",
+          "expect": [
+            "transaction rejected",
+            "no partial rows committed"
+          ]
+        },
+        {
+          "name": "permission needs approval",
+          "expect": [
+            "no payment mutation",
+            "APPROVAL_REQUIRED returned"
+          ]
+        }
+      ]
+    },
+    {
+      "command": "confirmJoined",
+      "cases": [
+        {
+          "name": "upcoming tenancy",
+          "expect": [
+            "tenancy active",
+            "planned occupancy active",
+            "events/outbox queued"
+          ]
+        },
+        {
+          "name": "already active",
+          "expect": [
+            "rejected",
+            "no mutation"
+          ]
+        },
+        {
+          "name": "joining date passed",
+          "expect": [
+            "still requires explicit confirmJoined",
+            "no implicit state change"
+          ]
+        }
+      ]
+    },
+    {
+      "command": "transferRoom",
+      "cases": [
+        {
+          "name": "valid transfer",
+          "expect": [
+            "old assignment ended",
+            "new assignment active",
+            "rent_terms untouched"
+          ]
+        },
+        {
+          "name": "target occupied",
+          "expect": [
+            "BED_CONFLICT",
+            "transaction rolled back"
+          ]
+        },
+        {
+          "name": "target retired",
+          "expect": [
+            "CAPACITY_UNAVAILABLE",
+            "transaction rolled back"
+          ]
+        }
+      ]
+    },
+    {
+      "command": "applySecurityToDues",
+      "cases": [
+        {
+          "name": "explicit valid application",
+          "expect": [
+            "security_event inserted",
+            "outstanding projection decreases"
+          ]
+        },
+        {
+          "name": "insufficient held",
+          "expect": [
+            "rejected",
+            "no mutation"
+          ]
+        },
+        {
+          "name": "over outstanding",
+          "expect": [
+            "rejected",
+            "no mutation"
+          ]
+        }
+      ]
+    },
+    {
+      "command": "recordPromise",
+      "cases": [
+        {
+          "name": "valid promise",
+          "expect": [
+            "promise inserted",
+            "event/outbox queued",
+            "no ledger/payment mutation"
+          ]
+        },
+        {
+          "name": "new promise after prior promise",
+          "expect": [
+            "history preserved",
+            "prior row not overwritten"
+          ]
+        }
+      ]
+    }
+  ]
+}

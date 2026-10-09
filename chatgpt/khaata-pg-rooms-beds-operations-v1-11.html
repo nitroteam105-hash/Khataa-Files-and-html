@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · PG / Hostel · Rooms & Beds · v1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{
+--canvas:#FDFCF8;--surface:#FFFFFF;--row:#F6F6F5;--line:#E6E0D7;--ink:#171716;--muted:#6B6B69;
+--alert:#FF6B5B;--alert-solid:#C23E2E;--alert-ink:#B83A2B;--alert-tint:#FFE4DF;
+--pending:#EBC36B;--pending-ink:#6E5200;--pending-tile:#FFF0C4;
+--done-ink:#1E7A4C;--done-tint:#DDF3E6;--info:#D7E1FE;--info-ink:#2B3A75;--info-line:#C3D0F7;
+--act:#2B3A75;--act-text:#FFFFFF;--neutral-tile:#EDEDEC;--neutral-ink:#6B6B69;
+--r-btn:14px;--r-card:20px;--r-pill:999px;color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+--canvas:#1B1B1A;--surface:#262625;--row:#232322;--line:#38383A;--ink:#FFFFFF;--muted:#9B9B98;
+--alert:#E8705C;--alert-solid:#E8705C;--alert-ink:#F59384;--alert-tint:#3A2420;
+--pending:#EBC36B;--pending-ink:#EBC36B;--pending-tile:#3A3122;--done-ink:#74C99A;--done-tint:#244232;
+--info:#252C42;--info-ink:#DCE4FF;--info-line:#34405E;--act:#C9D4FB;--act-text:#1A2140;
+--neutral-tile:#2A2A29;--neutral-ink:#9B9B98;color-scheme:dark}}
+:root[data-theme="dark"]{
+--canvas:#1B1B1A;--surface:#262625;--row:#232322;--line:#38383A;--ink:#FFFFFF;--muted:#9B9B98;
+--alert:#E8705C;--alert-solid:#E8705C;--alert-ink:#F59384;--alert-tint:#3A2420;
+--pending:#EBC36B;--pending-ink:#EBC36B;--pending-tile:#3A3122;--done-ink:#74C99A;--done-tint:#244232;
+--info:#252C42;--info-ink:#DCE4FF;--info-line:#34405E;--act:#C9D4FB;--act-text:#1A2140;
+--neutral-tile:#2A2A29;--neutral-ink:#9B9B98;color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--canvas);color:var(--ink);font-family:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif}
+button,input,select{font:inherit}button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--act);outline-offset:2px}
+svg.lucide{width:18px;height:18px;stroke-width:2}[hidden]{display:none!important}
+.app{max-width:520px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom))}
+.new{padding:10px 12px;border-radius:var(--r-card);background:var(--info);color:var(--info-ink);font-size:11.5px;line-height:1.45;margin-bottom:12px}
+.new strong{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.back,.theme{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);display:grid;place-items:center;padding:0}
+.title{flex:1}.title strong{display:block;font-size:14px}.title small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+h1{font-size:26px;line-height:1.05;margin:8px 0 4px}.lead{margin:0 0 14px;color:var(--muted);font-size:12px;line-height:1.5}
+.toolbar{display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:10px}
+.search{height:42px;border:1px solid var(--line);border-radius:var(--r-btn);background:var(--surface);color:var(--ink);padding:0 12px;font-size:12px}
+.add{height:42px;border:0;border-radius:var(--r-btn);background:var(--act);color:var(--act-text);padding:0 13px;font-size:11px;font-weight:800;display:flex;align-items:center;gap:6px}
+.filters{display:flex;gap:7px;overflow:auto;padding:0 0 12px;scrollbar-width:none}.filters::-webkit-scrollbar{display:none}
+.filter{flex:none;border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:999px;min-height:34px;padding:0 11px;font-size:10.5px;font-weight:800}
+.filter.on{background:var(--ink);color:var(--canvas);border-color:var(--ink)}
+.card{border:1px solid var(--line);border-radius:var(--r-card);background:var(--surface);overflow:hidden}
+.room{padding:13px 14px;border-bottom:1px solid var(--line)}.room:last-child{border-bottom:0}
+.room-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:9px}
+.room-head>div:first-child{min-width:0}
+.room-head strong{display:block;font-size:12.5px}
+.room-head small{display:block;color:var(--muted);font-size:10px;margin-top:2px}
+.beds{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.bed{border:1px solid var(--line);border-radius:14px;background:var(--row);padding:10px;text-align:left;color:var(--ink);min-height:80px}
+.bed strong{display:block;font-size:11.5px}.bed small{display:block;color:var(--muted);font-size:9.8px;line-height:1.35;margin-top:4px}
+.pill{display:inline-flex;align-items:center;margin-top:7px;border-radius:999px;padding:4px 7px;font-size:9px;font-weight:800}
+.pill.vacant{background:var(--done-tint);color:var(--done-ink)}
+.pill.occupied{background:var(--neutral-tile);color:var(--neutral-ink)}
+.pill.reserved,.pill.planned{background:var(--pending-tile);color:var(--pending-ink)}
+.pill.unavailable{background:var(--info);color:var(--info-ink)}
+.pill.retired{background:var(--neutral-tile);color:var(--neutral-ink)}
+
+.overview{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:8px}
+.stat{padding:11px 12px;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--ink);text-align:left;min-height:62px}
+.stat.active{border-color:var(--act);box-shadow:0 0 0 1px var(--act) inset;background:var(--info)}
+.stat.active span,.stat.active b{color:var(--info-ink)}
+.stat span{display:block;color:var(--muted);font-size:9.5px;font-weight:700}.stat b{display:block;font-size:18px;margin-top:2px}
+.summary-filter-panel{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px;padding:8px;border:1px solid var(--line);border-radius:12px;background:var(--row)}
+.summary-filter-panel button{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 10px;font-size:9.5px;font-weight:800}
+.summary-filter-panel button.on{background:var(--act);color:var(--act-text);border-color:var(--act)}
+.viewbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0 10px}
+.viewbar .hint{font-size:9.5px;color:var(--muted)}
+.stat span{display:block;color:var(--muted);font-size:9.5px}.stat b{display:block;font-size:13px;margin-top:3px}
+.blocklist{display:grid;gap:10px}
+.blockcard{border:1px solid var(--line);border-radius:var(--r-card);background:var(--surface);overflow:hidden}
+.blockhead{width:100%;border:0;background:var(--surface);color:var(--ink);padding:13px 14px;display:grid;grid-template-columns:36px 1fr auto;gap:10px;align-items:center;text-align:left}
+.blockicon{width:36px;height:36px;border-radius:12px;background:var(--neutral-tile);display:grid;place-items:center;color:var(--act)}
+.blockhead strong{display:block;font-size:12.5px}.blockhead small{display:block;color:var(--muted);font-size:10px;margin-top:3px}
+.blockmeta{font-size:10px;color:var(--muted);text-align:right}.blockmeta b{display:block;color:var(--ink);font-size:11px}
+.floors{border-top:1px solid var(--line);background:var(--row);padding:8px}
+.floorbtn{width:100%;border:0;background:var(--surface);color:var(--ink);border-radius:12px;padding:10px 11px;margin-bottom:7px;display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left}
+.floorbtn:last-child{margin-bottom:0}.floorbtn strong{font-size:11.5px}.floorbtn small{color:var(--muted);font-size:9.8px}.floorbtn span:last-child{font-size:10px;color:var(--muted)}
+.floorview{margin-top:14px}.floor-section{margin-bottom:16px}.floor-section>.room-head{padding:4px 4px 9px;min-height:30px;align-items:center}.floor-section>.card{border:0;background:transparent;border-radius:0;overflow:visible}.floor-section>.card>.room{border:1px solid var(--line);border-radius:var(--r-card);background:var(--surface);margin-bottom:9px;padding:13px 14px}.floor-section>.card>.room:last-child{margin-bottom:0}.floor-section>.card>.room:first-child{padding-top:13px}
+.crumb{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:10px;margin-bottom:10px}
+.crumb button{border:0;background:none;color:var(--act);padding:0;font-weight:800;font-size:10px}
+
+
+.results-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:2px 2px 10px}
+.results-head strong{font-size:12px}.results-head span{font-size:10px;color:var(--muted)}
+.result-group{margin-bottom:12px}
+.result-group-title{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 2px 7px}
+.result-group-title strong{font-size:11.5px}.result-group-title span{font-size:10px;color:var(--muted)}
+
+
+.room-tools{display:flex;align-items:center;gap:6px}
+.viewtoggle{display:flex;gap:4px;padding:3px;border:1px solid var(--line);border-radius:10px;background:var(--row)}
+.viewtoggle button{border:0;background:transparent;color:var(--muted);border-radius:8px;min-width:31px;height:27px;padding:0 7px;font-size:9px;font-weight:800}
+.viewtoggle button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px color-mix(in srgb,var(--ink) 8%,transparent)}
+.room-map{margin-top:2px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--row)}
+.map-top{display:flex;align-items:center;justify-content:space-between;color:var(--muted);font-size:9px;margin-bottom:10px}
+.map-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.map-bed{min-height:76px;border:1px solid var(--line);border-radius:13px;background:var(--surface);color:var(--ink);padding:9px;text-align:left}
+.map-bed strong{display:block;font-size:10.5px}.map-bed small{display:block;margin-top:4px;color:var(--muted);font-size:9px;line-height:1.3}
+.map-bed .pill{margin-top:7px}
+.map-bottom{display:flex;align-items:center;justify-content:center;margin-top:10px;color:var(--muted);font-size:9px}
+
+
+.property-map{margin-top:12px;overflow-x:auto;padding-bottom:4px}
+.map-floor-row{margin-bottom:16px}
+.map-floor-label{font-size:12px;font-weight:800;color:var(--ink);margin:0 0 8px 2px}
+.map-room-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.map-room-cell{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:7px;min-height:102px;min-width:0}
+.map-room-cell>strong{display:block;font-size:9.5px;text-align:center;margin-bottom:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.map-bed-layout{display:grid;gap:6px;justify-content:center;align-content:start}
+.map-bed-layout.count-1{grid-template-columns:42px}
+.map-bed-layout.count-2{grid-template-columns:repeat(2,42px)}
+.map-bed-layout.count-3{grid-template-columns:repeat(2,42px)}
+.map-bed-layout.count-4{grid-template-columns:repeat(2,42px);grid-auto-rows:42px}
+.map-bed-layout.count-5,.map-bed-layout.count-6{grid-template-columns:repeat(2,42px);grid-auto-rows:42px}
+.map-bed-marker{width:42px;height:42px;border:1px solid var(--line);border-radius:11px;background:var(--row);color:var(--ink);display:grid;place-items:center;padding:0;position:relative}
+.map-bed-marker i{width:18px;height:18px}
+.map-bed-marker .bedno{position:absolute;left:3px;right:3px;bottom:2px;font-size:8.5px;font-weight:800;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}
+.map-bed-marker.vacant{background:var(--done-tint);color:var(--done-ink)}
+.map-bed-marker.occupied{background:var(--neutral-tile);color:var(--neutral-ink)}
+.map-bed-marker.reserved,.map-bed-marker.planned{background:var(--pending-tile);color:var(--pending-ink)}
+.map-bed-marker.unavailable{background:var(--info);color:var(--info-ink)}
+.map-bed-marker.retired{background:var(--neutral-tile);color:var(--neutral-ink);opacity:.7}
+.map-legend{display:flex;flex-wrap:wrap;gap:7px;margin:8px 0 12px}
+.map-legend span{display:inline-flex;align-items:center;gap:5px;font-size:9px;color:var(--muted)}
+.map-legend i{width:10px;height:10px;border-radius:3px;background:var(--neutral-tile)}
+.map-legend .lg-vacant{background:var(--done-tint)}.map-legend .lg-reserved{background:var(--pending-tile)}.map-legend .lg-info{background:var(--info)}
+.map-mode-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:4px 0 10px}
+.map-mode-head strong{font-size:12px}.map-mode-head span{font-size:10px;color:var(--muted)}
+
+
+.stat[role="button"]{cursor:pointer}
+.stat.selected{border-color:var(--act);background:var(--info)}
+.stat.selected span,.stat.selected b{color:var(--info-ink)}
+.blockhead.selected{background:var(--info);color:var(--info-ink)}
+.blockhead.selected small,.blockhead.selected .blockmeta{color:var(--info-ink)}
+.floorbtn.selected{background:var(--info);color:var(--info-ink);border:1px solid var(--info-line)}
+.floorbtn.selected small,.floorbtn.selected span:last-child{color:var(--info-ink)}
+
+.scrim{position:fixed;inset:0;background:color-mix(in srgb,var(--ink) 25%,transparent);opacity:0;pointer-events:none;transition:opacity .2s ease;z-index:50}
+.scrim.on{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:50%;bottom:0;transform:translate(-50%,105%);width:min(520px,100%);background:var(--surface);border-radius:24px 24px 0 0;padding:10px 16px calc(18px + env(safe-area-inset-bottom));z-index:60;transition:transform .28s ease}
+.sheet.on{transform:translate(-50%,0)}
+.handle{width:38px;height:4px;border-radius:99px;background:var(--line);margin:0 auto 14px}
+.sheet-head{display:flex;align-items:start;justify-content:space-between;gap:12px}.sheet h2{margin:0;font-size:18px}.sheet p{margin:4px 0 12px;color:var(--muted);font-size:10.8px;line-height:1.45}
+.close{width:36px;height:36px;border:1px solid var(--line);border-radius:50%;background:var(--surface);color:var(--ink);display:grid;place-items:center;padding:0}
+.info-row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:11px}.info-row:last-child{border-bottom:0}.info-row span{color:var(--muted)}
+.actions{display:grid;gap:8px;margin-top:14px}
+.action{width:100%;min-height:42px;border:1px solid var(--line);border-radius:var(--r-btn);background:var(--surface);color:var(--ink);display:flex;align-items:center;justify-content:space-between;padding:0 12px;font-size:11.5px;font-weight:800}
+.action.warn{background:var(--info);color:var(--info-ink);border-color:var(--info-line)}
+.action.retire{background:var(--alert-tint);color:var(--alert-ink);border-color:transparent}
+.form{display:grid;gap:10px;margin-top:12px}.field label{display:block;font-size:10px;font-weight:800;margin-bottom:5px}.input{width:100%;height:42px;border:1px solid var(--line);border-radius:var(--r-btn);background:var(--surface);color:var(--ink);padding:0 11px;font-size:12px}
+.notice{padding:10px 11px;border-radius:var(--r-btn);background:var(--pending-tile);color:var(--pending-ink);font-size:10.5px;line-height:1.45;margin-top:10px}
+.btn{width:100%;min-height:42px;border:0;border-radius:var(--r-btn);background:var(--act);color:var(--act-text);font-weight:800;font-size:12px}
+.toast{position:fixed;left:50%;bottom:18px;transform:translate(-50%,20px);background:var(--ink);color:var(--canvas);padding:10px 13px;border-radius:14px;font-size:11px;font-weight:700;opacity:0;pointer-events:none;transition:.22s;z-index:80}.toast.on{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+<main class="app">
+<div class="new"><strong>New in this file</strong><br>Rooms & Beds Operations v1.11 keeps applied summary filters visibly selected. Block, Floor, Room, and Vacant-bed tiles stay highlighted while active, and selected values are shown directly in the tiles.</div>
+
+<header class="top">
+<button class="back" type="button" aria-label="Back"><i data-lucide="arrow-left"></i></button>
+<div class="title"><strong>Rooms & beds</strong><small>Sunrise PG</small></div>
+<button class="theme" type="button" data-act="theme" aria-label="Toggle theme"><i data-lucide="sun-moon"></i></button>
+</header>
+
+<h1>Rooms & beds</h1>
+<p class="lead">Browse large properties by block and floor, or jump straight to a room/bed with search and operational filters.</p>
+
+<div class="toolbar">
+<input class="search" id="search" placeholder="Search room or bed">
+<button class="add" type="button"><i data-lucide="plus"></i>Add capacity</button>
+</div>
+
+<div class="filters">
+<button class="filter on" data-filter="all">All</button>
+<button class="filter" data-filter="vacant">Vacant</button>
+<button class="filter" data-filter="occupied">Occupied</button>
+<button class="filter" data-filter="reserved">Reserved</button>
+<button class="filter" data-filter="planned">Planned vacancy</button>
+</div>
+
+<div class="overview">
+  <button class="stat" type="button" data-summary-filter="block"><span>Blocks</span><b id="blockStatValue">5</b></button>
+  <button class="stat" type="button" data-summary-filter="floor"><span>Floors</span><b id="floorStatValue">25</b></button>
+  <button class="stat" type="button" data-summary-filter="room"><span>Rooms</span><b id="roomStatValue">50</b></button>
+  <button class="stat" type="button" data-summary-filter="vacant"><span>Vacant beds</span><b id="vacantStatValue">7</b></button>
+</div>
+<div class="summary-filter-panel" id="summaryFilterPanel" hidden></div>
+<div class="viewbar">
+  <span class="hint" id="viewHint">Browse by block, floor and room</span>
+  <div class="viewtoggle" role="group" aria-label="Rooms view">
+    <button type="button" class="on" data-main-view="list" aria-pressed="true"><i data-lucide="list"></i> List</button>
+    <button type="button" data-main-view="map" aria-pressed="false"><i data-lucide="layout-grid"></i> Map</button>
+  </div>
+</div>
+
+
+<section id="propertyMapView" hidden>
+  <div class="map-mode-head"><strong id="mapTitle">Property room map</strong><span>Tap any bed</span></div>
+  <div class="map-legend">
+    <span><i class="lg-vacant"></i>Vacant</span>
+    <span><i></i>Occupied</span>
+    <span><i class="lg-reserved"></i>Reserved / planned</span>
+    <span><i class="lg-info"></i>Unavailable</span>
+  </div>
+  <div class="property-map" id="propertyMap"></div>
+</section>
+
+<section id="hierarchyView">
+  <div class="blocklist" id="blockList">
+    <div class="blockcard" data-block-card="A">
+      <button class="blockhead" type="button" data-block="A">
+        <span class="blockicon"><i data-lucide="building-2"></i></span>
+        <span><strong>Block A</strong><small>5 floors · 10 rooms</small></span>
+        <span class="blockmeta"><b>2 vacant</b>20 beds</span>
+      </button>
+    </div>
+    <div class="blockcard" data-block-card="B">
+      <button class="blockhead" type="button" data-block="B">
+        <span class="blockicon"><i data-lucide="building-2"></i></span>
+        <span><strong>Block B</strong><small>5 floors · 10 rooms</small></span>
+        <span class="blockmeta"><b>1 vacant</b>20 beds</span>
+      </button>
+    </div>
+    <div class="blockcard" data-block-card="C">
+      <button class="blockhead" type="button" data-block="C">
+        <span class="blockicon"><i data-lucide="building-2"></i></span>
+        <span><strong>Block C</strong><small>5 floors · 10 rooms</small></span>
+        <span class="blockmeta"><b>2 vacant</b>20 beds</span>
+      </button>
+    </div>
+    <div class="blockcard" data-block-card="D">
+      <button class="blockhead" type="button" data-block="D">
+        <span class="blockicon"><i data-lucide="building-2"></i></span>
+        <span><strong>Block D</strong><small>5 floors · 10 rooms</small></span>
+        <span class="blockmeta"><b>1 vacant</b>20 beds</span>
+      </button>
+    </div>
+    <div class="blockcard" data-block-card="E">
+      <button class="blockhead" type="button" data-block="E">
+        <span class="blockicon"><i data-lucide="building-2"></i></span>
+        <span><strong>Block E</strong><small>5 floors · 10 rooms</small></span>
+        <span class="blockmeta"><b>1 vacant</b>20 beds</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+
+<section id="resultsView" hidden>
+  <div class="results-head">
+    <strong id="resultsTitle">Results</strong>
+    <span id="resultsCount">0 beds</span>
+  </div>
+  <div id="resultsList"></div>
+</section>
+
+<section id="floorView" class="floorview" hidden>
+  <div class="crumb"><button type="button" data-act="all-blocks">All blocks</button><i data-lucide="chevron-right"></i><span id="crumbBlock">Block A</span></div>
+  <div id="floorRooms"></div>
+</section>
+</section>
+</main>
+
+<div class="scrim" id="scrim"></div>
+<section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+<div class="handle"></div>
+<div class="sheet-head">
+<div><h2 id="sheetTitle">Bed details</h2><p id="sheetSub">Capacity and occupancy</p></div>
+<button class="close" type="button" data-act="close"><i data-lucide="x"></i></button>
+</div>
+
+<div id="detailView">
+<div class="card" style="padding:0 12px">
+<div class="info-row"><span>Occupancy</span><b id="occupancy">Vacant</b></div>
+<div class="info-row"><span>Capacity lifecycle</span><b id="lifecycle">Available</b></div>
+<div class="info-row"><span>Current / future person</span><b id="person">—</b></div>
+</div>
+<div class="actions">
+<button class="action" data-act="unavailable"><span>Mark temporarily unavailable</span><i data-lucide="chevron-right"></i></button>
+<button class="action retire" data-act="retire"><span>Retire bed</span><i data-lucide="chevron-right"></i></button>
+</div>
+</div>
+
+<div id="unavailableView" hidden>
+<h2>Temporarily unavailable</h2>
+<p>Keep the bed record and its history, but block new assignment until it becomes available again.</p>
+<div class="form">
+<div class="field"><label for="reason">Reason</label><input class="input" id="reason" value="Repair / maintenance"></div>
+<div class="field"><label for="availableDate">Available from</label><input class="input" id="availableDate" type="date" value="2026-10-18"></div>
+<button class="btn" type="button" data-act="save-unavailable">Save availability</button>
+</div>
+</div>
+
+<div id="blockedView" hidden>
+<h2>Cannot change yet</h2>
+<p id="blockedText">This bed has an active or future tenancy commitment. Resolve the tenancy first so Khaata does not invalidate occupancy history.</p>
+<div class="notice">Khaata does not silently move tenants or cancel reservations when capacity changes.</div>
+<button class="btn" style="margin-top:12px" type="button" data-act="close">Back to rooms & beds</button>
+</div>
+</section>
+
+<div class="toast" id="toast">Saved</div>
+
+<script>
+let activeBed=null,activeFilter="all",currentBlock=null,mainView="list",selectedBlock="all",selectedFloor="all",selectedRoom="all";
+
+const demo={
+A:[
+ {floor:"Floor 1",rooms:[
+  {room:"A-101",beds:[["Bed A","occupied","Aman Shah · Active","Aman Shah"],["Bed B","vacant","Available for assignment",""]]},
+  {room:"A-102",beds:[["Bed A","reserved","Priya Nair · joins 12 Oct","Priya Nair"],["Bed B","occupied","Rahul Verma · Active","Rahul Verma"]]}
+ ]},
+ {floor:"Floor 2",rooms:[
+  {room:"A-201",beds:[["Bed A","planned","Rohan Mehta · moves out 31 Oct","Rohan Mehta"],["Bed B","occupied","Neeraj Jain · Active","Neeraj Jain"]]},
+  {room:"A-202",beds:[["Bed A","occupied","Karan S · Active","Karan S"],["Bed B","unavailable","Repair work · available 18 Oct",""]]}
+ ]},
+ {floor:"Floor 3",rooms:[
+  {room:"A-301",beds:[
+    ["Bed 1","vacant","Available for assignment",""],
+    ["Bed 2","occupied","Dev Patel · Active","Dev Patel"],
+    ["Bed 3","occupied","Sameer K · Active","Sameer K"],
+    ["Bed 4","vacant","Available for assignment",""]
+  ]},
+  {room:"A-302",beds:[["Bed A","occupied","Sahil M · Active","Sahil M"],["Bed B","retired","Retired 1 Sep · history preserved",""]]}
+ ]},
+ {floor:"Floor 4",rooms:[
+  {room:"A-401",beds:[
+    ["Bed 1","occupied","Harsh N · Active","Harsh N"],
+    ["Bed 2","occupied","Omkar P · Active","Omkar P"],
+    ["Bed 3","vacant","Available for assignment",""],
+    ["Bed 4","reserved","Joining 18 Oct","Future tenant"],
+    ["Bed 5","occupied","Ravi J · Active","Ravi J"]
+  ]},
+  {room:"A-402",beds:[["Bed A","reserved","Aditi Rao · joins 15 Oct","Aditi Rao"],["Bed B","occupied","Vivek Rao · Active","Vivek Rao"]]}
+ ]},
+ {floor:"Floor 5",rooms:[
+  {room:"A-501",beds:[["Bed A","occupied","Arjun K · Active","Arjun K"],["Bed B","occupied","Nitin G · Active","Nitin G"]]},
+  {room:"A-502",beds:[["Bed A","occupied","Manav S · Active","Manav S"],["Bed B","occupied","Yash D · Active","Yash D"]]}
+ ]}
+]
+};
+
+function icons(){if(window.lucide&&lucide.createIcons)lucide.createIcons()}
+
+function updateScopeHighlights(){
+  document.querySelectorAll("[data-scope]").forEach(el=>el.classList.remove("selected"));
+  if(currentBlock) document.querySelector('[data-scope="blocks"]')?.classList.add("selected");
+  if(selectedFloor) document.querySelector('[data-scope="floors"]')?.classList.add("selected");
+  if(activeFilter==="vacant") document.querySelector('[data-scope="vacant"]')?.classList.add("selected");
+  document.querySelectorAll("[data-block]").forEach(b=>b.classList.toggle("selected",b.dataset.block===currentBlock));
+  document.querySelectorAll("[data-floor-select]").forEach(b=>b.classList.toggle("selected",b.dataset.floorSelect===selectedFloor));
+}
+
+function labelForState(s){return s==="vacant"?"Vacant":s==="occupied"?"Occupied":s==="reserved"?"Reserved":s==="planned"?"Planned vacancy":s==="unavailable"?"Temporarily unavailable":"Retired"}
+function lifecycleForState(s){return s==="unavailable"?"Temporarily unavailable":s==="retired"?"Retired":"Available"}
+function markerIcon(state){
+  return state==="vacant"?"bed-single":state==="occupied"?"user-round":state==="reserved"?"calendar-clock":state==="planned"?"calendar-range":state==="unavailable"?"wrench":"archive";
+}
+function mapMarkerHtml(room,b,idx){
+  const [name,state,sub,person]=b;
+  const full="Room "+room+" · "+name;
+  return `<button class="map-bed-marker ${state}" data-state="${state}" data-bed="${full}" data-person="${person}" aria-label="${full}, ${labelForState(state)}"><i data-lucide="${markerIcon(state)}"></i><span class="bedno">${name}</span></button>`;
+}
+function adaptiveClass(n){return "count-"+Math.min(n,6)}
+function renderPropertyMap(){
+  const blocks=selectedBlock==="all"?["A","B","C","D","E"]:[selectedBlock];
+  let html="";
+  blocks.forEach(block=>{
+    const floors=floorData(block).filter(f=>selectedFloor==="all"||f.floor===selectedFloor);
+    if(blocks.length>1) html+=`<div style="font-size:10px;font-weight:800;color:var(--muted);margin:10px 2px 8px">Block ${block}</div>`;
+    floors.forEach(f=>{
+      const rooms=f.rooms.filter(r=>selectedRoom==="all"||r.room===selectedRoom);
+      if(!rooms.length)return;
+      const roomCells=rooms.map(r=>{
+        const beds=r.beds.filter(b=>activeFilter==="all"||b[1]===activeFilter);
+        if(activeFilter!=="all"&&!beds.length)return "";
+        const n=Math.max(1,beds.length);
+        return `<div class="map-room-cell"><strong>${r.room}</strong><div class="map-bed-layout ${adaptiveClass(n)}">${beds.map((b,i)=>mapMarkerHtml(r.room,b,i)).join("")}</div></div>`;
+      }).join("");
+      if(roomCells) html+=`<div class="map-floor-row"><div class="map-floor-label">${f.floor}</div><div class="map-room-grid">${roomCells}</div></div>`;
+    });
+  });
+  propertyMap.innerHTML=html||'<div class="card" style="padding:14px;color:var(--muted);font-size:11px">No matching rooms or beds.</div>';
+  mapTitle.textContent=selectedBlock==="all"?"Property room map":`Block ${selectedBlock} · Room map`;
+  icons();
+}
+
+
+function floorData(block){
+  if(demo[block]) return demo[block];
+  return Array.from({length:5},(_,i)=>({floor:"Floor "+(i+1),rooms:[
+    {room:block+"-"+(i+1)+"01",beds:[["Bed A","occupied","Tenant active","Tenant"],["Bed B","occupied","Tenant active","Tenant"]]},
+    {room:block+"-"+(i+1)+"02",beds:[["Bed A","occupied","Tenant active","Tenant"],["Bed B","occupied","Tenant active","Tenant"]]}
+  ]}));
+}
+
+function allBlocksData(){
+  const blocks=["A","B","C","D","E"];
+  return blocks.map(block=>({block,floors:floorData(block)}));
+}
+
+function bedHtml(room,b){
+  const [name,state,sub,person]=b;
+  const full="Room "+room+" · "+name;
+  return `<button class="bed" data-state="${state}" data-bed="${full}" data-person="${person}"><strong>${name}</strong><small>${sub}</small><span class="pill ${state}">${labelForState(state)}</span></button>`;
+}
+function mapBedHtml(room,b){
+  const [name,state,sub,person]=b;
+  const full="Room "+room+" · "+name;
+  return `<button class="map-bed" data-state="${state}" data-bed="${full}" data-person="${person}"><strong>${name}</strong><small>${person||sub}</small><span class="pill ${state}">${labelForState(state)}</span></button>`;
+}
+function roomHtml(r,bedsOverride=null){
+  const beds=bedsOverride||r.beds;
+  return `<div class="room">
+    <div class="room-head">
+      <div><strong>Room ${r.room}</strong><small>${beds.length} ${beds.length===1?"bed":"beds"}</small></div>
+    </div>
+    <div class="beds">${beds.map(b=>bedHtml(r.room,b)).join("")}</div>
+  </div>`;
+}
+
+function openBlock(block){
+  currentBlock=block;
+  selectedFloor=null;
+  crumbBlock.textContent="Block "+block;
+  hierarchyView.hidden=true;
+  resultsView.hidden=true;
+  floorView.hidden=false;
+  renderFloors();
+  updateScopeHighlights();
+}
+
+function renderFloors(){
+  let html="";
+  floorData(currentBlock).forEach(f=>{
+    if(selectedFloor && f.floor!==selectedFloor) return;
+    const rooms=f.rooms.map(r=>roomHtml(r)).join("");
+    html+=`<div class="floor-section">
+      <button class="floorbtn ${selectedFloor===f.floor?"selected":""}" type="button" data-floor-select="${f.floor}">
+        <span><strong>${f.floor}</strong><small>${f.rooms.length} rooms</small></span>
+        <span>${selectedFloor===f.floor?"Selected":"View floor"}</span>
+      </button>
+      <div class="card">${rooms}</div>
+    </div>`;
+  });
+  floorRooms.innerHTML=html;
+  icons();
+  updateScopeHighlights();
+}
+
+function collectMatches(){
+  const q=search.value.trim().toLowerCase();
+  const matches=[];
+  allBlocksData().forEach(({block,floors})=>{
+    if(selectedBlock!=="all"&&block!==selectedBlock)return;
+    floors.forEach(f=>{
+      if(selectedFloor!=="all"&&f.floor!==selectedFloor)return;
+      f.rooms.forEach(r=>{
+        if(selectedRoom!=="all"&&r.room!==selectedRoom)return;
+        r.beds.forEach(b=>{
+          const [name,state,sub,person]=b;
+          const full=("Block "+block+" "+f.floor+" Room "+r.room+" "+name+" "+sub+" "+person).toLowerCase();
+          const filterMatch=activeFilter==="all"||state===activeFilter;
+          const searchMatch=!q||full.includes(q);
+          if(filterMatch&&searchMatch) matches.push({block,floor:f.floor,room:r.room,bed:b});
+        });
+      });
+    });
+  });
+  return matches;
+}
+
+function renderResults(){
+  const matches=collectMatches();
+  const q=search.value.trim();
+  const label=activeFilter==="all" ? (q?`Search results`:"Results") : labelForState(activeFilter);
+  resultsTitle.textContent=label;
+  resultsCount.textContent=matches.length+" "+(matches.length===1?"bed":"beds");
+
+  const grouped={};
+  matches.forEach(m=>{
+    const k=m.block+"|"+m.floor;
+    if(!grouped[k]) grouped[k]={block:m.block,floor:m.floor,rooms:{}};
+    if(!grouped[k].rooms[m.room]) grouped[k].rooms[m.room]=[];
+    grouped[k].rooms[m.room].push(m.bed);
+  });
+
+  let html="";
+  Object.values(grouped).forEach(g=>{
+    const floorCount=Object.values(g.rooms).reduce((n,beds)=>n+beds.length,0);
+    const roomsHtml=Object.entries(g.rooms).map(([room,beds])=>{
+      return roomHtml({room,beds},beds);
+    }).join("");
+    html+=`<div class="result-group"><div class="result-group-title"><strong>Block ${g.block} · ${g.floor}</strong><span>${floorCount} matching ${floorCount===1?"bed":"beds"}</span></div><div class="card">${roomsHtml}</div></div>`;
+  });
+
+  resultsList.innerHTML=html||'<div class="card" style="padding:14px;color:var(--muted);font-size:11px">No matching beds found.</div>';
+  icons();
+}
+
+function selectedDataMatches(){
+  const out=[];
+  allBlocksData().forEach(({block,floors})=>{
+    if(selectedBlock!=="all"&&block!==selectedBlock)return;
+    floors.forEach(f=>{
+      if(selectedFloor!=="all"&&f.floor!==selectedFloor)return;
+      f.rooms.forEach(r=>{
+        if(selectedRoom!=="all"&&r.room!==selectedRoom)return;
+        r.beds.forEach(b=>out.push({block,floor:f.floor,room:r.room,bed:b}));
+      });
+    });
+  });
+  return out;
+}
+function summaryChoices(type){
+  if(type==="block")return [{v:"all",t:"All blocks"},...["A","B","C","D","E"].map(x=>({v:x,t:`Block ${x}`}))];
+  if(type==="floor")return [{v:"all",t:"All floors"},...Array.from({length:5},(_,i)=>({v:`Floor ${i+1}`,t:`Floor ${i+1}`}))];
+  if(type==="room"){
+    const rooms=[...new Set(selectedDataMatches().map(x=>x.room))].sort();
+    return [{v:"all",t:"All rooms"},...rooms.map(x=>({v:x,t:x}))];
+  }
+  return [];
+}
+
+function syncSummarySelectionUI(){
+  const blockActive=selectedBlock!=="all";
+  const floorActive=selectedFloor!=="all";
+  const roomActive=selectedRoom!=="all";
+  const vacantActive=activeFilter==="vacant";
+
+  document.querySelector('[data-summary-filter="block"]').classList.toggle("active",blockActive);
+  document.querySelector('[data-summary-filter="floor"]').classList.toggle("active",floorActive);
+  document.querySelector('[data-summary-filter="room"]').classList.toggle("active",roomActive);
+  document.querySelector('[data-summary-filter="vacant"]').classList.toggle("active",vacantActive);
+
+  blockStatValue.textContent=blockActive?`Block ${selectedBlock}`:"5";
+  floorStatValue.textContent=floorActive?selectedFloor:"25";
+  roomStatValue.textContent=roomActive?selectedRoom:"50";
+  vacantStatValue.textContent=vacantActive?"Selected":"7";
+
+  viewHint.textContent=[
+    blockActive?`Block ${selectedBlock}`:"",
+    floorActive?selectedFloor:"",
+    roomActive?selectedRoom:"",
+    vacantActive?"Vacant beds":""
+  ].filter(Boolean).join(" · ")||"Browse by block, floor and room";
+}
+
+function openSummaryFilter(type){
+  syncSummarySelectionUI();
+  const opener=document.querySelector(`[data-summary-filter="${type}"]`);
+  opener.classList.add("active");
+  if(type==="vacant"){
+    activeFilter="vacant"; document.querySelectorAll("[data-filter]").forEach(x=>x.classList.toggle("on",x.dataset.filter==="vacant"));
+    summaryFilterPanel.hidden=true; syncSummarySelectionUI(); syncMode(); return;
+  }
+  const current=type==="block"?selectedBlock:type==="floor"?selectedFloor:selectedRoom;
+  summaryFilterPanel.innerHTML=summaryChoices(type).map(o=>`<button type="button" class="${o.v===current?"on":""}" data-summary-choice="${type}" data-value="${o.v}">${o.t}</button>`).join("");
+  summaryFilterPanel.hidden=false;
+}
+function applySummaryChoice(type,value){
+  if(type==="block"){selectedBlock=value;selectedFloor="all";selectedRoom="all"}
+  if(type==="floor"){selectedFloor=value;selectedRoom="all"}
+  if(type==="room")selectedRoom=value;
+  summaryFilterPanel.hidden=true;
+  syncSummarySelectionUI();
+  syncMode();
+}
+
+function syncMode(){
+  if(mainView==="map"){propertyMapView.hidden=false;hierarchyView.hidden=true;floorView.hidden=true;resultsView.hidden=true;renderPropertyMap();return}
+  const q=search.value.trim();
+  const summaryFiltered=selectedBlock!=="all"||selectedFloor!=="all"||selectedRoom!=="all";
+  const filtered=activeFilter!=="all" || q || summaryFiltered;
+  if(filtered){
+    currentBlock=null; hierarchyView.hidden=true; floorView.hidden=true; resultsView.hidden=false; renderResults();
+  }else{resultsView.hidden=true;floorView.hidden=true;hierarchyView.hidden=false}
+}
+
+function openSheet(b){
+  activeBed=b; sheetTitle.textContent=b.dataset.bed; sheetSub.textContent="Capacity and occupancy";
+  const s=b.dataset.state;
+  occupancy.textContent=labelForState(s); lifecycle.textContent=lifecycleForState(s); person.textContent=b.dataset.person||"—";
+  detailView.hidden=false;unavailableView.hidden=true;blockedView.hidden=true;
+  scrim.classList.add("on");sheet.classList.add("on");icons();
+}
+function closeSheet(){scrim.classList.remove("on");sheet.classList.remove("on")}
+
+document.addEventListener("click",e=>{
+  const sf=e.target.closest("[data-summary-filter]"); if(sf){openSummaryFilter(sf.dataset.summaryFilter);return}
+  const sc=e.target.closest("[data-summary-choice]"); if(sc){applySummaryChoice(sc.dataset.summaryChoice,sc.dataset.value);return}
+  const scope=e.target.closest("[data-scope]"); if(scope){
+    const s=scope.dataset.scope;
+    if(s==="blocks"){selectedFloor=null;activeFilter="all";mainView="list";hierarchyView.hidden=false;floorView.hidden=true;resultsView.hidden=true;propertyMapView.hidden=true;currentBlock=null;}
+    if(s==="floors" && currentBlock){floorView.hidden=false;hierarchyView.hidden=true;resultsView.hidden=true;propertyMapView.hidden=true;}
+    if(s==="rooms" && currentBlock){floorView.hidden=false;hierarchyView.hidden=true;resultsView.hidden=true;propertyMapView.hidden=true;}
+    if(s==="vacant"){activeFilter="vacant";document.querySelectorAll("[data-filter]").forEach(x=>x.classList.toggle("on",x.dataset.filter==="vacant"));syncMode();}
+    updateScopeHighlights();return
+  }
+  const fs=e.target.closest("[data-floor-select]"); if(fs){
+    selectedFloor = selectedFloor===fs.dataset.floorSelect ? null : fs.dataset.floorSelect;
+    renderFloors(); updateScopeHighlights(); return
+  }
+  const mv=e.target.closest("[data-main-view]"); if(mv){
+    mainView=mv.dataset.mainView;
+    document.querySelectorAll("[data-main-view]").forEach(b=>{const on=b.dataset.mainView===mainView;b.classList.toggle("on",on);b.setAttribute("aria-pressed",String(on))});
+    if(mainView==="map"){
+      hierarchyView.hidden=true;floorView.hidden=true;resultsView.hidden=true;propertyMapView.hidden=false;renderPropertyMap();
+    }else{
+      propertyMapView.hidden=true;syncMode();
+    }
+    return
+  }
+  const bed=e.target.closest(".bed,.map-bed,.map-bed-marker"); if(bed){openSheet(bed);return}
+  const block=e.target.closest("[data-block]"); if(block){openBlock(block.dataset.block);return}
+  const f=e.target.closest("[data-filter]"); if(f){
+    activeFilter=f.dataset.filter;
+    document.querySelectorAll("[data-filter]").forEach(x=>x.classList.toggle("on",x===f));
+    syncMode();updateScopeHighlights();return
+  }
+  const a=e.target.closest("[data-act]"); if(!a)return;
+  if(a.dataset.act==="all-blocks"){floorView.hidden=true;resultsView.hidden=true;propertyMapView.hidden=true;hierarchyView.hidden=false;currentBlock=null;selectedFloor=null;updateScopeHighlights();return}
+  if(a.dataset.act==="theme"){const r=document.documentElement,c=r.getAttribute("data-theme");r.setAttribute("data-theme",c==="dark"?"light":"dark");return}
+  if(a.dataset.act==="close"){closeSheet();return}
+  if(a.dataset.act==="unavailable"){
+    if(["occupied","reserved","planned"].includes(activeBed.dataset.state)){
+      detailView.hidden=true;blockedView.hidden=false;blockedText.textContent="This bed has an active or future tenancy commitment. Change the tenant’s room/bed, joining date, or move-out plan first.";return}
+    detailView.hidden=true;unavailableView.hidden=false;return
+  }
+  if(a.dataset.act==="retire"){
+    if(["occupied","reserved","planned"].includes(activeBed.dataset.state)){
+      detailView.hidden=true;blockedView.hidden=false;blockedText.textContent="This bed cannot be retired while it has an active or future tenancy commitment. Resolve that commitment first.";return}
+    activeBed.dataset.state="retired";activeBed.querySelector("small").textContent="Retired today · history preserved";
+    const p=activeBed.querySelector(".pill");p.className="pill retired";p.textContent="Retired";
+    closeSheet();toast.textContent="Bed retired · history preserved";toast.classList.add("on");setTimeout(()=>toast.classList.remove("on"),1600);return
+  }
+  if(a.dataset.act==="save-unavailable"){
+    activeBed.dataset.state="unavailable";activeBed.querySelector("small").textContent=reason.value+" · available 18 Oct";
+    const p=activeBed.querySelector(".pill");p.className="pill unavailable";p.textContent="Temporarily unavailable";
+    closeSheet();toast.textContent="Availability updated";toast.classList.add("on");setTimeout(()=>toast.classList.remove("on"),1600);return
+  }
+});
+
+scrim.addEventListener("click",closeSheet);
+search.addEventListener("input",syncMode);
+
+renderPropertyMap();
+updateScopeHighlights();
+icons();
+</script>
+</body>
+</html>

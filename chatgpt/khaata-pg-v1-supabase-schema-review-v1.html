@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · PG V1 Supabase Schema Review v1</title>
+<style>
+:root{--canvas:#FDFCF8;--surface:#FFFFFF;--row:#F6F6F5;--line:#E6E0D7;--ink:#171716;--muted:#6B6B69;--info:#D7E1FE;--info-ink:#2B3A75;--done:#DDF3E6;--done-ink:#1E7A4C;--pending:#FFF0C4;--pending-ink:#6E5200;--act:#2B3A75;--act-text:#FFFFFF}
+*{box-sizing:border-box}body{margin:0;background:var(--canvas);color:var(--ink);font-family:Manrope,system-ui,sans-serif}main{max-width:820px;margin:auto;padding:20px 16px 40px}h1{font-size:26px;margin:0 0 5px}p{font-size:12px;line-height:1.55;color:var(--muted)}.note{padding:11px 12px;border-radius:14px;background:var(--info);color:var(--info-ink);font-size:11px;line-height:1.5;margin:12px 0}.ok{background:var(--done);color:var(--done-ink)}.warn{background:var(--pending);color:var(--pending-ink)}.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:14px;margin-top:12px;overflow:auto}table{width:100%;border-collapse:collapse;font-size:10.5px}th,td{text-align:left;vertical-align:top;padding:9px 8px;border-bottom:1px solid var(--line);line-height:1.45}th{color:var(--muted)}tr:last-child td{border-bottom:0}code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.steps{font-size:11px;line-height:1.65}
+</style>
+</head>
+<body><main>
+<h1>PG V1 Supabase/Postgres Schema Proposal</h1>
+<p>This is the first concrete relational schema proposal derived from the frozen PG V1 data/event contract. Product semantics are source-backed; exact table/column names, indexes and triggers are implementation proposals.</p>
+
+<div class="note ok"><b>Included:</b> tables, foreign keys, check constraints, indexes, projection views, immutability triggers, migration order and an explicit RLS placeholder.</div>
+<div class="note warn"><b>Not applied to Supabase.</b> This is a reviewable migration proposal. RLS is intentionally not finalized until the shared account/business membership model is approved.</div>
+
+<div class="card"><table>
+<tr><th>Area</th><th>Purpose</th><th>Invariant protected</th></tr>
+<tr><td><code>businesses</code></td><td>Shared business shell</td><td>One operational currency; owner/account linkage proposed</td></tr>
+<tr><td><code>property_nodes</code></td><td>Building/block/floor/room/bed hierarchy</td><td>Retire rather than hard-delete history</td></tr>
+<tr><td><code>parties</code></td><td>Person or organization identity</td><td>Keeps occupant/payer/responsible/deposit owner separable</td></tr>
+<tr><td><code>tenancies</code></td><td>Commercial lifecycle</td><td>Upcoming/Active/Planned move-out/Moved out/Cancelled before joining</td></tr>
+<tr><td><code>tenancy_role_assignments</code></td><td>Effective-dated commercial roles</td><td>Historical responsibility preserved</td></tr>
+<tr><td><code>occupancy_assignments</code></td><td>Room/bed history</td><td>Transfer appends; one active tenancy per capacity</td></tr>
+<tr><td><code>rent_terms</code></td><td>Effective-dated rent agreement</td><td>Room transfer cannot silently change rent</td></tr>
+<tr><td><code>obligations</code></td><td>Rent/charge/opening balance due</td><td>Deterministic key supports idempotent monthly generation</td></tr>
+<tr><td><code>payment_events</code></td><td>Payment/reversal/chargeback events</td><td>Append-only; original preserved</td></tr>
+<tr><td><code>payment_allocations</code></td><td>Many-to-many payment allocation</td><td>Partial/multi-obligation allocation</td></tr>
+<tr><td><code>receipt_snapshots</code></td><td>Immutable receipt payload</td><td>Never regenerated from changed live data</td></tr>
+<tr><td><code>security_accounts/events</code></td><td>Agreed/held/apply/refund</td><td>Application to dues must be explicit</td></tr>
+<tr><td><code>payment_promises</code></td><td>Promise-to-pay history</td><td>No ledger effect</td></tr>
+<tr><td><code>expenses</code></td><td>Business-paid/staff-paid expense</td><td>Staff-paid creates reimbursement accountability</td></tr>
+<tr><td><code>cash_custody_events</code></td><td>Custody/handover/discrepancy</td><td>Never reopens tenant payment</td></tr>
+<tr><td><code>staff_* / approval_requests</code></td><td>Access, visibility, approval</td><td>Approval ≠ execution</td></tr>
+<tr><td><code>domain_events</code></td><td>Proposed append-only audit/sync envelope</td><td>Exact sync protocol still open</td></tr>
+</table></div>
+
+<h2>Important schema choices</h2>
+<div class="card steps">
+<b>Money:</b> all amounts are <code>bigint</code> minor units; no floating point.<br>
+<b>Offline IDs:</b> UUID PKs accept client-generated values and also have DB defaults.<br>
+<b>Monthly billing:</b> <code>obligations.deterministic_key</code> is unique per business for idempotent offline-safe generation.<br>
+<b>History:</b> posted payments, receipts, security events, custody events and domain events are protected from UPDATE/DELETE by triggers.<br>
+<b>Occupancy:</b> partial unique indexes enforce one active assignment per tenancy and one active tenancy per capacity.<br>
+<b>Security:</b> agreed amount is stored separately from event-derived amount actually held.<br>
+<b>Corrections:</b> reversal/chargeback references the original payment rather than editing it.<br>
+<b>Approval:</b> approval rows authorize but do not stand in for the executed business event.
+</div>
+
+<h2>Migration order</h2>
+<div class="card steps">
+001 Business shell<br>
+002 Property + parties<br>
+003 Tenancy + roles + occupancy + rent terms<br>
+004 Charges + obligations + adjustments<br>
+005 Payments + allocations + receipts<br>
+006 Security + promises<br>
+007 Expenses + cash custody<br>
+008 Staff + permissions + approvals<br>
+009 Domain events<br>
+010 Projection views<br>
+011 Immutability triggers<br>
+012 RLS after shared membership model approval
+</div>
+
+<div class="note">The SQL file is intentionally conservative about Supabase Auth and RLS because those shared-account details are not fully specified by the PG V1 sources. That gap is left visible instead of guessed.</div>
+</main></body></html>

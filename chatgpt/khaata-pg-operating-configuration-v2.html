@@ -1,0 +1,71 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Khaata — PG Operating Configuration V1</title>
+<style>
+:root{--bg:#fdfcf8;--card:#fff;--ink:#191918;--muted:#74736f;--line:#e7e2d9;--act:#29396f;--info:#eaf0ff;--ok:#eaf5ee}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px system-ui,-apple-system,sans-serif}
+main{max-width:540px;margin:auto;padding:18px 16px 72px}.top{display:flex;gap:12px;align-items:center}.back{width:44px;height:44px;border:1px solid var(--line);border-radius:14px;background:var(--card);font-size:20px}.back:disabled{opacity:.3}
+.progress{flex:1}.meta{font-size:11px;color:var(--muted);margin-bottom:6px}.track{height:5px;background:var(--line);border-radius:8px;overflow:hidden}.fill{height:100%;background:var(--act)}
+h1{font-size:26px;margin:20px 0 6px}.sub{font-size:12px;color:var(--muted);line-height:1.5;margin:0 0 18px}.card,.choice{border:1px solid var(--line);border-radius:17px;background:var(--card)}.card{padding:15px;margin-bottom:12px}
+.choice{display:block;width:100%;text-align:left;padding:14px;margin-bottom:9px;color:var(--ink)}.choice.sel{border:2px solid var(--act);background:var(--info)}.choice b{display:block}.choice span{display:block;color:var(--muted);font-size:11px;margin-top:4px;line-height:1.4}
+.row{display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid var(--line)}.row:last-child{border:0}.row span{color:var(--muted);font-size:12px}.row b{text-align:right;font-size:12px}
+label{display:block;color:var(--muted);font-size:11px;margin:0 0 6px}.field{width:100%;height:46px;border:1px solid var(--line);border-radius:12px;background:#fff;padding:0 12px;font-size:16px;margin-bottom:13px}
+.actions{display:grid;gap:9px;margin-top:17px}.primary,.secondary{min-height:48px;border-radius:14px;font-weight:800}.primary{border:0;background:var(--act);color:#fff}.secondary{border:1px solid var(--line);background:var(--card);color:var(--ink)}
+.note{font-size:11px;line-height:1.5;padding:12px;border-radius:14px;background:var(--info);margin:12px 0}.ok{background:var(--ok)}.switchrow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}.switchrow:last-child{border:0}
+.toggle{min-width:58px;height:34px;border:1px solid var(--line);border-radius:20px;background:#eee;color:var(--muted);font-size:11px}.toggle.on{background:var(--act);color:#fff}.small{font-size:11px;color:var(--muted)}
+</style></head>
+<body><main>
+<div class="top"><button id="back" class="back">‹</button><div class="progress"><div id="meta" class="meta"></div><div class="track"><div id="fill" class="fill"></div></div></div></div>
+<section id="screen"></section>
+</main>
+<script>(function(){
+var S={page:0,history:[],timing:"prepaid",grace:"0",reqId:true,reqPhone:true,approval:false,electricity:false,food:false,parking:false,staff:"owner",backup:"device"};
+var sc=document.getElementById("screen"),back=document.getElementById("back"),meta=document.getElementById("meta"),fill=document.getElementById("fill");
+var total=8;
+function chrome(n){meta.innerHTML="Operating setup · Step "+n+" of "+total;fill.style.width=(n/total*100)+"%";back.disabled=S.history.length===0}
+function rows(a){var h="";for(var i=0;i<a.length;i++)h+='<div class="row"><span>'+a[i][0]+'</span><b>'+a[i][1]+'</b></div>';return h}
+function choice(key,val,title,desc){return '<button class="choice '+(S[key]===val?'sel':'')+'" data-set="'+key+':'+val+'"><b>'+title+'</b><span>'+desc+'</span></button>'}
+function toggle(key,title,desc){return '<div class="switchrow"><div><b>'+title+'</b><div class="small">'+desc+'</div></div><button class="toggle '+(S[key]?'on':'')+'" data-toggle="'+key+'">'+(S[key]?'On':'Off')+'</button></div>'}
+function next(n){S.history.push(S.page);S.page=n;render()}function prev(){if(S.history.length){S.page=S.history.pop();render()}}
+function render(){var h="";
+if(S.page===0){chrome(1);h='<h1>Billing rules</h1><p class="sub">Set business defaults. Individual tenancy agreements can still carry their own agreed rent and due day.</p>'+
+choice("timing","prepaid","Rent paid in advance","The period is due at the beginning of the billing period.")+
+choice("timing","postpaid","Rent paid after the period","The period becomes due after occupancy for that billing period.")+
+'<div class="card"><label>Default due day</label><input class="field" value="5"><label>Grace period</label><select class="field" id="grace"><option>None</option><option>3 days</option><option>5 days</option></select><div class="row"><span>Billing frequency</span><b>Monthly</b></div></div><div class="note">These are defaults, not room prices. Tenant onboarding establishes the actual commercial agreement.</div><div class="actions"><button class="primary" data-next="1">Continue</button></div>'}
+else if(S.page===1){chrome(2);h='<h1>Tenant requirements</h1><p class="sub">Choose what staff should collect during onboarding. Missing required items may leave setup incomplete without blocking tenant creation.</p><div class="card">'+
+toggle("reqPhone","Phone number","Required for tenant basics.")+
+toggle("reqId","Identity document","Can be collected after tenant creation.")+
+toggle("approval","Owner approval for missing requirements","Staff may save the tenant and request completion.")+
+'</div><div class="actions"><button class="primary" data-next="2">Continue</button></div>'}
+else if(S.page===2){chrome(3);h='<h1>Expenses</h1><p class="sub">Khaata starts with sensible PG defaults. Customize them now or later from More.</p><div class="card">'+rows([["Default categories","Utilities · Repairs · Supplies · Staff"],["Payment source","Business or staff-paid"],["Receipt proof","Optional"],["Approval","Configurable by role"]])+'</div><div class="note">Business-paid vs staff-paid is chosen when recording each expense. Approval authority belongs under Staff & Access.</div><div class="actions"><button class="primary" data-next="3">Continue</button></div>'}
+else if(S.page===3){chrome(4);h='<h1>Optional capabilities</h1><p class="sub">Keep features hidden unless this PG actually uses them.</p><div class="card">'+toggle("electricity","Electricity","Enable separate or allowance-based electricity charging.")+toggle("food","Food / mess","Enable included or fixed recurring food charges.")+toggle("parking","Parking","Enable included, recurring, or ad-hoc parking charges.")+'</div>';
+if(S.electricity)h+='<div class="card">'+rows([["Electricity policy","Separate charge"],["Meter workflow","Not required for basic setup"]])+'</div>';
+if(S.food)h+='<div class="card">'+rows([["Food policy","Fixed recurring"],["Availability","Per tenancy"]])+'</div>';if(S.parking)h+='<div class="card">'+rows([["Parking policy","Fixed recurring"],["Vehicle details","Per tenancy"],["Slot inventory","Not managed in V1"]])+'</div>';
+h+='<div class="actions"><button class="primary" data-next="4">Continue</button></div>'}
+else if(S.page===4){chrome(5);h='<h1>Staff & access</h1><p class="sub">The owner can operate alone now or invite staff. Permissions control actions separately from visibility.</p>'+
+choice("staff","owner","Owner only","Skip staff setup and invite people later.")+
+choice("staff","team","Set up staff now","Add Manager, Caretaker / Front desk, or Accounts roles.")+
+(S.staff==="team"?'<div class="card">'+rows([["Manager","Operational access"],["Caretaker / Front desk","Limited collections & tenant work"],["Accounts","Money & reporting"]])+'<div class="note">Role templates are editable. Actions use Allowed / Needs approval / Not allowed. Visibility is controlled separately. Missing required tenant information follows staff permissions.</div></div>':'')+
+'<div class="actions"><button class="primary" data-next="5">Continue</button></div>'}
+else if(S.page===5){chrome(6);h='<h1>Backup & sync</h1><p class="sub">Core work remains local-first. Backup and sync depend on the account plan.</p>'+
+choice("backup","device","On this device only","Selected by default. Data stays on this device unless you create or export a backup.")+
+choice("backup","drive","Google Drive backup","Automatic/manual Drive backup with restore from the latest backup.")+
+choice("backup","sync","Khaata Sync (Pro)","Local data plus server sync when online; core work remains available offline.")+
+'<div class="note">This screen describes the operating choice. Authentication, conflict protocol and sync internals are not part of this setup flow.</div><div class="actions"><button class="primary" data-next="6">Continue</button></div>'}
+else if(S.page===6){chrome(7);h='<h1>Review setup</h1><p class="sub">Review the business-level operating configuration before starting.</p><div class="card">'+rows([
+["Billing",S.timing==="prepaid"?"Monthly · prepaid":"Monthly · postpaid"],
+["Tenant requirements",S.reqId?"ID required":"Basic only"],
+["Electricity",S.electricity?"Enabled":"Off"],
+["Food / mess",S.food?"Enabled":"Off"],["Parking",S.parking?"Enabled":"Off"],
+["Staff",S.staff==="owner"?"Owner only":"Team configured"],
+["Data",S.backup==="device"?"On this device only":(S.backup==="drive"?"Google Drive backup":"Khaata Sync (Pro)")]
+])+'</div><div class="actions"><button class="primary" data-next="7">Confirm setup</button></div>'}
+else if(S.page===7){chrome(8);h='<h1>Ready to operate</h1><p class="sub">The PG is ready. Setup can continue evolving from More without blocking normal work.</p><div class="card">'+rows([["Property & capacity","Ready"],["Billing rules","Ready"],["Tenant requirements","Ready"],["Expenses","Ready"],["Optional capabilities",S.electricity||S.food||S.parking?"Configured":"Off"],["Staff & access",S.staff==="owner"?"Can configure later":"Configured"],["Backup / sync","Configured"]])+'</div><div class="note ok"><b>Next destination: Home.</b><br>Khaata can now surface what needs attention today while setup remains editable from More.</div><div class="actions"><button class="primary">Go to Home</button></div>'}
+sc.innerHTML=h}
+document.addEventListener("click",function(e){var x=e.target;while(x&&x!==document&&!x.getAttribute("data-next")&&!x.getAttribute("data-set")&&!x.getAttribute("data-toggle"))x=x.parentNode;if(!x||x===document)return;
+if(x.getAttribute("data-next"))next(parseInt(x.getAttribute("data-next"),10));
+else if(x.getAttribute("data-set")){var a=x.getAttribute("data-set").split(":");S[a[0]]=a[1];render()}
+else if(x.getAttribute("data-toggle")){var k=x.getAttribute("data-toggle");S[k]=!S[k];render()}
+},false);
+back.addEventListener("click",prev,false);render();
+})();</script></body></html>

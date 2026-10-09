@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · Change Feed Integration v1</title>
+<style>
+:root{--canvas:#FDFCF8;--surface:#FFFFFF;--line:#E6E0D7;--ink:#171716;--muted:#6B6B69;--info:#D7E1FE;--info-ink:#2B3A75;--done:#DDF3E6;--done-ink:#1E7A4C;--pending:#FFF0C4;--pending-ink:#6E5200;--alert:#FFE4DF;--alert-ink:#B83A2B}
+*{box-sizing:border-box}body{margin:0;background:var(--canvas);color:var(--ink);font-family:Manrope,system-ui,sans-serif}main{max-width:900px;margin:auto;padding:20px 16px 44px}h1{font-size:26px;margin:0 0 6px}h2{font-size:19px;margin:22px 0 6px}p{font-size:11.5px;line-height:1.6;color:var(--muted);margin:0}.note{padding:11px 12px;border-radius:14px;background:var(--info);color:var(--info-ink);font-size:11px;line-height:1.5;margin:12px 0}.ok{background:var(--done);color:var(--done-ink)}.warn{background:var(--pending);color:var(--pending-ink)}.alert{background:var(--alert);color:var(--alert-ink)}.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:14px;margin-top:10px;overflow:auto}table{width:100%;border-collapse:collapse;font-size:11px}th,td{text-align:left;vertical-align:top;padding:9px 8px;border-bottom:1px solid var(--line);line-height:1.45}th{color:var(--muted)}tr:last-child td{border-bottom:0}code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.flow{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;line-height:1.65;white-space:pre-wrap;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px}
+</style></head><body><main>
+<h1>Change Feed Integration v1</h1>
+<p>The server write path and server pull stream are now connected automatically and atomically.</p>
+
+<div class="note ok"><b>New in this file:</b> narrowly scoped typed PostgreSQL triggers publish each relevant domain row to <code>sync_change_feed</code> inside the same transaction that creates or changes it.</div>
+<div class="note warn"><b>Not generic CDC:</b> every trigger explicitly defines its entity type and transport payload. Khaata is not blindly serializing arbitrary table rows into a mutation channel.</div>
+
+<h2>Typed RPC coverage</h2>
+<div class="card"><table><tr><th>Operation</th><th>Feed output</th><th>Invariant</th></tr><tr><td>Payment</td><td>payment + allocations + receipt + optional custody</td><td>Every dependent row is independently pullable</td></tr><tr><td>Reversal</td><td>reversal + negative allocations</td><td>Original history remains untouched</td></tr><tr><td>Room transfer</td><td>old occupancy update + new occupancy insert</td><td>Rent does not change implicitly</td></tr><tr><td>Security</td><td>security event</td><td>Explicit application/refund remains separate</td></tr><tr><td>Cash handover</td><td>handover + optional discrepancy</td><td>Tenant payment truth remains separate</td></tr><tr><td>End tenancy</td><td>tenancy + occupancy updates</td><td>Finance/refund history survives</td></tr></table></div>
+
+<h2>Atomic publication</h2>
+<div class="flow">pg_record_payment(...)
+  ↓
+INSERT payment_event
+  └─ trigger → feed row
+INSERT allocations
+  └─ each trigger → feed row
+INSERT receipt
+  └─ trigger → feed row
+optional INSERT cash custody
+  └─ trigger → feed row
+INSERT domain_event
+  └─ trigger → feed row
+  ↓
+COMMIT
+
+Any trigger/publication failure
+  → whole RPC rolls back</div>
+
+<h2>Mobile transport adapter</h2>
+<div class="card"><p>
+The TypeScript <code>SupabasePullApi</code> now maps <code>pg_fetch_changes</code> results into the exact <code>RemoteChange</code> contract consumed by the PullCoordinator. It validates monotonic cursors and leaves merge policy to the resolver built in the previous step.
+</p></div>
+
+<h2>Allocation hardening</h2>
+<div class="note ok">
+<code>payment_allocations</code> now gets explicit UPDATE and DELETE rejection triggers. Reversal effects are new allocation rows with <code>allocation_effect=-1</code>; the original allocation remains history.
+</div>
+
+<div class="note alert"><b>Still proposed:</b> none of these migrations has been executed against the live Supabase project. They must be reconciled with the actual deployed schema before applying.</div>
+</main></body></html>

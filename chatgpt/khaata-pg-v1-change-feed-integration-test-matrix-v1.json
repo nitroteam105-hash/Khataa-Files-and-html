@@ -1,0 +1,115 @@
+{
+  "version": "1.0",
+  "status": "proposed change-feed integration tests",
+  "cases": [
+    {
+      "id": "INT-001",
+      "case": "record payment RPC",
+      "expect": [
+        "payment feed row",
+        "one feed row per allocation",
+        "receipt feed row",
+        "domain-event feed row",
+        "all committed atomically"
+      ]
+    },
+    {
+      "id": "INT-002",
+      "case": "cash payment",
+      "expect": [
+        "cash custody feed row additionally emitted",
+        "tenant settlement semantics unchanged"
+      ]
+    },
+    {
+      "id": "INT-003",
+      "case": "reverse payment RPC",
+      "expect": [
+        "reversal payment feed row",
+        "negative allocation feed rows",
+        "original payment/allocations untouched"
+      ]
+    },
+    {
+      "id": "INT-004",
+      "case": "room transfer RPC",
+      "expect": [
+        "old occupancy update feed row",
+        "new occupancy insert feed row",
+        "no rent-term feed row unless rent explicitly changes"
+      ]
+    },
+    {
+      "id": "INT-005",
+      "case": "apply security/refund",
+      "expect": [
+        "security event feed row",
+        "no automatic tenant-payment row"
+      ]
+    },
+    {
+      "id": "INT-006",
+      "case": "cash handover discrepancy",
+      "expect": [
+        "handover feed row",
+        "optional discrepancy feed row",
+        "domain event feed row"
+      ]
+    },
+    {
+      "id": "INT-007",
+      "case": "end tenancy RPC",
+      "expect": [
+        "tenancy update feed row",
+        "occupancy update feed row when active occupancy existed",
+        "financial history untouched"
+      ]
+    },
+    {
+      "id": "INT-008",
+      "case": "feed trigger fails",
+      "expect": [
+        "whole typed RPC transaction rolls back",
+        "no half-published domain mutation"
+      ]
+    },
+    {
+      "id": "INT-009",
+      "case": "payment allocation UPDATE/DELETE attempted",
+      "expect": [
+        "rejected as append-only"
+      ]
+    },
+    {
+      "id": "INT-010",
+      "case": "pull adapter receives ascending rows",
+      "expect": [
+        "RemoteChange objects produced",
+        "nextCursor equals last cursor"
+      ]
+    },
+    {
+      "id": "INT-011",
+      "case": "pull adapter receives non-monotonic cursor",
+      "expect": [
+        "reject NON_MONOTONIC_CHANGE_FEED"
+      ]
+    },
+    {
+      "id": "INT-012",
+      "case": "empty pull page",
+      "expect": [
+        "no changes",
+        "existing cursor retained"
+      ]
+    },
+    {
+      "id": "INT-013",
+      "case": "realtime wake-up later added",
+      "expect": [
+        "wake durable pull loop only",
+        "does not directly mutate SQLite"
+      ]
+    }
+  ]
+}

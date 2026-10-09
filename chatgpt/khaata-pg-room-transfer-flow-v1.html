@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · PG / Hostel · Room transfer · v1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{
+--canvas:#FDFCF8;--surface:#FFFFFF;--row:#F6F6F5;--line:#E6E0D7;--ink:#171716;--muted:#6B6B69;
+--alert:#FF6B5B;--alert-solid:#C23E2E;--alert-ink:#B83A2B;--alert-tint:#FFE4DF;
+--pending:#EBC36B;--pending-ink:#6E5200;--pending-tile:#FFF0C4;
+--done-ink:#1E7A4C;--done-tint:#DDF3E6;--info:#D7E1FE;--info-ink:#2B3A75;--info-line:#C3D0F7;
+--act:#2B3A75;--act-text:#FFFFFF;--neutral-tile:#EDEDEC;--neutral-ink:#6B6B69;
+--biz-pink:#FBB9C2;--biz-pink-ink:#171716;
+--r-btn:14px;--r-card:20px;--r-pill:999px;color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+--canvas:#1B1B1A;--surface:#262625;--row:#232322;--line:#38383A;--ink:#FFFFFF;--muted:#9B9B98;
+--alert:#E8705C;--alert-solid:#E8705C;--alert-ink:#F59384;--alert-tint:#3A2420;
+--pending:#EBC36B;--pending-ink:#EBC36B;--pending-tile:#3A3122;--done-ink:#74C99A;--done-tint:#244232;
+--info:#252C42;--info-ink:#DCE4FF;--info-line:#34405E;--act:#C9D4FB;--act-text:#1A2140;
+--neutral-tile:#2A2A29;--neutral-ink:#9B9B98;--biz-pink:#5A2B34;--biz-pink-ink:#FFFFFF;color-scheme:dark}}
+:root[data-theme="dark"]{
+--canvas:#1B1B1A;--surface:#262625;--row:#232322;--line:#38383A;--ink:#FFFFFF;--muted:#9B9B98;
+--alert:#E8705C;--alert-solid:#E8705C;--alert-ink:#F59384;--alert-tint:#3A2420;
+--pending:#EBC36B;--pending-ink:#EBC36B;--pending-tile:#3A3122;--done-ink:#74C99A;--done-tint:#244232;
+--info:#252C42;--info-ink:#DCE4FF;--info-line:#34405E;--act:#C9D4FB;--act-text:#1A2140;
+--neutral-tile:#2A2A29;--neutral-ink:#9B9B98;--biz-pink:#5A2B34;--biz-pink-ink:#FFFFFF;color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--canvas);color:var(--ink);font-family:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif}
+button,input,textarea,select{font:inherit}button{cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--act);outline-offset:2px}
+svg.lucide{width:18px;height:18px;stroke-width:2}[hidden]{display:none!important}
+.app{max-width:520px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top)) 16px calc(92px + env(safe-area-inset-bottom))}
+.new{padding:10px 12px;border-radius:var(--r-card);background:var(--info);color:var(--info-ink);font-size:11.5px;line-height:1.45;margin-bottom:12px}
+.new strong{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.back,.theme{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);display:grid;place-items:center;padding:0}
+.title{flex:1}.title strong{display:block;font-size:14px}.title small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+h1{font-size:26px;line-height:1.05;margin:8px 0 4px}.lead{margin:0 0 14px;color:var(--muted);font-size:12px;line-height:1.5}
+.card{border:1px solid var(--line);border-radius:var(--r-card);background:var(--surface)}
+.tenant{padding:13px 14px;display:flex;gap:12px;align-items:center;margin-bottom:12px}
+.avatar{width:42px;height:42px;border-radius:14px;background:var(--biz-pink);color:var(--biz-pink-ink);display:grid;place-items:center;font-weight:800}
+.copy{flex:1}.copy strong{display:block;font-size:13px}.copy small{display:block;color:var(--muted);font-size:10.5px;margin-top:3px}
+.badge{font-size:10px;font-weight:800;padding:5px 8px;border-radius:999px;background:var(--neutral-tile);color:var(--neutral-ink)}
+.form{padding:14px}.field{margin-bottom:12px}.field:last-child{margin-bottom:0}.field label{display:block;font-size:10.5px;font-weight:800;margin-bottom:6px}
+.select,.input{width:100%;height:44px;border:1px solid var(--line);border-radius:var(--r-btn);background:var(--surface);color:var(--ink);padding:0 12px;font-size:13px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.route{padding:13px;margin-bottom:12px}
+.route-row{display:grid;grid-template-columns:1fr 34px 1fr;gap:8px;align-items:center}
+.place{padding:11px 12px;border-radius:14px;background:var(--row)}
+.place span{display:block;color:var(--muted);font-size:9.5px}.place b{display:block;font-size:12px;margin-top:3px}.arrow{display:grid;place-items:center;color:var(--muted)}
+.switchrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0}
+.switchrow strong{display:block;font-size:11.5px}.switchrow small{display:block;color:var(--muted);font-size:10px;margin-top:3px;line-height:1.4}
+.switch{width:44px;height:26px;border:0;border-radius:999px;background:var(--neutral-tile);padding:3px;flex:none}
+.switch span{display:block;width:20px;height:20px;border-radius:50%;background:var(--surface);box-shadow:0 1px 3px color-mix(in srgb,var(--ink) 15%,transparent);transition:transform .2s ease}
+.switch[aria-checked="true"]{background:var(--act)}.switch[aria-checked="true"] span{transform:translateX(18px)}
+.notice{padding:11px 12px;border-radius:var(--r-btn);background:var(--info);color:var(--info-ink);font-size:10.8px;line-height:1.45;margin-top:10px}
+.footer{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(520px,100%);padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:var(--surface);border-top:1px solid var(--line);z-index:30}
+.btn{width:100%;min-height:42px;border:0;border-radius:var(--r-btn);background:var(--act);color:var(--act-text);font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn.loading{pointer-events:none;opacity:.82}.spinner{width:15px;height:15px;border:2px solid color-mix(in srgb,currentColor 35%,transparent);border-top-color:currentColor;border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+.view{transition:opacity .26s ease,transform .26s ease}.view.enter-from-right{opacity:0;transform:translateX(18px)}.view.exit-left{opacity:0;transform:translateX(-14px)}
+.success{padding:16px;text-align:center}.success-icon{width:48px;height:48px;border-radius:16px;background:var(--done-tint);color:var(--done-ink);display:grid;place-items:center;margin:0 auto 9px;transform:scale(.8);opacity:0}
+.success-icon.on{animation:pop .4s cubic-bezier(.2,.9,.3,1.2) forwards}@keyframes pop{70%{transform:scale(1.08);opacity:1}100%{transform:scale(1);opacity:1}}
+.success h2{margin:0;font-size:20px}.success p{margin:4px 0 14px;color:var(--muted);font-size:11px;line-height:1.45}
+.summary{overflow:hidden;text-align:left}.srow{display:flex;justify-content:space-between;gap:12px;padding:10px 12px;border-bottom:1px solid var(--line);font-size:11.5px}.srow:last-child{border-bottom:0}.srow span{color:var(--muted)}.srow b{text-align:right}
+.success-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}.success-actions .btn{background:var(--surface);color:var(--ink);border:1px solid var(--line);font-size:12px}
+@media(prefers-reduced-motion:reduce){.view{transition:none}.success-icon{opacity:1;transform:none}.success-icon.on{animation:none}}
+</style>
+</head>
+<body>
+<main class="app">
+<div class="new"><strong>New in this file</strong><br>Room Transfer v1 preserves the old room/bed occupancy history and starts a new assignment. Rent stays unchanged unless the owner explicitly chooses a new rent with its own effective date.</div>
+
+<header class="top">
+<button class="back" type="button" data-act="back" aria-label="Back"><i data-lucide="arrow-left"></i></button>
+<div class="title"><strong id="topTitle">Transfer room</strong><small>Sunrise PG</small></div>
+<button class="theme" type="button" data-act="theme" aria-label="Toggle theme"><i data-lucide="sun-moon"></i></button>
+</header>
+
+<section id="entryView" class="view">
+<h1>Transfer room</h1>
+<p class="lead">Move the tenant to another room or bed without rewriting their previous occupancy history.</p>
+
+<div class="card tenant">
+<div class="avatar">RM</div>
+<div class="copy"><strong>Rohan Mehta</strong><small>Current rent ₹8,500 / month</small></div>
+<div class="badge">Active</div>
+</div>
+
+<div class="card route">
+<div class="route-row">
+<div class="place"><span>Current</span><b>Room 203 · Bed B</b></div>
+<div class="arrow"><i data-lucide="arrow-right"></i></div>
+<div class="place"><span>New</span><b id="routeTarget">Room 305 · Bed A</b></div>
+</div>
+</div>
+
+<div class="card form">
+<div class="field"><label for="room">New room</label>
+<select class="select" id="room">
+<option value="305">Room 305</option>
+<option value="210">Room 210</option>
+<option value="118">Room 118</option>
+</select></div>
+
+<div class="field"><label for="bed">New bed</label>
+<select class="select" id="bed"><option>Bed A</option><option>Bed B</option></select></div>
+
+<div class="field"><label for="date">Transfer effective date</label><input class="input" id="date" type="date" value="2026-10-08"></div>
+
+<div class="switchrow">
+<div><strong>Change rent with this transfer</strong><small>Off by default. Moving rooms does not automatically change the commercial agreement.</small></div>
+<button class="switch" id="rentSwitch" type="button" role="switch" aria-checked="false"><span></span></button>
+</div>
+
+<div id="rentFields" hidden>
+<div class="grid2">
+<div class="field"><label for="rent">New monthly rent</label><input class="input" id="rent" inputmode="numeric" value="9500"></div>
+<div class="field"><label for="rentDate">Rent effective date</label><input class="input" id="rentDate" type="date" value="2026-10-08"></div>
+</div>
+</div>
+
+<div class="field"><label for="note">Reason / note</label><input class="input" id="note" value="Tenant requested quieter floor."></div>
+</div>
+
+<div class="notice">Room 203 · Bed B remains in Tenancy History up to the transfer date. The new assignment starts from the effective date.</div>
+</section>
+
+<section id="successView" class="view" hidden>
+<div class="card success">
+<div class="success-icon" id="successIcon"><i data-lucide="bed-single"></i></div>
+<h2>Room transferred</h2>
+<p>Rohan's previous occupancy is preserved, and the new room/bed assignment is now active from the selected date.</p>
+
+<div class="card summary">
+<div class="srow"><span>From</span><b>Room 203 · Bed B</b></div>
+<div class="srow"><span>To</span><b id="sumTo">Room 305 · Bed A</b></div>
+<div class="srow"><span>Effective date</span><b>8 Oct 2026</b></div>
+<div class="srow"><span>Rent</span><b id="sumRent">Unchanged · ₹8,500</b></div>
+<div class="srow"><span>History</span><b>Previous occupancy preserved</b></div>
+</div>
+
+<div class="success-actions">
+<button class="btn" type="button"><i data-lucide="user-round"></i>Tenant detail</button>
+<button class="btn" type="button"><i data-lucide="history"></i>Tenancy history</button>
+</div>
+</div>
+</section>
+</main>
+
+<footer class="footer" id="footer">
+<button class="btn" id="saveBtn" type="button" data-act="save"><i data-lucide="arrow-right-left"></i><span>Transfer room</span></button>
+</footer>
+
+<script>
+function icons(){if(window.lucide&&lucide.createIcons)lucide.createIcons()}
+function targetText(){return "Room "+room.value+" · "+bed.value}
+function syncTarget(){routeTarget.textContent=targetText()}
+room.addEventListener("change",syncTarget);bed.addEventListener("change",syncTarget);
+rentSwitch.addEventListener("click",()=>{
+const on=rentSwitch.getAttribute("aria-checked")==="true";
+rentSwitch.setAttribute("aria-checked",String(!on));rentFields.hidden=on;
+});
+document.addEventListener("click",e=>{
+const a=e.target.closest("[data-act]");if(!a)return;
+if(a.dataset.act==="theme"){const r=document.documentElement,c=r.getAttribute("data-theme");r.setAttribute("data-theme",c==="dark"?"light":"dark");return}
+if(a.dataset.act==="save"){
+if(saveBtn.classList.contains("loading"))return;
+const original=saveBtn.innerHTML;saveBtn.classList.add("loading");saveBtn.setAttribute("aria-busy","true");
+saveBtn.innerHTML='<span class="spinner"></span><span>Transferring…</span>';
+setTimeout(()=>{
+sumTo.textContent=targetText();
+const changeRent=rentSwitch.getAttribute("aria-checked")==="true";
+sumRent.textContent=changeRent?"Changed to ₹"+Number(rent.value||0).toLocaleString("en-IN")+" from 8 Oct":"Unchanged · ₹8,500";
+footer.hidden=true;entryView.classList.add("exit-left");
+setTimeout(()=>{
+entryView.hidden=true;entryView.classList.remove("exit-left");successView.hidden=false;successView.classList.add("enter-from-right");topTitle.textContent="Transfer complete";
+requestAnimationFrame(()=>requestAnimationFrame(()=>successView.classList.remove("enter-from-right")));
+saveBtn.classList.remove("loading");saveBtn.removeAttribute("aria-busy");saveBtn.innerHTML=original;icons();successIcon.classList.add("on");
+},220);
+},700);return}
+if(a.dataset.act==="back"&&!successView.hidden){successView.hidden=true;entryView.hidden=false;footer.hidden=false;topTitle.textContent="Transfer room";successIcon.classList.remove("on");icons()}
+});
+syncTarget();icons();
+</script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Khaata · Tenant Requirements Domain v1</title>
+<style>
+:root{--canvas:#FDFCF8;--surface:#FFFFFF;--line:#E6E0D7;--ink:#171716;--muted:#6B6B69;--info:#D7E1FE;--info-ink:#2B3A75;--done:#DDF3E6;--done-ink:#1E7A4C;--pending:#FFF0C4;--pending-ink:#6E5200}
+*{box-sizing:border-box}body{margin:0;background:var(--canvas);color:var(--ink);font-family:Manrope,system-ui,sans-serif}main{max-width:820px;margin:auto;padding:20px 16px 44px}h1{font-size:26px;margin:0 0 6px}h2{font-size:19px;margin:22px 0 6px}p{font-size:11.5px;line-height:1.6;color:var(--muted);margin:0}.note{padding:11px 12px;border-radius:14px;background:var(--info);color:var(--info-ink);font-size:11px;line-height:1.5;margin:12px 0}.ok{background:var(--done);color:var(--done-ink)}.warn{background:var(--pending);color:var(--pending-ink)}.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:14px;margin-top:10px}.flow{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10.5px;line-height:1.65;white-space:pre-wrap;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px}
+</style></head><body><main>
+<h1>Tenant Requirements Domain v1</h1>
+<p>This closes the data-model gap intentionally left visible in the previous read-model build.</p>
+
+<div class="note ok"><b>Frozen behavior preserved:</b> each requirement is Required, Optional, or Not collected. Missing a required item does not block tenant creation; the tenancy may remain Setup incomplete and be followed up operationally.</div>
+<div class="note warn"><b>Authority stays separate:</b> whether staff may proceed despite missing requirements is still handled by Staff & Access permission/approval policy, not by the requirement record itself.</div>
+
+<h2>Storage model</h2>
+<div class="card"><p><code>tenant_requirement_policies</code> stores the business policy. <code>tenancy_requirement_items</code> stores what a specific tenancy has provided. A derived view computes <code>setup_incomplete</code> and missing-required count.</p></div>
+
+<h2>Read model integration</h2>
+<div class="flow">business requirement policy
+  ↓
+Required / Optional / Not collected
+  ↓
+tenancy_requirement_items
+  ↓
+v_tenancy_requirement_status
+  ↓
+missing required?
+  ├─ no → no attention noise
+  └─ yes → Setup incomplete
+           → actionable Home attention where relevant</div>
+
+<h2>Supported initial requirement categories</h2>
+<div class="card"><p>Phone number · Identity document · Emergency contact · Photo · Address/basic details · Other documents.</p></div>
+
+<h2>Service API</h2>
+<div class="card"><p><code>setPolicy()</code> updates business expectations. <code>markProvided()</code> records tenant data/document completion. <code>getStatus()</code> returns Setup incomplete and missing-required counts without inventing blocking behavior.</p></div>
+
+<div class="note">This layer can now be wired into Add Tenant, Tenant Detail and Home attention without violating the rule that real-world occupancy may continue while documentation is incomplete.</div>
+</main></body></html>

@@ -1,0 +1,148 @@
+{
+  "version": "1.0",
+  "status": "proposed server domain RPC tests",
+  "cases": [
+    {
+      "id": "RPC-001",
+      "rpc": "pg_record_payment",
+      "case": "valid offline-created IDs",
+      "expect": [
+        "payment appended",
+        "allocations appended",
+        "immutable receipt created",
+        "same operation_id is idempotent"
+      ]
+    },
+    {
+      "id": "RPC-002",
+      "rpc": "pg_record_payment",
+      "case": "allocation total exceeds payment",
+      "expect": [
+        "reject OVER_ALLOCATED_PAYMENT",
+        "transaction rollback"
+      ]
+    },
+    {
+      "id": "RPC-003",
+      "rpc": "pg_record_payment",
+      "case": "cash payment held by staff",
+      "expect": [
+        "tenant payment accepted",
+        "custody event created separately"
+      ]
+    },
+    {
+      "id": "RPC-004",
+      "rpc": "pg_reverse_payment",
+      "case": "valid reversal",
+      "expect": [
+        "original payment untouched",
+        "reversal appended",
+        "negative allocation effects appended",
+        "old receipt untouched"
+      ]
+    },
+    {
+      "id": "RPC-005",
+      "rpc": "pg_reverse_payment",
+      "case": "second reversal",
+      "expect": [
+        "reject PAYMENT_ALREADY_REVERSED"
+      ]
+    },
+    {
+      "id": "RPC-006",
+      "rpc": "pg_transfer_room",
+      "case": "valid room transfer",
+      "expect": [
+        "old occupancy ended",
+        "new occupancy active",
+        "rent_terms unchanged"
+      ]
+    },
+    {
+      "id": "RPC-007",
+      "rpc": "pg_transfer_room",
+      "case": "target bed occupied",
+      "expect": [
+        "reject BED_CONFLICT",
+        "old occupancy remains active"
+      ]
+    },
+    {
+      "id": "RPC-008",
+      "rpc": "pg_apply_security_to_dues",
+      "case": "valid explicit application",
+      "expect": [
+        "security event appended",
+        "outstanding projection decreases"
+      ]
+    },
+    {
+      "id": "RPC-009",
+      "rpc": "pg_apply_security_to_dues",
+      "case": "amount exceeds held/outstanding",
+      "expect": [
+        "reject",
+        "no security event"
+      ]
+    },
+    {
+      "id": "RPC-010",
+      "rpc": "pg_refund_security",
+      "case": "former tenant refund",
+      "expect": [
+        "refund allowed when security held is sufficient",
+        "tenancy remains moved_out"
+      ]
+    },
+    {
+      "id": "RPC-011",
+      "rpc": "pg_handover_cash",
+      "case": "actual differs from expected",
+      "expect": [
+        "handover preserved",
+        "discrepancy appended",
+        "tenant payments untouched"
+      ]
+    },
+    {
+      "id": "RPC-012",
+      "rpc": "pg_end_tenancy",
+      "case": "active tenancy",
+      "expect": [
+        "active occupancy ended",
+        "tenancy moved_out",
+        "obligations/payments/security retained"
+      ]
+    },
+    {
+      "id": "RPC-013",
+      "rpc": "all",
+      "case": "permission needs approval",
+      "expect": [
+        "valid one-use authorization required",
+        "approval consumption occurs with actual domain event"
+      ]
+    },
+    {
+      "id": "RPC-014",
+      "rpc": "all",
+      "case": "retry after uncertain ACK",
+      "expect": [
+        "prior sync_operations result returned",
+        "no duplicate domain write"
+      ]
+    },
+    {
+      "id": "RPC-015",
+      "rpc": "drain-only",
+      "case": "cloud_sync lost after valid offline writes",
+      "expect": [
+        "ENT-30 requires eventual upload",
+        "bare client boolean is insufficient proof",
+        "production proof mechanism remains open"
+      ]
+    }
+  ]
+}

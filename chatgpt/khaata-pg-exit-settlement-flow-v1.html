@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · PG / Hostel · Exit settlement · v1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{
+--canvas:#FDFCF8;--surface:#FFFFFF;--row:#F6F6F5;--line:#E6E0D7;--ink:#171716;--muted:#6B6B69;
+--alert:#FF6B5B;--alert-solid:#C23E2E;--alert-ink:#B83A2B;--alert-tint:#FFE4DF;
+--pending:#EBC36B;--pending-ink:#6E5200;--pending-tile:#FFF0C4;
+--done-ink:#1E7A4C;--done-tint:#DDF3E6;--info:#D7E1FE;--info-ink:#2B3A75;--info-line:#C3D0F7;
+--act:#2B3A75;--act-text:#FFFFFF;--neutral-tile:#EDEDEC;--neutral-ink:#6B6B69;
+--biz-pink:#FBB9C2;--biz-pink-ink:#171716;
+--r-btn:14px;--r-card:20px;--r-pill:999px;color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+--canvas:#1B1B1A;--surface:#262625;--row:#232322;--line:#38383A;--ink:#FFFFFF;--muted:#9B9B98;
+--alert:#E8705C;--alert-solid:#E8705C;--alert-ink:#F59384;--alert-tint:#3A2420;
+--pending:#EBC36B;--pending-ink:#EBC36B;--pending-tile:#3A3122;--done-ink:#74C99A;--done-tint:#244232;
+--info:#252C42;--info-ink:#DCE4FF;--info-line:#34405E;--act:#C9D4FB;--act-text:#1A2140;
+--neutral-tile:#2A2A29;--neutral-ink:#9B9B98;--biz-pink:#5A2B34;--biz-pink-ink:#FFFFFF;color-scheme:dark}}
+:root[data-theme="dark"]{
+--canvas:#1B1B1A;--surface:#262625;--row:#232322;--line:#38383A;--ink:#FFFFFF;--muted:#9B9B98;
+--alert:#E8705C;--alert-solid:#E8705C;--alert-ink:#F59384;--alert-tint:#3A2420;
+--pending:#EBC36B;--pending-ink:#EBC36B;--pending-tile:#3A3122;--done-ink:#74C99A;--done-tint:#244232;
+--info:#252C42;--info-ink:#DCE4FF;--info-line:#34405E;--act:#C9D4FB;--act-text:#1A2140;
+--neutral-tile:#2A2A29;--neutral-ink:#9B9B98;--biz-pink:#5A2B34;--biz-pink-ink:#FFFFFF;color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--canvas);color:var(--ink);font-family:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif}
+button,input,textarea,select{font:inherit}button{cursor:pointer}
+svg.lucide{width:18px;height:18px;stroke-width:2}[hidden]{display:none!important}
+.app{max-width:520px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top)) 16px calc(92px + env(safe-area-inset-bottom))}
+.new{padding:10px 12px;border-radius:var(--r-card);background:var(--info);color:var(--info-ink);font-size:11.5px;line-height:1.45;margin-bottom:12px}
+.new strong{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.back,.theme{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);display:grid;place-items:center;padding:0}
+.title{flex:1}.title strong{display:block;font-size:14px}.title small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+h1{font-size:26px;line-height:1.05;margin:8px 0 4px}.lead{margin:0 0 14px;color:var(--muted);font-size:12px;line-height:1.5}
+.card{border:1px solid var(--line);border-radius:var(--r-card);background:var(--surface)}
+.tenant{padding:13px 14px;display:flex;gap:12px;align-items:center;margin-bottom:12px}
+.avatar{width:42px;height:42px;border-radius:14px;background:var(--biz-pink);color:var(--biz-pink-ink);display:grid;place-items:center;font-weight:800}
+.copy{flex:1}.copy strong{display:block;font-size:13px}.copy small{display:block;color:var(--muted);font-size:10.5px;margin-top:3px}
+.badge{font-size:10px;font-weight:800;padding:5px 8px;border-radius:999px;background:var(--pending-tile);color:var(--pending-ink)}
+.section{padding:14px;margin-bottom:12px}.section h2{font-size:12px;margin:0 0 10px}
+.row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:11.5px}.row:last-child{border-bottom:0}.row span{color:var(--muted)}.row b{text-align:right}
+.field{margin-bottom:12px}.field:last-child{margin-bottom:0}.field label{display:block;font-size:10.5px;font-weight:800;margin-bottom:6px}
+.input,.select{width:100%;height:44px;border:1px solid var(--line);border-radius:var(--r-btn);background:var(--surface);color:var(--ink);padding:0 12px;font-size:13px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.choice{min-height:40px;border:1px solid var(--line);border-radius:var(--r-btn);background:var(--surface);color:var(--ink);font-size:10.5px;font-weight:800}
+.choice.on{background:var(--info);color:var(--info-ink);border-color:var(--info-line)}
+.notice{padding:11px 12px;border-radius:var(--r-btn);background:var(--pending-tile);color:var(--pending-ink);font-size:10.8px;line-height:1.45;margin-top:10px}
+.danger{padding:11px 12px;border-radius:var(--r-btn);background:var(--alert-tint);color:var(--alert-ink);font-size:10.8px;line-height:1.45;margin-top:10px}
+.footer{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(520px,100%);padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:var(--surface);border-top:1px solid var(--line);z-index:30}
+.btn{width:100%;min-height:42px;border:0;border-radius:var(--r-btn);background:var(--act);color:var(--act-text);font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn.loading{pointer-events:none;opacity:.82}.spinner{width:15px;height:15px;border:2px solid color-mix(in srgb,currentColor 35%,transparent);border-top-color:currentColor;border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+.view{transition:opacity .26s ease,transform .26s ease}.view.enter-from-right{opacity:0;transform:translateX(18px)}.view.exit-left{opacity:0;transform:translateX(-14px)}
+.success{padding:16px;text-align:center}.success-icon{width:48px;height:48px;border-radius:16px;background:var(--done-tint);color:var(--done-ink);display:grid;place-items:center;margin:0 auto 9px;transform:scale(.8);opacity:0}
+.success-icon.on{animation:pop .4s cubic-bezier(.2,.9,.3,1.2) forwards}@keyframes pop{70%{transform:scale(1.08);opacity:1}100%{transform:scale(1);opacity:1}}
+.success h2{margin:0;font-size:20px}.success p{margin:4px 0 14px;color:var(--muted);font-size:11px;line-height:1.45}
+.summary{overflow:hidden;text-align:left}.srow{display:flex;justify-content:space-between;gap:12px;padding:10px 12px;border-bottom:1px solid var(--line);font-size:11.5px}.srow:last-child{border-bottom:0}.srow span{color:var(--muted)}.srow b{text-align:right}
+.success-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}.success-actions .btn{background:var(--surface);color:var(--ink);border:1px solid var(--line);font-size:12px}
+</style>
+</head>
+<body>
+<main class="app">
+<div class="new"><strong>New in this file</strong><br>Exit Settlement v1 keeps occupancy end, bed release, dues, and security settlement explicit. Ending tenancy does not erase outstanding receivables, and a security refund may remain pending after the tenant becomes Former.</div>
+
+<header class="top">
+<button class="back" type="button" data-act="back"><i data-lucide="arrow-left"></i></button>
+<div class="title"><strong id="topTitle">Exit settlement</strong><small>Sunrise PG</small></div>
+<button class="theme" type="button" data-act="theme"><i data-lucide="sun-moon"></i></button>
+</header>
+
+<section id="entryView" class="view">
+<h1>Exit settlement</h1>
+<p class="lead">Close the tenancy carefully without hiding money still due or automatically using the security deposit.</p>
+
+<div class="card tenant">
+<div class="avatar">RM</div>
+<div class="copy"><strong>Rohan Mehta</strong><small>Room 203 · Bed B · Planned move-out 31 Oct</small></div>
+<div class="badge">Moving out</div>
+</div>
+
+<div class="card section">
+<h2>1 · Occupancy end</h2>
+<div class="grid2">
+<div class="field"><label for="vacateDate">Physically vacated</label><input class="input" id="vacateDate" type="date" value="2026-10-31"></div>
+<div class="field"><label for="endDate">Financial end date</label><input class="input" id="endDate" type="date" value="2026-10-31"></div>
+</div>
+<div class="field"><label>Release bed now?</label>
+<div class="choices"><button class="choice on" data-release="Yes">Release now</button><button class="choice" data-release="No">Keep reserved</button></div></div>
+</div>
+
+<div class="card section">
+<h2>2 · Final dues</h2>
+<div class="row"><span>Outstanding rent / charges</span><b>₹4,500</b></div>
+<div class="row"><span>Tenant credit</span><b>₹1,000</b></div>
+<div class="row"><span>Net amount due</span><b>₹3,500</b></div>
+<div class="notice">Outstanding receivables survive move-out. Becoming Former does not make unpaid dues disappear.</div>
+</div>
+
+<div class="card section">
+<h2>3 · Security</h2>
+<div class="row"><span>Security held</span><b>₹10,000</b></div>
+<div class="field"><label>Security action</label>
+<div class="choices"><button class="choice on" data-security="Refund">Refund</button><button class="choice" data-security="Pending">Refund later</button></div></div>
+<div class="danger">Security is never applied to rent or charges automatically. “Apply security to dues” is a separate explicit action.</div>
+</div>
+
+<div class="card section">
+<h2>4 · Close tenancy</h2>
+<div class="field"><label for="note">Settlement note</label><input class="input" id="note" value="Final inspection completed."></div>
+<div class="notice">This action ends the tenancy. It is not Delete or Block, and historical tenancy/financial records remain available.</div>
+</div>
+</section>
+
+<section id="successView" class="view" hidden>
+<div class="card success">
+<div class="success-icon" id="successIcon"><i data-lucide="badge-check"></i></div>
+<h2>Tenancy ended</h2>
+<p>Rohan is now Former. Financial follow-up and any pending security refund remain discoverable until they are resolved.</p>
+<div class="card summary">
+<div class="srow"><span>Status</span><b>Former</b></div>
+<div class="srow"><span>Vacated</span><b>31 Oct 2026</b></div>
+<div class="srow"><span>Bed</span><b id="sumBed">Released</b></div>
+<div class="srow"><span>Outstanding</span><b>₹3,500 remains due</b></div>
+<div class="srow"><span>Security</span><b id="sumSecurity">Refund to be recorded</b></div>
+</div>
+<div class="success-actions">
+<button class="btn" type="button"><i data-lucide="scroll-text"></i>View statement</button>
+<button class="btn" type="button"><i data-lucide="history"></i>Tenancy history</button>
+</div>
+</div>
+</section>
+</main>
+
+<footer class="footer" id="footer">
+<button class="btn" id="saveBtn" type="button" data-act="save"><i data-lucide="log-out"></i><span>End tenancy</span></button>
+</footer>
+
+<script>
+let release="Yes",security="Refund";
+function icons(){if(window.lucide&&lucide.createIcons)lucide.createIcons()}
+document.addEventListener("click",e=>{
+const rel=e.target.closest("[data-release]");if(rel){release=rel.dataset.release;document.querySelectorAll("[data-release]").forEach(b=>b.classList.toggle("on",b===rel));return}
+const sec=e.target.closest("[data-security]");if(sec){security=sec.dataset.security;document.querySelectorAll("[data-security]").forEach(b=>b.classList.toggle("on",b===sec));return}
+const a=e.target.closest("[data-act]");if(!a)return;
+if(a.dataset.act==="theme"){const r=document.documentElement,c=r.getAttribute("data-theme");r.setAttribute("data-theme",c==="dark"?"light":"dark");return}
+if(a.dataset.act==="save"){
+if(saveBtn.classList.contains("loading"))return;
+const original=saveBtn.innerHTML;saveBtn.classList.add("loading");saveBtn.innerHTML='<span class="spinner"></span><span>Ending tenancy…</span>';
+setTimeout(()=>{
+sumBed.textContent=release==="Yes"?"Released":"Still reserved";
+sumSecurity.textContent=security==="Refund"?"Refund to be recorded":"Refund pending";
+footer.hidden=true;entryView.classList.add("exit-left");
+setTimeout(()=>{entryView.hidden=true;entryView.classList.remove("exit-left");successView.hidden=false;successView.classList.add("enter-from-right");topTitle.textContent="Tenancy ended";
+requestAnimationFrame(()=>requestAnimationFrame(()=>successView.classList.remove("enter-from-right")));
+saveBtn.classList.remove("loading");saveBtn.innerHTML=original;icons();successIcon.classList.add("on");},220);
+},800);return}
+if(a.dataset.act==="back"&&!successView.hidden){successView.hidden=true;entryView.hidden=false;footer.hidden=false;topTitle.textContent="Exit settlement";successIcon.classList.remove("on");icons()}
+});
+icons();
+</script>
+</body>
+</html>

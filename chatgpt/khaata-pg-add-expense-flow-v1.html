@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · PG / Hostel · Add expense · v1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{
+--canvas:#FDFCF8;--surface:#FFFFFF;--row:#F6F6F5;--line:#E6E0D7;--ink:#171716;--muted:#6B6B69;
+--alert:#FF6B5B;--alert-solid:#C23E2E;--alert-ink:#B83A2B;--alert-tint:#FFE4DF;
+--pending:#EBC36B;--pending-ink:#6E5200;--pending-tile:#FFF0C4;
+--done-ink:#1E7A4C;--done-tint:#DDF3E6;--info:#D7E1FE;--info-ink:#2B3A75;--info-line:#C3D0F7;
+--act:#2B3A75;--act-text:#FFFFFF;--neutral-tile:#EDEDEC;--neutral-ink:#6B6B69;
+--r-btn:14px;--r-card:20px;--r-pill:999px;color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+--canvas:#1B1B1A;--surface:#262625;--row:#232322;--line:#38383A;--ink:#FFFFFF;--muted:#9B9B98;
+--alert:#E8705C;--alert-solid:#E8705C;--alert-ink:#F59384;--alert-tint:#3A2420;
+--pending:#EBC36B;--pending-ink:#EBC36B;--pending-tile:#3A3122;--done-ink:#74C99A;--done-tint:#244232;
+--info:#252C42;--info-ink:#DCE4FF;--info-line:#34405E;--act:#C9D4FB;--act-text:#1A2140;--neutral-tile:#2A2A29;--neutral-ink:#9B9B98;color-scheme:dark}}
+:root[data-theme="dark"]{
+--canvas:#1B1B1A;--surface:#262625;--row:#232322;--line:#38383A;--ink:#FFFFFF;--muted:#9B9B98;
+--alert:#E8705C;--alert-solid:#E8705C;--alert-ink:#F59384;--alert-tint:#3A2420;
+--pending:#EBC36B;--pending-ink:#EBC36B;--pending-tile:#3A3122;--done-ink:#74C99A;--done-tint:#244232;
+--info:#252C42;--info-ink:#DCE4FF;--info-line:#34405E;--act:#C9D4FB;--act-text:#1A2140;--neutral-tile:#2A2A29;--neutral-ink:#9B9B98;color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--canvas);color:var(--ink);font-family:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif}
+button,input,textarea,select{font:inherit}button{cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--act);outline-offset:2px}
+svg.lucide{width:18px;height:18px;stroke-width:2}[hidden]{display:none!important}
+.app{max-width:520px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top)) 16px calc(92px + env(safe-area-inset-bottom))}
+.new{padding:10px 12px;border-radius:var(--r-card);background:var(--info);color:var(--info-ink);font-size:11.5px;line-height:1.45;margin-bottom:12px}
+.new strong{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.back,.theme{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);display:grid;place-items:center;padding:0}
+.title{flex:1}.title strong{display:block;font-size:14px}.title small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+h1{font-size:26px;line-height:1.05;margin:8px 0 4px}.lead{margin:0 0 14px;color:var(--muted);font-size:12px;line-height:1.5}
+.card{border:1px solid var(--line);border-radius:var(--r-card);background:var(--surface)}.form{padding:14px}
+.field{margin-bottom:12px}.field:last-child{margin-bottom:0}.field label{display:block;font-size:10.5px;font-weight:800;margin-bottom:6px}
+.input,.select{width:100%;height:44px;border:1px solid var(--line);border-radius:var(--r-btn);background:var(--surface);color:var(--ink);padding:0 12px;font-size:13px}
+textarea.input{height:72px;padding-top:10px;resize:none}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.choices{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.payer-choices{grid-template-columns:1fr 1fr}
+.choice{min-height:40px;border:1px solid var(--line);border-radius:var(--r-btn);background:var(--surface);color:var(--ink);font-size:10.5px;font-weight:800}
+.choice.on{background:var(--info);color:var(--info-ink);border-color:var(--info-line)}
+.proof-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.proof-btn{min-height:40px;border:1px solid var(--line);border-radius:var(--r-btn);background:var(--surface);color:var(--ink);display:flex;align-items:center;justify-content:center;gap:6px;font-size:10.5px;font-weight:800}
+.proof-state{display:none;margin-top:8px;padding:9px 10px;border-radius:12px;background:var(--row);font-size:10.5px;color:var(--muted);align-items:center;gap:7px}.proof-state.on{display:flex}.proof-state svg{width:15px;height:15px;color:var(--done-ink)}
+.staff-box,.property-box{padding:11px 12px;border-radius:var(--r-btn);background:var(--pending-tile);color:var(--pending-ink);font-size:10.8px;line-height:1.45;margin-top:10px}
+.property-box{background:var(--row);color:var(--muted)}
+.footer{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(520px,100%);padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:var(--surface);border-top:1px solid var(--line);z-index:30}
+.btn{width:100%;min-height:42px;border:0;border-radius:var(--r-btn);background:var(--act);color:var(--act-text);font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn.loading{pointer-events:none;opacity:.82}.spinner{width:15px;height:15px;border:2px solid color-mix(in srgb,currentColor 35%,transparent);border-top-color:currentColor;border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+.view{transition:opacity .26s ease,transform .26s ease}.view.enter-from-right{opacity:0;transform:translateX(18px)}.view.exit-left{opacity:0;transform:translateX(-14px)}
+.success{padding:16px;text-align:center}.success-icon{width:48px;height:48px;border-radius:16px;background:var(--done-tint);color:var(--done-ink);display:grid;place-items:center;margin:0 auto 9px;transform:scale(.8);opacity:0}
+.success-icon.on{animation:pop .4s cubic-bezier(.2,.9,.3,1.2) forwards}@keyframes pop{70%{transform:scale(1.08);opacity:1}100%{transform:scale(1);opacity:1}}
+.success h2{margin:0;font-size:20px}.success p{margin:4px 0 14px;color:var(--muted);font-size:11px;line-height:1.45}
+.summary{overflow:hidden;text-align:left}.srow{display:flex;justify-content:space-between;gap:12px;padding:10px 12px;border-bottom:1px solid var(--line);font-size:11.5px}.srow:last-child{border-bottom:0}.srow span{color:var(--muted)}.srow b{text-align:right}
+.success-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}.success-actions .btn{background:var(--surface);color:var(--ink);border:1px solid var(--line);font-size:12px}
+@media(prefers-reduced-motion:reduce){.view{transition:none}.success-icon{opacity:1;transform:none}.success-icon.on{animation:none}}
+</style>
+</head>
+<body>
+<main class="app">
+<div class="new"><strong>New in this file</strong><br>Add Expense v1 uses PG default categories, supports business-paid or staff-paid expenses, receipt proof, and optional property context. Staff-paid creates reimbursement accountability rather than pretending business cash was already spent.</div>
+
+<header class="top">
+<button class="back" type="button" data-act="back" aria-label="Back"><i data-lucide="arrow-left"></i></button>
+<div class="title"><strong id="topTitle">Add expense</strong><small>Sunrise PG</small></div>
+<button class="theme" type="button" data-act="theme" aria-label="Toggle theme"><i data-lucide="sun-moon"></i></button>
+</header>
+
+<section id="entryView" class="view">
+<h1>Add expense</h1>
+<p class="lead">Record money spent for the PG. Receipt proof and vendor details are optional.</p>
+
+<div class="card form">
+<div class="field"><label for="amount">Amount</label><input class="input" id="amount" inputmode="decimal" value="3150"></div>
+
+<div class="field"><label for="category">Category</label>
+<select class="select" id="category">
+<option>Repairs & Maintenance</option><option>Utilities</option><option>Supplies</option><option>Staff</option><option>Food / Mess</option><option>Rent / Lease</option><option>Other</option>
+</select></div>
+
+<div class="field"><label>Paid by</label>
+<div class="choices payer-choices">
+<button class="choice on" type="button" data-payer="Business">Business</button>
+<button class="choice" type="button" data-payer="Staff">Staff</button>
+</div>
+<div class="staff-box" id="staffBox" hidden>Staff-paid expenses create an amount owed back to the staff member. They are not treated as business cash already spent.</div>
+</div>
+
+<div class="field" id="staffField" hidden><label for="staffName">Staff member</label>
+<select class="select" id="staffName"><option>Ravi Kumar</option><option>Sunita Rao</option></select></div>
+
+<div class="field"><label>Payment mode</label>
+<div class="choices">
+<button class="choice on" type="button" data-mode="Cash">Cash</button>
+<button class="choice" type="button" data-mode="UPI">UPI</button>
+<button class="choice" type="button" data-mode="Bank">Bank</button>
+</div></div>
+
+<div class="grid2">
+<div class="field"><label for="date">Expense date</label><input class="input" id="date" type="date" value="2026-10-07"></div>
+<div class="field"><label for="vendor">Vendor</label><input class="input" id="vendor" value="Shree Plumbing"></div>
+</div>
+
+<div class="field"><label>Receipt / proof</label>
+<div class="proof-actions">
+<button class="proof-btn" type="button" data-act="attach-proof"><i data-lucide="image-plus"></i>Attach receipt</button>
+<button class="proof-btn" type="button" data-act="take-photo"><i data-lucide="camera"></i>Take photo</button>
+</div>
+<div class="proof-state" id="proofState"><i data-lucide="check-circle-2"></i><span id="proofText">Receipt attached</span></div>
+</div>
+
+<div class="field"><label for="property">Property context</label>
+<select class="select" id="property"><option>Room 203</option><option>Common area</option><option>Building-wide</option><option>Not linked</option></select>
+<div class="property-box">Useful for maintenance and repairs. This is context only; PG V1 does not turn it into a maintenance ticket.</div>
+</div>
+
+<div class="field"><label for="note">Note</label><textarea class="input" id="note" placeholder="Optional">Bathroom tap repair and replacement parts.</textarea></div>
+</div>
+</section>
+
+<section id="successView" class="view" hidden>
+<div class="card success">
+<div class="success-icon" id="successIcon"><i data-lucide="receipt"></i></div>
+<h2>Expense recorded</h2>
+<p id="successCopy">The expense has been added to Sunrise PG.</p>
+
+<div class="card summary">
+<div class="srow"><span>Amount</span><b id="sumAmount">₹3,150</b></div>
+<div class="srow"><span>Category</span><b id="sumCategory">Repairs & Maintenance</b></div>
+<div class="srow"><span>Paid by</span><b id="sumPayer">Business</b></div>
+<div class="srow"><span>Payment mode</span><b id="sumMode">Cash</b></div>
+<div class="srow"><span>Date</span><b>7 Oct 2026</b></div>
+<div class="srow"><span>Vendor</span><b id="sumVendor">Shree Plumbing</b></div>
+<div class="srow"><span>Property</span><b id="sumProperty">Room 203</b></div>
+</div>
+
+<div class="success-actions">
+<button class="btn" type="button"><i data-lucide="list"></i>View expenses</button>
+<button class="btn" type="button"><i data-lucide="plus"></i>Add another</button>
+</div>
+</div>
+</section>
+</main>
+
+<footer class="footer" id="footer">
+<button class="btn" id="saveBtn" type="button" data-act="save"><i data-lucide="check"></i><span>Record expense</span></button>
+</footer>
+
+<script>
+let payer="Business",mode="Cash";
+function icons(){if(window.lucide&&lucide.createIcons)lucide.createIcons()}
+function number(v){const n=parseFloat(String(v||"0").replace(/,/g,""));return Number.isFinite(n)?n:0}
+function money(v){return "₹"+Math.round(v).toLocaleString("en-IN")}
+document.addEventListener("click",e=>{
+const p=e.target.closest("[data-payer]");
+if(p){payer=p.dataset.payer;document.querySelectorAll("[data-payer]").forEach(b=>b.classList.toggle("on",b===p));const staff=payer==="Staff";staffField.hidden=!staff;staffBox.hidden=!staff;return}
+const m=e.target.closest("[data-mode]");
+if(m){mode=m.dataset.mode;document.querySelectorAll("[data-mode]").forEach(b=>b.classList.toggle("on",b===m));return}
+const a=e.target.closest("[data-act]");if(!a)return;
+if(a.dataset.act==="theme"){const r=document.documentElement,c=r.getAttribute("data-theme");r.setAttribute("data-theme",c==="dark"?"light":"dark");return}
+if(a.dataset.act==="attach-proof"){proofText.textContent="Receipt attached";proofState.classList.add("on");icons();return}
+if(a.dataset.act==="take-photo"){proofText.textContent="Receipt photo captured";proofState.classList.add("on");icons();return}
+if(a.dataset.act==="save"){
+if(saveBtn.classList.contains("loading"))return;
+const original=saveBtn.innerHTML;saveBtn.classList.add("loading");saveBtn.setAttribute("aria-busy","true");
+saveBtn.innerHTML='<span class="spinner"></span><span>Recording expense…</span>';
+setTimeout(()=>{
+sumAmount.textContent=money(number(amount.value));sumCategory.textContent=category.value;
+sumPayer.textContent=payer==="Staff"?staffName.value:"Business";sumMode.textContent=mode;
+sumVendor.textContent=vendor.value||"—";sumProperty.textContent=property.value;
+successCopy.textContent=payer==="Staff"?"The expense is recorded, with reimbursement accountability to "+staffName.value+".":"The expense has been added to Sunrise PG.";
+footer.hidden=true;entryView.classList.add("exit-left");
+setTimeout(()=>{
+entryView.hidden=true;entryView.classList.remove("exit-left");successView.hidden=false;successView.classList.add("enter-from-right");topTitle.textContent="Expense";
+requestAnimationFrame(()=>requestAnimationFrame(()=>successView.classList.remove("enter-from-right")));
+saveBtn.classList.remove("loading");saveBtn.removeAttribute("aria-busy");saveBtn.innerHTML=original;icons();successIcon.classList.add("on");
+},220);
+},700);return}
+if(a.dataset.act==="back"&&!successView.hidden){successView.hidden=true;entryView.hidden=false;footer.hidden=false;topTitle.textContent="Add expense";successIcon.classList.remove("on");icons()}
+});
+icons();
+</script>
+</body>
+</html>

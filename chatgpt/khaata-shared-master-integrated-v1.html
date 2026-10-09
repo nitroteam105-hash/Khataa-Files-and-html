@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · Shared master integrated · v1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{
+--canvas:#FDFCF8;--surface:#FFFFFF;--row:#F6F6F5;--line:#E6E0D7;--ink:#171716;--muted:#6B6B69;
+--alert:#FF6B5B;--alert-solid:#C23E2E;--alert-ink:#B83A2B;--alert-tint:#FFE4DF;
+--pending:#EBC36B;--pending-ink:#6E5200;--pending-tile:#FFF0C4;
+--done-ink:#1E7A4C;--done-tint:#DDF3E6;--info:#D7E1FE;--info-ink:#2B3A75;--info-line:#C3D0F7;
+--act:#2B3A75;--act-text:#FFFFFF;--neutral-tile:#EDEDEC;--neutral-ink:#6B6B69;
+--idb-violet:#B898F4;--idb-lavender:#C9C3EE;--idb-blue:#9AB8F0;--idb-teal:#8FD3CA;--idb-magenta:#E3A9D5;--idb-sand:#E2D3BC;
+--idh-violet:#3B2A6E;--idh-lavender:#36305E;--idh-blue:#163A78;--idh-teal:#0E4D47;--idh-magenta:#5A1E4E;--idh-sand:#4A3B26;--idh-ink:#FBFBFA;
+--biz-pink:#FBB9C2;--biz-pink-ink:#171716;--biz-fig:#3B1F3A;--biz-fig-ink:#FBFBFA;--biz-crimson:#D42E57;--biz-crimson-ink:#FBFBFA;--biz-pine:#0F2C24;--biz-pine-ink:#FBFBFA;--biz-olive:#292E1E;--biz-olive-ink:#FBFBFA;--biz-navy:#1E2A5A;--biz-navy-ink:#FBFBFA;
+--scrim:rgba(0,0,0,.34);--r-card:20px;--r-btn:14px;--r-pill:999px;color-scheme:light
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+--canvas:#1B1B1A;--surface:#262625;--row:#232322;--line:#38383A;--ink:#FFFFFF;--muted:#9B9B98;
+--alert:#E8705C;--alert-solid:#E8705C;--alert-ink:#F59384;--alert-tint:#3A2420;
+--pending:#EBC36B;--pending-ink:#EBC36B;--pending-tile:#3A3122;--done-ink:#74C99A;--done-tint:#244232;
+--info:#252C42;--info-ink:#DCE4FF;--info-line:#34405E;--act:#C9D4FB;--act-text:#1A2140;--neutral-tile:#2A2A29;--neutral-ink:#9B9B98;
+--idb-violet:#3B2A6E;--idb-lavender:#36305E;--idb-blue:#163A78;--idb-teal:#0E4D47;--idb-magenta:#5A1E4E;--idb-sand:#4A3B26;
+--scrim:rgba(0,0,0,.6);color-scheme:dark}}
+:root[data-theme="dark"]{
+--canvas:#1B1B1A;--surface:#262625;--row:#232322;--line:#38383A;--ink:#FFFFFF;--muted:#9B9B98;
+--alert:#E8705C;--alert-solid:#E8705C;--alert-ink:#F59384;--alert-tint:#3A2420;
+--pending:#EBC36B;--pending-ink:#EBC36B;--pending-tile:#3A3122;--done-ink:#74C99A;--done-tint:#244232;
+--info:#252C42;--info-ink:#DCE4FF;--info-line:#34405E;--act:#C9D4FB;--act-text:#1A2140;--neutral-tile:#2A2A29;--neutral-ink:#9B9B98;
+--idb-violet:#3B2A6E;--idb-lavender:#36305E;--idb-blue:#163A78;--idb-teal:#0E4D47;--idb-magenta:#5A1E4E;--idb-sand:#4A3B26;
+--scrim:rgba(0,0,0,.6);color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--canvas);color:var(--ink);font-family:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif}
+button,input,select{font:inherit;color:inherit}button{cursor:pointer}:focus-visible{outline:2px solid var(--act);outline-offset:2px}[hidden]{display:none!important}
+svg.lucide{width:18px;height:18px;flex:none}.app{max-width:520px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top)) 16px calc(42px + env(safe-area-inset-bottom))}
+.top{position:sticky;top:0;z-index:8;background:var(--canvas);display:flex;align-items:center;gap:10px;padding:2px 0 10px}.bizbutton{flex:1;min-width:0;border:0;background:transparent;padding:0;display:flex;align-items:center;gap:10px;text-align:left}.biztext{min-width:0}.biztext strong{display:block;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.biztext small{display:block;font-size:11px;color:var(--muted);margin-top:2px}
+.mark{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-weight:800;flex:none}.mark.pine{background:var(--biz-pine);color:var(--biz-pine-ink)}.mark.fig{background:var(--biz-fig);color:var(--biz-fig-ink)}.mark.crimson{background:var(--biz-crimson);color:var(--biz-crimson-ink)}.mark.olive{background:var(--biz-olive);color:var(--biz-olive-ink)}.mark.navy{background:var(--biz-navy);color:var(--biz-navy-ink)}.mark.pink{background:var(--biz-pink);color:var(--biz-pink-ink)}
+.ibtn{width:44px;height:44px;border:1px solid var(--line);background:var(--surface);border-radius:12px;display:grid;place-items:center;padding:0}h1{font-size:26px;line-height:1.08;margin:12px 0 5px}.lead{font-size:12px;line-height:1.5;color:var(--muted);margin:0 0 16px}.note{border-radius:14px;padding:11px 12px;font-size:11px;line-height:1.45;background:var(--info);color:var(--info-ink);margin-bottom:14px}.note.warn{background:var(--pending-tile);color:var(--pending-ink)}.note.ok{background:var(--done-tint);color:var(--done-ink)}
+.grp{font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:21px 4px 8px}.hub{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.mod{min-height:118px;border:0;border-radius:18px;padding:14px;text-align:left;display:flex;flex-direction:column;justify-content:space-between;color:#171716}.mod strong{display:block;font-size:13px}.mod small{display:block;font-size:10.5px;margin-top:3px;opacity:.75}.mod.sand{background:var(--idb-sand)}.mod.magenta{background:var(--idb-magenta)}.mod.violet{background:var(--idb-violet)}.mod.blue{background:var(--idb-blue)}.mod.teal{background:var(--idb-teal)}.mod.lavender{background:var(--idb-lavender)}
+.hero{margin:calc(-12px - env(safe-area-inset-top)) -16px 16px;padding:calc(14px + env(safe-area-inset-top)) 16px 18px;color:var(--idh-ink);display:flex;align-items:center;gap:10px}.hero.sand{background:var(--idh-sand)}.hero.magenta{background:var(--idh-magenta)}.hero.violet{background:var(--idh-violet)}.hero.blue{background:var(--idh-blue)}.hero.teal{background:var(--idh-teal)}.hero.lavender{background:var(--idh-lavender)}.hero .ibtn{border-color:rgba(255,255,255,.28);background:transparent;color:inherit}.hero .grow{flex:1}.hero small{display:block;font-size:11px;opacity:.82}.hero strong{display:block;font-size:18px;margin-top:2px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:14px}.row{width:100%;min-height:60px;border:0;border-bottom:1px solid var(--line);background:transparent;display:flex;align-items:center;gap:12px;text-align:left;padding:11px 0}.row:last-child{border-bottom:0}.tile{width:40px;height:40px;border-radius:13px;background:var(--neutral-tile);display:grid;place-items:center;flex:none;color:var(--neutral-ink)}.avatar{width:40px;height:40px;border-radius:50%;background:var(--neutral-tile);display:grid;place-items:center;font-weight:800;flex:none}.grow{flex:1;min-width:0}.row strong{display:block;font-size:12px}.row small{display:block;color:var(--muted);font-size:11px;line-height:1.4;margin-top:3px}.value,.amount{font-size:11px;font-weight:800;color:var(--muted);white-space:nowrap}
+.tag{display:inline-flex;align-items:center;border-radius:999px;padding:3px 8px;font-size:10px;font-weight:800;background:var(--neutral-tile);color:var(--neutral-ink)}.tag.wait{background:var(--pending-tile);color:var(--pending-ink)}.tag.ok{background:var(--done-tint);color:var(--done-ink)}.btn{min-height:44px;border:1px solid var(--line);background:var(--surface);border-radius:var(--r-btn);padding:0 14px;font-size:11px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;gap:6px}.btn.primary{background:var(--act);color:var(--act-text);border-color:var(--act)}.btn.wide{width:100%;margin-top:12px}.metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.metric{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px}.metric b{display:block;font-size:21px}.metric small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:11px}.kv:last-child{border-bottom:0}.kv span{color:var(--muted)}.kv b{text-align:right}.chips{display:flex;gap:8px;flex-wrap:wrap}.chip{min-height:40px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:0 12px;font-size:11px;font-weight:800}.chip.on{background:var(--info);border-color:var(--info-line);color:var(--info-ink)}
+.scrim{position:fixed;inset:0;background:var(--scrim);z-index:40;opacity:0;pointer-events:none;transition:.18s}.scrim.on{opacity:1;pointer-events:auto}.drawer{position:fixed;top:0;right:0;bottom:0;z-index:41;width:min(340px,86vw);background:var(--canvas);border-left:1px solid var(--line);transform:translateX(105%);transition:.22s;display:flex;flex-direction:column;padding:calc(14px + env(safe-area-inset-top)) 0 env(safe-area-inset-bottom)}.drawer.on{transform:none}.dhead{display:flex;align-items:flex-start;gap:10px;padding:0 16px 14px}.dhead .grow{flex:1}.dhead strong{font-size:17px;display:block}.dhead small{display:block;color:var(--muted);font-size:12px;margin-top:2px}.dlist{padding:0 16px;overflow:auto}.drow{width:100%;min-height:58px;border:0;border-bottom:1px solid var(--line);background:transparent;display:flex;align-items:center;gap:10px;text-align:left}.drawer-foot{margin-top:auto;padding:12px 16px}
+.sheet{position:fixed;left:50%;bottom:0;transform:translate(-50%,105%);width:min(520px,100%);max-height:90vh;overflow:auto;background:var(--surface);border-radius:24px 24px 0 0;padding:10px 16px calc(18px + env(safe-area-inset-bottom));z-index:50;transition:.22s}.sheet.on{transform:translate(-50%,0)}.handle{width:38px;height:4px;border-radius:99px;background:var(--line);margin:0 auto 12px}.shead{display:flex;align-items:flex-start;gap:10px}.shead .grow{flex:1}.shead h2{font-size:18px;margin:0}.shead p{font-size:11px;color:var(--muted);margin:3px 0 0}.close{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center}.field{margin-top:12px}.field label{display:block;font-size:11px;font-weight:800;margin-bottom:6px}.input{width:100%;min-height:44px;border:1px solid var(--line);background:var(--canvas);border-radius:12px;padding:9px 11px;font-size:12px}
+</style>
+</head>
+<body>
+<main class="app" id="app"></main>
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-label="Business switcher">
+  <div class="dhead"><div class="grow"><strong>My businesses</strong><small>Switch without leaving Khaata</small></div><button class="ibtn" data-act="drawer-close" aria-label="Close"><i data-lucide="x"></i></button></div>
+  <div class="dlist" id="businessList"></div>
+  <div class="drawer-foot"><button class="btn wide" data-act="add-business"><i data-lucide="plus"></i>Add business</button></div>
+</aside>
+<section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <div class="handle"></div><div class="shead"><div class="grow"><h2 id="sheetTitle"></h2><p id="sheetSub"></p></div><button class="close" data-act="sheet-close" aria-label="Close"><i data-lucide="x"></i></button></div><div id="sheetBody"></div>
+</section>
+<script>
+(function(){
+"use strict";
+var businesses=[
+{id:"pg",name:"Sunrise PG",type:"PG / hostel",mark:"S",color:"pine"},
+{id:"cafe",name:"Fig & Flour",type:"Bakery café",mark:"F",color:"fig"},
+{id:"juice",name:"Fresh Squeeze",type:"Juice bar",mark:"F",color:"crimson"},
+{id:"dairy",name:"Sharma Dairy",type:"Dairy delivery",mark:"S",color:"olive"},
+{id:"gym",name:"Iron Temple",type:"Gym",mark:"I",color:"navy"},
+{id:"ice",name:"Scoops & Co",type:"Ice cream parlour",mark:"S",color:"pink"}
+];
+var S={business:"pg",view:"hub",stack:[],lastFocus:null,expensePayer:"Business"};
+function I(n){return '<i data-lucide="'+n+'"></i>'}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function icons(){if(window.lucide&&lucide.createIcons)lucide.createIcons()}
+function biz(){return businesses.find(function(b){return b.id===S.business})||businesses[0]}
+function mark(b,sz){return '<span class="mark '+b.color+'" style="width:'+sz+'px;height:'+sz+'px">'+esc(b.mark)+'</span>'}
+function top(){
+ var b=biz();return '<header class="top"><button class="bizbutton" data-act="drawer">'+mark(b,40)+'<span class="biztext"><strong>'+esc(b.name)+'</strong><small>'+esc(b.type)+'</small></span>'+I("chevron-down")+'</button><button class="ibtn" data-act="theme" aria-label="Toggle theme">'+I("sun-moon")+'</button></header>'
+}
+var mods=[
+{id:"collections",name:"Collections",sub:"Money coming in",c:"sand",icon:"wallet"},
+{id:"expenses",name:"Expenses",sub:"Money going out",c:"magenta",icon:"receipt"},
+{id:"staff",name:"Staff",sub:"People & access",c:"violet",icon:"users"},
+{id:"business",name:"Business",sub:"This business",c:"blue",icon:"building-2"},
+{id:"backup",name:"Backup",sub:"Data & restore",c:"teal",icon:"hard-drive"},
+{id:"settings",name:"Settings",sub:"App preferences",c:"lavender",icon:"settings-2"}
+];
+function hub(){
+ return top()+'<div class="note"><b>Shared master integrated v1</b><br>Business switcher, all six shared destinations, Add Business, account settings and Plans are connected in one self-contained review file.</div>'+
+ '<h1>Business hub</h1><p class="lead">The screens every business keeps, whatever its vertical.</p><div class="hub">'+mods.map(function(m){return '<button class="mod '+m.c+'" data-view="'+m.id+'"><span>'+I(m.icon)+'</span><span><strong>'+m.name+'</strong><small>'+m.sub+'</small></span></button>'}).join("")+'</div>'+
+ '<div class="grp">Vertical workspace</div><section class="card"><div class="row"><span class="tile">'+I("bed-double")+'</span><span class="grow"><strong>PG / Hostel workspace</strong><small>Home · Tenants · Collections · More</small></span><button class="btn" data-act="vertical">Open</button></div></section>'+
+ '<div class="grp">Account</div><section class="card"><button class="row" data-view="plans"><span class="tile">'+I("sparkles")+'</span><span class="grow"><strong>Plan</strong><small>Free · Pro · Premium</small></span>'+I("chevron-right")+'</button><button class="row" data-act="help"><span class="tile">'+I("life-buoy")+'</span><span class="grow"><strong>Help & support</strong><small>Khaata help</small></span>'+I("chevron-right")+'</button></section>'
+}
+function hero(m){return '<header class="hero '+m.c+'"><button class="ibtn" data-act="back" aria-label="Back">'+I("arrow-left")+'</button><div class="grow"><small>You are in</small><strong>'+m.name+'</strong></div>'+I(m.icon)+'</header>'}
+function collections(){var m=mods[0];return hero(m)+'<h1>Money coming in</h1><p class="lead">What is due, what needs attention, and what has settled.</p><div class="metrics"><div class="metric"><b>₹1.42L</b><small>Collected this month</small></div><div class="metric"><b>₹38.5K</b><small>Outstanding</small></div></div><div class="grp">This month</div><section class="card"><button class="row" data-sheet="oct-rent"><span class="tile">'+I("receipt-text")+'</span><span class="grow"><strong>October rent</strong><small>PG / Hostel obligation</small></span><span class="amount">₹1,42,000</span>'+I("chevron-right")+'</button><button class="row" data-sheet="pending"><span class="tile">'+I("clock")+'</span><span class="grow"><strong>3 pending</strong><small>Need follow-up this week</small></span><span class="tag wait">Review</span>'+I("chevron-right")+'</button><button class="row" data-sheet="settled"><span class="tile">'+I("check-check")+'</span><span class="grow"><strong>Settled</strong><small>42 this month</small></span><span class="tag ok">Done</span>'+I("chevron-right")+'</button></section><button class="btn primary wide" data-sheet="payment">'+I("indian-rupee")+'Record payment</button>'}
+function expenses(){var m=mods[1];return hero(m)+'<h1>Money going out</h1><p class="lead">Expenses and staff reimbursement accountability.</p><div class="metrics"><div class="metric"><b>₹21.8K</b><small>Expenses this month</small></div><div class="metric"><b>₹3.1K</b><small>Staff reimbursement due</small></div></div><div class="grp">Recent expenses</div><section class="card"><button class="row" data-sheet="electricity"><span class="tile">'+I("zap")+'</span><span class="grow"><strong>Electricity</strong><small>Utilities · business-paid</small></span><span class="amount">₹8,400</span>'+I("chevron-right")+'</button><button class="row" data-sheet="repairs"><span class="tile">'+I("wrench")+'</span><span class="grow"><strong>Repairs</strong><small>2 bills · one staff-paid</small></span><span class="amount">₹3,150</span>'+I("chevron-right")+'</button><button class="row" data-sheet="reimburse"><span class="tile">'+I("hand-coins")+'</span><span class="grow"><strong>Staff reimbursement</strong><small>Ravi Kumar</small></span><span class="tag wait">₹3,150 due</span>'+I("chevron-right")+'</button></section><button class="btn primary wide" data-sheet="add-expense">'+I("plus")+'Add expense</button>'}
+function staff(){var m=mods[2];return hero(m)+'<h1>People & access</h1><p class="lead">People, roles, permissions and approvals.</p><div class="grp">People</div><section class="card"><button class="row" data-sheet="ravi"><span class="avatar">R</span><span class="grow"><strong>Ravi Kumar</strong><small>Manager · Sunrise PG</small></span><span class="tag ok">Can edit</span>'+I("chevron-right")+'</button><button class="row" data-sheet="sunita"><span class="avatar">S</span><span class="grow"><strong>Sunita Rao</strong><small>Caretaker / Front desk</small></span><span class="tag">View only</span>'+I("chevron-right")+'</button><button class="row" data-sheet="anil"><span class="avatar">A</span><span class="grow"><strong>Anil Menon</strong><small>Accounts</small></span><span class="tag wait">Invite pending</span>'+I("chevron-right")+'</button></section><div class="grp">Access & permissions</div><section class="card"><button class="row" data-sheet="roles"><span class="tile">'+I("shield-check")+'</span><span class="grow"><strong>Role templates</strong><small>Manager · Caretaker / Front desk · Accounts · Custom role</small></span>'+I("chevron-right")+'</button><button class="row" data-sheet="approvals"><span class="tile">'+I("badge-check")+'</span><span class="grow"><strong>Approvals</strong><small>Request ≠ execution</small></span><span class="tag wait">3</span>'+I("chevron-right")+'</button><button class="row" data-sheet="access-history"><span class="tile">'+I("history")+'</span><span class="grow"><strong>Access history</strong><small>Audit access changes</small></span>'+I("chevron-right")+'</button></section>'}
+function business(){var m=mods[3],b=biz();return hero(m)+'<h1>'+esc(b.name)+'</h1><p class="lead">Business identity and operating context.</p><section class="card"><button class="row" data-sheet="details"><span class="tile">'+I("pencil")+'</span><span class="grow"><strong>Name & details</strong><small>Business name, type, location and currency</small></span>'+I("chevron-right")+'</button><button class="row" data-sheet="bill-theme"><span class="tile">'+I("image")+'</span><span class="grow"><strong>Logo & bill theme</strong><small>Business mark now · bill theme is plan-dependent</small></span><span class="tag">Pro</span>'+I("chevron-right")+'</button><button class="row" data-sheet="tax"><span class="tile">'+I("id-card")+'</span><span class="grow"><strong>Tax & export</strong><small>Shared entry point</small></span>'+I("chevron-right")+'</button></section>'}
+function backup(){var m=mods[4];return hero(m)+'<h1>Data & restore</h1><p class="lead">Back up, restore or export your business data.</p><section class="card"><button class="row" data-sheet="backup"><span class="tile">'+I("cloud-upload")+'</span><span class="grow"><strong>Back up now</strong><small>Create a recovery copy</small></span><span class="value">2 min ago</span>'+I("chevron-right")+'</button><button class="row" data-sheet="restore"><span class="tile">'+I("history")+'</span><span class="grow"><strong>Restore</strong><small>Review before replacing local data</small></span>'+I("chevron-right")+'</button><button class="row" data-sheet="export"><span class="tile">'+I("file-down")+'</span><span class="grow"><strong>Export</strong><small>Create a portable copy</small></span>'+I("chevron-right")+'</button></section><div class="note warn" style="margin-top:14px"><b>Backup is not sync.</b><br>Sync is configured separately and does not replace recovery copies.</div>'}
+function settings(){var m=mods[5];return hero(m)+'<h1>Settings</h1><p class="lead">Account-level and app-level preferences shared across businesses.</p><div class="grp">On this device</div><section class="card"><button class="row" data-sheet="backup-settings"><span class="tile">'+I("download")+'</span><span class="grow"><strong>Backup & restore</strong><small>Local recovery controls</small></span>'+I("chevron-right")+'</button><button class="row" data-sheet="app-lock"><span class="tile">'+I("lock")+'</span><span class="grow"><strong>App lock</strong><small>Protect Khaata on this device</small></span><span class="value">Off</span>'+I("chevron-right")+'</button></section><div class="grp">Synced · Pro</div><section class="card"><button class="row" data-sheet="sync"><span class="tile">'+I("cloud")+'</span><span class="grow"><strong>Cloud sync</strong><small>Supported data when online</small></span><span class="tag ok">On</span>'+I("chevron-right")+'</button><button class="row" data-sheet="devices"><span class="tile">'+I("smartphone")+'</span><span class="grow"><strong>Devices</strong><small>Linked account devices</small></span><span class="value">2 linked</span>'+I("chevron-right")+'</button></section><div class="grp">General</div><section class="card"><button class="row" data-sheet="appearance"><span class="tile">'+I("palette")+'</span><span class="grow"><strong>Appearance</strong><small>Theme and text size</small></span>'+I("chevron-right")+'</button><button class="row" data-sheet="language"><span class="tile">'+I("globe")+'</span><span class="grow"><strong>Language</strong><small>App language</small></span><span class="value">English</span>'+I("chevron-right")+'</button><button class="row" data-view="plans"><span class="tile">'+I("sparkles")+'</span><span class="grow"><strong>Plan</strong><small>Free · Pro · Premium</small></span>'+I("chevron-right")+'</button></section>'}
+function plans(){return '<header class="hero lavender"><button class="ibtn" data-act="back" aria-label="Back">'+I("arrow-left")+'</button><div class="grow"><small>Account</small><strong>Plans</strong></div>'+I("sparkles")+'</header><h1>Choose the right plan</h1><p class="lead">Free and Pro stay plain. Premium is recommended.</p><section class="card"><div class="row"><span class="tile">'+I("circle")+'</span><span class="grow"><strong>Free</strong><small>Core local use</small></span><span class="tag">Current</span></div><div class="row"><span class="tile">'+I("cloud")+'</span><span class="grow"><strong>Pro</strong><small>Khaata Sync and linked devices</small></span><button class="btn" data-sheet="choose-pro">Choose</button></div><div class="row" style="background:var(--done-tint);margin:0 -14px;padding-left:14px;padding-right:14px"><span class="tile">'+I("shield-check")+'</span><span class="grow"><strong>Premium</strong><small>Advanced staff & access controls · Recommended</small></span><button class="btn" data-sheet="choose-premium">Choose</button></div></section><div class="note" style="margin-top:14px">Exact commercial pricing is intentionally not defined in this prototype.</div>'}
+function addBusiness(){
+ return '<header class="hero blue"><button class="ibtn" data-act="back" aria-label="Back">'+I("arrow-left")+'</button><div class="grow"><small>Business switcher</small><strong>Add business</strong></div>'+I("plus")+'</header><h1>Create business</h1><p class="lead">Business name → Business type → Location → Operational currency.</p><section class="card"><div class="field"><label>Business name</label><input class="input" id="newName" value="Lake View PG"></div><div class="field"><label>Business type</label><select class="input" id="newType"><option>PG / Hostel</option><option>Bakery / café</option><option>Juice bar</option><option>Dairy delivery</option><option>Gym</option><option>Ice cream parlour</option></select></div><div class="field"><label>Location</label><input class="input" id="newLocation" value="Bengaluru"></div><div class="field"><label>Operational currency</label><select class="input" id="newCurrency"><option>INR</option><option>USD</option><option>GBP</option><option>EUR</option></select></div></section><div class="note" style="margin-top:12px">Currency is explicit and is not silently inferred from location.</div><button class="btn primary wide" data-act="create-business">Create business</button>'
+}
+function render(){
+ var fn={hub:hub,collections:collections,expenses:expenses,staff:staff,business:business,backup:backup,settings:settings,plans:plans,"add-business":addBusiness}[S.view]||hub;
+ document.getElementById("app").innerHTML=fn();icons();window.scrollTo(0,0)
+}
+function push(v){S.stack.push(S.view);S.view=v;render()}
+function back(){S.view=S.stack.length?S.stack.pop():"hub";render()}
+function renderDrawer(){
+ var box=document.getElementById("businessList");box.innerHTML='<div class="grp" style="margin-top:4px">My businesses</div>'+businesses.map(function(b){return '<button class="drow" data-business="'+b.id+'">'+mark(b,34)+'<span class="grow"><strong>'+esc(b.name)+'</strong><small>'+esc(b.type)+'</small></span>'+(b.id===S.business?I("check"):"")+'</button>'}).join("");icons()
+}
+function openDrawer(){renderDrawer();document.getElementById("scrim").classList.add("on");document.getElementById("drawer").classList.add("on")}
+function closeDrawer(){document.getElementById("scrim").classList.remove("on");document.getElementById("drawer").classList.remove("on")}
+function openSheet(t,s,b){S.lastFocus=document.activeElement;document.getElementById("sheetTitle").textContent=t;document.getElementById("sheetSub").textContent=s||"";document.getElementById("sheetBody").innerHTML=b;document.getElementById("scrim").classList.add("on");document.getElementById("sheet").classList.add("on");icons()}
+function closeSheet(){document.getElementById("scrim").classList.remove("on");document.getElementById("sheet").classList.remove("on");if(S.lastFocus&&S.lastFocus.focus)S.lastFocus.focus()}
+function sheetFor(k){
+ var m={
+"oct-rent":["October rent","Collection group",'<div class="kv"><span>Expected</span><b>₹1,80,500</b></div><div class="kv"><span>Collected</span><b>₹1,42,000</b></div><div class="kv"><span>Outstanding</span><b>₹38,500</b></div>'],
+"pending":["3 pending","Needs attention",'<div class="kv"><span>Part paid</span><b>1</b></div><div class="kv"><span>Overdue / follow-up</span><b>2</b></div>'],
+"settled":["Settled","42 this month",'<div class="note ok"><b>42 settled items</b><br>Completed collection obligations for the current month.</div>'],
+"payment":["Record payment","Shared handoff",'<div class="note">The active vertical supplies the detailed payment form.</div><button class="btn primary wide">Continue</button>'],
+"electricity":["Electricity","Utilities",'<div class="kv"><span>Paid by</span><b>Business</b></div><div class="kv"><span>Amount</span><b>₹8,400</b></div>'],
+"repairs":["Repairs","2 bills",'<div class="kv"><span>Business-paid</span><b>₹1,600</b></div><div class="kv"><span>Staff-paid</span><b>₹1,550</b></div>'],
+"reimburse":["Staff reimbursement","Ravi Kumar",'<div class="note warn"><b>₹3,150 owed back.</b><br>Staff-paid expense accountability remains separate from business cash already spent.</div>'],
+"ravi":["Ravi Kumar","Manager",'<div class="kv"><span>Access</span><b>Operational</b></div><div class="kv"><span>Last active</span><b>Today · 8:42 PM</b></div>'],
+"sunita":["Sunita Rao","Caretaker / Front desk",'<div class="kv"><span>Access</span><b>Limited</b></div><div class="kv"><span>Last active</span><b>Today · 6:18 PM</b></div>'],
+"anil":["Anil Menon","Accounts",'<div class="kv"><span>Status</span><b>Invite pending</b></div>'],
+"roles":["Role templates","Editable",'<div class="note"><b>Shared model:</b> Allowed · Needs approval · Not allowed. Visibility and area access are separate.</div><button class="btn wide">Open full role editor</button>'],
+"approvals":["Approvals","Request ≠ execution",'<div class="note warn"><b>3 requests waiting.</b><br>Approval grants authority; it does not mean the action has executed.</div>'],
+"access-history":["Access history","Audit trail",'<div class="kv"><span>Ravi Kumar</span><b>Manager assigned</b></div><div class="kv"><span>Sunita Rao</span><b>Visibility changed</b></div>'],
+"details":["Name & details","This business",'<div class="field"><label>Business name</label><input class="input" value="'+esc(biz().name)+'"></div><div class="field"><label>Business type</label><input class="input" value="'+esc(biz().type)+'" disabled></div><div class="field"><label>Operational currency</label><select class="input"><option>INR</option><option>USD</option></select></div><button class="btn primary wide">Save</button>'],
+"bill-theme":["Logo & bill theme","Business identity",'<div class="note">Business colour stays inside the lettered mark; it never fills whole business headers. Bill themes are plan-dependent.</div><button class="btn wide" data-view="plans">View plans</button>'],
+"tax":["Tax & export","Shared destination",'<div class="note">The shared source defines this destination, but not the exact jurisdiction-specific tax fields or CA export format.</div>'],
+"backup":["Back up now","Create recovery copy",'<div class="kv"><span>Business</span><b>'+esc(biz().name)+'</b></div><div class="kv"><span>Destination</span><b>On this device</b></div><button class="btn primary wide">Create backup</button>'],
+"restore":["Restore","Review first",'<div class="note warn"><b>Review first.</b><br>Restore replaces the local business copy with the chosen backup.</div><button class="btn primary wide">Review restore</button>'],
+"export":["Export","Portable copy",'<div class="note">Exact exported file schema is not defined in this shared prototype.</div><button class="btn primary wide">Create export</button>'],
+"backup-settings":["Backup & restore","On this device",'<div class="note">Local recovery controls belong here.</div>'],
+"app-lock":["App lock","On this device",'<div class="kv"><span>Require app lock</span><b>Off</b></div>'],
+"sync":["Cloud sync","Synced · Pro",'<div class="note">Core work remains local-first; sync and permissions remain separate concerns.</div>'],
+"devices":["Devices","2 linked",'<div class="kv"><span>Tablet</span><b>Current</b></div><div class="kv"><span>Phone</span><b>Last synced today</b></div>'],
+"appearance":["Appearance","Theme and text size",'<div class="chips"><button class="chip" data-theme-choice="system">System</button><button class="chip" data-theme-choice="light">Light</button><button class="chip" data-theme-choice="dark">Dark</button></div>'],
+"language":["Language","General",'<div class="chips"><button class="chip on">English</button><button class="chip">हिन्दी</button><button class="chip">ಕನ್ನಡ</button></div>'],
+"choose-pro":["Choose Pro","Upgrade",'<div class="kv"><span>Current</span><b>Free</b></div><div class="kv"><span>New plan</span><b>Pro</b></div><div class="note">Exact checkout and price are not defined here.</div>'],
+"choose-premium":["Choose Premium","Upgrade",'<div class="kv"><span>Current</span><b>Free</b></div><div class="kv"><span>New plan</span><b>Premium</b></div><div class="note">Exact checkout and price are not defined here.</div>']
+ };
+ if(k==="add-expense"){
+   return ["Add expense","Business-paid or staff-paid",'<div class="field"><label>Amount</label><input class="input" value="3150"></div><div class="field"><label>Paid by</label><div class="chips"><button class="chip '+(S.expensePayer==="Business"?"on":"")+'" data-payer="Business">Business</button><button class="chip '+(S.expensePayer==="Staff"?"on":"")+'" data-payer="Staff">Staff</button></div></div>'+(S.expensePayer==="Staff"?'<div class="note warn" style="margin-top:12px">Creates reimbursement accountability; not business cash already spent.</div>':'')+'<button class="btn primary wide">Record expense</button>']
+ }
+ return m[k]||["Prototype action","Integrated shared shell",'<div class="note">This action is connected at structural prototype level.</div>']
+}
+document.addEventListener("click",function(e){
+ var v=e.target.closest("[data-view]");if(v){closeSheet();push(v.dataset.view);return}
+ var b=e.target.closest("[data-business]");if(b){S.business=b.dataset.business;closeDrawer();S.view="hub";S.stack=[];render();return}
+ var payer=e.target.closest("[data-payer]");if(payer){S.expensePayer=payer.dataset.payer;var x=sheetFor("add-expense");openSheet(x[0],x[1],x[2]);return}
+ var sh=e.target.closest("[data-sheet]");if(sh){var x2=sheetFor(sh.dataset.sheet);openSheet(x2[0],x2[1],x2[2]);return}
+ var a=e.target.closest("[data-act]");if(!a)return;
+ if(a.dataset.act==="drawer"){openDrawer();return}
+ if(a.dataset.act==="drawer-close"){closeDrawer();return}
+ if(a.dataset.act==="sheet-close"){closeSheet();return}
+ if(a.dataset.act==="back"){back();return}
+ if(a.dataset.act==="theme"){var r=document.documentElement;r.dataset.theme=r.dataset.theme==="dark"?"light":"dark";return}
+ if(a.dataset.act==="add-business"){closeDrawer();push("add-business");return}
+ if(a.dataset.act==="create-business"){var n=document.getElementById("newName").value.trim()||"New business";var type=document.getElementById("newType").value;var id="biz"+Date.now();businesses.push({id:id,name:n,type:type,mark:n.charAt(0).toUpperCase(),color:"pine"});S.business=id;S.stack=[];S.view="hub";render();return}
+ if(a.dataset.act==="vertical"){openSheet("PG / Hostel workspace","Vertical handoff",'<div class="note">This hands off to the integrated PG / Hostel V1 workspace.</div>');return}
+ if(a.dataset.act==="help"){openSheet("Help & support","Shared account",'<div class="note">Help destination placeholder for the shared shell.</div>');return}
+});
+document.getElementById("scrim").addEventListener("click",function(){closeSheet();closeDrawer()});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"){closeSheet();closeDrawer()}});
+render();
+})();
+</script>
+</body>
+</html>

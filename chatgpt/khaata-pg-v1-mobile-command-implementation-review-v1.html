@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · Mobile Command Implementation Skeleton v1</title>
+<style>
+:root{--canvas:#FDFCF8;--surface:#FFFFFF;--line:#E6E0D7;--ink:#171716;--muted:#6B6B69;--info:#D7E1FE;--info-ink:#2B3A75;--done:#DDF3E6;--done-ink:#1E7A4C;--pending:#FFF0C4;--pending-ink:#6E5200}
+*{box-sizing:border-box}body{margin:0;background:var(--canvas);color:var(--ink);font-family:Manrope,system-ui,sans-serif}main{max-width:860px;margin:auto;padding:20px 16px 44px}h1{font-size:26px;margin:0 0 6px}h2{font-size:19px;margin:22px 0 6px}p{font-size:11.5px;line-height:1.6;color:var(--muted);margin:0}.note{padding:11px 12px;border-radius:14px;background:var(--info);color:var(--info-ink);font-size:11px;line-height:1.5;margin:12px 0}.ok{background:var(--done);color:var(--done-ink)}.warn{background:var(--pending);color:var(--pending-ink)}.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:14px;margin-top:10px;overflow:auto}table{width:100%;border-collapse:collapse;font-size:10.5px}th,td{text-align:left;vertical-align:top;padding:9px 8px;border-bottom:1px solid var(--line);line-height:1.45}th{color:var(--muted)}tr:last-child td{border-bottom:0}code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.flow{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10.5px;line-height:1.65;white-space:pre-wrap;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px}
+</style></head>
+<body><main>
+<h1>Mobile Command Implementation Skeleton v1</h1>
+<p>The service API has now been pushed one layer deeper into concrete transaction-handler patterns.</p>
+
+<div class="note ok"><b>Implemented in the skeleton:</b> record payment, confirm joined, room transfer, explicit security application, and payment promise.</div>
+<div class="note warn"><b>Still intentionally framework-neutral:</b> no React Native/Android/Flutter database library is assumed. The handlers depend only on transaction, query, ID, clock, access, domain-event and outbox interfaces.</div>
+
+<h2>Coverage</h2>
+<div class="card"><table><tr><th>Command</th><th>Status</th><th>Protected invariant</th></tr><tr><td><code>recordPayment</code></td><td>Implemented skeleton</td><td>Payment + allocations + receipt + optional cash custody + event + outbox</td></tr><tr><td><code>confirmJoined</code></td><td>Implemented skeleton</td><td>Explicit Upcoming → Active only</td></tr><tr><td><code>transferRoom</code></td><td>Implemented skeleton</td><td>Ends old occupancy, starts new; rent untouched</td></tr><tr><td><code>applySecurityToDues</code></td><td>Implemented skeleton</td><td>Checks held security and outstanding amount; explicit event only</td></tr><tr><td><code>recordPromise</code></td><td>Implemented skeleton</td><td>No ledger effect</td></tr><tr><td><code>addUpcomingTenant</code></td><td>Contract only</td><td>Next concrete handler</td></tr><tr><td><code>ensureMonthlyObligations</code></td><td>Contract only</td><td>Next concrete handler; deterministic/idempotent</td></tr><tr><td><code>reversePayment</code></td><td>Contract only</td><td>Next concrete handler</td></tr><tr><td><code>addCharge</code></td><td>Contract only</td><td>Next concrete handler</td></tr><tr><td><code>addExpense</code></td><td>Contract only</td><td>Next concrete handler</td></tr><tr><td><code>handoverCash</code></td><td>Contract only</td><td>Next concrete handler</td></tr><tr><td><code>endTenancy</code></td><td>Contract only</td><td>Next concrete handler</td></tr></table></div>
+
+<h2>Transaction pattern</h2>
+<div class="flow">screen / view-model
+  ↓
+domain command handler
+  ↓
+validate business invariant
+  ↓
+permission gate
+  ↓
+BEGIN SQLite transaction
+  ↓
+domain writes
+  ↓
+domain-event history
+  ↓
+sync-outbox rows
+  ↓
+COMMIT
+  ↓
+return success to UI
+
+any failure before COMMIT
+  → rollback everything</div>
+
+<h2>Important examples</h2>
+<div class="card"><p><b>recordPayment:</b> rejects over-allocation before committing, preserves immutable receipt creation, and records staff cash custody inside the same local transaction.</p></div>
+<div class="card"><p><b>transferRoom:</b> ends the previous occupancy and creates the new one but deliberately performs no <code>rent_terms</code> mutation.</p></div>
+<div class="card"><p><b>confirmJoined:</b> only accepts an Upcoming tenancy and activates its planned occupancy explicitly; the date passing alone still does nothing.</p></div>
+<div class="card"><p><b>applySecurityToDues:</b> checks actual held security and outstanding obligation before appending an explicit application event.</p></div>
+<div class="card"><p><b>recordPromise:</b> writes promise history and sync work while deliberately creating no payment/allocation/ledger settlement.</p></div>
+
+<h2>Test matrix</h2>
+<div class="note">A machine-readable JSON matrix accompanies this build so these handlers can be turned directly into unit/integration tests when the actual mobile stack is selected.</div>
+</main></body></html>

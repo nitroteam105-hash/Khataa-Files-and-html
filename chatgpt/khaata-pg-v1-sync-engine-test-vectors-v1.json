@@ -1,0 +1,98 @@
+{
+  "version": "1.0",
+  "status": "proposed implementation contract",
+  "principles": [
+    "SQLite commit is authoritative for immediate local UX.",
+    "Client-generated IDs make retries idempotent.",
+    "History-sensitive events are append-only.",
+    "Blind last-write-wins is forbidden for financial/history-sensitive records.",
+    "Pending outbound events recorded while entitled must drain even after entitlement loss."
+  ],
+  "cases": [
+    {
+      "id": "SYNC-001",
+      "name": "Offline cash payment then reconnect",
+      "local_actions": [
+        "insert payment_event",
+        "insert payment_allocations",
+        "insert receipt_snapshot",
+        "insert cash_custody_event(collection_received)",
+        "enqueue sync_outbox rows"
+      ],
+      "expected": [
+        "tenant shows paid immediately after local commit",
+        "server retry is idempotent",
+        "custody remains Cash with staff until handover",
+        "failed handover never reopens tenant obligation"
+      ]
+    },
+    {
+      "id": "SYNC-002",
+      "name": "Two devices create independent payments for same obligation",
+      "expected": [
+        "both payment events survive",
+        "both allocations survive",
+        "obligation projection recomputes from all events",
+        "no silent overwrite"
+      ]
+    },
+    {
+      "id": "SYNC-003",
+      "name": "Same bed assigned concurrently",
+      "expected": [
+        "both legitimate commitments are preserved long enough to detect conflict",
+        "sync_conflict created",
+        "owner resolves explicitly",
+        "no automatic reassignment"
+      ]
+    },
+    {
+      "id": "SYNC-004",
+      "name": "Entitlement expires before reconnect",
+      "precondition": "events were recorded while entitled or within valid offline grace",
+      "expected": [
+        "outbox enters drain-only mode if needed",
+        "pending events upload successfully",
+        "future gated actions remain blocked until entitlement is restored"
+      ]
+    },
+    {
+      "id": "SYNC-005",
+      "name": "Remote reversal arrives after original payment",
+      "expected": [
+        "original payment remains",
+        "reversal event is appended",
+        "receipt snapshot remains immutable",
+        "projection reflects reversed allocation impact"
+      ]
+    },
+    {
+      "id": "SYNC-006",
+      "name": "Local room transfer while remote device edits rent",
+      "expected": [
+        "occupancy transfer and rent-term change remain separate events",
+        "transfer does not implicitly overwrite rent",
+        "if both are valid, both can coexist by effective date",
+        "semantic conflict only if effective-dated records truly overlap incompatibly"
+      ]
+    },
+    {
+      "id": "SYNC-007",
+      "name": "Duplicate server delivery after checkpoint retry",
+      "expected": [
+        "applied_remote_events suppresses double application",
+        "checkpoint advances only after local transaction commits"
+      ]
+    },
+    {
+      "id": "SYNC-008",
+      "name": "Server rejects stale mutable record version",
+      "expected": [
+        "domain row marked conflict",
+        "sync_conflicts row created",
+        "local history is preserved",
+        "UI can surface explicit resolution"
+      ]
+    }
+  ]
+}

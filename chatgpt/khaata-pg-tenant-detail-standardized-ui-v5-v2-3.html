@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · PG / Hostel · Tenant Detail · standardized with UI components v5 · v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{
+  --canvas:#FDFCF8; --surface:#FFFFFF; --row:#F6F6F5; --line:#E6E0D7;
+  --ink:#171716; --muted:#6B6B69;
+  --alert:#FF6B5B; --alert-solid:#C23E2E; --alert-ink:#B83A2B; --alert-tint:#FFE4DF;
+  --pending:#EBC36B; --pending-ink:#6E5200; --pending-tile:#FFF0C4;
+  --done-ink:#1E7A4C; --done-tint:#DDF3E6;
+  --info:#D7E1FE; --info-ink:#2B3A75; --info-line:#C3D0F7;
+  --act:#2B3A75; --act-text:#FFFFFF;
+  --neutral-tile:#EDEDEC; --neutral-ink:#6B6B69;
+  --r-btn:14px; --r-card:20px; --r-pill:999px;
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:24px; --sp-7:32px;
+  --dur-fast:.18s; --dur-slide:.5s; --ease-slide:cubic-bezier(.33,1,.68,1);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --canvas:#1B1B1A; --surface:#262625; --row:#232322; --line:#38383a;
+    --ink:#FFFFFF; --muted:#9B9B98;
+    --alert:#E8705C; --alert-solid:#E8705C; --alert-ink:#F59384; --alert-tint:#3A2420;
+    --pending:#EBC36B; --pending-ink:#EBC36B; --pending-tile:#3A3122;
+    --done-ink:#74C99A; --done-tint:#244232;
+    --info:#252C42; --info-ink:#DCE4FF; --info-line:#34405E;
+    --act:#C9D4FB; --act-text:#1A2140;
+    --neutral-tile:#2A2A29; --neutral-ink:#9B9B98;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --canvas:#1B1B1A; --surface:#262625; --row:#232322; --line:#38383a;
+  --ink:#FFFFFF; --muted:#9B9B98;
+  --alert:#E8705C; --alert-solid:#E8705C; --alert-ink:#F59384; --alert-tint:#3A2420;
+  --pending:#EBC36B; --pending-ink:#EBC36B; --pending-tile:#3A3122;
+  --done-ink:#74C99A; --done-tint:#244232;
+  --info:#252C42; --info-ink:#DCE4FF; --info-line:#34405E;
+  --act:#C9D4FB; --act-text:#1A2140;
+  --neutral-tile:#2A2A29; --neutral-ink:#9B9B98;
+  color-scheme:dark;
+}
+:root{--biz-pink:#FBB9C2;--biz-pink-ink:#171716}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--canvas);color:var(--ink);font-family:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif}
+button{font:inherit;cursor:pointer}
+button:focus-visible{outline:2px solid var(--act);outline-offset:2px}
+svg.lucide{width:18px;height:18px;stroke-width:2}
+.app{max-width:520px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top)) 16px calc(100px + env(safe-area-inset-bottom))}
+.btn{min-height:44px;border-radius:var(--r-btn);padding:0 14px;border:0;background:var(--act);color:var(--act-text);font-weight:800;display:inline-flex;align-items:center;justify-content:center;gap:7px;white-space:nowrap}
+.btn.secondary{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.btn.compact{min-height:38px;padding:0 12px;font-size:12px;gap:5px}
+.btn.icon-only{width:38px;height:38px;min-height:38px;padding:0;border-radius:50%;background:var(--surface);color:var(--act);border:1px solid var(--line)}
+.btn.icon-only svg{width:17px;height:17px}
+.pill{display:inline-flex;align-items:center;gap:5px;border-radius:var(--r-pill);padding:5px 9px;font-size:11px;font-weight:800;border:0}
+.pill.alert{background:var(--alert-tint);color:var(--alert-ink)}
+.pill.pending{background:var(--pending-tile);color:var(--pending-ink)}
+.pill.info{background:var(--info);color:var(--info-ink)}
+.card{border:1px solid var(--line);border-radius:var(--r-card);background:var(--surface)}
+.ibtn{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);display:grid;place-items:center;padding:0}
+.new{padding:10px 12px;border-radius:var(--r-card);background:var(--info);color:var(--info-ink);font-size:11.5px;line-height:1.45;margin-bottom:12px}
+.new strong{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.back{border:0;background:transparent;color:var(--ink);width:40px;height:40px;border-radius:12px;display:grid;place-items:center}
+.top .grow{flex:1;min-width:0}.top .grow strong{display:block;font-size:14px}.top .grow small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.hero{padding:16px;margin-bottom:12px}
+.identity{display:flex;gap:12px;align-items:center}.avatar{width:48px;height:48px;border-radius:15px;background:var(--biz-pink);color:var(--biz-pink-ink);display:grid;place-items:center;font-weight:800}
+.identity .copy{flex:1;min-width:0}.identity h1{font-size:22px;line-height:1.1;margin:0}.identity p{margin:5px 0 0;color:var(--muted);font-size:12px}
+.lifecycle{margin-top:11px;display:flex;gap:7px;flex-wrap:wrap}
+.outstanding{margin-top:14px;padding-top:14px;border-top:1px solid var(--line);display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:end}
+.outstanding span{display:block;color:var(--muted);font-size:11.5px}.outstanding strong{display:block;font-size:28px;letter-spacing:-.02em;margin-top:2px}.outstanding .sub{color:var(--alert-ink);font-size:11px;font-weight:750;margin-top:3px}
+.actions{display:contents}
+.section{margin-top:18px}.section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.section-head h2{font-size:14px;margin:0}.section-head span{color:var(--muted);font-size:11px}
+.rows{overflow:hidden}
+.row{width:100%;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--ink);min-height:58px;padding:11px 13px;display:flex;align-items:center;gap:11px;text-align:left}
+.row:last-child{border-bottom:0}
+.tile{width:34px;height:34px;border-radius:11px;background:var(--neutral-tile);color:var(--neutral-ink);display:grid;place-items:center;flex:none}.tile.info{background:var(--info);color:var(--info-ink)}.tile.alert{background:var(--alert-tint);color:var(--alert-ink)}.tile.pending{background:var(--pending-tile);color:var(--pending-ink)}
+.row .copy{flex:1;min-width:0}.row .copy strong{display:block;font-size:13px}.row .copy span{display:block;margin-top:2px;color:var(--muted);font-size:11.5px;line-height:1.35}.value{font-size:12px;font-weight:800;text-align:right;align-self:center;color:var(--act)}.chev{color:var(--muted)}
+.month{padding:14px}.month-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.month-copy{min-width:0}.month-copy strong{display:block;font-size:14px;line-height:1.3}.month-copy span{display:block;margin-top:3px;font-size:11px;color:var(--muted)}.month-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.mini{background:var(--row);border-radius:var(--r-btn);padding:10px}.mini span{display:block;color:var(--muted);font-size:10.5px}.mini strong{display:block;margin-top:3px;font-size:13px}
+.nav{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(520px,100%);height:72px;background:var(--surface);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);z-index:40;padding-bottom:env(safe-area-inset-bottom)}
+.nav button{border:0;background:transparent;color:var(--muted);font-size:10px;font-weight:750;display:grid;place-items:center;align-content:center;gap:3px;min-width:0}.nav button.on{color:var(--act)}
+.scrim{position:fixed;inset:0;background:color-mix(in srgb,var(--ink) 30%,transparent);z-index:70;display:none}.scrim.on{display:block}
+.sheet{position:fixed;left:50%;bottom:0;transform:translate(-50%,110%);transition:transform var(--dur-slide) var(--ease-slide);z-index:71;width:min(520px,100%);background:var(--surface);border-radius:24px 24px 0 0;padding:10px 18px calc(26px + env(safe-area-inset-bottom))}.sheet.on{transform:translate(-50%,0)}
+.handle{width:38px;height:4px;border-radius:99px;background:var(--line);margin:0 auto 18px}.sheet h3{margin:0;font-size:20px}.sheet p{margin:4px 0 0;color:var(--muted);font-size:12px}.sheet-body{margin-top:14px}.sheet-row{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-top:1px solid var(--line);font-size:12.5px}.sheet-row span{color:var(--muted)}.sheet-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom));transform:translate(-50%,180%);transition:transform var(--dur-fast);z-index:90;background:var(--ink);color:var(--canvas);border-radius:var(--r-btn);padding:11px 14px;font-size:12px;font-weight:800}.toast.on{transform:translate(-50%,0)}
+@media(max-width:360px){.month-grid,.sheet-actions{grid-template-columns:1fr}.outstanding{grid-template-columns:minmax(0,1fr) auto auto}.btn.compact{padding:0 10px;font-size:11.5px}.outstanding strong{font-size:26px}}
+</style>
+</head>
+<body>
+<main class="app">
+  <div class="new"><strong>New in this file</strong><br>Tenant Detail standardized against Khaata UI components for build · v5. v2.3 keeps Outstanding and its actions on one line: compact Record payment plus an icon-only Share reminder action. Product structure is unchanged.</div>
+
+  <header class="top">
+    <button class="back" type="button" data-act="back" aria-label="Back"><i data-lucide="arrow-left"></i></button>
+    <div class="grow"><strong>Tenant detail</strong><small>Sunrise PG</small></div>
+    <button class="ibtn" type="button" data-act="theme" aria-label="Toggle theme"><i data-lucide="sun-moon"></i></button>
+  </header>
+
+  <section class="card hero">
+    <div class="identity">
+      <div class="avatar">RM</div>
+      <div class="copy"><h1>Rohan Mehta</h1><p>Room 203 · Bed B</p></div>
+    </div>
+    <div class="lifecycle">
+      <span class="pill info">Active since 5 Mar 2026</span>
+    </div>
+    <div class="outstanding">
+      <div><span>Outstanding</span><strong>₹4,500</strong><div class="sub">Overdue</div></div>
+      <div class="actions">
+        <button class="btn compact" type="button" data-act="payment"><i data-lucide="indian-rupee"></i>Record payment</button>
+        <button class="btn icon-only" type="button" data-act="remind" aria-label="Share reminder" title="Share reminder"><i data-lucide="share-2"></i></button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><h2>Current month</h2><span>October 2026</span></div>
+    <div class="card month">
+      <div class="month-top"><div class="month-copy"><strong>October rent</strong><span>Due 5 Oct</span></div><span class="pill alert">₹4,500 overdue</span></div>
+      <div class="month-grid">
+        <div class="mini"><span>Rent</span><strong>₹8,500</strong></div>
+        <div class="mini"><span>Paid</span><strong>₹4,000</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><h2>Tenancy</h2></div>
+    <div class="card rows">
+      <button class="row" type="button" data-act="tenancy"><span class="tile info"><i data-lucide="file-text"></i></span><span class="copy"><strong>Tenancy terms</strong><span>₹8,500 monthly · Due on 5th</span></span><span class="chev"><i data-lucide="chevron-right"></i></span></button>
+      <button class="row" type="button" data-act="phone"><span class="tile"><i data-lucide="phone"></i></span><span class="copy"><strong>Phone</strong><span>98765 43210</span></span><span class="chev"><i data-lucide="chevron-right"></i></span></button>
+      <button class="row" type="button" data-act="requirements"><span class="tile pending"><i data-lucide="clipboard-check"></i></span><span class="copy"><strong>Requirements</strong><span>1 item still incomplete</span></span><span class="value">Review</span></button>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><h2>Recent payments</h2><button class="btn secondary" style="min-height:34px;padding:0 11px;font-size:11px" type="button" data-act="statement">Statement</button></div>
+    <div class="card rows">
+      <button class="row" type="button" data-act="payments"><span class="tile"><i data-lucide="receipt-indian-rupee"></i></span><span class="copy"><strong>₹4,000 · 5 Oct</strong><span>UPI · October rent</span></span><span class="chev"><i data-lucide="chevron-right"></i></span></button>
+      <button class="row" type="button" data-act="payments"><span class="tile"><i data-lucide="receipt-indian-rupee"></i></span><span class="copy"><strong>₹8,500 · 5 Sep</strong><span>Cash · September rent</span></span><span class="chev"><i data-lucide="chevron-right"></i></span></button>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><h2>Tenancy actions</h2></div>
+    <div class="card rows">
+      <button class="row" type="button" data-act="transfer"><span class="tile"><i data-lucide="arrow-right-left"></i></span><span class="copy"><strong>Transfer room</strong><span>Move to another room or bed</span></span><span class="chev"><i data-lucide="chevron-right"></i></span></button>
+      <button class="row" type="button" data-act="moveout"><span class="tile"><i data-lucide="calendar-range"></i></span><span class="copy"><strong>Plan move-out</strong><span>Set or change planned move-out</span></span><span class="chev"><i data-lucide="chevron-right"></i></span></button>
+      <button class="row" type="button" data-act="edit"><span class="tile"><i data-lucide="pencil"></i></span><span class="copy"><strong>Edit agreement</strong><span>Rent, due day and tenancy details</span></span><span class="chev"><i data-lucide="chevron-right"></i></span></button>
+    </div>
+  </section>
+</main>
+
+<nav class="nav">
+  <button type="button" data-act="nav-home"><i data-lucide="house"></i><span>Home</span></button>
+  <button class="on" type="button" data-act="nav-tenants"><i data-lucide="users"></i><span>Tenants</span></button>
+  <button type="button" data-act="nav-collections"><i data-lucide="wallet-cards"></i><span>Collections</span></button>
+  <button type="button" data-act="nav-more"><i data-lucide="menu"></i><span>More</span></button>
+</nav>
+
+<div class="scrim" id="scrim" data-act="close"></div>
+<section class="sheet" id="sheet" role="dialog" aria-modal="true">
+  <div class="handle"></div><h3 id="sheetTitle"></h3><p id="sheetSub"></p><div class="sheet-body" id="sheetBody"></div>
+  <div class="sheet-actions"><button class="btn secondary" type="button" data-act="close">Close</button><button class="btn" type="button" id="sheetPrimary" data-act="sheet-primary">Continue</button></div>
+</section>
+<div class="toast" id="toast"></div>
+
+<script>
+const sheets={
+ payment:{title:"Record payment",sub:"Rohan Mehta · ₹4,500 outstanding",rows:[["Outstanding","₹4,500"],["October rent","₹8,500"]],primary:"Record payment"},
+ remind:{title:"Share reminder",sub:"October rent · ₹4,500 outstanding",rows:[["Tenant","Rohan Mehta"],["Phone","98765 43210"]],primary:"Share reminder"},
+ tenancy:{title:"Tenancy details",sub:"Room 203 · Bed B",rows:[["Active since","5 Mar 2026"],["Monthly rent","₹8,500"],["Due day","5th"]],primary:"Edit agreement"},
+ requirements:{title:"Requirements",sub:"1 item incomplete",rows:[["ID proof","Received"],["Emergency contact","Missing"]],primary:"Review"},
+ statement:{title:"Tenant statement",sub:"Rohan Mehta",rows:[["Outstanding","₹4,500"],["Security held","₹10,000"]],primary:"Open statement"},
+ payments:{title:"Payments",sub:"Recent payments for this tenancy",rows:[["5 Oct","₹4,000 · UPI"],["5 Sep","₹8,500 · Cash"]],primary:"View all"},
+ transfer:{title:"Transfer room",sub:"Current: Room 203 · Bed B",rows:[["Current room","203 · Bed B"],["Effective date","Choose in flow"]],primary:"Start transfer"},
+ moveout:{title:"Plan move-out",sub:"Rohan Mehta",rows:[["Current status","Active"],["Move-out date","Not planned"]],primary:"Plan move-out"},
+ edit:{title:"Edit agreement",sub:"Rohan Mehta",rows:[["Monthly rent","₹8,500"],["Due day","5th"]],primary:"Edit agreement"},
+ phone:{title:"Phone",sub:"Rohan Mehta",rows:[["Phone","98765 43210"]],primary:"Call"}
+};
+let current=null;
+function icons(){if(window.lucide&&lucide.createIcons)lucide.createIcons()}
+function openSheet(k){const d=sheets[k];if(!d)return;current=k;document.getElementById("sheetTitle").textContent=d.title;document.getElementById("sheetSub").textContent=d.sub;document.getElementById("sheetBody").innerHTML=d.rows.map(r=>'<div class="sheet-row"><span>'+r[0]+'</span><strong>'+r[1]+'</strong></div>').join("");document.getElementById("sheetPrimary").textContent=d.primary;document.getElementById("scrim").classList.add("on");document.getElementById("sheet").classList.add("on")}
+function closeSheet(){document.getElementById("scrim").classList.remove("on");document.getElementById("sheet").classList.remove("on")}
+function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("on");clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove("on"),1700)}
+function theme(){const r=document.documentElement,c=r.getAttribute("data-theme");if(c==="dark")r.setAttribute("data-theme","light");else if(c==="light")r.setAttribute("data-theme","dark");else r.setAttribute("data-theme",matchMedia("(prefers-color-scheme:dark)").matches?"light":"dark")}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-act]");if(!b)return;const a=b.dataset.act;
+ if(a==="theme")theme(); else if(a==="back")toast("Back to Tenants"); else if(a==="close")closeSheet();
+ else if(a==="sheet-primary"){const d=sheets[current];closeSheet();toast(d?d.primary:"Continue");}
+ else if(sheets[a])openSheet(a);
+ else if(a.startsWith("nav-"))toast(b.textContent.trim());
+});
+icons();
+</script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · Server Change Feed + Mobile Appliers v1</title>
+<style>
+:root{--canvas:#FDFCF8;--surface:#FFFFFF;--line:#E6E0D7;--ink:#171716;--muted:#6B6B69;--info:#D7E1FE;--info-ink:#2B3A75;--done:#DDF3E6;--done-ink:#1E7A4C;--pending:#FFF0C4;--pending-ink:#6E5200;--alert:#FFE4DF;--alert-ink:#B83A2B}
+*{box-sizing:border-box}body{margin:0;background:var(--canvas);color:var(--ink);font-family:Manrope,system-ui,sans-serif}main{max-width:900px;margin:auto;padding:20px 16px 44px}h1{font-size:26px;margin:0 0 6px}h2{font-size:19px;margin:22px 0 6px}p{font-size:11.5px;line-height:1.6;color:var(--muted);margin:0}.note{padding:11px 12px;border-radius:14px;background:var(--info);color:var(--info-ink);font-size:11px;line-height:1.5;margin:12px 0}.ok{background:var(--done);color:var(--done-ink)}.warn{background:var(--pending);color:var(--pending-ink)}.alert{background:var(--alert);color:var(--alert-ink)}.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:14px;margin-top:10px;overflow:auto}table{width:100%;border-collapse:collapse;font-size:11px}th,td{text-align:left;vertical-align:top;padding:9px 8px;border-bottom:1px solid var(--line);line-height:1.45}th{color:var(--muted)}tr:last-child td{border-bottom:0}code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.flow{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;line-height:1.65;white-space:pre-wrap;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px}
+</style></head><body><main>
+<h1>Server Change Feed + Mobile Appliers v1</h1>
+<p>The pull coordinator now has an actual server stream to read and concrete typed SQLite mappings to apply.</p>
+
+<div class="note ok"><b>End-to-end pull path:</b> typed server domain RPC → sync change feed → after-cursor fetch → semantic merge policy → typed SQLite applier → checkpoint commit.</div>
+<div class="note alert"><b>Transport ≠ business history:</b> the change-feed cursor exists only for synchronization ordering. Khaata's domain events and immutable financial records remain the business/audit truth.</div>
+
+<h2>Architecture</h2>
+<div class="card"><table><tr><th>Layer</th><th>Mechanism</th><th>Guarantee</th></tr><tr><td>Server feed</td><td>Monotonic BIGINT cursor per append</td><td>Simple after-cursor pagination</td></tr><tr><td>Business isolation</td><td>Feed rows carry business_id + access check</td><td>No cross-business pull</td></tr><tr><td>Typed publisher</td><td>Domain RPC emits deliberate payload</td><td>No generic trigger guessing</td></tr><tr><td>Atomicity</td><td>Domain mutation + feed append same server transaction</td><td>No phantom remote change</td></tr><tr><td>Mobile applier</td><td>Explicit entity-to-SQL mapping</td><td>No dynamic payload-to-SQL execution</td></tr><tr><td>Immutable data</td><td>INSERT OR IGNORE</td><td>Financial/history rows stay immutable</td></tr><tr><td>Mutable data</td><td>Typed UPSERT</td><td>Version/semantic policy stays in PullCoordinator</td></tr></table></div>
+
+<h2>Server publication</h2>
+<div class="flow">typed domain RPC
+  ↓
+validate + mutate server domain
+  ↓
+typed publish_*_change(...)
+  ↓
+append sync_change_feed
+  ↓
+same PostgreSQL transaction commits
+
+If any step fails → domain mutation + feed row both roll back</div>
+
+<h2>Mobile pull</h2>
+<div class="flow">last SQLite cursor
+  ↓
+pg_fetch_changes(after_cursor)
+  ↓
+ascending server feed rows
+  ↓
+PullCoordinator:
+  • dedupe remote_event_id
+  • semantic conflict check
+  • version policy
+  ↓
+RemoteChangeAppliers:
+  • immutable INSERT OR IGNORE
+  • mutable typed UPSERT
+  ↓
+record applied_remote_event
+  ↓
+advance checkpoint
+  ↓
+COMMIT</div>
+
+<h2>Why typed publishers and appliers</h2>
+<div class="card"><p>
+The server does not dump arbitrary table rows blindly, and the phone does not dynamically construct SQL from JSON keys.
+Each entity has an explicit transport payload and an explicit SQLite mapping. This keeps schema changes reviewable and prevents synchronization from becoming an unrestricted mutation channel.
+</p></div>
+
+<div class="note warn"><b>Next integration step:</b> wire each existing typed domain RPC to its corresponding <code>publish_*_change</code> calls, including payment allocations and other dependent rows, so every accepted server mutation becomes visible to other devices immediately on their next pull.</div>
+</main></body></html>

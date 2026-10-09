@@ -1,0 +1,70 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata — PG V1 Product Flow Map</title>
+<style>
+:root{--bg:#fdfcf8;--card:#fff;--ink:#191918;--muted:#74736f;--line:#e7e2d9;--act:#29396f;--red:#b64638;--amber:#866a18;--green:#2f7650}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px system-ui,-apple-system,sans-serif}.app{max-width:680px;margin:auto;padding:26px 16px 70px}
+h1{font-size:28px;margin:0 0 6px}.lead{color:var(--muted);font-size:12px;line-height:1.55;margin:0 0 24px}.legend{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:25px}.tag{font-size:10px;font-weight:750;padding:5px 8px;border:1px solid var(--line);border-radius:99px;background:var(--card)}
+.phase{margin:0 0 12px;border:1px solid var(--line);border-radius:18px;background:var(--card);overflow:hidden}.phasehead{width:100%;border:0;background:none;text-align:left;color:var(--ink);padding:15px;display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:center}.num{width:27px;height:27px;border-radius:50%;display:grid;place-items:center;background:var(--act);color:white;font-size:11px;font-weight:800}.phasehead b{font-size:14px}.phasehead small{display:block;color:var(--muted);font-size:10px;margin-top:3px}.arrow{color:var(--muted)}
+.body{display:none;border-top:1px solid var(--line);padding:5px 14px 14px}.phase.open .body{display:block}.flow{padding:11px 0;border-bottom:1px solid var(--line)}.flow:last-child{border:0}.flow b{font-size:12px}.flow p{font-size:11px;color:var(--muted);line-height:1.5;margin:4px 0 0}.route{font-size:10px;color:var(--act);font-weight:700;margin-top:5px}
+.check{margin-top:26px}.check h2{font-size:16px}.item{border:1px solid var(--line);border-radius:14px;background:var(--card);padding:13px;margin:8px 0}.item b{font-size:12px}.item p{margin:4px 0 0;color:var(--muted);font-size:11px;line-height:1.5}.ok{color:var(--green)}.review{color:var(--amber)}.gap{color:var(--red)}
+</style></head><body><main class="app">
+<h1>PG V1 Product Flow</h1>
+<p class="lead">Structural review map. This is not a visual-design specification. Tap a lifecycle phase to inspect the owner journey, major actions and where the existing V1 screens fit.</p>
+<div class="legend"><span class="tag">✓ Covered</span><span class="tag">△ Review</span><span class="tag">＋ Potential gap</span></div>
+
+<div id="phases">
+<section class="phase open"><button class="phasehead"><span class="num">1</span><span><b>Create & set up PG</b><small>Business → capacity</small></span><span class="arrow">⌃</span></button><div class="body">
+<div class="flow"><b>Create PG business</b><p>Establish the business shell and PG/Hostel capability.</p><div class="route">Business creation → PG setup</div></div>
+<div class="flow"><b>Set up capacity</b><p>Rooms only, floors & rooms, or blocks/buildings → floors → rooms → beds. Setup may be skipped and completed progressively.</p><div class="route">Property setup → Rooms & Beds</div></div>
+</div></section>
+
+<section class="phase"><button class="phasehead"><span class="num">2</span><span><b>Bring in a tenant</b><small>Person → tenancy → occupancy</small></span><span class="arrow">⌄</span></button><div class="body">
+<div class="flow"><b>Add tenant</b><p>Basics → Room/Bed → Money → Requirements → Review. Missing required details may save as Setup incomplete.</p><div class="route">Tenants → Add tenant → Tenant detail</div></div>
+<div class="flow"><b>Future joining</b><p>The same tenancy can remain Upcoming until the agreed joining date. No-show does not silently cancel or release the bed.</p></div>
+</div></section>
+
+<section class="phase"><button class="phasehead"><span class="num">3</span><span><b>Run the active tenancy</b><small>Occupancy + agreement + requirements</small></span><span class="arrow">⌄</span></button><div class="body">
+<div class="flow"><b>Tenant record</b><p>Identity, room/bed, agreement terms, security held, current financial state, requirements and recent payments.</p><div class="route">Tenant list → Tenant detail</div></div>
+<div class="flow"><b>Room transfer</b><p>Move the occupant while preserving occupancy history. Rent changes only when explicitly chosen.</p></div>
+<div class="flow"><b>Agreement changes</b><p>Due-day and responsibility changes are prospective/effective-dated rather than rewriting history.</p></div>
+</div></section>
+
+<section class="phase"><button class="phasehead"><span class="num">4</span><span><b>Bill & collect</b><small>Obligation → payment → receipt</small></span><span class="arrow">⌄</span></button><div class="body">
+<div class="flow"><b>Monthly rent obligation</b><p>Active rent agreement deterministically creates the monthly obligation. Current and older dues remain distinguishable.</p><div class="route">Collections → Due / Needs attention</div></div>
+<div class="flow"><b>Record payment</b><p>Actual money received is recorded and applied to obligations. Partial payments remain part-paid rather than creating a replacement balance.</p><div class="route">Collections / Tenant → Record payment → Receipt</div></div>
+<div class="flow"><b>Exceptions</b><p>Overdue, missed promise, dispute, reversal, refund, waiver or correction become explicit financial events/states.</p></div>
+<div class="flow"><b>Statement</b><p>Ledger projection for the tenancy; security remains separate.</p><div class="route">Tenant detail → Statement</div></div>
+</div></section>
+
+<section class="phase"><button class="phasehead"><span class="num">5</span><span><b>Other money</b><small>Charges + expenses + custody</small></span><span class="arrow">⌄</span></button><div class="body">
+<div class="flow"><b>Add charge</b><p>Electricity or other tenant charges stay distinct from rent and from payments.</p></div>
+<div class="flow"><b>Add expense</b><p>Business-paid expense or staff-pocket reimbursement; optional property context.</p></div>
+<div class="flow"><b>Cash custody</b><p>Cash collected by staff settles the tenant payment immediately but creates physical custody with that staff member.</p><div class="route">More → Cash custody → Handover</div></div>
+<div class="flow"><b>Cash handover</b><p>Expected versus actual cash is confirmed; discrepancies require explicit resolution.</p></div>
+</div></section>
+
+<section class="phase"><button class="phasehead"><span class="num">6</span><span><b>Plan departure</b><small>Future vacancy without ending history</small></span><span class="arrow">⌄</span></button><div class="body">
+<div class="flow"><b>Plan move-out</b><p>Record intended move-out and notice. This creates planned vacancy but does not yet end the tenancy.</p><div class="route">Tenant detail → Plan move-out</div></div>
+<div class="flow"><b>Change / cancel plan</b><p>Extension, changed date or cancellation updates the future plan without corrupting occupancy history.</p></div>
+</div></section>
+
+<section class="phase"><button class="phasehead"><span class="num">7</span><span><b>Settle & end tenancy</b><small>Vacate → settle → refund → former</small></span><span class="arrow">⌄</span></button><div class="body">
+<div class="flow"><b>Exit settlement</b><p>Final dues, explicit security application, refund due and bed release are handled separately.</p><div class="route">Moving out → Exit settlement</div></div>
+<div class="flow"><b>End tenancy</b><p>Moves the lifecycle to Former. Outstanding receivables can survive the move-out; they are not deleted.</p></div>
+<div class="flow"><b>Pending refund / old dues</b><p>Financial follow-up remains actionable after physical departure until resolved or explicitly written off.</p></div>
+</div></section>
+
+<section class="phase"><button class="phasehead"><span class="num">8</span><span><b>Operate the business</b><small>People + policy + configuration</small></span><span class="arrow">⌄</span></button><div class="body">
+<div class="flow"><b>Staff & permissions</b><p>Owner, manager, caretaker/front desk and accounts with allowed / approval / not allowed decisions.</p></div>
+<div class="flow"><b>More / Settings</b><p>Property, billing, requirements, cash custody, expenses, optional electricity/food, business settings and backup/sync.</p></div>
+</div></section>
+</div>
+
+<section class="check"><h2>Structural check</h2>
+<div class="item"><b class="ok">✓ Core lifecycle is covered</b><p>Setup → tenant → occupancy → billing → payment → departure → former tenant has a coherent path.</p></div>
+<div class="item"><b class="review">△ Needs dedicated V1 treatment</b><p>Room transfer, payment correction/reversal, security refund pending, dispute/write-off, and approval request are defined in the model but do not yet have dedicated structural screens.</p></div>
+<div class="item"><b class="gap">＋ Likely missing review surface</b><p>A former-tenant financial follow-up view may be useful so old dues or pending refunds remain discoverable after the tenant leaves.</p></div>
+</section>
+</main>
+<script>(function(){document.addEventListener("click",function(e){var h=e.target.closest(".phasehead");if(!h)return;var p=h.parentNode;p.classList.toggle("open");h.querySelector(".arrow").textContent=p.classList.contains("open")?"⌃":"⌄";});})();</script>
+</body></html>

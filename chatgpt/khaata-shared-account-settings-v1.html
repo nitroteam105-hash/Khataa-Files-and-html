@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · Shared account & settings · v1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{
+--canvas:#FDFCF8;--surface:#FFFFFF;--row:#F6F6F5;--line:#E6E0D7;--ink:#171716;--muted:#6B6B69;
+--alert:#FF6B5B;--alert-solid:#C23E2E;--alert-ink:#B83A2B;--alert-tint:#FFE4DF;
+--pending:#EBC36B;--pending-ink:#6E5200;--pending-tile:#FFF0C4;
+--done-ink:#1E7A4C;--done-tint:#DDF3E6;--info:#D7E1FE;--info-ink:#2B3A75;--info-line:#C3D0F7;
+--act:#2B3A75;--act-text:#FFFFFF;--neutral-tile:#EDEDEC;--neutral-ink:#6B6B69;
+--r-card:20px;--r-btn:14px;--r-pill:999px;color-scheme:light
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+--canvas:#1B1B1A;--surface:#262625;--row:#232322;--line:#38383A;--ink:#FFFFFF;--muted:#9B9B98;
+--alert:#E8705C;--alert-solid:#E8705C;--alert-ink:#F59384;--alert-tint:#3A2420;
+--pending:#EBC36B;--pending-ink:#EBC36B;--pending-tile:#3A3122;--done-ink:#74C99A;--done-tint:#244232;
+--info:#252C42;--info-ink:#DCE4FF;--info-line:#34405E;--act:#C9D4FB;--act-text:#1A2140;--neutral-tile:#2A2A29;--neutral-ink:#9B9B98;color-scheme:dark}}
+:root[data-theme="dark"]{
+--canvas:#1B1B1A;--surface:#262625;--row:#232322;--line:#38383A;--ink:#FFFFFF;--muted:#9B9B98;
+--alert:#E8705C;--alert-solid:#E8705C;--alert-ink:#F59384;--alert-tint:#3A2420;
+--pending:#EBC36B;--pending-ink:#EBC36B;--pending-tile:#3A3122;--done-ink:#74C99A;--done-tint:#244232;
+--info:#252C42;--info-ink:#DCE4FF;--info-line:#34405E;--act:#C9D4FB;--act-text:#1A2140;--neutral-tile:#2A2A29;--neutral-ink:#9B9B98;color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--canvas);color:var(--ink);font-family:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif}
+button,input,select{font:inherit;color:inherit}button{cursor:pointer}:focus-visible{outline:2px solid var(--act);outline-offset:2px}[hidden]{display:none!important}
+svg.lucide{width:18px;height:18px;flex:none}
+.app{max-width:520px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top)) 16px calc(34px + env(safe-area-inset-bottom))}
+.top{position:sticky;top:0;z-index:5;background:var(--canvas);display:flex;align-items:center;gap:10px;padding:2px 0 10px}
+.ibtn{width:44px;height:44px;border:1px solid var(--line);background:var(--surface);border-radius:12px;display:grid;place-items:center;padding:0}
+.title{flex:1}.title strong{display:block;font-size:16px}.title small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+h1{font-size:26px;line-height:1.08;margin:12px 0 5px}.lead{font-size:12px;color:var(--muted);line-height:1.5;margin:0 0 16px}
+.grp{font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:22px 4px 8px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:14px}
+.row{width:100%;min-height:58px;border:0;border-bottom:1px solid var(--line);background:transparent;display:flex;align-items:center;gap:12px;text-align:left;padding:11px 0}.row:last-child{border-bottom:0}
+.tile{width:40px;height:40px;border-radius:13px;background:var(--neutral-tile);display:grid;place-items:center;flex:none;color:var(--neutral-ink)}
+.grow{flex:1;min-width:0}.row strong{display:block;font-size:12px}.row small{display:block;color:var(--muted);font-size:11px;line-height:1.4;margin-top:3px}
+.value{font-size:11px;font-weight:800;color:var(--muted);white-space:nowrap}.tag{display:inline-flex;align-items:center;border-radius:999px;padding:3px 8px;font-size:10px;font-weight:800;background:var(--neutral-tile);color:var(--neutral-ink)}.tag.ok{background:var(--done-tint);color:var(--done-ink)}
+.switch{width:46px;height:27px;border-radius:var(--r-pill);background:var(--line);position:relative;flex:none}.switch .knob{position:absolute;left:3px;top:3px;width:21px;height:21px;border-radius:50%;background:var(--surface);transition:.18s}.switch[aria-checked="true"]{background:var(--act)}.switch[aria-checked="true"] .knob{transform:translateX(19px)}
+.note{padding:11px 12px;border-radius:14px;background:var(--info);color:var(--info-ink);font-size:11px;line-height:1.45;margin-bottom:14px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}.chip{min-height:40px;border:1.5px solid var(--ink);background:var(--canvas);border-radius:999px;padding:7px 13px;font-size:11.5px;font-weight:600}.chip[aria-pressed="true"]{background:var(--info);color:var(--info-ink);border-color:var(--info-ink);box-shadow:inset 0 0 0 1px var(--info-ink);font-weight:800}
+.range{display:flex;align-items:center;gap:10px}.range button{width:44px;height:44px;border:1px solid var(--line);background:var(--surface);border-radius:12px;font-weight:800}.range span{min-width:52px;text-align:center;font-size:12px;font-weight:800}
+.plan{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.plan button{min-height:92px;border:1px solid var(--line);background:var(--surface);border-radius:16px;padding:10px;text-align:left}.plan button.on{border-color:var(--done-ink);background:var(--done-tint)}.plan strong{display:block;font-size:12px}.plan small{display:block;font-size:10px;color:var(--muted);margin-top:3px}.rec{display:inline-flex;margin-top:7px;border-radius:999px;background:var(--done-ink);color:var(--surface);font-size:9px;font-weight:800;padding:3px 6px}
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.34);z-index:40;opacity:0;pointer-events:none}.scrim.on{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:50%;bottom:0;transform:translate(-50%,105%);width:min(520px,100%);max-height:88vh;overflow:auto;background:var(--surface);border-radius:24px 24px 0 0;padding:10px 16px calc(18px + env(safe-area-inset-bottom));z-index:50;transition:.22s}.sheet.on{transform:translate(-50%,0)}
+.handle{width:38px;height:4px;border-radius:99px;background:var(--line);margin:0 auto 12px}.shead{display:flex;align-items:flex-start;gap:10px}.shead .grow{flex:1}.shead h2{font-size:18px;margin:0}.shead p{font-size:11px;color:var(--muted);margin:3px 0 0}.close{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center}
+.btn{min-height:44px;border:1px solid var(--line);background:var(--surface);border-radius:var(--r-btn);padding:0 14px;font-size:11px;font-weight:800}.btn.primary{background:var(--act);color:var(--act-text);border-color:var(--act)}.btn.wide{width:100%;margin-top:10px}
+</style>
+</head>
+<body>
+<main class="app">
+<header class="top">
+<button class="ibtn" data-act="back" aria-label="Back"><i data-lucide="arrow-left"></i></button>
+<div class="title"><strong>Settings</strong><small>Khaata account & app</small></div>
+<button class="ibtn" data-act="theme" aria-label="Toggle theme"><i data-lucide="sun-moon"></i></button>
+</header>
+
+<div class="note"><b>Shared settings v1</b><br>Settings are grouped by where data lives: local device settings, synced Pro settings, and general app preferences.</div>
+
+<h1>Settings</h1>
+<p class="lead">Account-level and app-level preferences shared across every business.</p>
+
+<div class="grp">On this device</div>
+<section class="card">
+<button class="row" data-open="backup"><span class="tile"><i data-lucide="download"></i></span><span class="grow"><strong>Backup & restore</strong><small>Local backup, restore and export</small></span><i data-lucide="chevron-right"></i></button>
+<button class="row" data-open="lock"><span class="tile"><i data-lucide="lock"></i></span><span class="grow"><strong>App lock</strong><small>Protect Khaata on this device</small></span><span class="value">Off</span><i data-lucide="chevron-right"></i></button>
+</section>
+
+<div class="grp">Synced · Pro</div>
+<section class="card">
+<button class="row" data-open="sync"><span class="tile"><i data-lucide="cloud"></i></span><span class="grow"><strong>Cloud sync</strong><small>Sync supported data when online</small></span><span class="tag ok">On</span><i data-lucide="chevron-right"></i></button>
+<button class="row" data-open="devices"><span class="tile"><i data-lucide="smartphone"></i></span><span class="grow"><strong>Devices</strong><small>See devices linked to this account</small></span><span class="value">2 linked</span><i data-lucide="chevron-right"></i></button>
+</section>
+
+<div class="grp">General</div>
+<section class="card">
+<button class="row" data-open="appearance"><span class="tile"><i data-lucide="palette"></i></span><span class="grow"><strong>Appearance</strong><small>Theme and text size</small></span><i data-lucide="chevron-right"></i></button>
+<button class="row" data-open="language"><span class="tile"><i data-lucide="globe"></i></span><span class="grow"><strong>Language</strong><small>App language</small></span><span class="value">English</span><i data-lucide="chevron-right"></i></button>
+<button class="row" data-open="reminders"><span class="tile"><i data-lucide="bell"></i></span><span class="grow"><strong>Reminders</strong><small>Shared reminder preferences</small></span><i data-lucide="chevron-right"></i></button>
+</section>
+
+<div class="grp">Account</div>
+<section class="card">
+<button class="row" data-open="plan"><span class="tile"><i data-lucide="sparkles"></i></span><span class="grow"><strong>Plan</strong><small>Free, Pro or Premium</small></span><span class="value">Premium</span><i data-lucide="chevron-right"></i></button>
+<button class="row" data-open="profile"><span class="tile"><i data-lucide="circle-user-round"></i></span><span class="grow"><strong>Account profile</strong><small>Name, email and sign-in</small></span><i data-lucide="chevron-right"></i></button>
+</section>
+</main>
+
+<div class="scrim" id="scrim"></div>
+<section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+<div class="handle"></div>
+<div class="shead"><div class="grow"><h2 id="sheetTitle"></h2><p id="sheetSub"></p></div><button class="close" data-act="close" aria-label="Close"><i data-lucide="x"></i></button></div>
+<div id="sheetBody"></div>
+</section>
+
+<script>
+(function(){
+"use strict";
+var textSize=100,appLock=false,syncOn=true;
+function icons(){if(window.lucide&&lucide.createIcons)lucide.createIcons()}
+function openSheet(t,s,b){sheetTitle.textContent=t;sheetSub.textContent=s||"";sheetBody.innerHTML=b;scrim.classList.add("on");sheet.classList.add("on");icons()}
+function closeSheet(){scrim.classList.remove("on");sheet.classList.remove("on")}
+function setTheme(v){document.documentElement.dataset.theme=v==="system"?"":v}
+function content(k){
+ if(k==="backup")return ["Backup & restore","On this device",'<div class="note">Create or restore a local backup without changing business records.</div><button class="btn wide">Back up now</button><button class="btn wide">Restore backup</button><button class="btn wide">Export data</button>'];
+ if(k==="lock")return ["App lock","On this device",'<div class="row"><span class="grow"><strong>Require app lock</strong><small>Protect Khaata when opening this device.</small></span><button class="switch" role="switch" aria-checked="'+appLock+'" data-switch="lock"><span class="knob"></span></button></div><div class="note">This is a device setting. It does not change staff permissions.</div>'];
+ if(k==="sync")return ["Cloud sync","Synced · Pro",'<div class="row"><span class="grow"><strong>Khaata Sync</strong><small>Keep local data and sync supported changes when online.</small></span><button class="switch" role="switch" aria-checked="'+syncOn+'" data-switch="sync"><span class="knob"></span></button></div><div class="note">Core work remains local-first. Sync and permission rules are separate.</div>'];
+ if(k==="devices")return ["Devices","2 linked",'<section class="card"><div class="row"><span class="tile"><i data-lucide="tablet"></i></span><span class="grow"><strong>iPad</strong><small>This device · active now</small></span><span class="tag ok">Current</span></div><div class="row"><span class="tile"><i data-lucide="smartphone"></i></span><span class="grow"><strong>Phone</strong><small>Last synced today</small></span></div></section>'];
+ if(k==="appearance")return ["Appearance","Theme and text size",'<div class="grp">Theme</div><div class="chips"><button class="chip" data-theme-choice="system" aria-pressed="true">✓ System</button><button class="chip" data-theme-choice="light" aria-pressed="false">Light</button><button class="chip" data-theme-choice="dark" aria-pressed="false">Dark</button></div><div class="grp">Text size</div><div class="range"><button data-size="-">A−</button><span id="sizeLabel">'+textSize+'%</span><button data-size="+">A+</button></div>'];
+ if(k==="language")return ["Language","General",'<div class="chips"><button class="chip" aria-pressed="true">✓ English</button><button class="chip" aria-pressed="false">हिन्दी</button><button class="chip" aria-pressed="false">ಕನ್ನಡ</button></div><div class="note">This prototype shows the selection pattern; translation content is not defined here.</div>'];
+ if(k==="reminders")return ["Reminders","General",'<div class="row"><span class="grow"><strong>Operational reminders</strong><small>Use product-derived reminders where the active vertical supports them.</small></span><button class="switch" role="switch" aria-checked="true"><span class="knob"></span></button></div>'];
+ if(k==="plan")return ["Plan","Account",'<div class="plan"><button><strong>Free</strong><small>Core local use</small></button><button><strong>Pro</strong><small>Cloud sync</small></button><button class="on"><strong>Premium</strong><small>Advanced access</small><span class="rec">Recommended</span></button></div><div class="note">Exact commercial pricing and included features are not defined by the source patterns used for this build.</div>'];
+ return ["Account profile","Account",'<section class="card"><div class="row"><span class="grow"><strong>Owner account</strong><small>Profile and sign-in details</small></span></div></section>'];
+}
+document.addEventListener("click",function(e){
+ var o=e.target.closest("[data-open]");if(o){var c=content(o.dataset.open);openSheet(c[0],c[1],c[2]);return}
+ var sw=e.target.closest("[data-switch]");if(sw){if(sw.dataset.switch==="lock")appLock=!appLock;if(sw.dataset.switch==="sync")syncOn=!syncOn;var c2=content(sw.dataset.switch==="lock"?"lock":"sync");sheetBody.innerHTML=c2[2];icons();return}
+ var th=e.target.closest("[data-theme-choice]");if(th){document.querySelectorAll("[data-theme-choice]").forEach(function(b){b.setAttribute("aria-pressed","false");b.textContent=b.textContent.replace(/^✓\\s*/,"")});th.setAttribute("aria-pressed","true");th.textContent="✓ "+th.textContent;setTheme(th.dataset.themeChoice);return}
+ var sz=e.target.closest("[data-size]");if(sz){textSize=Math.max(90,Math.min(130,textSize+(sz.dataset.size==="+"?10:-10)));document.documentElement.style.fontSize=textSize+"%";if(window.sizeLabel)sizeLabel.textContent=textSize+"%";return}
+ var a=e.target.closest("[data-act]");if(!a)return;
+ if(a.dataset.act==="close"){closeSheet();return}
+ if(a.dataset.act==="back"){alert("Back to shared Khaata hub");return}
+ if(a.dataset.act==="theme"){var r=document.documentElement;r.dataset.theme=r.dataset.theme==="dark"?"light":"dark";return}
+});
+scrim.addEventListener("click",closeSheet);
+document.addEventListener("keydown",function(e){if(e.key==="Escape")closeSheet()});
+icons();
+})();
+</script>
+</body>
+</html>

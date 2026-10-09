@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · Approval Orchestration v1</title>
+<style>
+:root{--canvas:#FDFCF8;--surface:#FFFFFF;--line:#E6E0D7;--ink:#171716;--muted:#6B6B69;--info:#D7E1FE;--info-ink:#2B3A75;--done:#DDF3E6;--done-ink:#1E7A4C;--pending:#FFF0C4;--pending-ink:#6E5200;--alert:#FFE4DF;--alert-ink:#B83A2B}
+*{box-sizing:border-box}body{margin:0;background:var(--canvas);color:var(--ink);font-family:Manrope,system-ui,sans-serif}main{max-width:900px;margin:auto;padding:20px 16px 44px}h1{font-size:26px;margin:0 0 6px}h2{font-size:19px;margin:22px 0 6px}p{font-size:11.5px;line-height:1.6;color:var(--muted);margin:0}.note{padding:11px 12px;border-radius:14px;background:var(--info);color:var(--info-ink);font-size:11px;line-height:1.5;margin:12px 0}.ok{background:var(--done);color:var(--done-ink)}.warn{background:var(--pending);color:var(--pending-ink)}.alert{background:var(--alert);color:var(--alert-ink)}.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:14px;margin-top:10px;overflow:auto}table{width:100%;border-collapse:collapse;font-size:11px}th,td{text-align:left;vertical-align:top;padding:9px 8px;border-bottom:1px solid var(--line);line-height:1.45}th{color:var(--muted)}tr:last-child td{border-bottom:0}code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.flow{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;line-height:1.65;white-space:pre-wrap;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px}
+</style></head><body><main>
+<h1>Approval Orchestration v1</h1>
+<p>This corrects the remaining local approval-transaction and approver-authority defects.</p>
+
+<div class="note ok"><b>New in this file:</b> approval-required commands now return a committed result instead of throwing after request creation; retries reuse the same pending request; approval authority is explicit; owner audit attribution uses user identity even when no staff membership exists.</div>
+<div class="note alert"><b>Core invariant:</b> requesting approval does not execute the action. Approving does not execute the action. Only the retried protected command performs the business mutation.</div>
+
+<h2>Corrected behavior</h2>
+<div class="card"><table><tr><th>Stage</th><th>Implementation</th><th>Guarantee</th></tr><tr><td>Needs approval</td><td>Return committed approval_required result</td><td>Request survives transaction</td></tr><tr><td>Retry same intent</td><td>Reuse request_key</td><td>No duplicate pending approvals</td></tr><tr><td>Approve</td><td>Create one-use authorization only</td><td>Business action still not executed</td></tr><tr><td>Approver authority</td><td>Owner or explicit approve_requests</td><td>Not every active staff member</td></tr><tr><td>Owner audit</td><td>decided_by_user_id + nullable membership</td><td>No false requester attribution</td></tr><tr><td>Execute approved command</td><td>Mutation + consume auth same transaction</td><td>Rollback keeps auth unused</td></tr></table></div>
+
+<h2>Transaction fix</h2>
+<div class="flow">protected command
+  ↓
+BEGIN SQLite transaction
+  ↓
+AccessGate.evaluate(...)
+  ↓
+permission = Needs approval
+  ↓
+create OR reuse approval_request
+  ↓
+return {
+  status: "approval_required",
+  approvalRequestId
+}
+  ↓
+COMMIT
+
+No exception.
+No rollback.
+No business mutation.</div>
+
+<h2>Approval path</h2>
+<div class="flow">approver opens pending request
+  ↓
+owner?
+  ├─ yes → allowed
+  └─ no → active membership
+            + approve_requests = Allowed
+  ↓
+mark request Approved
+  ↓
+create one-use approval_authorization
+  ↓
+append approval decision history
+  ↓
+COMMIT
+
+Still no underlying domain mutation.</div>
+
+<h2>Execution path</h2>
+<div class="flow">requesting staff retries command
+  + approvalAuthorizationId
+  ↓
+validate actor + action + target + expiry + unused
+  ↓
+perform business mutation
+  ↓
+append domain event
+  ↓
+consume authorization
+  ↓
+COMMIT
+
+If business mutation fails:
+  whole transaction rolls back
+  authorization remains unused</div>
+
+<div class="note warn">The new <code>approve_requests</code> permission is inserted as <code>not_allowed</code> by default for existing roles. Role-template defaults should be deliberately configured rather than silently granting approval authority to every active staff member.</div>
+</main></body></html>

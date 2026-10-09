@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · Supabase RLS + Sync Server v1</title>
+<style>
+:root{--canvas:#FDFCF8;--surface:#FFFFFF;--line:#E6E0D7;--ink:#171716;--muted:#6B6B69;--info:#D7E1FE;--info-ink:#2B3A75;--done:#DDF3E6;--done-ink:#1E7A4C;--pending:#FFF0C4;--pending-ink:#6E5200;--alert:#FFE4DF;--alert-ink:#B83A2B}
+*{box-sizing:border-box}body{margin:0;background:var(--canvas);color:var(--ink);font-family:Manrope,system-ui,sans-serif}main{max-width:900px;margin:auto;padding:20px 16px 44px}h1{font-size:26px;margin:0 0 6px}h2{font-size:19px;margin:22px 0 6px}p{font-size:11.5px;line-height:1.6;color:var(--muted);margin:0}.note{padding:11px 12px;border-radius:14px;background:var(--info);color:var(--info-ink);font-size:11px;line-height:1.5;margin:12px 0}.ok{background:var(--done);color:var(--done-ink)}.warn{background:var(--pending);color:var(--pending-ink)}.alert{background:var(--alert);color:var(--alert-ink)}.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:14px;margin-top:10px;overflow:auto}table{width:100%;border-collapse:collapse;font-size:11px}th,td{text-align:left;vertical-align:top;padding:9px 8px;border-bottom:1px solid var(--line);line-height:1.45}th{color:var(--muted)}tr:last-child td{border-bottom:0}code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.flow{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;line-height:1.65;white-space:pre-wrap;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px}
+</style></head><body><main>
+<h1>Supabase RLS + Sync Server Contract v1</h1>
+<p>The local access, visibility and sync rules now have a proposed server-side enforcement layer.</p>
+
+<div class="note ok"><b>Server rule:</b> Supabase does not trust the mobile AccessGate by itself. Business scope, membership, visibility, action permission, entitlement and sync idempotency are rechecked server-side.</div>
+<div class="note alert"><b>Not applied:</b> this is a review migration. It intentionally stops before implementing generic payload-to-table mutation; production sync operations must dispatch to typed domain RPCs.</div>
+
+<h2>Coverage</h2>
+<div class="card"><table><tr><th>Concern</th><th>Mechanism</th><th>Guarantee</th></tr><tr><td>Business scope</td><td>RLS + owner/active-membership helpers</td><td>Prevents cross-business row access</td></tr><tr><td>Visibility</td><td>Safe RPC + restrictive table policies</td><td>Field redaction remains separate from action authority</td></tr><tr><td>Action permission</td><td>Server helper checks Allowed / Needs approval / Not allowed</td><td>Client AccessGate is not trusted as sole enforcement</td></tr><tr><td>Cloud sync</td><td>Checks `cloud_sync` entitlement key</td><td>No tier-name logic</td></tr><tr><td>Idempotency</td><td>`sync_operations.operation_id`</td><td>Safe retry after uncertain ACK</td></tr><tr><td>Conflict detection</td><td>Base-version check + conflict table</td><td>No blind last-write-wins</td></tr><tr><td>Financial/history writes</td><td>Typed domain RPC required</td><td>No generic arbitrary table mutation</td></tr><tr><td>Approval</td><td>Generic sync cannot bypass Needs approval</td><td>Approved action still executes separately</td></tr></table></div>
+
+<h2>Server request path</h2>
+<div class="flow">SQLite outbox
+  ↓
+authenticated Supabase request
+  ↓
+business access check
+  ↓
+cloud_sync entitlement key
+  ↓
+action permission
+  ↓
+operation_id already seen?
+  ├─ yes → return prior result
+  └─ no
+       ↓
+       base version conflict?
+       ├─ yes → preserve client payload + create conflict
+       └─ no → typed domain RPC dispatch
+                 ↓
+                 validate invariant again
+                 ↓
+                 append/write server domain state
+                 ↓
+                 record idempotent ACK</div>
+
+<h2>Why RLS alone is not enough</h2>
+<div class="card"><p>
+RLS is naturally row-oriented. Khaata also needs field-level visibility such as “tenant record visible but balance hidden”.
+The proposal therefore uses RLS for business/row scope and safe security-definer read RPCs for controlled field redaction.
+The mobile query guard remains useful for offline UX, while the server independently enforces the same boundary.
+</p></div>
+
+<h2>Entitlements</h2>
+<div class="card"><p>
+The migration uses <code>has_entitlement('cloud_sync')</code>. It contains no Free/Pro/Premium condition.
+The effective entitlement snapshot is assumed to be computed from server configuration, so packaging can change without changing feature code.
+</p></div>
+
+<h2>Important remaining server work</h2>
+<div class="note warn">
+The generic sync envelope deliberately does not execute arbitrary SQL. The next server build should implement typed RPCs for the highest-risk operations first:
+<b>record payment, payment reversal, room transfer, security application/refund, cash handover, and end tenancy</b>.
+A dedicated drain authorization mechanism is also still needed so legitimate pre-expiry outbound events can finish syncing after entitlement loss.
+</div>
+</main></body></html>

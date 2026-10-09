@@ -1,0 +1,102 @@
+{
+  "version": "1.0",
+  "status": "proposed drain-only entitlement tests",
+  "cases": [
+    {
+      "id": "DRN-001",
+      "case": "Valid lease, cloud_sync currently active",
+      "expect": [
+        "operation accepted as normal",
+        "outbox drains"
+      ]
+    },
+    {
+      "id": "DRN-002",
+      "case": "Lease included cloud_sync, current cloud_sync lost, operation created within grace",
+      "expect": [
+        "accepted_drain",
+        "typed domain RPC may execute",
+        "no future cloud-sync capability restored"
+      ]
+    },
+    {
+      "id": "DRN-003",
+      "case": "Device wall clock moved backward",
+      "expect": [
+        "offline grace unaffected",
+        "server-relative time uses monotonic elapsed"
+      ]
+    },
+    {
+      "id": "DRN-004",
+      "case": "Monotonic continuity lost after reboot",
+      "expect": [
+        "new paid-only offline writes stop until re-verification",
+        "already-stamped outbox rows remain eligible for later drain"
+      ]
+    },
+    {
+      "id": "DRN-005",
+      "case": "Operation stamped after lease grace expiry",
+      "expect": [
+        "client refuses creation",
+        "server rejects if submitted"
+      ]
+    },
+    {
+      "id": "DRN-006",
+      "case": "Lease never included required entitlement",
+      "expect": [
+        "server rejects LEASE_DID_NOT_INCLUDE_ENTITLEMENT"
+      ]
+    },
+    {
+      "id": "DRN-007",
+      "case": "Bare client recordedWhileEntitled boolean",
+      "expect": [
+        "ignored/not sufficient",
+        "lease provenance required"
+      ]
+    },
+    {
+      "id": "DRN-008",
+      "case": "Duplicate drain operation",
+      "expect": [
+        "idempotent result returned",
+        "no duplicate domain write"
+      ]
+    },
+    {
+      "id": "DRN-009",
+      "case": "Outbox sequence gap",
+      "expect": [
+        "do not silently fabricate missing operations",
+        "hash/sequence anomaly surfaced"
+      ]
+    },
+    {
+      "id": "DRN-010",
+      "case": "Device revoked",
+      "expect": [
+        "new server drain rejected",
+        "local history remains preserved"
+      ]
+    },
+    {
+      "id": "DRN-011",
+      "case": "Queue becomes empty in drain-only mode",
+      "expect": [
+        "drain-only mode exits",
+        "future gated sync remains unavailable until entitlement restored"
+      ]
+    },
+    {
+      "id": "DRN-012",
+      "case": "Rooted/fully compromised phone threat model",
+      "expect": [
+        "system does not claim forensic timestamp certainty",
+        "server still validates domain invariants and audit history"
+      ]
+    }
+  ]
+}

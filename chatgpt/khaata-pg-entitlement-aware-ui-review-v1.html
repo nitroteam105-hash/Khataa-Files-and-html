@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata PG — Entitlement-aware UI review</title>
+<style>
+:root{
+  --canvas:#FDFCF8;--surface:#FFFFFF;--line:#E8E6DF;--ink:#171717;--muted:#6B6A66;
+  --navy:#172554;--info:#1D4ED8;--warn:#92400E;--soft:#F4F2EC;--ok:#166534;
+  --r:16px;--sp:16px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--canvas);color:var(--ink);font-family:Manrope,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.app{max-width:520px;margin:0 auto;min-height:100vh;padding:18px 16px 96px}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+h1{font-size:24px;line-height:1.15;margin:0}
+h2{font-size:18px;margin:0 0 8px}
+p{margin:0;color:var(--muted);line-height:1.45}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin:12px 0}
+.row{display:flex;gap:12px;align-items:flex-start;justify-content:space-between}
+.row+.row{border-top:1px solid var(--line);padding-top:14px;margin-top:14px}
+.title{font-weight:700}
+.meta{font-size:13px;color:var(--muted);margin-top:3px;line-height:1.4}
+.badge{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;padding:5px 8px;font-size:12px;white-space:nowrap;background:var(--soft)}
+.badge.info{color:var(--info);border-color:#BFDBFE;background:#EFF6FF}
+.badge.warn{color:var(--warn);border-color:#FDE68A;background:#FFFBEB}
+.badge.ok{color:var(--ok);border-color:#BBF7D0;background:#F0FDF4}
+.btn{appearance:none;border:0;border-radius:12px;padding:12px 14px;font-weight:700;background:var(--navy);color:#fff;width:100%;margin-top:12px}
+.btn.secondary{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.tabs{display:flex;gap:8px;overflow:auto;padding-bottom:2px;margin-bottom:10px}
+.tab{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:9px 12px;white-space:nowrap}
+.tab.active{background:var(--navy);color:white;border-color:var(--navy)}
+.notice{border:1px solid #FDE68A;background:#FFFBEB;border-radius:14px;padding:13px;margin:12px 0}
+.notice b{display:block;margin-bottom:3px}
+.small{font-size:13px}
+.nav{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(520px,100%);background:var(--surface);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);padding:10px 8px calc(10px + env(safe-area-inset-bottom))}
+.nav button{border:0;background:transparent;color:var(--muted);padding:7px 2px;font-weight:600}
+.nav button.active{color:var(--navy)}
+.screen{display:none}.screen.active{display:block}
+hr{border:0;border-top:1px solid var(--line);margin:16px 0}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div>
+      <div class="small" style="color:var(--muted)">PG / Hostel · entitlement-aware review</div>
+      <h1 id="screenTitle">Backup & Sync</h1>
+    </div>
+    <span class="badge">Structure pass</span>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-screen="backup">Backup & Sync</button>
+    <button class="tab" data-screen="staff">Staff & Access</button>
+    <button class="tab" data-screen="bills">Bills</button>
+    <button class="tab" data-screen="reports">Reports</button>
+    <button class="tab" data-screen="offline">Offline state</button>
+    <button class="tab" data-screen="downgrade">Downgrade</button>
+  </div>
+
+  <section class="screen active" id="backup">
+    <div class="card">
+      <div class="row">
+        <div><div class="title">On this device only</div><div class="meta">Local data, local backup/export and restore.</div></div>
+        <span class="badge ok">Available</span>
+      </div>
+      <div class="row">
+        <div><div class="title">Google Drive backup</div><div class="meta">Manual Drive backup and restore. Scheduled automatic Drive backup is not yet a confirmed decision.</div></div>
+        <span class="badge ok">Available</span>
+      </div>
+      <div class="row">
+        <div><div class="title">Khaata Sync</div><div class="meta">Cloud sync and multi-device capability. Availability comes from entitlement state, not hardcoded tier checks.</div></div>
+        <span class="badge info">Available with Pro</span>
+      </div>
+    </div>
+    <div class="notice"><b>UI rule</b><span class="small">The feature may display the current tier label returned by configuration, but feature logic checks the entitlement key only.</span></div>
+  </section>
+
+  <section class="screen" id="staff">
+    <div class="card">
+      <h2>Staff & Access</h2>
+      <p>Historical staff and cash accountability always remain visible.</p>
+      <hr>
+      <div class="row">
+        <div><div class="title">Invite additional users</div><div class="meta">Requires <code>multi_user</code>.</div></div>
+        <span class="badge info">Premium</span>
+      </div>
+      <div class="row">
+        <div><div class="title">Roles & permissions</div><div class="meta">Requires <code>role_permissions</code> and therefore <code>multi_user</code>.</div></div>
+        <span class="badge info">Premium</span>
+      </div>
+      <button class="btn">View plans</button>
+    </div>
+    <div class="card">
+      <div class="title">Ravi · former staff access</div>
+      <div class="meta">₹12,500 cash custody remains visible even if multi-user access is no longer entitled.</div>
+      <button class="btn secondary">Record handover</button>
+      <button class="btn secondary">Record discrepancy</button>
+    </div>
+  </section>
+
+  <section class="screen" id="bills">
+    <div class="card">
+      <div class="row">
+        <div><div class="title">Bill themes</div><div class="meta">Controls theme choices for newly issued bills.</div></div>
+        <span class="badge info">Pro</span>
+      </div>
+      <div class="row">
+        <div><div class="title">Business branding</div><div class="meta">Controls branding on newly issued bills and receipts.</div></div>
+        <span class="badge info">Pro</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">Previously issued bill</div>
+      <div class="meta">Invoice #KH-1042 · issued 18 Sep · branded</div>
+      <div class="notice"><b>Immutable</b><span class="small">A downgrade never changes the appearance of an already-issued document.</span></div>
+    </div>
+  </section>
+
+  <section class="screen" id="reports">
+    <div class="card">
+      <div class="row">
+        <div><div class="title">Core operational reports</div><div class="meta">Remain part of the core product.</div></div>
+        <span class="badge ok">Available</span>
+      </div>
+      <div class="row">
+        <div><div class="title">Advanced reports</div><div class="meta">Deeper reporting beyond the core set.</div></div>
+        <span class="badge info">Premium</span>
+      </div>
+      <div class="row">
+        <div><div class="title">Advanced analytics</div><div class="meta">Trends, deeper analysis and business insights.</div></div>
+        <span class="badge info">Premium</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="offline">
+    <div class="notice">
+      <b>Connect soon to verify your plan</b>
+      <span class="small">This warning appears before offline entitlement grace expires. The exact grace length and warning lead time come from server configuration and must not be hardcoded in UI.</span>
+    </div>
+    <div class="card">
+      <div class="title">Last verified entitlement state</div>
+      <div class="meta">Use the locally cached entitlement snapshot while it remains valid. Grace expiry is anchored to verified server time, not the phone clock.</div>
+    </div>
+    <div class="card">
+      <div class="title">Pending uploads</div>
+      <div class="meta">3 events waiting to sync.</div>
+      <div class="notice"><b>Drain rule</b><span class="small">Events already recorded while entitled must still upload even if cloud sync entitlement expires before reconnection.</span></div>
+    </div>
+  </section>
+
+  <section class="screen" id="downgrade">
+    <div class="card">
+      <h2>After entitlement loss</h2>
+      <p>Future gated capability may stop, but historical truth and unresolved business work remain reachable.</p>
+      <hr>
+      <div class="row"><div><div class="title">Existing tenant records</div><div class="meta">Still visible and usable.</div></div><span class="badge ok">Preserved</span></div>
+      <div class="row"><div><div class="title">Historical staff attribution</div><div class="meta">Never removed by downgrade.</div></div><span class="badge ok">Preserved</span></div>
+      <div class="row"><div><div class="title">Open cash custody</div><div class="meta">Owner can still hand over or resolve discrepancy.</div></div><span class="badge ok">Actionable</span></div>
+      <div class="row"><div><div class="title">New multi-user actions</div><div class="meta">Blocked when the entitlement is no longer available.</div></div><span class="badge warn">Unavailable</span></div>
+    </div>
+    <div class="notice"><b>Invariant</b><span class="small">Downgrade changes future capability, never historical truth.</span></div>
+  </section>
+</div>
+
+<div class="nav">
+  <button>Home</button><button>Tenants</button><button>Collections</button><button class="active">More</button>
+</div>
+
+<script>
+(function(){
+  var tabs=document.querySelectorAll(".tab");
+  var screens=document.querySelectorAll(".screen");
+  var title=document.getElementById("screenTitle");
+  var names={backup:"Backup & Sync",staff:"Staff & Access",bills:"Bills & receipts",reports:"Reports",offline:"Offline entitlement state",downgrade:"Downgrade behavior"};
+  document.addEventListener("click",function(e){
+    var t=e.target;
+    while(t&&t!==document&&!t.getAttribute("data-screen"))t=t.parentNode;
+    if(!t||t===document)return;
+    var id=t.getAttribute("data-screen"),i;
+    for(i=0;i<tabs.length;i++)tabs[i].className="tab"+(tabs[i].getAttribute("data-screen")===id?" active":"");
+    for(i=0;i<screens.length;i++)screens[i].className="screen"+(screens[i].id===id?" active":"");
+    title.innerHTML=names[id]||"Khaata";
+  });
+})();
+</script>
+</body>
+</html>

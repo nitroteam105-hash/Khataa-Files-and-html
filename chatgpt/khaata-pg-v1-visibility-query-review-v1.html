@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · Visibility-Aware Query Layer v1</title>
+<style>
+:root{--canvas:#FDFCF8;--surface:#FFFFFF;--line:#E6E0D7;--ink:#171716;--muted:#6B6B69;--info:#D7E1FE;--info-ink:#2B3A75;--done:#DDF3E6;--done-ink:#1E7A4C;--pending:#FFF0C4;--pending-ink:#6E5200}
+*{box-sizing:border-box}body{margin:0;background:var(--canvas);color:var(--ink);font-family:Manrope,system-ui,sans-serif}main{max-width:860px;margin:auto;padding:20px 16px 44px}h1{font-size:26px;margin:0 0 6px}h2{font-size:19px;margin:22px 0 6px}p{font-size:11.5px;line-height:1.6;color:var(--muted);margin:0}.note{padding:11px 12px;border-radius:14px;background:var(--info);color:var(--info-ink);font-size:11px;line-height:1.5;margin:12px 0}.ok{background:var(--done);color:var(--done-ink)}.warn{background:var(--pending);color:var(--pending-ink)}.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:14px;margin-top:10px;overflow:auto}table{width:100%;border-collapse:collapse;font-size:11px}th,td{text-align:left;vertical-align:top;padding:9px 8px;border-bottom:1px solid var(--line);line-height:1.45}th{color:var(--muted)}tr:last-child td{border-bottom:0}code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.flow{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;line-height:1.65;white-space:pre-wrap;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px}
+</style></head><body><main>
+<h1>Visibility-Aware Query Layer v1</h1>
+<p>The access model now protects the read side as well as the command side.</p>
+
+<div class="note ok"><b>Core rule:</b> action authority and data visibility are evaluated independently. A staff member can be allowed to perform a task without automatically receiving access to every related financial or sensitive field.</div>
+<div class="note warn"><b>Offline reality:</b> this layer controls what the app presents from SQLite. It does not pretend that a remote role change instantly erases already-cached bytes from an offline device.</div>
+
+<h2>Visibility domains</h2>
+<div class="card"><table><tr><th>Visibility key</th><th>Controls</th><th>Boundary</th></tr><tr><td>Tenant records</td><td>Controls tenant list/detail availability</td><td>Base identity/lifecycle</td></tr><tr><td>Tenant balances</td><td>Controls money fields on tenant/collections reads</td><td>Independent from ability to record payment</td></tr><tr><td>Tenant sensitive identity</td><td>Controls phone/ID-style sensitive fields</td><td>May be hidden while basic tenant records remain visible</td></tr><tr><td>Rooms</td><td>Controls room/bed labels</td><td>Tenant record can still be visible</td></tr><tr><td>Expenses</td><td>Controls expense reads</td><td>Expense action permission remains separate</td></tr><tr><td>Staff cash custody</td><td>Controls custody reads</td><td>Never changes tenant payment status</td></tr><tr><td>Staff access</td><td>Controls staff/access administration reads</td><td>Action authority remains separately gated</td></tr></table></div>
+
+<h2>Read path</h2>
+<div class="flow">screen requests data
+  ↓
+VisibilityResolver.resolve(viewer)
+  ↓
+owner?
+  ├─ yes → full business visibility
+  └─ no → active staff membership
+           ↓
+           role visibility snapshot
+  ↓
+query executes
+  ↓
+field-level redaction / whole-query block
+  ↓
+UI receives only permitted projection</div>
+
+<h2>Example</h2>
+<div class="flow">Caretaker:
+  tenant_records = visible
+  tenant_balances = hidden
+  tenant_sensitive_identity = hidden
+  rooms = visible
+
+Tenant row result:
+  ✓ tenant name
+  ✓ room / bed
+  ✓ lifecycle
+  ✕ outstanding amount
+  ✕ phone / ID-sensitive fields
+
+Their Record payment permission is evaluated separately by AccessGate.</div>
+
+<h2>Coverage</h2>
+<div class="card"><p>
+The TypeScript layer includes visibility-aware repositories for tenant records, Collections,
+Expenses, staff cash custody and Staff & Access. It also includes reusable field-redaction helpers
+and an owner-only fallback consistent with sole-owner operation.
+</p></div>
+
+<div class="note">The accompanying test matrix explicitly covers the important case where an action is allowed but visibility is hidden, preventing us from accidentally coupling the two concerns again.</div>
+</main></body></html>

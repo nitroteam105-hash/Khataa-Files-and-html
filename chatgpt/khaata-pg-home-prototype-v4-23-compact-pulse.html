@@ -1,0 +1,780 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · Sunrise PG · Home V4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FDFCF8;--surface:#FFFFFF;--soft:#F5F4EF;--soft2:#EFEEE9;--ink:#222222;--muted:#77746F;--line:#E7E3DB;
+  --navy:#2B3A75;--navy-ink:#fff;
+  --alert:#C23E2E;--alert-tint:#FFE4DF;--alert-ink:#B83A2B;
+  --pending:#FFF0C4;--pending-ink:#6E5200;
+  --done:#3DB37A;--done-tint:#DDF3E6;--done-ink:#1E7A4C;
+  --info:#D7E1FE;--info-ink:#2B3A75;
+  --scrim:rgba(0,0,0,.36);
+  --r:24px;--rb:14px;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#1B1B1A;--surface:#262625;--soft:#232322;--soft2:#2C2C2B;--ink:#FFFFFF;--muted:#A9A6A0;--line:#38383A;
+    --navy:#C9D4FB;--navy-ink:#1A2140;
+    --alert:#E8705C;--alert-tint:#3A2420;--alert-ink:#F59384;
+    --pending:#3A3122;--pending-ink:#EBC36B;
+    --done:#56B884;--done-tint:#244232;--done-ink:#74C99A;
+    --info:#252C42;--info-ink:#DCE4FF;
+    --scrim:rgba(0,0,0,.58);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1B1B1A;--surface:#262625;--soft:#232322;--soft2:#2C2C2B;--ink:#FFFFFF;--muted:#A9A6A0;--line:#38383A;
+  --navy:#C9D4FB;--navy-ink:#1A2140;
+  --alert:#E8705C;--alert-tint:#3A2420;--alert-ink:#F59384;
+  --pending:#3A3122;--pending-ink:#EBC36B;
+  --done:#56B884;--done-tint:#244232;--done-ink:#74C99A;
+  --info:#252C42;--info-ink:#DCE4FF;
+  --scrim:rgba(0,0,0,.58);
+}
+*,*:before,*:after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Manrope',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
+.app{max-width:520px;margin:0 auto;padding:0 16px 112px}
+.top{display:flex;align-items:center;gap:12px;padding:18px 0 10px}
+.logo{width:42px;height:42px;border-radius:14px;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-weight:800}
+.biz{flex:1;border:0;background:none;padding:0;text-align:left}
+.biz b{display:block;font-size:16px;font-weight:800}
+.biz span{display:block;font-size:12.5px;color:var(--muted);margin-top:2px}
+.iconbtn{width:38px;height:38px;border:1px solid var(--line);background:var(--surface);border-radius:12px;display:grid;place-items:center}
+.headline{padding:8px 0 2px}
+.headline h1{margin:0;font-size:23px;line-height:1.2;letter-spacing:-.02em}
+.headline p{margin:5px 0 0;color:var(--muted);font-size:13px}
+.sec{margin-top:24px}
+.sectitle{display:flex;align-items:center;justify-content:space-between;margin:0 2px 10px}
+.sectitle h2{margin:0;font-size:17px;font-weight:800}
+.sectitle .hint{font-size:12px;color:var(--muted);font-weight:600}
+.summary{
+  width:100%;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:var(--r);
+  padding:16px;display:block;
+}
+.sumtop{display:flex;align-items:flex-start;gap:12px}
+.tile{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;flex:none;font-weight:800}
+.tile.bad{background:var(--alert-tint);color:var(--alert-ink)}
+.tile.wait{background:var(--pending);color:var(--pending-ink)}
+.tile.info{background:var(--info);color:var(--info-ink)}
+.sumcopy{flex:1;min-width:0}
+.sumcopy strong{display:block;font-size:16px;line-height:1.3}
+.sumcopy p{margin:4px 0 0;color:var(--muted);font-size:12.5px;line-height:1.45}
+.count{font-size:12px;font-weight:800;color:var(--navy);padding-top:2px;white-space:nowrap}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
+.chip{font-size:11.5px;font-weight:700;padding:5px 9px;border-radius:999px;background:var(--soft2);color:var(--muted)}
+.chip.bad{background:var(--alert-tint);color:var(--alert-ink)}
+.chip.wait{background:var(--pending);color:var(--pending-ink)}
+.chip.info{background:var(--info);color:var(--info-ink)}
+.chip.done{background:var(--done-tint);color:var(--done-ink)}
+.preview{margin-top:10px;padding-top:9px;border-top:1px solid var(--line)}
+.prevrow{display:flex;gap:10px;align-items:flex-start;padding:6px 0}
+.prevrow:first-child{padding-top:0}.prevrow:last-child{padding-bottom:0}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--alert);margin-top:8px;flex:none}
+.dot.pending{background:var(--pending-ink)}.dot.info{background:var(--info-ink)}
+.prevrow b{display:block;font-size:13.5px}.prevrow span{display:block;font-size:11.5px;color:var(--muted);margin-top:2px;line-height:1.4}
+.viewline{display:flex;align-items:center;justify-content:space-between;margin-top:12px;color:var(--navy);font-size:12.5px;font-weight:800}
+
+.decksec{margin-top:18px}
+.decklabel{display:flex;align-items:center;justify-content:space-between;margin:0 2px 10px;font-size:12px;color:var(--muted);font-weight:700}
+.decklabel span:first-child{font-size:17px;color:var(--ink);font-weight:800}
+.carddeck{position:relative;height:286px;touch-action:pan-y;perspective:900px;padding-top:38px}
+.deckcard{
+  position:absolute;left:0;right:0;top:0;height:216px;border:1px solid var(--line);background:var(--surface);
+  border-radius:18px;padding:0 16px 14px;overflow:hidden;transform-origin:50% 0;
+  transition:transform .28s cubic-bezier(.2,.8,.2,1),top .28s cubic-bezier(.2,.8,.2,1),opacity .2s,border-color .2s;
+  will-change:transform,top;box-shadow:none;
+}
+.deckcard.front{z-index:4;top:54px;left:0;right:10px;transform:none}
+.deckcard.back1{z-index:3;top:18px;left:5px;right:5px;transform:none;height:216px;background:var(--surface)}
+.deckcard.back2{z-index:2;top:-18px;left:10px;right:0;transform:none;height:216px;background:var(--surface)}
+.deckcard.back3{z-index:1;top:-54px;left:15px;right:0;transform:none;height:216px;background:var(--surface)}
+.carddeck.compact{height:288px;padding-top:72px}
+.carddeck.compact .deckcard.front{top:48px;left:0;right:12px;transform:none}
+.carddeck.compact .deckcard.back1{top:12px;left:5px;right:7px;transform:none;height:216px;background:var(--surface)}
+.carddeck.compact .deckcard.back2{top:-24px;left:10px;right:2px;transform:none;height:216px;background:var(--surface)}
+.carddeck.compact .deckcard.back3{top:-60px;left:15px;right:0;transform:none;height:216px;background:var(--surface)}
+.carddeck.spread{height:484px;padding-top:0}
+.carddeck.spread .deckcard{height:216px;left:0;right:0;transform:none;background:var(--surface)}
+.carddeck.spread .deckcard.front{top:0}
+.carddeck.spread .deckcard.back1{top:252px}
+.carddeck.spread .deckcard.back2{top:504px}
+.deckcard.dragging{transition:none}
+.deckhead{width:100%;height:auto;min-height:32px;border:0;background:none;padding:6px 0 0;display:flex;align-items:flex-start;justify-content:space-between;text-align:left;gap:12px}
+.decktitle{font-size:17px;font-weight:800;line-height:1.1}
+.deckmeta{display:flex;align-items:center;justify-content:flex-end;gap:9px;color:var(--muted);font-size:11.5px;white-space:nowrap;margin-left:auto}
+.deckmeta em{font-style:normal;font-weight:800}
+.attention .deckmeta em{color:var(--alert-ink)}
+
+.status-pills{margin-top:0}
+.collapsed-pill-slots{display:none;align-items:center;gap:7px;min-width:0;margin-top:0}
+
+.deckhead{margin-bottom:4px}
+.deckcontent>.status-pills{margin-bottom:8px}
+.carddeck.compact .deckcard:not(.front) .deckhead{margin-bottom:4px}
+.carddeck.compact .deckcard:not(.front) .collapsed-pill-slots{margin-top:0}
+
+.cycle-slot{transition:opacity .18s ease,transform .18s ease;will-change:opacity,transform}
+.cycle-slot.switching{opacity:.15;transform:translateY(3px)}
+.carddeck.compact .deckcard:not(.front) .status-pills{display:none}
+.carddeck.compact .deckcard:not(.front) .collapsed-pill-slots{display:flex}
+.carddeck.compact .deckcard:not(.front) .deckcontent{opacity:1}
+.carddeck.compact .deckcard:not(.front) .quick,.carddeck.compact .deckcard:not(.front) .peek{display:none}
+.carddeck.compact .deckcard:not(.front) .deckhead{height:auto;min-height:32px}
+@media (prefers-reduced-motion:reduce){.cycle-slot{transition:none}}
+.deckcontent{opacity:1;transition:opacity .15s}
+.carddeck.compact .deckcard:not(.front) .deckcontent{opacity:1;pointer-events:auto}
+.carddeck.spread .deckcard .deckcontent{opacity:1;pointer-events:auto}
+.carddeck.compact .deckcard:not(.front) .deckhead{height:auto;min-height:32px;padding-top:6px}.carddeck.spread .deckcard .deckhead{height:auto;min-height:32px;padding-top:6px}
+.deckquick{width:100%;border:0;background:none;padding:8px 0 2px;margin-top:5px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;color:var(--navy);font-size:12.5px;font-weight:800;text-align:left}
+.deckhint{text-align:center;margin-top:4px;font-size:10.5px;color:var(--muted)}
+.decktoggle{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 10px;font-size:11px;font-weight:800;min-height:34px}
+.carddeck.compact .deckcard:not(.front){border-radius:16px}
+.carddeck.compact .deckcard.front{border-radius:16px}
+.carddeck.spread .deckcard{border-radius:18px}
+.deckcard.swipeleft{transform:translateX(-108%) rotate(-3deg) scale(.98);opacity:.15}
+.deckcard.swiperight{transform:translateX(108%) rotate(3deg) scale(.98);opacity:.15}
+
+.carddeck.compact .deckcard.front{
+  box-shadow:7px -3px 14px rgba(20,24,30,.08);
+}
+.carddeck.compact .deckcard.back1,
+.carddeck.compact .deckcard.back2,
+.carddeck.compact .deckcard.back3{
+  filter:none;
+  box-shadow:none;
+}
+[data-theme="dark"] .carddeck.compact .deckcard.front{
+  box-shadow:7px -3px 16px rgba(0,0,0,.28);
+}
+.carddeck.spread .deckcard{filter:none;box-shadow:none}
+
+@media(prefers-reduced-motion:reduce){
+  .deckcard,.deckcontent{transition:none}
+}
+.pulse{border:1px solid var(--line);background:var(--surface);border-radius:var(--r);padding:16px}
+.moneytop{display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
+.moneytop .lhs span,.moneytop .rhs span{display:block;font-size:11.5px;color:var(--muted);font-weight:600}
+.metricbtn{border:0;background:none;padding:0;text-align:left;min-width:0}
+.metricbtn.rhs{text-align:right}
+.metricbtn small{display:block;margin-top:4px;font-size:10.5px;color:var(--muted);font-weight:600}
+.metricbtn small em{font-style:normal}
+.statuswait{color:var(--pending-ink)!important}
+.statusbad{color:var(--alert-ink)!important}
+.moneytop strong{display:block;font-size:24px;letter-spacing:-.03em;margin-top:2px}
+.moneytop .rhs{text-align:right}.moneytop .rhs strong{font-size:20px}
+.progresswrap{margin-top:14px}
+.progressmeta{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted)}
+.progressmeta b{color:var(--ink)}
+.progress{height:8px;border-radius:999px;background:var(--soft2);overflow:hidden;margin-top:7px}
+.progress span{display:block;height:100%;width:92.4%;background:var(--done);border-radius:inherit}
+.grid{display:grid;grid-template-columns:1fr 1fr;margin-top:16px;border-top:1px solid var(--line)}
+.metric{border:0;background:none;text-align:left;padding:14px 0 0}
+.metric:nth-child(even){padding-left:16px;border-left:1px solid var(--line)}
+.metric strong{display:block;font-size:20px;letter-spacing:-.02em}
+.cashstaff{width:100%;margin-top:14px;padding:12px 0 0;border:0;border-top:1px solid var(--line);background:none;display:flex;align-items:center;gap:8px;text-align:left}
+.cashstaff span:first-child{font-size:12px;color:var(--muted);font-weight:700}
+.cashstaff strong{margin-left:auto;font-size:14px}
+.cashstaff .arrow{color:var(--muted);font-size:18px}
+.metric span{display:block;font-size:11.5px;color:var(--muted);margin-top:3px;font-weight:600}
+.navbar{
+  position:fixed;left:50%;bottom:max(0px,env(safe-area-inset-bottom,0px));transform:translateX(-50%);
+  width:min(100%,520px);height:72px;background:var(--bg);border-top:1px solid var(--line);
+  display:flex;align-items:center;justify-content:space-around;z-index:8
+}
+.navitem{width:72px;border:0;background:none;color:var(--muted);font-size:10.5px;font-weight:700;display:grid;place-items:center;gap:3px}
+.navitem .ic{font-size:17px}.navitem.on{color:var(--ink)}
+.fab{
+  position:fixed;right:max(18px,calc((100vw - 520px)/2 + 18px));bottom:84px;width:54px;height:54px;border-radius:50%;
+  border:0;background:var(--navy);color:var(--navy-ink);font-size:28px;z-index:11;box-shadow:0 8px 18px var(--scrim)
+}
+.quickmenu{
+  position:fixed;right:max(18px,calc((100vw - 520px)/2 + 18px));bottom:148px;z-index:11;
+  display:grid;gap:10px;opacity:0;pointer-events:none;transform:translateY(8px);transition:.18s
+}
+.quickmenu.on{opacity:1;pointer-events:auto;transform:none}
+.qa{display:flex;align-items:center;justify-content:flex-end;gap:10px}
+.qa span{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 12px;font-size:12.5px;font-weight:700}
+.qa i{width:42px;height:42px;border-radius:50%;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;font-style:normal;font-weight:800}
+.scrim{position:fixed;inset:0;background:var(--scrim);z-index:9;display:none}.scrim.on{display:block}
+.sheet{
+  position:fixed;left:50%;bottom:0;transform:translateX(-50%) translateY(100%);width:min(100%,520px);max-height:78vh;
+  background:var(--surface);border-radius:24px 24px 0 0;z-index:12;padding:10px 18px calc(22px + env(safe-area-inset-bottom));
+  transition:transform .22s ease;overflow:auto;border:1px solid var(--line);border-bottom:0
+}
+.sheet.on{transform:translateX(-50%) translateY(0)}
+.handle{width:40px;height:4px;background:var(--line);border-radius:999px;margin:0 auto 14px}
+.sheethead{display:flex;align-items:flex-start;gap:12px}
+.sheethead h3{margin:0;font-size:18px}.sheethead p{margin:4px 0 0;font-size:12.5px;color:var(--muted)}
+.sheethead .close{margin-left:auto;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--soft)}
+.group{margin-top:18px}.group h4{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 8px}
+.item{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)}
+.item:last-child{border-bottom:0}.item .grow{flex:1}.item b{display:block;font-size:13.5px}.item small{display:block;font-size:11.5px;color:var(--muted);margin-top:3px}
+.item .pill{font-size:10.5px;font-weight:800;padding:4px 8px;border-radius:999px;background:var(--soft2);color:var(--muted)}
+.item .pill.bad{background:var(--alert-tint);color:var(--alert-ink)}
+.item .pill.wait{background:var(--pending);color:var(--pending-ink)}
+.item .pill.info{background:var(--info);color:var(--info-ink)}
+.item .pill.done{background:var(--done-tint);color:var(--done-ink)}
+.inlineacts{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.inlineacts button{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:6px 9px;font-size:11.5px;font-weight:700}
+.proto{margin-top:22px;border-top:1px dashed var(--line);padding-top:10px}
+.proto button{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:7px 10px;font-size:11px}
+
+/* V4.17: tighter lower rhythm */
+.deckcard{height:216px}
+.carddeck.compact .deckcard.front,
+.carddeck.compact .deckcard.back1,
+.carddeck.compact .deckcard.back2,
+.carddeck.compact .deckcard.back3{height:216px}
+.peek{padding-bottom:7px}
+.quick{margin-top:5px;padding-top:8px;padding-bottom:8px}
+
+
+/* V4.18 — standardized Home vertical rhythm */
+:root{--home-section-gap:24px;--home-label-gap:14px;--home-card-gap:16px}
+
+/* Today heading -> card area */
+.todayhead{margin-bottom:var(--home-label-gap)}
+
+/* Deck uses only the space its visible geometry needs. */
+.carddeck.compact{height:264px;padding-top:48px;margin-bottom:var(--home-section-gap)}
+.carddeck.spread{margin-bottom:var(--home-section-gap)}
+
+/* Remove helper-copy space from the layout; interaction is already discoverable. */
+.deckhint{display:none}
+
+/* Section heading -> its content card follows the same rhythm. */
+.pulsehead{margin-top:0;margin-bottom:var(--home-label-gap)}
+.pulse{margin-top:0}
+
+/* In Show all, cards use one standard inter-card gap. */
+.carddeck.spread{gap:var(--home-card-gap)}
+
+
+/* V4.19 — expandable Business Pulse */
+.pulse-actions{display:flex;align-items:center;gap:8px}
+.pulse-toggle{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 10px;font:inherit;font-size:11px;font-weight:800;white-space:nowrap}
+.pulse-detail{display:none;flex-wrap:wrap;gap:6px 12px;margin-top:8px;color:var(--muted);font-size:11px;line-height:1.35}
+.pulse-detail span{white-space:nowrap}
+.pulse-detail b{color:var(--ink);font-weight:800}
+.pulse-detail-right{justify-content:flex-end}
+.pulse.expanded .pulse-detail{display:flex}
+.pulse.expanded{padding-bottom:12px}
+.pulse.expanded .pulse-detail span+span{position:relative}
+.pulse.expanded .pulse-detail span+span:before{content:"·";position:absolute;left:-8px;color:var(--muted)}
+@media(max-width:380px){.pulse-actions{gap:6px}.pulse-toggle{padding:6px 8px}.pulse-detail{gap:5px 10px}}
+
+
+/* V4.21 — Business Pulse detail arrays */
+.pulse-detail{
+  display:none;
+  margin-top:10px;
+  padding-top:2px;
+  width:100%;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.35;
+}
+.pulse.expanded .pulse-detail{display:block}
+.pulse-detail-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  min-height:34px;
+  padding:7px 0;
+  border-top:1px solid var(--line);
+}
+.pulse-detail-row:first-child{border-top:0}
+.pulse-detail-row span{min-width:0}
+.pulse-detail-row b{
+  flex:0 0 auto;
+  color:var(--ink);
+  font-weight:800;
+  text-align:right;
+  white-space:nowrap;
+}
+.pulse-detail-row b.over{color:var(--danger)}
+.pulse-detail-row.pulse-more span,
+.pulse-detail-row.pulse-more b{color:var(--muted)}
+.pulse.expanded .pulse-detail span+span:before{content:none}
+
+
+/* V4.22 — standardized expanded Business Pulse */
+.pulse-pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.pulse-cell,.pulse-staff{
+  appearance:none;border:0;background:transparent;color:inherit;font:inherit;
+  min-width:0;text-align:left;
+}
+.pulse-cell{padding:0 28px 0 0}
+.pulse-cell+ .pulse-cell{padding:0 0 0 28px;border-left:1px solid var(--line)}
+.pulse-kicker{display:block;color:var(--muted);font-size:14px;line-height:1.35}
+.pulse-main{display:block;margin-top:8px;color:var(--ink);font-size:28px;line-height:1;font-weight:800;letter-spacing:-.03em}
+.pulse-summary{display:block;margin-top:10px;color:var(--muted);font-size:12px;line-height:1.35;white-space:nowrap}
+.pulse-cell:nth-child(2){text-align:right}
+.pulse-count{font-size:26px;margin-top:0}
+.pulse-under{margin-top:9px;min-height:38px}
+.pulse-progresswrap{margin-top:22px}
+.pulse-divider{height:1px;background:var(--line);margin:22px 0}
+.pulse-detail{
+  display:none;
+  width:100%;
+  margin-top:16px;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.35;
+  text-align:left;
+}
+.pulse.expanded .pulse-detail{display:block}
+.pulse-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:14px;
+  min-height:42px;
+  border-top:1px solid var(--line);
+}
+.pulse-row:first-child{border-top:0}
+.pulse-row>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pulse-row>b{color:var(--ink);font-weight:800;text-align:right;white-space:nowrap}
+.pulse-row>b.statusbad{color:var(--danger)}
+.pulse-muted>span,.pulse-muted>b{color:var(--muted)}
+.pulse-empty{visibility:hidden}
+.pulse-qv{
+  display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;
+  min-height:38px;border-top:1px solid var(--line);color:var(--info);
+  font-weight:800;
+}
+.pulse-qv>b{font-size:18px;font-weight:800}
+.pulse-staff{display:block;width:100%;padding:0}
+.pulse-staff-head{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:16px}
+.pulse-staff-head>strong{color:var(--ink);font-size:17px;white-space:nowrap}
+.pulse-staff .pulse-detail{margin-top:12px}
+.pulse.expanded{padding-bottom:18px}
+@media(max-width:380px){
+  .pulse-cell{padding-right:18px}
+  .pulse-cell+ .pulse-cell{padding-left:18px}
+  .pulse-kicker{font-size:13px}
+  .pulse-main{font-size:26px}
+  .pulse-summary{font-size:11px}
+}
+
+
+/* V4.23 — compact standardized Pulse */
+.pulse-cell,.pulse-staff,.pulse-cell *,.pulse-staff *{
+  font-family:inherit;
+  font-style:normal;
+}
+.pulse-main{font-size:26px;margin-top:6px}
+.pulse-count{font-size:25px;margin-top:0}
+.pulse-kicker{font-size:13px}
+.pulse-under{margin-top:6px;min-height:32px}
+.pulse-detail{margin-top:10px;font-size:12px}
+.pulse-row{min-height:34px}
+.pulse-qv{
+  min-height:34px;
+  color:var(--ink);
+  opacity:.78;
+  font-size:12px;
+}
+.pulse-qv>b{color:inherit}
+.pulse-inline-progress{
+  display:block;
+  margin-top:11px;
+  width:100%;
+}
+.pulse-inline-meta{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:8px;
+  color:var(--muted);
+  font-size:11px;
+}
+.pulse-inline-meta>b{color:var(--ink);font-size:12px}
+.pulse-inline-track{
+  display:block;
+  height:5px;
+  margin-top:6px;
+  overflow:hidden;
+  border-radius:999px;
+  background:var(--row);
+}
+.pulse-inline-track>i{
+  display:block;
+  width:92%;
+  height:100%;
+  border-radius:inherit;
+  background:var(--success);
+}
+.pulse-divider{margin:16px 0}
+.pulse-cell{padding-right:22px}
+.pulse-cell+.pulse-cell{padding-left:22px}
+.pulse-staff .pulse-detail{margin-top:8px}
+.pulse.expanded{padding-bottom:14px}
+@media(max-width:380px){
+  .pulse-cell{padding-right:16px}
+  .pulse-cell+.pulse-cell{padding-left:16px}
+}
+
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="top">
+    <div class="logo">S</div>
+    <button class="biz" data-act="business"><b>Sunrise PG</b><span>PG / Hostel · Bengaluru ▾</span></button>
+  </header>
+
+  <section class="sec decksec">
+    <div class="decklabel"><span>Today</span><button class="decktoggle" data-act="toggle-deck" id="deckToggle">Stack cards ↑</button></div>
+    <div class="carddeck" id="cardDeck">
+      <article class="deckcard attention" data-card="attention">
+        <button class="deckhead" data-act="select-card" data-card="attention">
+          <span class="decktitle">Needs attention</span>
+          <span class="deckmeta"><em>2 urgent</em></span>
+        </button>
+        <div class="deckcontent">
+          <div class="chips status-pills">
+            <span class="chip bad" data-group="red">3 overdue</span>
+            <span class="chip bad" data-group="red">1 conflict</span>
+            <span class="chip wait" data-group="yellow">2 approvals</span>
+            <span class="chip wait" data-group="yellow">2 handovers</span>
+          </div>
+          <div class="collapsed-pill-slots" aria-hidden="true">
+            <span class="cycle-slot chip bad" data-cycle="red" data-items="3 overdue|1 conflict">3 overdue</span>
+            <span class="cycle-slot chip wait" data-cycle="yellow" data-items="2 approvals|2 handovers">2 approvals</span>
+          </div>
+          <div class="preview">
+            <div class="prevrow"><span class="dot"></span><div><b>Rajesh · ₹12,000 overdue</b><span>2 months · exceeds security by ₹2,000</span></div></div>
+            <div class="prevrow"><span class="dot pending"></span><div><b>Room 101-A conflict</b><span>Rajesh until 5 Dec · Priya from 1 Dec</span></div></div>
+          </div>
+          <button class="deckquick" data-act="open-attn"><span>Quick view</span><span>›</span></button>
+        </div>
+      </article>
+
+      <article class="deckcard upcoming" data-card="upcoming">
+        <button class="deckhead" data-act="select-card" data-card="upcoming">
+          <span class="decktitle">Coming up</span>
+          <span class="deckmeta"><em>Next 7 days</em></span>
+        </button>
+        <div class="deckcontent">
+          <div class="chips status-pills">
+            <span class="chip info" data-group="blue">2 joining</span>
+            <span class="chip info" data-group="blue">1 moving out</span>
+            <span class="chip wait" data-group="yellow">18 rents due</span>
+          </div>
+          <div class="collapsed-pill-slots" aria-hidden="true">
+            <span class="cycle-slot chip info" data-cycle="blue" data-items="2 joining|1 moving out">2 joining</span>
+            <span class="cycle-slot chip wait" data-cycle="yellow" data-items="18 rents due">18 rents due</span>
+          </div>
+          <div class="preview">
+            <div class="prevrow"><span class="dot pending"></span><div><b>Priya joins tomorrow · Room 102-A</b><span>ID proof still missing</span></div></div>
+            <div class="prevrow"><span class="dot info"></span><div><b>18 rents due on 5 Oct</b><span>₹1,08,000 expected</span></div></div>
+          </div>
+          <button class="deckquick" data-act="open-upcoming"><span>Quick view</span><span>›</span></button>
+        </div>
+      </article>
+    </div>
+    <div class="deckhint" id="deckHint">Tap a visible card header to bring it forward</div>
+  </section>
+
+  <section class="sec">
+    <div class="sectitle"><h2>Business pulse</h2><span class="pulse-actions"><span class="hint">October</span><button class="pulse-toggle" type="button" data-action="toggle-pulse">Expand ↓</button></span></div>
+    <div class="pulse">
+      <div class="pulse-pair pulse-money">
+        <button class="pulse-cell" data-act="open-collected">
+          <span class="pulse-kicker">Collected</span><strong class="pulse-main">₹3.42L</strong>
+          <span class="pulse-inline-progress">
+            <span class="pulse-inline-meta"><b>92%</b><span>of ₹3.70L</span></span>
+            <span class="pulse-inline-track"><i></i></span>
+          </span>
+          <span class="pulse-detail">
+            <span class="pulse-row"><span>Cash</span><b>₹82K</b></span>
+            <span class="pulse-row"><span>Online</span><b>₹2.60L</b></span>
+            <span class="pulse-row"><span>Payments</span><b>42</b></span>
+            <span class="pulse-qv"><span>Quick view</span><b>›</b></span>
+          </span>
+        </button>
+        <button class="pulse-cell" data-act="open-outstanding">
+          <span class="pulse-kicker">Outstanding</span><strong class="pulse-main">₹28K</strong>
+          
+          <span class="pulse-detail">
+            <span class="pulse-row"><span>This month</span><b>₹12K</b></span>
+            <span class="pulse-row"><span>Older dues</span><b class="statusbad">₹16K</b></span>
+            <span class="pulse-row pulse-empty" aria-hidden="true"><span>&nbsp;</span><b>&nbsp;</b></span>
+            <span class="pulse-qv"><span>Quick view</span><b>›</b></span>
+          </span>
+        </button>
+      </div>
+
+      <div class="pulse-divider"></div>
+
+      <div class="pulse-pair pulse-occupancy">
+        <button class="pulse-cell" data-act="open-vacant">
+          <strong class="pulse-main pulse-count">7</strong><span class="pulse-kicker pulse-under">Vacant beds</span>
+          <span class="pulse-detail">
+            <span class="pulse-row"><span>Room 101</span><b>Bed A</b></span>
+            <span class="pulse-row"><span>Room 103</span><b>Bed B</b></span>
+            <span class="pulse-row"><span>Room 204</span><b>Bed A</b></span>
+            <span class="pulse-row pulse-muted"><span>More vacant beds</span><b>+4</b></span>
+          </span>
+        </button>
+        <button class="pulse-cell" data-act="open-vacating">
+          <strong class="pulse-main pulse-count">4</strong><span class="pulse-kicker pulse-under">Becoming vacant this month</span>
+          <span class="pulse-detail">
+            <span class="pulse-row"><span>Room 102 · Bed A</span><b>8 Oct</b></span>
+            <span class="pulse-row"><span>Room 201 · Bed B</span><b>14 Oct</b></span>
+            <span class="pulse-row pulse-muted"><span>More planned</span><b>+2</b></span>
+            <span class="pulse-row pulse-empty" aria-hidden="true"><span>&nbsp;</span><b>&nbsp;</b></span>
+          </span>
+        </button>
+      </div>
+
+      <div class="pulse-divider"></div>
+
+      <button class="pulse-staff" data-act="open-cash">
+        <span class="pulse-staff-head"><span class="pulse-kicker">Cash with staff</span><strong>₹18,500</strong></span>
+        <span class="pulse-detail">
+          <span class="pulse-row"><span>Ravi</span><b>₹12,000</b></span>
+          <span class="pulse-row"><span>Manoj</span><b>₹6,500</b></span>
+          <span class="pulse-qv"><span>Quick view</span><b>›</b></span>
+        </span>
+      </button>
+    </div>
+  </section>
+
+  <div class="proto"><button data-act="theme">Toggle theme</button></div>
+</main>
+
+<div class="scrim" id="scrim" data-act="close-all"></div>
+
+<div class="quickmenu" id="quickmenu">
+  <div class="qa"><span>Add tenant</span><i data-act="qa">＋</i></div>
+  <div class="qa"><span>Record payment</span><i data-act="qa">₹</i></div>
+  <div class="qa"><span>Add expense</span><i data-act="qa">−</i></div>
+  <div class="qa"><span>Add charge</span><i data-act="qa">＋₹</i></div>
+</div>
+<button class="fab" data-act="fab">+</button>
+
+<nav class="navbar">
+  <button class="navitem on"><span class="ic">⌂</span><span>Home</span></button>
+  <button class="navitem"><span class="ic">♙</span><span>Tenants</span></button>
+  <button class="navitem"><span class="ic">₹</span><span>Collections</span></button>
+  <button class="navitem"><span class="ic">•••</span><span>More</span></button>
+</nav>
+
+<section class="sheet" id="attnSheet">
+  <div class="handle"></div>
+  <div class="sheethead"><div><h3>Needs attention</h3><p>8 unresolved situations</p></div><button class="close" data-act="close-sheet">×</button></div>
+  <div class="group"><h4>Urgent</h4>
+    <div class="item"><span class="dot"></span><div class="grow"><b>Rajesh · ₹12,000 overdue</b><small>2 months · exceeds security by ₹2,000</small><div class="inlineacts"><button>Review</button><button>Record payment</button></div></div><span class="pill bad">18 days</span></div>
+    <div class="item"><span class="dot"></span><div class="grow"><b>Room 101-A conflict</b><small>Rajesh until 5 Dec · Priya from 1 Dec</small><div class="inlineacts"><button>Resolve</button></div></div><span class="pill bad">Conflict</span></div>
+  </div>
+  <div class="group"><h4>Action required</h4>
+    <div class="item"><span class="dot pending"></span><div class="grow"><b>2 approvals waiting</b><small>Rent discount · Expense</small><div class="inlineacts"><button>Review</button></div></div><span class="pill wait">2</span></div>
+    <div class="item"><span class="dot pending"></span><div class="grow"><b>Cash handover needs confirmation</b><small>Ravi → Amit · ₹8,000</small><div class="inlineacts"><button>Confirm</button></div></div><span class="pill wait">Today</span></div>
+  </div>
+</section>
+
+<section class="sheet" id="upcomingSheet">
+  <div class="handle"></div>
+  <div class="sheethead"><div><h3>Coming up</h3><p>Next 7 days</p></div><button class="close" data-act="close-sheet">×</button></div>
+  <div class="group"><h4>Tomorrow</h4>
+    <div class="item"><span class="dot info"></span><div class="grow"><b>Priya joins · Room 102-A</b><small>ID proof still missing</small><div class="inlineacts"><button>Open tenant</button></div></div><span class="pill wait">Tomorrow</span></div>
+  </div>
+  <div class="group"><h4>5 Oct</h4>
+    <div class="item"><span class="dot info"></span><div class="grow"><b>18 rents due</b><small>₹1,08,000 expected</small><div class="inlineacts"><button>View collections</button></div></div><span class="pill info">5 Oct</span></div>
+  </div>
+  <div class="group"><h4>8 Oct</h4>
+    <div class="item"><span class="dot info"></span><div class="grow"><b>Amit moves out · Room 203-B</b><small>Bed becomes available</small><div class="inlineacts"><button>Open tenancy</button></div></div><span class="pill info">8 Oct</span></div>
+  </div>
+</section>
+
+
+<section class="sheet" id="collectedSheet">
+  <div class="handle"></div>
+  <div class="sheethead"><div><h3>Collected this month</h3><p>₹3.42L received · 31 payments</p></div><button class="close" data-act="close-sheet">×</button></div>
+  <div class="group"><h4>Recent payments</h4>
+    <div class="item"><span class="dot info"></span><div class="grow"><b>Priya · ₹8,000</b><small>4 Oct · UPI · Rent</small></div><span class="pill info">Today</span></div>
+    <div class="item"><span class="dot info"></span><div class="grow"><b>Amit · ₹6,500</b><small>3 Oct · Cash · Collected by Ravi</small></div><span class="pill info">3 Oct</span></div>
+    <div class="item"><span class="dot info"></span><div class="grow"><b>Neha · ₹7,500</b><small>3 Oct · Bank transfer · Rent</small></div><span class="pill info">3 Oct</span></div>
+  </div>
+  <div class="viewline"><span>View all collections</span><span>›</span></div>
+</section>
+
+<section class="sheet" id="outstandingSheet">
+  <div class="handle"></div>
+  <div class="sheethead"><div><h3>Outstanding</h3><p>₹28K total · ₹16K overdue</p></div><button class="close" data-act="close-sheet">×</button></div>
+  <div class="group"><h4>Overdue</h4>
+    <div class="item"><span class="dot"></span><div class="grow"><b>Rajesh · ₹12,000</b><small>Due 15 Sep · 18 days overdue</small><div class="inlineacts"><button>Record payment</button><button>Open account</button></div></div><span class="pill bad">Overdue</span></div>
+    <div class="item"><span class="dot"></span><div class="grow"><b>Kiran · ₹4,000</b><small>Due 1 Oct · grace ended</small></div><span class="pill bad">Overdue</span></div>
+  </div>
+  <div class="group"><h4>Due / grace</h4>
+    <div class="item"><span class="dot pending"></span><div class="grow"><b>Meena · ₹7,000</b><small>Due 5 Oct</small></div><span class="pill wait">Due soon</span></div>
+    <div class="item"><span class="dot pending"></span><div class="grow"><b>Arjun · ₹5,000</b><small>Due today · inside grace period</small></div><span class="pill wait">Grace</span></div>
+  </div>
+</section>
+
+<section class="sheet" id="vacantSheet">
+  <div class="handle"></div>
+  <div class="sheethead"><div><h3>Vacant beds</h3><p>7 available now</p></div><button class="close" data-act="close-sheet">×</button></div>
+  <div class="group"><h4>Available now</h4>
+    <div class="item"><span class="dot info"></span><div class="grow"><b>Room 102 · Bed A</b><small>1st floor · Window side</small></div><span class="pill info">Now</span></div>
+    <div class="item"><span class="dot info"></span><div class="grow"><b>Room 205 · Bed B</b><small>2nd floor · Upper bunk</small></div><span class="pill info">Now</span></div>
+    <div class="item"><span class="dot info"></span><div class="grow"><b>Room 207 · Bed A</b><small>2nd floor · Lower bunk</small></div><span class="pill info">Now</span></div>
+  </div>
+  <div class="viewline"><span>View all 7 vacant beds</span><span>›</span></div>
+</section>
+
+<section class="sheet" id="vacatingSheet">
+  <div class="handle"></div>
+  <div class="sheethead"><div><h3>Becoming vacant</h3><p>4 beds this month</p></div><button class="close" data-act="close-sheet">×</button></div>
+  <div class="group"><h4>Planned availability</h4>
+    <div class="item"><span class="dot info"></span><div class="grow"><b>Room 203 · Bed B</b><small>2nd floor · Amit moves out 8 Oct</small></div><span class="pill info">8 Oct</span></div>
+    <div class="item"><span class="dot info"></span><div class="grow"><b>Room 301 · Bed A</b><small>3rd floor · available after 31 Oct</small></div><span class="pill info">31 Oct</span></div>
+    <div class="item"><span class="dot pending"></span><div class="grow"><b>Room 204 · Bed C</b><small>Vacates 14 Oct · reserved from 16 Oct</small></div><span class="pill wait">Reserved</span></div>
+  </div>
+</section>
+
+<section class="sheet" id="cashSheet">
+  <div class="handle"></div>
+  <div class="sheethead"><div><h3>Cash with staff</h3><p>₹18,500 currently in custody</p></div><button class="close" data-act="close-sheet">×</button></div>
+  <div class="group"><h4>With staff</h4>
+    <div class="item"><span class="dot pending"></span><div class="grow"><b>Ravi · ₹8,000</b><small>Last collection today · handover pending</small><div class="inlineacts"><button>Open custody</button></div></div><span class="pill wait">Pending</span></div>
+    <div class="item"><span class="dot pending"></span><div class="grow"><b>Amit · ₹6,500</b><small>Collected 3 Oct</small></div><span class="pill wait">With staff</span></div>
+    <div class="item"><span class="dot pending"></span><div class="grow"><b>Suresh · ₹4,000</b><small>Collected 2 Oct</small></div><span class="pill wait">With staff</span></div>
+  </div>
+</section>
+
+<script>
+(function(){
+  var theme="";
+  var deckOrder=["attention","upcoming"];
+  var deckIndex=0;
+  var deckCompact=true;
+  var drag={active:false,startX:0,x:0,card:null};
+
+  function renderDeck(){
+    var cards=document.querySelectorAll(".deckcard");
+    var i,name,pos,c;
+    for(i=0;i<cards.length;i++){
+      c=cards[i];
+      name=c.getAttribute("data-card");
+      pos=(deckOrder.indexOf(name)-deckIndex+deckOrder.length)%deckOrder.length;
+      c.classList.remove("front","back1","back2","back3","swipeleft","swiperight","dragging");
+      if(pos===0){c.classList.add("front");}
+      else if(pos===1){c.classList.add("back1");}
+      else if(pos===2){c.classList.add("back2");}
+      else{c.classList.add("back3");}
+    }
+    $("cardDeck").className="carddeck "+(deckCompact?"compact":"spread");
+    $("deckToggle").innerHTML=deckCompact?"Show all ↓":"Stack cards ↑";
+    $("deckHint").innerHTML=deckCompact?"Tap a card behind to bring it forward":"Both cards remain fully expanded";
+  }
+  function shuffle(dir){
+    var front=document.querySelector(".deckcard.front");
+    if(!front)return;
+    front.classList.add(dir>0?"swipeleft":"swiperight");
+    window.setTimeout(function(){
+      deckIndex=(deckIndex+(dir>0?1:-1)+deckOrder.length)%deckOrder.length;
+      renderDeck();
+    },180);
+  }
+  function $(id){return document.getElementById(id);}
+  function closeAll(){
+    $("scrim").className="scrim";
+    $("quickmenu").className="quickmenu";
+    $("attnSheet").className="sheet";
+    $("upcomingSheet").className="sheet";
+    $("collectedSheet").className="sheet";
+    $("outstandingSheet").className="sheet";
+    $("vacantSheet").className="sheet";
+    $("vacatingSheet").className="sheet";
+    $("cashSheet").className="sheet";
+  }
+  function openSheet(id){
+    closeAll();
+    $("scrim").className="scrim on";
+    $(id).className="sheet on";
+  }
+  document.addEventListener("click",function(e){
+    var pulseBtn=e.target.closest("[data-action='toggle-pulse']");
+    if(pulseBtn){
+      var pulse=document.querySelector(".pulse");
+      if(pulse){
+        var open=pulse.classList.toggle("expanded");
+        pulseBtn.textContent=open?"Collapse ↑":"Expand ↓";
+      }
+      return;
+    }
+
+    var b=e.target.closest("[data-act]"); if(!b)return;
+    var a=b.getAttribute("data-act");
+    if(a==="fab"){
+      var on=$("quickmenu").className.indexOf("on")>-1;
+      closeAll();
+      if(!on){$("scrim").className="scrim on";$("quickmenu").className="quickmenu on";}
+    }else if(a==="toggle-deck"){
+      deckCompact=!deckCompact;renderDeck();
+    }else if(a==="select-card"){
+      var target=b.getAttribute("data-card");
+      var targetIndex=deckOrder.indexOf(target);
+      if(deckCompact && targetIndex!==deckIndex){deckIndex=targetIndex;renderDeck();}
+    }else if(a==="open-attn"){openSheet("attnSheet");
+    }else if(a==="open-upcoming"){openSheet("upcomingSheet");
+    }else if(a==="open-collected"){openSheet("collectedSheet");
+    }else if(a==="open-outstanding"){openSheet("outstandingSheet");
+    }else if(a==="open-vacant"){openSheet("vacantSheet");
+    }else if(a==="open-vacating"){openSheet("vacatingSheet");
+    }else if(a==="open-cash"){openSheet("cashSheet");
+    }else if(a==="close-all"||a==="close-sheet"){closeAll();
+    }else if(a==="qa"){closeAll();
+    }else if(a==="theme"){
+      theme=theme==="dark"?"light":"dark";
+      document.documentElement.setAttribute("data-theme",theme);
+    }
+  });
+  var deck=$("cardDeck");
+  deck.addEventListener("pointerdown",function(e){
+    var front=e.target.closest(".deckcard.front");
+    if(!deckCompact || !front || e.target.closest(".deckquick"))return;
+    drag.active=true;drag.startX=e.clientX;drag.x=0;drag.card=front;
+    front.classList.add("dragging");
+    if(deck.setPointerCapture){try{deck.setPointerCapture(e.pointerId);}catch(err){}}
+  });
+  deck.addEventListener("pointermove",function(e){
+    if(!drag.active||!drag.card)return;
+    drag.x=e.clientX-drag.startX;
+    if(Math.abs(drag.x)<5)return;
+    var rot=Math.max(-4,Math.min(4,drag.x/45));
+    drag.card.style.transform="translateX("+drag.x+"px) rotate("+rot+"deg) scale(.995)";
+  });
+  function endDrag(){
+    if(!drag.active||!drag.card)return;
+    var card=drag.card,x=drag.x;
+    drag.active=false;drag.card=null;
+    card.classList.remove("dragging");
+    card.style.transform="";
+    if(Math.abs(x)>70){shuffle(x<0?1:-1);}
+  }
+  deck.addEventListener("pointerup",endDrag);
+  deck.addEventListener("pointercancel",endDrag);
+  renderDeck();
+  document.addEventListener("input",function(){});
+  document.addEventListener("change",function(){});
+}());
+</script>
+</body>
+</html>

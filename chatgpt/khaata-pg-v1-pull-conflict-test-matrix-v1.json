@@ -1,0 +1,113 @@
+{
+  "version": "1.0",
+  "status": "proposed pull/conflict tests",
+  "cases": [
+    {
+      "id": "PULL-001",
+      "case": "duplicate remote event",
+      "expect": [
+        "ignored",
+        "no duplicate local effect",
+        "checkpoint advances only after commit"
+      ]
+    },
+    {
+      "id": "PULL-002",
+      "case": "remote payment event",
+      "expect": [
+        "append-only insert",
+        "immutable row not updated for sync metadata",
+        "sync_entity_state updated instead"
+      ]
+    },
+    {
+      "id": "PULL-003",
+      "case": "remote reversal",
+      "expect": [
+        "original payment remains",
+        "reversal appended"
+      ]
+    },
+    {
+      "id": "PULL-004",
+      "case": "newer safe mutable record",
+      "expect": [
+        "typed local upsert",
+        "server_version advances"
+      ]
+    },
+    {
+      "id": "PULL-005",
+      "case": "remote update while local pending",
+      "expect": [
+        "explicit conflict",
+        "both snapshots preserved"
+      ]
+    },
+    {
+      "id": "PULL-006",
+      "case": "same-bed concurrent commitments",
+      "expect": [
+        "bed_commitment_overlap conflict",
+        "both commitments remain",
+        "no auto reassignment"
+      ]
+    },
+    {
+      "id": "PULL-007",
+      "case": "generic local-wins on bed conflict",
+      "expect": [
+        "rejected",
+        "must use legitimate tenancy/occupancy action"
+      ]
+    },
+    {
+      "id": "PULL-008",
+      "case": "bed conflict resolved by room/date/lifecycle change",
+      "expect": [
+        "new domain action queued",
+        "conflict closes only after underlying change"
+      ]
+    },
+    {
+      "id": "PULL-009",
+      "case": "batch failure halfway",
+      "expect": [
+        "whole batch rolls back",
+        "checkpoint unchanged"
+      ]
+    },
+    {
+      "id": "PULL-010",
+      "case": "unknown merge policy",
+      "expect": [
+        "conflict",
+        "no blind merge"
+      ]
+    },
+    {
+      "id": "PULL-011",
+      "case": "apply remote ordinary mutable conflict",
+      "expect": [
+        "resolution history appended",
+        "conflict closes"
+      ]
+    },
+    {
+      "id": "PULL-012",
+      "case": "keep local ordinary mutable conflict",
+      "expect": [
+        "new outbox operation",
+        "sync state pending"
+      ]
+    },
+    {
+      "id": "PULL-013",
+      "case": "mark immutable payment synced",
+      "expect": [
+        "only sync_entity_state changes",
+        "payment row remains immutable"
+      ]
+    }
+  ]
+}

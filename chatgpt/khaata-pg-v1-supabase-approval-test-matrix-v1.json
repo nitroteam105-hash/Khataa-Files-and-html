@@ -1,0 +1,113 @@
+{
+  "version": "1.0",
+  "status": "proposed server approval orchestration tests",
+  "cases": [
+    {
+      "id": "APR-001",
+      "case": "staff permission needs approval",
+      "expect": [
+        "pg_request_approval creates pending request",
+        "no business mutation"
+      ]
+    },
+    {
+      "id": "APR-002",
+      "case": "same request_key retried",
+      "expect": [
+        "existing request reused",
+        "no duplicate pending request"
+      ]
+    },
+    {
+      "id": "APR-003",
+      "case": "action already Allowed",
+      "expect": [
+        "request rejected APPROVAL_NOT_REQUIRED"
+      ]
+    },
+    {
+      "id": "APR-004",
+      "case": "action Not allowed",
+      "expect": [
+        "request rejected ACTION_NOT_ALLOWED"
+      ]
+    },
+    {
+      "id": "APR-005",
+      "case": "ordinary active staff attempts approval",
+      "expect": [
+        "NOT_APPROVER unless approve_requests is Allowed"
+      ]
+    },
+    {
+      "id": "APR-006",
+      "case": "owner approves without staff membership",
+      "expect": [
+        "approval succeeds",
+        "decided_by_user_id is owner",
+        "membership attribution nullable"
+      ]
+    },
+    {
+      "id": "APR-007",
+      "case": "authorized staff approves",
+      "expect": [
+        "request approved",
+        "one-use authorization created",
+        "decision event appended"
+      ]
+    },
+    {
+      "id": "APR-008",
+      "case": "approval itself",
+      "expect": [
+        "underlying protected business action still not executed"
+      ]
+    },
+    {
+      "id": "APR-009",
+      "case": "decline",
+      "expect": [
+        "request state declined",
+        "no authorization created",
+        "decision history appended"
+      ]
+    },
+    {
+      "id": "APR-010",
+      "case": "approve same request twice",
+      "expect": [
+        "second call rejected APPROVAL_NOT_PENDING or idempotent prior operation result"
+      ]
+    },
+    {
+      "id": "APR-011",
+      "case": "protected command succeeds with authorization",
+      "expect": [
+        "domain mutation and consume authorization atomically",
+        "authorization feed update emitted"
+      ]
+    },
+    {
+      "id": "APR-012",
+      "case": "protected command rolls back",
+      "expect": [
+        "authorization remains unconsumed"
+      ]
+    },
+    {
+      "id": "APR-013",
+      "case": "second device pull",
+      "expect": [
+        "request/decision/authorization synchronize through typed appliers"
+      ]
+    },
+    {
+      "id": "APR-014",
+      "case": "approval history update/delete attempted",
+      "expect": [
+        "rejected append-only"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · Plans & upgrade · v1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{
+--canvas:#FDFCF8;--surface:#FFFFFF;--row:#F6F6F5;--line:#E6E0D7;--ink:#171716;--muted:#6B6B69;
+--alert:#FF6B5B;--alert-solid:#C23E2E;--alert-ink:#B83A2B;--alert-tint:#FFE4DF;
+--pending:#EBC36B;--pending-ink:#6E5200;--pending-tile:#FFF0C4;
+--done-ink:#1E7A4C;--done-tint:#DDF3E6;--info:#D7E1FE;--info-ink:#2B3A75;--info-line:#C3D0F7;
+--act:#2B3A75;--act-text:#FFFFFF;--neutral-tile:#EDEDEC;--neutral-ink:#6B6B69;
+--r-card:20px;--r-btn:14px;--r-pill:999px;color-scheme:light
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+--canvas:#1B1B1A;--surface:#262625;--row:#232322;--line:#38383A;--ink:#FFFFFF;--muted:#9B9B98;
+--alert:#E8705C;--alert-solid:#E8705C;--alert-ink:#F59384;--alert-tint:#3A2420;
+--pending:#EBC36B;--pending-ink:#EBC36B;--pending-tile:#3A3122;--done-ink:#74C99A;--done-tint:#244232;
+--info:#252C42;--info-ink:#DCE4FF;--info-line:#34405E;--act:#C9D4FB;--act-text:#1A2140;--neutral-tile:#2A2A29;--neutral-ink:#9B9B98;color-scheme:dark}}
+:root[data-theme="dark"]{
+--canvas:#1B1B1A;--surface:#262625;--row:#232322;--line:#38383A;--ink:#FFFFFF;--muted:#9B9B98;
+--alert:#E8705C;--alert-solid:#E8705C;--alert-ink:#F59384;--alert-tint:#3A2420;
+--pending:#EBC36B;--pending-ink:#EBC36B;--pending-tile:#3A3122;--done-ink:#74C99A;--done-tint:#244232;
+--info:#252C42;--info-ink:#DCE4FF;--info-line:#34405E;--act:#C9D4FB;--act-text:#1A2140;--neutral-tile:#2A2A29;--neutral-ink:#9B9B98;color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--canvas);color:var(--ink);font-family:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif}
+button{font:inherit;color:inherit;cursor:pointer}:focus-visible{outline:2px solid var(--act);outline-offset:2px}[hidden]{display:none!important}
+svg.lucide{width:18px;height:18px;flex:none}
+.app{max-width:520px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top)) 16px calc(36px + env(safe-area-inset-bottom))}
+.top{position:sticky;top:0;z-index:5;background:var(--canvas);display:flex;align-items:center;gap:10px;padding:2px 0 10px}
+.ibtn{width:44px;height:44px;border:1px solid var(--line);background:var(--surface);border-radius:12px;display:grid;place-items:center;padding:0}
+.title{flex:1}.title strong{display:block;font-size:16px}.title small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+h1{font-size:26px;line-height:1.08;margin:12px 0 5px}.lead{font-size:12px;color:var(--muted);line-height:1.5;margin:0 0 16px}
+.note{padding:11px 12px;border-radius:14px;background:var(--info);color:var(--info-ink);font-size:11px;line-height:1.45;margin-bottom:14px}
+.current{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:4px 8px;background:var(--neutral-tile);color:var(--neutral-ink);font-size:10px;font-weight:800}
+.plans{display:grid;gap:10px}.plan{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:15px;position:relative}.plan.recommended{background:var(--done-tint);border-color:var(--done-ink)}.plan.selected{box-shadow:inset 0 0 0 2px var(--act);border-color:var(--act)}
+.kicker{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:4px 8px;background:var(--done-ink);color:var(--surface);font-size:10px;font-weight:800;margin-bottom:8px}
+.plan h2{font-size:18px;margin:0}.plan p{font-size:11px;color:var(--muted);line-height:1.45;margin:4px 0 0}.plan.recommended p{color:var(--done-ink)}
+.price{font-size:22px;font-weight:800;margin-top:12px}.price small{display:block;font-size:10px;color:var(--muted);font-weight:600;margin-top:3px}
+.features{display:grid;gap:8px;margin-top:14px}.feat{display:flex;gap:8px;align-items:flex-start;font-size:11px;line-height:1.4}.feat i{color:var(--done-ink);margin-top:1px}
+.btn{min-height:44px;border:1px solid var(--line);background:var(--surface);border-radius:var(--r-btn);padding:0 14px;font-size:11px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;gap:6px}.btn.primary{background:var(--act);color:var(--act-text);border-color:var(--act)}.btn.secondary{background:var(--surface);color:var(--ink)}.btn.wide{width:100%;margin-top:14px}.btn:disabled{opacity:.45}
+.compare{margin-top:22px}.compare h2{font-size:14px;margin:0 0 10px}.table{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--surface)}.tr{display:grid;grid-template-columns:1.5fr repeat(3,.7fr);align-items:center;border-bottom:1px solid var(--line);min-height:48px}.tr:last-child{border-bottom:0}.th{background:var(--row);font-weight:800}.tr span{padding:9px 7px;font-size:10.5px;text-align:center}.tr span:first-child{text-align:left}.yes{color:var(--done-ink);font-weight:800}.dash{color:var(--muted)}
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.34);z-index:40;opacity:0;pointer-events:none}.scrim.on{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:50%;bottom:0;transform:translate(-50%,105%);width:min(520px,100%);background:var(--surface);border-radius:24px 24px 0 0;padding:10px 16px calc(18px + env(safe-area-inset-bottom));z-index:50;transition:.22s}.sheet.on{transform:translate(-50%,0)}
+.handle{width:38px;height:4px;border-radius:99px;background:var(--line);margin:0 auto 12px}.shead{display:flex;align-items:flex-start;gap:10px}.shead .grow{flex:1}.shead h2{font-size:18px;margin:0}.shead p{font-size:11px;color:var(--muted);margin:3px 0 0}.close{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center}
+.summary{margin-top:12px;border:1px solid var(--line);border-radius:16px;padding:12px}.kv{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line);font-size:11px}.kv:last-child{border-bottom:0}.kv span{color:var(--muted)}.kv b{text-align:right}
+</style>
+</head>
+<body>
+<main class="app">
+<header class="top">
+<button class="ibtn" data-act="back" aria-label="Back"><i data-lucide="arrow-left"></i></button>
+<div class="title"><strong>Plans</strong><small>Khaata account</small></div>
+<button class="ibtn" data-act="theme" aria-label="Toggle theme"><i data-lucide="sun-moon"></i></button>
+</header>
+
+<div class="note"><b>Plans v1</b><br>Free and Pro stay plain. Premium is the recommended plan and carries the positive green treatment. Exact commercial pricing is intentionally not defined in this prototype.</div>
+
+<h1>Choose the right plan</h1>
+<p class="lead">Start local, add sync when you need it, and move to advanced access when your business grows.</p>
+
+<div class="plans">
+<section class="plan" data-plan="free">
+<span class="current"><i data-lucide="check"></i>Current plan</span>
+<h2>Free</h2>
+<p>Core local use for a single owner.</p>
+<div class="price">₹—<small>Price shown when commercial plans are finalized.</small></div>
+<div class="features">
+<div class="feat"><i data-lucide="check"></i><span>Core business records on this device</span></div>
+<div class="feat"><i data-lucide="check"></i><span>Local backup and export</span></div>
+<div class="feat"><i data-lucide="check"></i><span>Normal offline work</span></div>
+</div>
+<button class="btn secondary wide" disabled>Current plan</button>
+</section>
+
+<section class="plan" data-plan="pro">
+<h2>Pro</h2>
+<p>Add connected-device sync while keeping local-first operation.</p>
+<div class="price">₹—<small>Price shown when commercial plans are finalized.</small></div>
+<div class="features">
+<div class="feat"><i data-lucide="check"></i><span>Everything in Free</span></div>
+<div class="feat"><i data-lucide="check"></i><span>Khaata Sync when online</span></div>
+<div class="feat"><i data-lucide="check"></i><span>Linked devices and synced data</span></div>
+</div>
+<button class="btn primary wide" data-choose="pro">Choose Pro</button>
+</section>
+
+<section class="plan recommended" data-plan="premium">
+<span class="kicker"><i data-lucide="thumbs-up"></i>Recommended</span>
+<h2>Premium</h2>
+<p>Advanced business access for teams and businesses that need more control.</p>
+<div class="price">₹—<small>Price shown when commercial plans are finalized.</small></div>
+<div class="features">
+<div class="feat"><i data-lucide="check"></i><span>Everything in Pro</span></div>
+<div class="feat"><i data-lucide="check"></i><span>Advanced staff & access controls</span></div>
+<div class="feat"><i data-lucide="check"></i><span>Premium-only capabilities where enabled</span></div>
+</div>
+<button class="btn primary wide" data-choose="premium">Choose Premium</button>
+</section>
+</div>
+
+<section class="compare">
+<h2>Compare</h2>
+<div class="table">
+<div class="tr th"><span>Capability</span><span>Free</span><span>Pro</span><span>Premium</span></div>
+<div class="tr"><span>Local business use</span><span class="yes">✓</span><span class="yes">✓</span><span class="yes">✓</span></div>
+<div class="tr"><span>Backup / export</span><span class="yes">✓</span><span class="yes">✓</span><span class="yes">✓</span></div>
+<div class="tr"><span>Khaata Sync</span><span class="dash">—</span><span class="yes">✓</span><span class="yes">✓</span></div>
+<div class="tr"><span>Linked devices</span><span class="dash">—</span><span class="yes">✓</span><span class="yes">✓</span></div>
+<div class="tr"><span>Advanced staff access</span><span class="dash">—</span><span class="dash">—</span><span class="yes">✓</span></div>
+</div>
+</section>
+</main>
+
+<div class="scrim" id="scrim"></div>
+<section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+<div class="handle"></div>
+<div class="shead"><div class="grow"><h2 id="sheetTitle">Upgrade</h2><p id="sheetSub"></p></div><button class="close" data-act="close" aria-label="Close"><i data-lucide="x"></i></button></div>
+<div id="sheetBody"></div>
+</section>
+
+<script>
+(function(){
+"use strict";
+var selected=null,lastFocus=null;
+function icons(){if(window.lucide&&lucide.createIcons)lucide.createIcons()}
+function openSheet(plan){
+ selected=plan;lastFocus=document.activeElement;
+ var label=plan==="pro"?"Pro":"Premium";
+ sheetTitle.textContent="Choose "+label;
+ sheetSub.textContent="Review before continuing";
+ sheetBody.innerHTML='<div class="summary"><div class="kv"><span>Current plan</span><b>Free</b></div><div class="kv"><span>New plan</span><b>'+label+'</b></div><div class="kv"><span>Business data</span><b>Kept</b></div></div><div class="note" style="margin-top:12px"><b>No data migration loss.</b><br>Existing local business data remains available. Exact checkout, billing period and commercial price are outside this prototype.</div><button class="btn primary wide" data-act="checkout">Continue to checkout</button>';
+ scrim.classList.add("on");sheet.classList.add("on");icons();
+ setTimeout(function(){var b=sheet.querySelector("button");if(b)b.focus()},0)
+}
+function closeSheet(){scrim.classList.remove("on");sheet.classList.remove("on");if(lastFocus&&lastFocus.focus)lastFocus.focus()}
+document.addEventListener("click",function(e){
+ var c=e.target.closest("[data-choose]");if(c){openSheet(c.dataset.choose);return}
+ var a=e.target.closest("[data-act]");if(!a)return;
+ if(a.dataset.act==="back"){alert("Back to Settings");return}
+ if(a.dataset.act==="theme"){var r=document.documentElement;r.dataset.theme=r.dataset.theme==="dark"?"light":"dark";return}
+ if(a.dataset.act==="close"){closeSheet();return}
+ if(a.dataset.act==="checkout"){sheetBody.innerHTML='<div class="note" style="background:var(--done-tint);color:var(--done-ink)"><b>Checkout handoff</b><br>This is where the real commercial checkout would begin once pricing and billing terms are finalized.</div><button class="btn wide" data-act="close">Done</button>';icons();return}
+});
+scrim.addEventListener("click",closeSheet);
+document.addEventListener("keydown",function(e){if(e.key==="Escape")closeSheet()});
+icons();
+})();
+</script>
+</body>
+</html>

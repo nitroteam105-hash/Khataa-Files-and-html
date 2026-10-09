@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · Staff Access Enforcement v1</title>
+<style>
+:root{--canvas:#FDFCF8;--surface:#FFFFFF;--line:#E6E0D7;--ink:#171716;--muted:#6B6B69;--info:#D7E1FE;--info-ink:#2B3A75;--done:#DDF3E6;--done-ink:#1E7A4C;--pending:#FFF0C4;--pending-ink:#6E5200}
+*{box-sizing:border-box}body{margin:0;background:var(--canvas);color:var(--ink);font-family:Manrope,system-ui,sans-serif}main{max-width:860px;margin:auto;padding:20px 16px 44px}h1{font-size:26px;margin:0 0 6px}h2{font-size:19px;margin:22px 0 6px}p{font-size:11.5px;line-height:1.6;color:var(--muted);margin:0}.note{padding:11px 12px;border-radius:14px;background:var(--info);color:var(--info-ink);font-size:11px;line-height:1.5;margin:12px 0}.ok{background:var(--done);color:var(--done-ink)}.warn{background:var(--pending);color:var(--pending-ink)}.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:14px;margin-top:10px;overflow:auto}table{width:100%;border-collapse:collapse;font-size:10.5px}th,td{text-align:left;vertical-align:top;padding:9px 8px;border-bottom:1px solid var(--line);line-height:1.45}th{color:var(--muted)}tr:last-child td{border-bottom:0}code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.flow{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10.5px;line-height:1.65;white-space:pre-wrap;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px}
+</style></head><body><main>
+<h1>Staff Access Enforcement v1</h1>
+<p>This turns Staff & Access from configuration data into an executable authorization boundary for the mobile command layer.</p>
+
+<div class="note ok"><b>Core rule:</b> every protected command evaluates Allowed / Needs approval / Not allowed before mutating SQLite.</div>
+<div class="note warn"><b>Approval remains two-step:</b> approving a request creates an authorization. The actual business action still has to run later and consume that authorization inside its own transaction.</div>
+
+<h2>Permission behavior</h2>
+<div class="card"><table><tr><th>State / concern</th><th>Runtime behavior</th><th>Important boundary</th></tr><tr><td>Allowed</td><td>Execute immediately</td><td>No approval record needed</td></tr><tr><td>Needs approval</td><td>Create approval request and stop</td><td>Approval later creates authorization, not domain execution</td></tr><tr><td>Not allowed</td><td>Reject</td><td>Do not create approval request automatically</td></tr><tr><td>Visibility</td><td>Evaluated separately on reads</td><td>Does not redefine action permission</td></tr><tr><td>Missing requirements</td><td>Extra authority check</td><td>Tenant requirement policy remains Required/Optional/Not collected</td></tr><tr><td>Disabled staff</td><td>No new actions</td><td>Historical collections/custody/approvals remain attributed</td></tr></table></div>
+
+<h2>Approval execution path</h2>
+<div class="flow">staff attempts protected command
+  ↓
+AccessGate.requireAction(...)
+  ↓
+permission = Needs approval
+  ↓
+create approval_request
+  ↓
+STOP — no business mutation yet
+
+approver approves request
+  ↓
+create approval_authorization
+  ↓
+STOP — still no business mutation
+
+staff retries command with authorization
+  ↓
+validate actor + action + target + unused authorization
+  ↓
+perform domain mutation
+  ↓
+append domain event
+  ↓
+consume authorization in SAME SQLite transaction
+  ↓
+COMMIT</div>
+
+<h2>Missing tenant requirements</h2>
+<div class="flow">tenant has missing Required item
+  ↓
+RequirementService reports Setup incomplete
+  ↓
+base command permission check
+  ↓
+AccessGate checks:
+proceed_with_missing_requirements
+  ├─ Allowed → proceed, Setup incomplete remains visible
+  ├─ Needs approval → request approval and stop
+  └─ Not allowed → stop
+
+Requirement policy itself is never changed by this decision.</div>
+
+<h2>Storage added</h2>
+<div class="card"><p>
+<code>staff_roles</code>, normalized role action permissions, visibility rules, area-access levels,
+property scopes, one-use <code>approval_authorizations</code>, effective-access views and append-only staff access history.
+Default role-template contents remain configurable rather than being invented as frozen product policy.
+</p></div>
+
+<div class="note">The included test matrix covers owner-only operation, each permission state, approval creation vs execution, authorization reuse, disabled staff, missing-requirement override, visibility separation and target-bound approvals.</div>
+</main></body></html>

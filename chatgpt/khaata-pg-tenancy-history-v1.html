@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · PG / Hostel · Tenancy History · v1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{
+  --canvas:#FDFCF8; --surface:#FFFFFF; --row:#F6F6F5; --line:#E6E0D7;
+  --ink:#171716; --muted:#6B6B69;
+  --alert:#FF6B5B; --alert-solid:#C23E2E; --alert-ink:#B83A2B; --alert-tint:#FFE4DF;
+  --pending:#EBC36B; --pending-ink:#6E5200; --pending-tile:#FFF0C4;
+  --done-ink:#1E7A4C; --done-tint:#DDF3E6;
+  --info:#D7E1FE; --info-ink:#2B3A75; --info-line:#C3D0F7;
+  --act:#2B3A75; --act-text:#FFFFFF;
+  --neutral-tile:#EDEDEC; --neutral-ink:#6B6B69;
+  --r-btn:14px; --r-card:20px; --r-pill:999px;
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:24px; --sp-7:32px;
+  --dur-fast:.18s; --dur-slide:.5s; --ease-slide:cubic-bezier(.33,1,.68,1);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --canvas:#1B1B1A; --surface:#262625; --row:#232322; --line:#38383a;
+    --ink:#FFFFFF; --muted:#9B9B98;
+    --alert:#E8705C; --alert-solid:#E8705C; --alert-ink:#F59384; --alert-tint:#3A2420;
+    --pending:#EBC36B; --pending-ink:#EBC36B; --pending-tile:#3A3122;
+    --done-ink:#74C99A; --done-tint:#244232;
+    --info:#252C42; --info-ink:#DCE4FF; --info-line:#34405E;
+    --act:#C9D4FB; --act-text:#1A2140;
+    --neutral-tile:#2A2A29; --neutral-ink:#9B9B98;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --canvas:#1B1B1A; --surface:#262625; --row:#232322; --line:#38383a;
+  --ink:#FFFFFF; --muted:#9B9B98;
+  --alert:#E8705C; --alert-solid:#E8705C; --alert-ink:#F59384; --alert-tint:#3A2420;
+  --pending:#EBC36B; --pending-ink:#EBC36B; --pending-tile:#3A3122;
+  --done-ink:#74C99A; --done-tint:#244232;
+  --info:#252C42; --info-ink:#DCE4FF; --info-line:#34405E;
+  --act:#C9D4FB; --act-text:#1A2140;
+  --neutral-tile:#2A2A29; --neutral-ink:#9B9B98;
+  color-scheme:dark;
+}
+:root{--biz-pink:#FBB9C2;--biz-pink-ink:#171716}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--canvas);color:var(--ink);font-family:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif}
+button,input{font:inherit}button{cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid var(--act);outline-offset:2px}
+svg.lucide{width:18px;height:18px;stroke-width:2}
+.app{max-width:520px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top)) 16px calc(92px + env(safe-area-inset-bottom))}
+.new{padding:10px 12px;border-radius:var(--r-card);background:var(--info);color:var(--info-ink);font-size:11.5px;line-height:1.45;margin-bottom:12px}
+.new strong{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.back,.theme{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);display:grid;place-items:center;padding:0}
+.business{flex:1}.business strong{display:block;font-size:14px}.business small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+h1{font-size:26px;line-height:1.05;margin:8px 0 4px}
+.lead{margin:0 0 14px;color:var(--muted);font-size:12px;line-height:1.5}
+.search{height:46px;border:1px solid var(--line);border-radius:var(--r-btn);background:var(--surface);display:flex;align-items:center;gap:8px;padding:0 12px;margin-bottom:10px}
+.search input{width:100%;border:0;outline:0;background:transparent;color:var(--ink);font-size:13px}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:var(--row);border-radius:16px;padding:4px;margin-bottom:12px}
+.tab{height:36px;border:0;border-radius:12px;background:transparent;color:var(--muted);font-size:11px;font-weight:800}
+.tab.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px color-mix(in srgb,var(--ink) 10%,transparent)}
+.card{border:1px solid var(--line);border-radius:var(--r-card);background:var(--surface);overflow:hidden}
+.row{width:100%;border:0;border-bottom:1px solid var(--line);background:var(--surface);color:var(--ink);padding:13px;display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:10px;align-items:center;text-align:left}.row:last-child{border-bottom:0}
+.tile{width:36px;height:36px;border-radius:12px;background:var(--neutral-tile);color:var(--act);display:grid;place-items:center}
+.row strong{display:block;font-size:13px}.row small{display:block;color:var(--muted);font-size:10.5px;margin-top:3px;line-height:1.35}
+.chev{color:var(--muted)}
+.empty{padding:28px 18px;text-align:center;color:var(--muted);font-size:12px}
+.sheetback{position:fixed;inset:0;background:color-mix(in srgb,var(--ink) 28%,transparent);display:none;z-index:60}.sheetback.on{display:block}
+.sheet{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:min(520px,100%);max-height:78vh;overflow:auto;background:var(--surface);border-radius:24px 24px 0 0;padding:10px 18px calc(22px + env(safe-area-inset-bottom))}
+.handle{width:38px;height:4px;border-radius:99px;background:var(--line);margin:0 auto 18px}
+.sheet h2{font-size:19px;margin:0}.sheet p{margin:4px 0 14px;color:var(--muted);font-size:11px}
+.timeline{position:relative;padding-left:24px}.timeline:before{content:"";position:absolute;left:7px;top:6px;bottom:6px;width:1px;background:var(--line)}
+.event{position:relative;padding:0 0 16px}.event:last-child{padding-bottom:0}
+.event:before{content:"";position:absolute;left:-21px;top:5px;width:9px;height:9px;border-radius:50%;background:var(--surface);border:2px solid var(--act)}
+.event b{display:block;font-size:12px}.event span{display:block;color:var(--muted);font-size:10.5px;margin-top:2px;line-height:1.4}
+.nav{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(520px,100%);height:72px;padding-bottom:env(safe-area-inset-bottom);background:var(--surface);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);z-index:40}
+.nav button{border:0;background:transparent;color:var(--muted);font-size:10px;font-weight:700;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}.nav button.on{color:var(--act)}.nav svg{width:18px;height:18px}
+</style>
+</head>
+<body>
+<main class="app">
+  <div class="new"><strong>New in this file</strong><br>New PG secondary operating screen: Tenancy History. It preserves and browses historical occupancy by Tenant, Room, or Bed. Financial history remains in statements/collections rather than being mixed into this screen.</div>
+
+  <header class="top">
+    <button class="back" type="button" aria-label="Back"><i data-lucide="arrow-left"></i></button>
+    <div class="business"><strong>Tenancy History</strong><small>Sunrise PG · occupancy archive</small></div>
+    <button class="theme" type="button" data-act="theme" aria-label="Toggle theme"><i data-lucide="sun-moon"></i></button>
+  </header>
+
+  <h1>Tenancy History</h1>
+  <p class="lead">Find who stayed where and when. Search historical occupancy without mixing it with payment or expense history.</p>
+
+  <div class="search">
+    <i data-lucide="search"></i>
+    <input id="q" type="search" placeholder="Search tenant, room, bed or year">
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab on" type="button" data-scope="tenant">Tenants</button>
+    <button class="tab" type="button" data-scope="room">Rooms</button>
+    <button class="tab" type="button" data-scope="bed">Beds</button>
+  </div>
+
+  <section class="card" id="list"></section>
+</main>
+
+<div class="sheetback" id="sheetback">
+  <section class="sheet" role="dialog" aria-modal="true">
+    <div class="handle"></div>
+    <h2 id="sheetTitle"></h2>
+    <p id="sheetMeta"></p>
+    <div class="timeline" id="timeline"></div>
+  </section>
+</div>
+
+<nav class="nav">
+  <button type="button"><i data-lucide="house"></i>Home</button>
+  <button type="button"><i data-lucide="users"></i>Tenants</button>
+  <button type="button"><i data-lucide="indian-rupee"></i>Collections</button>
+  <button type="button" class="on"><i data-lucide="menu"></i>More</button>
+</nav>
+
+<script>
+const data={
+ tenant:[
+  {title:"Ramesh Kumar",sub:"Former · Room 201 · Bed A · Jun 2015 – Mar 2017",icon:"user-round",meta:"Tenant occupancy history",events:[
+    ["Joined Sunrise PG","12 Jun 2015 · Room 201 · Bed A"],
+    ["Transferred room","03 Feb 2016 · Room 201 → Room 205 · Bed A"],
+    ["Transferred room","18 Nov 2016 · Room 205 → Room 201 · Bed A"],
+    ["Tenancy ended","31 Mar 2017 · Room 201 · Bed A"]
+  ]},
+  {title:"Neha Singh",sub:"Former · Room 304 · Bed B · Jul 2021 – Dec 2024",icon:"user-round",meta:"Tenant occupancy history",events:[
+    ["Joined Sunrise PG","01 Jul 2021 · Room 304 · Bed B"],
+    ["Tenancy ended","20 Dec 2024 · Room 304 · Bed B"]
+  ]},
+  {title:"Rohan Mehta",sub:"Active · Room 203 · Bed B · Since 5 Mar 2026",icon:"user-round",meta:"Tenant occupancy history",events:[
+    ["Joined Sunrise PG","05 Mar 2026 · Room 203 · Bed B"]
+  ]}
+ ],
+ room:[
+  {title:"Room 201",sub:"3 historical occupancies · 2015 – 2026",icon:"door-open",meta:"Room occupancy history",events:[
+    ["Ramesh Kumar","12 Jun 2015 – 03 Feb 2016 · Bed A"],
+    ["Ramesh Kumar","18 Nov 2016 – 31 Mar 2017 · Bed A"],
+    ["Aditya Jain","01 Apr 2026 – Present · Bed A"]
+  ]},
+  {title:"Room 203",sub:"2 historical occupancies · 2024 – 2026",icon:"door-open",meta:"Room occupancy history",events:[
+    ["Kabir Shah","10 Jan 2024 – 28 Feb 2026 · Bed B"],
+    ["Rohan Mehta","05 Mar 2026 – Present · Bed B"]
+  ]},
+  {title:"Room 304",sub:"2 historical occupancies · 2021 – 2026",icon:"door-open",meta:"Room occupancy history",events:[
+    ["Neha Singh","01 Jul 2021 – 20 Dec 2024 · Bed B"],
+    ["Priya Menon","08 Oct 2026 – Upcoming · Bed B"]
+  ]}
+ ],
+ bed:[
+  {title:"Room 201 · Bed A",sub:"3 occupancy periods · 2015 – 2026",icon:"bed-single",meta:"Bed occupancy history",events:[
+    ["Ramesh Kumar","12 Jun 2015 – 03 Feb 2016"],
+    ["Ramesh Kumar","18 Nov 2016 – 31 Mar 2017"],
+    ["Aditya Jain","01 Apr 2026 – Present"]
+  ]},
+  {title:"Room 203 · Bed B",sub:"2 occupancy periods · 2024 – 2026",icon:"bed-single",meta:"Bed occupancy history",events:[
+    ["Kabir Shah","10 Jan 2024 – 28 Feb 2026"],
+    ["Rohan Mehta","05 Mar 2026 – Present"]
+  ]}
+ ]
+};
+let scope="tenant";
+function icons(){if(window.lucide&&lucide.createIcons)lucide.createIcons()}
+function render(){
+ const term=q.value.trim().toLowerCase();
+ const rows=data[scope].filter(x=>(x.title+" "+x.sub+" "+x.events.flat().join(" ")).toLowerCase().includes(term));
+ list.innerHTML=rows.length?rows.map((x,i)=>`<button class="row" type="button" data-index="${data[scope].indexOf(x)}"><span class="tile"><i data-lucide="${x.icon}"></i></span><span><strong>${x.title}</strong><small>${x.sub}</small></span><i class="chev" data-lucide="chevron-right"></i></button>`).join(""):`<div class="empty">No matching ${scope==="tenant"?"tenancy":scope} history found.</div>`;
+ icons();
+}
+function openItem(x){
+ sheetTitle.textContent=x.title;sheetMeta.textContent=x.meta;
+ timeline.innerHTML=x.events.map(e=>`<div class="event"><b>${e[0]}</b><span>${e[1]}</span></div>`).join("");
+ sheetback.classList.add("on");
+}
+document.addEventListener("click",e=>{
+ const t=e.target.closest("[data-scope]");if(t){scope=t.dataset.scope;document.querySelectorAll("[data-scope]").forEach(b=>b.classList.toggle("on",b===t));render();return}
+ const r=e.target.closest("[data-index]");if(r){openItem(data[scope][+r.dataset.index]);return}
+ const a=e.target.closest("[data-act]");if(a&&a.dataset.act==="theme"){const root=document.documentElement,c=root.getAttribute("data-theme");root.setAttribute("data-theme",c==="dark"?"light":"dark")}
+});
+q.addEventListener("input",render);
+sheetback.addEventListener("click",e=>{if(e.target===sheetback)sheetback.classList.remove("on")});
+render();icons();
+</script>
+</body>
+</html>

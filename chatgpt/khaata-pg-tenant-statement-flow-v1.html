@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khaata · PG / Hostel · Tenant Statement · v1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{
+  --canvas:#FDFCF8; --surface:#FFFFFF; --row:#F6F6F5; --line:#E6E0D7;
+  --ink:#171716; --muted:#6B6B69;
+  --alert:#FF6B5B; --alert-solid:#C23E2E; --alert-ink:#B83A2B; --alert-tint:#FFE4DF;
+  --pending:#EBC36B; --pending-ink:#6E5200; --pending-tile:#FFF0C4;
+  --done-ink:#1E7A4C; --done-tint:#DDF3E6;
+  --info:#D7E1FE; --info-ink:#2B3A75; --info-line:#C3D0F7;
+  --act:#2B3A75; --act-text:#FFFFFF;
+  --neutral-tile:#EDEDEC; --neutral-ink:#6B6B69;
+  --r-btn:14px; --r-card:20px; --r-pill:999px;
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:24px; --sp-7:32px;
+  --dur-fast:.18s; --dur-slide:.5s; --ease-slide:cubic-bezier(.33,1,.68,1);
+  color-scheme:light;
+}
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --canvas:#1B1B1A; --surface:#262625; --row:#232322; --line:#38383a;
+    --ink:#FFFFFF; --muted:#9B9B98;
+    --alert:#E8705C; --alert-solid:#E8705C; --alert-ink:#F59384; --alert-tint:#3A2420;
+    --pending:#EBC36B; --pending-ink:#EBC36B; --pending-tile:#3A3122;
+    --done-ink:#74C99A; --done-tint:#244232;
+    --info:#252C42; --info-ink:#DCE4FF; --info-line:#34405E;
+    --act:#C9D4FB; --act-text:#1A2140;
+    --neutral-tile:#2A2A29; --neutral-ink:#9B9B98;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --canvas:#1B1B1A; --surface:#262625; --row:#232322; --line:#38383a;
+  --ink:#FFFFFF; --muted:#9B9B98;
+  --alert:#E8705C; --alert-solid:#E8705C; --alert-ink:#F59384; --alert-tint:#3A2420;
+  --pending:#EBC36B; --pending-ink:#EBC36B; --pending-tile:#3A3122;
+  --done-ink:#74C99A; --done-tint:#244232;
+  --info:#252C42; --info-ink:#DCE4FF; --info-line:#34405E;
+  --act:#C9D4FB; --act-text:#1A2140;
+  --neutral-tile:#2A2A29; --neutral-ink:#9B9B98;
+  color-scheme:dark;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--canvas);color:var(--ink);font-family:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif}
+button{font:inherit;cursor:pointer}
+button:focus-visible{outline:2px solid var(--act);outline-offset:2px}
+svg.lucide{width:18px;height:18px;stroke-width:2}
+.app{max-width:520px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top)) 16px calc(32px + env(safe-area-inset-bottom))}
+.new{padding:10px 12px;border-radius:var(--r-card);background:var(--info);color:var(--info-ink);font-size:11.5px;line-height:1.45;margin-bottom:12px}
+.new strong{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.back,.theme{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);display:grid;place-items:center;padding:0}
+.title{flex:1}.title strong{display:block;font-size:14px}.title small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+h1{font-size:26px;line-height:1.05;margin:8px 0 4px}
+.lead{margin:0 0 14px;color:var(--muted);font-size:12px;line-height:1.5}
+.card{border:1px solid var(--line);border-radius:var(--r-card);background:var(--surface)}
+.summary{padding:14px;margin-bottom:12px}
+.summary-top{display:flex;align-items:center;gap:12px}
+.avatar{width:42px;height:42px;border-radius:14px;background:#FBB9C2;color:#171716;display:grid;place-items:center;font-weight:800}
+.copy{flex:1}.copy strong{display:block;font-size:13px}.copy small{display:block;color:var(--muted);font-size:10.5px;margin-top:3px}
+.money{text-align:right}.money span{display:block;color:var(--muted);font-size:10px}.money b{display:block;font-size:18px;margin-top:2px}
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.metric{padding:10px 11px;border-radius:14px;background:var(--row)}
+.metric span{display:block;color:var(--muted);font-size:10px}.metric b{display:block;margin-top:3px;font-size:13px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.btn{min-height:40px;border:1px solid var(--line);border-radius:var(--r-btn);background:var(--surface);color:var(--ink);font-weight:800;font-size:11.5px;display:flex;align-items:center;justify-content:center;gap:6px}
+.filters{display:flex;gap:7px;overflow:auto;padding:2px 0 10px;scrollbar-width:none}.filters::-webkit-scrollbar{display:none}
+.filter{flex:none;border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:999px;min-height:34px;padding:0 11px;font-size:10.5px;font-weight:800}
+.filter.on{background:var(--ink);color:var(--canvas);border-color:var(--ink)}
+.timeline{overflow:hidden}
+.event{padding:12px 13px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:start}
+.event:last-child{border-bottom:0}
+.icon{width:34px;height:34px;border-radius:12px;background:var(--neutral-tile);display:grid;place-items:center;color:var(--act)}
+.icon.done{background:var(--done-tint);color:var(--done-ink)}
+.icon.alert{background:var(--alert-tint);color:var(--alert-ink)}
+.icon.pending{background:var(--pending-tile);color:var(--pending-ink)}
+.icon.info{background:var(--info);color:var(--info-ink)}
+.event strong{display:block;font-size:12px}.event small{display:block;color:var(--muted);font-size:10px;line-height:1.45;margin-top:3px}
+.amount{text-align:right;font-size:11.5px;font-weight:800;white-space:nowrap}
+.amount.credit{color:var(--done-ink)}.amount.debit{color:var(--ink)}.amount.context{color:var(--muted)}
+.group{margin-top:14px}
+.group-head{display:flex;align-items:center;justify-content:space-between;margin:0 2px 7px}.group-head strong{font-size:12px}.group-head span{font-size:10px;color:var(--muted)}
+.security{padding:12px 13px;display:grid;grid-template-columns:1fr auto;gap:10px}
+.security strong{display:block;font-size:12px}.security small{display:block;color:var(--muted);font-size:10.5px;margin-top:3px}.security b{font-size:13px}
+.legend{margin-top:10px;padding:10px 12px;border-radius:var(--r-btn);background:var(--row);color:var(--muted);font-size:10.5px;line-height:1.45}
+</style>
+</head>
+<body>
+<main class="app">
+  <div class="new"><strong>New in this file</strong><br>Tenant Statement v1 separates ledger/accounting entries from promise context. Security is shown separately from rent / charge balances, and historical events remain preserved.</div>
+
+  <header class="top">
+    <button class="back" type="button" aria-label="Back"><i data-lucide="arrow-left"></i></button>
+    <div class="title"><strong>Tenant Statement</strong><small>Sunrise PG</small></div>
+    <button class="theme" type="button" data-act="theme" aria-label="Toggle theme"><i data-lucide="sun-moon"></i></button>
+  </header>
+
+  <h1>Statement</h1>
+  <p class="lead">Financial history for this tenancy, with promise events shown as context and security kept separate.</p>
+
+  <section class="card summary">
+    <div class="summary-top">
+      <div class="avatar">RM</div>
+      <div class="copy"><strong>Rohan Mehta</strong><small>Room 203 · Bed B · Active since 5 Mar 2026</small></div>
+      <div class="money"><span>Outstanding</span><b>₹4,500</b></div>
+    </div>
+    <div class="metrics">
+      <div class="metric"><span>Tenant credit</span><b>₹1,000</b></div>
+      <div class="metric"><span>Security held</span><b>₹10,000</b></div>
+    </div>
+  </section>
+
+  <div class="actions">
+    <button class="btn" type="button"><i data-lucide="share-2"></i>Share statement</button>
+    <button class="btn" type="button"><i data-lucide="download"></i>Export</button>
+  </div>
+
+  <div class="filters">
+    <button class="filter on" type="button" data-filter="all">All</button>
+    <button class="filter" type="button" data-filter="financial">Ledger</button>
+    <button class="filter" type="button" data-filter="context">Promises</button>
+  </div>
+
+  <section class="card timeline" id="timeline">
+    <div class="event" data-kind="context">
+      <span class="icon alert"><i data-lucide="calendar-x-2"></i></span>
+      <span><strong>Promise missed</strong><small>Promised ₹4,500 for 6 Oct · no sufficient payment received</small></span>
+      <span class="amount context">Context</span>
+    </div>
+    <div class="event" data-kind="financial">
+      <span class="icon info"><i data-lucide="receipt-indian-rupee"></i></span>
+      <span><strong>October rent</strong><small>Due 5 Oct · includes Tax / VAT ₹500</small></span>
+      <span class="amount debit">₹8,500</span>
+    </div>
+    <div class="event" data-kind="context">
+      <span class="icon pending"><i data-lucide="calendar-clock"></i></span>
+      <span><strong>Promise recorded</strong><small>₹4,500 expected 6 Oct · “Will pay after salary credit”</small></span>
+      <span class="amount context">Context</span>
+    </div>
+    <div class="event" data-kind="financial">
+      <span class="icon done"><i data-lucide="indian-rupee"></i></span>
+      <span><strong>Payment received</strong><small>UPI · 4 Oct · Receipt #PG-2026-1039</small></span>
+      <span class="amount credit">− ₹4,000</span>
+    </div>
+    <div class="event" data-kind="financial">
+      <span class="icon info"><i data-lucide="receipt-indian-rupee"></i></span>
+      <span><strong>September rent</strong><small>Due 5 Sep</small></span>
+      <span class="amount debit">₹8,500</span>
+    </div>
+    <div class="event" data-kind="financial">
+      <span class="icon done"><i data-lucide="indian-rupee"></i></span>
+      <span><strong>Payment received</strong><small>Cash · 5 Sep · Receipt #PG-2026-0966</small></span>
+      <span class="amount credit">− ₹8,500</span>
+    </div>
+    <div class="event" data-kind="financial">
+      <span class="icon done"><i data-lucide="wallet-cards"></i></span>
+      <span><strong>Tenant credit carried forward</strong><small>Excess from August payment</small></span>
+      <span class="amount credit">₹1,000 credit</span>
+    </div>
+    <div class="event" data-kind="financial">
+      <span class="icon info"><i data-lucide="landmark"></i></span>
+      <span><strong>Opening balance</strong><small>Starting balance when accounting began in Khaata</small></span>
+      <span class="amount debit">₹0</span>
+    </div>
+  </section>
+
+  <section class="group">
+    <div class="group-head"><strong>Security</strong><span>Separate from rent / charges</span></div>
+    <div class="card security">
+      <div><strong>Security actually held</strong><small>Received 5 Mar 2026 · not applied to dues</small></div><b>₹10,000</b>
+    </div>
+  </section>
+
+  <div class="legend"><strong>Ledger entries</strong> change financial balances. <strong>Promise events</strong> explain commitments and misses but do not themselves debit, credit, or settle the account.</div>
+</main>
+
+<script>
+function icons(){if(window.lucide&&lucide.createIcons)lucide.createIcons()}
+document.addEventListener("click",e=>{
+  const f=e.target.closest("[data-filter]");
+  if(f){
+    const mode=f.dataset.filter;
+    document.querySelectorAll("[data-filter]").forEach(b=>b.classList.toggle("on",b===f));
+    document.querySelectorAll("[data-kind]").forEach(row=>{
+      row.hidden=mode!=="all"&&row.dataset.kind!==mode;
+    });
+    return;
+  }
+  const a=e.target.closest("[data-act]");
+  if(a&&a.dataset.act==="theme"){
+    const r=document.documentElement,c=r.getAttribute("data-theme");
+    r.setAttribute("data-theme",c==="dark"?"light":"dark");
+  }
+});
+icons();
+</script>
+</body>
+</html>
